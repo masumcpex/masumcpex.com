@@ -6,14 +6,22 @@ import {
 const membersCol = collection(db, "kh_members");
 const recordsCol = collection(db, "kh_records");
 
+const ICON_KEBAB = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>`;
+const ICON_EDIT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
+const ICON_TRASH = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>`;
+const ICON_TRASH_LG = ICON_TRASH.replace("<svg ", '<svg class="kh-modal-icon-svg" ');
+const ICON_WARNING = `<svg class="kh-modal-icon-svg kh-modal-icon-svg--warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+const ICON_SPINNER = `<svg class="kh-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9"/></svg>`;
+const ICON_CLOSE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+
 let appStarted = false;
 
 export function initKhApp(uid){
   if(appStarted) return; 
   appStarted = true;
 
-  let members = [];   // [{id, name}]
-  let records = [];   // [{id, date, member, status, hours}]
+  let members = [];
+  let records = [];
   let membersLoaded = false;
   let recordsLoaded = false;
 
@@ -68,7 +76,7 @@ export function initKhApp(uid){
       <span class="member-chip ${CHIP_COLORS[i % CHIP_COLORS.length]}">
         ${m.name}
         <span class="kh-member-id">${m.memberId || "…"}</span>
-        <button class="kh-remove-member" data-id="${m.id}" title="Remove">✕</button>
+        <button class="kh-remove-member" data-id="${m.id}" title="Remove">${ICON_CLOSE}</button>
       </span>`).join("");
     noMemberNote.style.display = members.length ? "none" : "block";
     noMemberWarn.style.display = members.length ? "none" : "block";
@@ -168,7 +176,7 @@ export function initKhApp(uid){
     overlay.className = "kh-modal-overlay";
     overlay.innerHTML = `
       <div class="kh-modal-card">
-        <p class="kh-modal-icon" id="khConfirmIcon">⚠️</p>
+        <p class="kh-modal-icon">${ICON_TRASH_LG}</p>
         <p class="kh-modal-text" id="khConfirmText"></p>
         <div class="kh-modal-actions">
           <button type="button" class="btn3d btn-coral" id="khConfirmYesBtn">Yes, Confirm</button>
@@ -178,11 +186,10 @@ export function initKhApp(uid){
     document.body.appendChild(overlay);
     return overlay;
   }
-  function askConfirm(message, icon){
+  function askConfirm(message){
     return new Promise(resolve => {
       const overlay = ensureConfirmModal();
       overlay.querySelector("#khConfirmText").textContent = message;
-      overlay.querySelector("#khConfirmIcon").textContent = icon || "⚠️";
       overlay.style.display = "flex";
       const yesBtn = overlay.querySelector("#khConfirmYesBtn");
       const noBtn  = overlay.querySelector("#khConfirmNoBtn");
@@ -207,11 +214,11 @@ export function initKhApp(uid){
     overlay.className = "kh-modal-overlay";
     overlay.innerHTML = `
       <div class="kh-modal-card">
-        <p class="kh-modal-icon">⚠️</p>
+        <p class="kh-modal-icon">${ICON_WARNING}</p>
         <p class="kh-modal-text">An attendance record for this member on this date already exists.</p>
         <div class="kh-modal-actions">
-          <button type="button" class="btn3d btn-mint" id="khDupUpdateBtn">✏️ Update Record</button>
-          <button type="button" class="btn3d btn-coral" id="khDupCancelBtn">❌ Cancel</button>
+          <button type="button" class="btn3d btn-mint" id="khDupUpdateBtn">${ICON_EDIT}Update Record</button>
+          <button type="button" class="btn3d btn-coral" id="khDupCancelBtn">Cancel</button>
         </div>
       </div>`;
     document.body.appendChild(overlay);
@@ -275,7 +282,7 @@ export function initKhApp(uid){
   });
 
   function currentYearMonth(){
-    return new Date().toISOString().slice(0,7); // "YYYY-MM"
+    return new Date().toISOString().slice(0,7);
   }
   function previousYearMonth(){
     const d = new Date();
@@ -298,9 +305,6 @@ export function initKhApp(uid){
     if(previousMonthHoursEl) previousMonthHoursEl.textContent = `${hoursForMonth(prev)} hours`;
   }
 
-  /* সামারি ড্রপডাউনে সিলেক্ট করার জন্য মাসের তালিকা তৈরি — রেকর্ডে থাকা প্রতিটা
-     মাস + চলতি মাস (রেকর্ড না থাকলেও, যাতে নতুন মাস শুরু হলে সাথে সাথেই
-     "Current Month" হিসেবে বেছে নেওয়া যায় এবং ০ থেকে শুরু হয়)। */
   function populateSummaryMonthOptions(){
     if(!summaryMonthSelect) return;
     const cur  = currentYearMonth();
@@ -318,12 +322,9 @@ export function initKhApp(uid){
     }).join("");
 
     if(months.includes(previouslySelected)) summaryMonthSelect.value = previouslySelected;
-    else summaryMonthSelect.value = cur; // ডিফল্ট হিসেবে সবসময় চলতি মাস দেখানো হয়
+    else summaryMonthSelect.value = cur;
   }
 
-  /* ---------------- সামারি টেবিল ----------------
-     এখন সবসময় শুধুমাত্র ড্রপডাউনে নির্বাচিত একটি মাসের রেকর্ড থেকে হিসাব করে —
-     জুলাই আর আগস্টের ঘণ্টা কখনোই একসাথে যোগ হবে না। */
   function renderSummary(){
     const tbody = document.querySelector("#summaryTable tbody");
     const noSummaryNote = document.getElementById("noSummaryNote");
@@ -357,7 +358,6 @@ export function initKhApp(uid){
     }).join("");
   }
 
-  /* সামারি সেকশনের ৩টা অংশ (ব্যাজ, ড্রপডাউন অপশন, টেবিল) একসাথে রিফ্রেশ করার শর্টকাট */
   function refreshSummarySection(){
     updateMonthBadges();
     populateSummaryMonthOptions();
@@ -366,7 +366,6 @@ export function initKhApp(uid){
 
   summaryMonthSelect?.addEventListener("change", renderSummary);
 
-  /* সামারি টেবিলে অগ্রিম (advance) ইনপুট বদলালে kh_members ডকুমেন্টে সংরক্ষণ */
   document.querySelector("#summaryTable tbody").addEventListener("change", async e => {
     const input = e.target.closest(".kh-advance-input");
     if(!input) return;
@@ -383,15 +382,13 @@ export function initKhApp(uid){
     }
   });
 
-  /* ---------------- মাস/সংখ্যা হেল্পার (ইন্টারফেস এখন ইংরেজি) ---------------- */
   const EN_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  function toBn(n){ return String(n); } // আগে বাংলা সংখ্যায় রূপান্তর করত, এখন ইন্টারফেস ইংরেজি হওয়ায় প্লেইন সংখ্যা
-  function monthLabel(ym){ // "2026-08" -> "August 2026"
+  function toBn(n){ return String(n); }
+  function monthLabel(ym){
     const [y, m] = ym.split("-").map(Number);
     return `${EN_MONTHS[m-1]} ${y}`;
   }
 
-  /* ---------------- রেজিস্টার: মাস অনুযায়ী গ্রুপ করে collapsible সেকশনে দেখানো ---------------- */
   function renderRegister(){
     const noRecordsNote = document.getElementById("noRecordsNote");
     const filter = filterMember.value;
@@ -418,15 +415,23 @@ export function initKhApp(uid){
           <td>${r.date}</td>
           <td>${r.member}</td>
           <td class="status-${r.status}">${r.status === "duty" ? "Present" : "Leave"}</td>
-          <td>${r.status === "duty" ? r.hours : "—"}</td>
-          <td><button class="row-delete" data-id="${r.id}" title="Delete">🗑️</button></td>
+          <td class="hours-cell">${r.status === "duty" ? r.hours : "—"}</td>
+          <td class="row-actions-cell">
+            <div class="row-actions">
+              <button type="button" class="row-menu-btn" data-id="${r.id}" aria-haspopup="true" aria-expanded="false" aria-label="Row actions">${ICON_KEBAB}</button>
+              <div class="row-actions-menu" role="menu">
+                <button type="button" class="row-action-edit" role="menuitem" data-id="${r.id}" data-member="${r.member}" data-date="${r.date}">${ICON_EDIT}Edit</button>
+                <button type="button" class="row-action-delete" role="menuitem" data-id="${r.id}">${ICON_TRASH}Delete</button>
+              </div>
+            </div>
+          </td>
         </tr>`).join("");
       return `
         <details class="kh-month-group"${idx === 0 ? " open" : ""}>
           <summary class="kh-month-summary">
             <span class="kh-month-label">${monthLabel(ym)}</span>
             <span class="kh-month-count">${list.length} entries</span>
-            <button type="button" class="btn3d btn-danger kh-month-delete" data-ym="${ym}">🗑️ Delete This Month</button>
+            <button type="button" class="btn3d btn-danger kh-month-delete" data-ym="${ym}">${ICON_TRASH}Delete This Month</button>
           </summary>
           <div class="table-wrap">
             <table class="kh-table">
@@ -438,20 +443,17 @@ export function initKhApp(uid){
     }).join("");
   }
 
-  /* একটা নির্দিষ্ট মাস (ym = "YYYY-MM") এর সব রেকর্ড মুছে ফেলা — যেকোনো মাসের জন্যই কাজ করে, শুধু চলতি মাস না */
   async function deleteMonthRecords(ym, btn){
     const monthRecords = records.filter(r => r.date.startsWith(ym));
     if(!monthRecords.length) return;
 
     const ok = await askConfirm(
-      `All ${monthRecords.length} entries for "${monthLabel(ym)}" will be permanently deleted. This action cannot be undone.`,
-      "🗑️"
+      `All ${monthRecords.length} entries for "${monthLabel(ym)}" will be permanently deleted. This action cannot be undone.`
     );
     if(!ok) return;
 
     if(btn) btn.disabled = true;
     try{
-      // Firestore ব্যাচে একসাথে ৫০০টির বেশি অপারেশন করা যায় না, তাই ৪০০টি করে ভাগ করে ডিলিট করা হচ্ছে
       const chunkSize = 400;
       for(let i = 0; i < monthRecords.length; i += chunkSize){
         const batch = writeBatch(db);
@@ -466,15 +468,45 @@ export function initKhApp(uid){
     }
   }
 
-  /* একক এন্ট্রি ডিলিট + মাস ডিলিট — দুটোই এখন #registerGroups-এর ভেতরে থাকা বাটনে ক্লিক থেকে ধরা হয় */
+  function closeAllRowMenus(){
+    registerGroups.querySelectorAll(".row-actions-menu.open").forEach(m => m.classList.remove("open"));
+    registerGroups.querySelectorAll('.row-menu-btn[aria-expanded="true"]').forEach(b => b.setAttribute("aria-expanded", "false"));
+  }
+  document.addEventListener("click", e => {
+    if(!e.target.closest(".row-actions")) closeAllRowMenus();
+  });
+
   registerGroups.addEventListener("click", async e => {
-    const rowDeleteBtn = e.target.closest(".row-delete");
-    if(rowDeleteBtn){
-      const ok = await askConfirm("Delete this entry?", "🗑️");
+    const menuBtn = e.target.closest(".row-menu-btn");
+    if(menuBtn){
+      const menu = menuBtn.nextElementSibling;
+      const willOpen = !menu.classList.contains("open");
+      closeAllRowMenus();
+      if(willOpen){
+        menu.classList.add("open");
+        menuBtn.setAttribute("aria-expanded", "true");
+      }
+      return;
+    }
+
+    const editBtn = e.target.closest(".row-action-edit");
+    if(editBtn){
+      closeAllRowMenus();
+      entryMember.value = editBtn.dataset.member;
+      entryDate.value = editBtn.dataset.date;
+      autoFillFromExisting();
+      entryForm.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    const deleteBtn = e.target.closest(".row-action-delete");
+    if(deleteBtn){
+      closeAllRowMenus();
+      const ok = await askConfirm("Delete this entry?");
       if(!ok) return;
-      khBounce(rowDeleteBtn);
+      khBounce(deleteBtn);
       try{
-        await deleteDoc(doc(db, "kh_records", rowDeleteBtn.dataset.id));
+        await deleteDoc(doc(db, "kh_records", deleteBtn.dataset.id));
       }catch(err){
         console.error(err);
         alert("Failed to delete entry. Please try again.");
@@ -484,7 +516,6 @@ export function initKhApp(uid){
 
     const monthDeleteBtn = e.target.closest(".kh-month-delete");
     if(monthDeleteBtn){
-      // <summary>-এর ভেতরের বাটন হওয়ায় ক্লিক করলে <details> টা খুলে/বন্ধ না হয়ে যায় সেটা আটকানো
       e.preventDefault();
       e.stopPropagation();
       khBounce(monthDeleteBtn);
@@ -494,7 +525,6 @@ export function initKhApp(uid){
 
   filterMember.addEventListener("change", renderRegister);
 
-  /* ---------------- Download This Month's Report (CSV) ---------------- */
   downloadCsvBtn.addEventListener("click", () => {
     khBounce(downloadCsvBtn);
     const ym = currentYearMonth();
@@ -520,7 +550,6 @@ export function initKhApp(uid){
       .map(row => row.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(","))
       .join("\r\n");
 
-    // Excel-এ ঠিকভাবে পড়ার জন্য BOM যোগ করা হলো
     const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -532,13 +561,6 @@ export function initKhApp(uid){
     URL.revokeObjectURL(url);
   });
 
-  /* ---------------- এই মাসের রিপোর্ট ডাউনলোড (PDF) ----------------
-     সম্পূর্ণ ক্লায়েন্ট-সাইড (ব্রাউজারেই) তৈরি হয় — Firebase Storage-এ
-     কোনো ফাইল আপলোড/সংরক্ষণ করা হয় না। CSV-এর মতোই একই local `records`
-     ভ্যারিয়েবল থেকে ডেটা নেওয়া হয়, শুধু আউটপুট ফরম্যাট আলাদা।
-     বাংলা টেক্সট সঠিকভাবে দেখানোর জন্য html2canvas দিয়ে একটা HTML
-     টেমপ্লেট ছবিতে রূপান্তর করে সেই ছবি jsPDF দিয়ে PDF-এ বসানো হয়
-     (এতে ব্রাউজারের নিজস্ব বাংলা ফন্ট রেন্ডারিং হুবহু বজায় থাকে)। */
   downloadPdfBtn.addEventListener("click", async () => {
     if(typeof window.html2canvas === "undefined" || typeof window.jspdf === "undefined"){
       alert("PDF generation library failed to load. Please check your internet connection and try again.");
@@ -559,8 +581,8 @@ export function initKhApp(uid){
     }
 
     downloadPdfBtn.disabled = true;
-    const originalLabel = downloadPdfBtn.textContent;
-    downloadPdfBtn.textContent = "⏳ Generating PDF...";
+    const originalLabel = downloadPdfBtn.innerHTML;
+    downloadPdfBtn.innerHTML = `${ICON_SPINNER}Generating PDF...`;
 
     try{
       await generatePdfReport(ym, monthRecords);
@@ -569,12 +591,11 @@ export function initKhApp(uid){
       alert("Failed to generate PDF. Please try again.");
     }finally{
       downloadPdfBtn.disabled = false;
-      downloadPdfBtn.textContent = originalLabel;
+      downloadPdfBtn.innerHTML = originalLabel;
     }
   });
 
   async function generatePdfReport(ym, monthRecords){
-    // প্রতিটা সদস্যের জন্য এই মাসের উপস্থিতি/অনুপস্থিতি/ঘণ্টা/শতাংশ হিসাব
     const byMember = {};
     monthRecords.forEach(r => {
       if(!byMember[r.member]) byMember[r.member] = { present:0, absent:0, hours:0 };
@@ -611,7 +632,6 @@ export function initKhApp(uid){
     const totalAbsent  = memberNames.reduce((sum,n) => sum + byMember[n].absent, 0);
     const generatedAt = new Date().toLocaleString("en-US", { dateStyle:"medium", timeStyle:"short" });
 
-    // ---------------- অফ-স্ক্রিন অফিসিয়াল প্রিন্ট টেমপ্লেট তৈরি ----------------
     const wrap = document.createElement("div");
     wrap.id = "pdfReportRoot";
     wrap.style.cssText = "position:fixed; left:-99999px; top:0; width:800px; background:#fff; padding:32px 30px; font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif; color:#1B2A45; display:flex; flex-direction:column;";
@@ -669,7 +689,6 @@ export function initKhApp(uid){
       </div>
     `;
 
-    // অফিসিয়াল ডকুমেন্ট লুক — সব সেল vertically centered, ধারাবাহিক প্যাডিং/বর্ডার
     const style = document.createElement("style");
     style.textContent = `
       #pdfReportRoot .pdf-table{ width:100%; border-collapse:collapse; font-size:13px; }
@@ -701,13 +720,10 @@ export function initKhApp(uid){
       const imgData = canvas.toDataURL("image/jpeg", 0.95);
 
       if(imgHeightMM <= A4_HEIGHT_MM){
-        // কন্টেন্ট এক পেজেই ধরে যাচ্ছে — পেজের সাইজ কন্টেন্টের সমান করে বসানো হলো
-        // যাতে নিচে অকারণে বড় ফাঁকা সাদা জায়গা না থাকে, ফুটার পেজের আসল নিচেই থাকে
         const pdf = new jsPDF({ orientation:"portrait", unit:"mm", format:[imgWidthMM, imgHeightMM] });
         pdf.addImage(imgData, "JPEG", 0, 0, imgWidthMM, imgHeightMM);
         pdf.save(`attendance-report-${ym}.pdf`);
       }else{
-        // কন্টেন্ট এক A4 পেজের চেয়ে বড় — স্ট্যান্ডার্ড A4-এ একাধিক পেজে ভাগ করে বসানো
         const pdf = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
         let heightLeft = imgHeightMM;
         let position = 0;
@@ -721,7 +737,6 @@ export function initKhApp(uid){
         }
         pdf.save(`attendance-report-${ym}.pdf`);
       }
-      // সরাসরি ডিভাইসে ডাউনলোড — Firebase Storage-এ কিছু আপলোড হয় না
     }finally{
       document.body.removeChild(wrap);
       document.body.removeChild(style);
@@ -734,20 +749,16 @@ export function initKhApp(uid){
       .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
   }
 
-
-  /* ---------------- লোডিং ইন্ডিকেটর ---------------- */
   function updateLoadingState(){
     if(membersLoaded && recordsLoaded){
       registerLoading.style.display = "none";
     }
   }
 
-  /* ---------------- প্রাথমিক রেন্ডার ---------------- */
   renderMembers();
   refreshSummarySection();
   renderRegister();
 
-  /* ---------------- এই uid-এর নিজের ডেটা শোনা শুরু ---------------- */
   const myMembersQuery = query(membersCol, where("ownerId", "==", uid));
   const myRecordsQuery = query(recordsCol, where("ownerId", "==", uid));
 

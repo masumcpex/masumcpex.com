@@ -47,6 +47,8 @@
   box-shadow: 0 0 0 var(--btn-shadow, #333), 0 2px 6px rgba(0,0,0,.18);
 }
 .btn3d:disabled{ opacity:.5; cursor:not-allowed; transform:none !important; }
+.btn3d svg{ width:15px; height:15px; vertical-align:-3px; margin-right:.4rem; }
+.kh-remove-member svg{ width:11px; height:11px; vertical-align:-1px; }
 
 .btn-mint{   background:#2ECC71; --btn-shadow:#1E9A56; }
 .btn-sky{    background:#3B82F6; --btn-shadow:#1D4ED8; }
@@ -121,13 +123,33 @@
 .kh-table th{ color: var(--muted); font-family: var(--font-util); font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; }
 .kh-table td.status-leave{ color: var(--gold); font-weight:600; }
 .kh-table td.status-duty{ color: var(--teal); font-weight:600; }
-.kh-table .row-delete{
-  background:#FF6B6B; border:none; color:#fff; cursor:pointer; font-size:.85rem;
-  border-radius:8px; padding:.35rem .55rem;
-  box-shadow: 0 3px 0 #C0392B, 0 5px 8px rgba(0,0,0,.15);
-  transition: transform .12s ease, box-shadow .12s ease;
+.kh-table td.hours-cell{ font-weight:600; }
+
+.row-actions-cell{ text-align:right; white-space:nowrap; }
+.row-actions{ position:relative; display:inline-block; }
+.row-menu-btn{
+  background:transparent; border:none; cursor:pointer; padding:.4rem;
+  border-radius:8px; color:var(--muted); display:inline-flex; align-items:center; justify-content:center;
+  transition: background .15s ease, color .15s ease;
 }
-.kh-table .row-delete:active{ transform: translateY(3px); box-shadow: 0 0 0 #C0392B; }
+.row-menu-btn svg{ width:18px; height:18px; }
+.row-menu-btn:hover, .row-menu-btn:focus-visible{ background:var(--paper-2); color:var(--charcoal); outline:none; }
+
+.row-actions-menu{
+  display:none; position:absolute; right:0; top:calc(100% + 4px); z-index:20;
+  background:#fff; border:1px solid var(--line); border-radius:10px;
+  box-shadow: 0 8px 24px rgba(16,24,40,.16); min-width:132px; padding:.35rem; overflow:hidden;
+}
+.row-actions-menu.open{ display:block; }
+.row-actions-menu button{
+  display:flex; align-items:center; gap:.55rem; width:100%; padding:.5rem .6rem;
+  background:transparent; border:none; cursor:pointer; border-radius:7px;
+  font-family: var(--font-body); font-size:.87rem; color: var(--charcoal); text-align:left;
+}
+.row-actions-menu button svg{ width:15px; height:15px; flex-shrink:0; }
+.row-actions-menu button:hover{ background: var(--paper-2); }
+.row-action-delete{ color:#C0392B; }
+.row-action-delete:hover{ background: rgba(255,107,107,.12); }
 
 .filter-row select{
   padding:.55rem .9rem; border-radius: 10px; border: 2px solid #9B59B6;
@@ -261,7 +283,14 @@ html, body, .kh-register-actions, #downloadCsvBtn, .kh-month-delete, .kh-month-g
   from{ transform: scale(.92); opacity: 0; }
   to{ transform: scale(1); opacity: 1; }
 }
-.kh-modal-icon{ font-size: 2rem; margin: 0 0 .6rem; }
+.kh-modal-icon{ margin: 0 0 .6rem; display:flex; justify-content:center; }
+.kh-modal-icon-svg{
+  width:26px; height:26px; color:#C0392B;
+  padding:.6rem; border-radius:50%; background: rgba(201,57,44,.1);
+}
+.kh-modal-icon-svg--warn{ color:#B45309; background: rgba(180,83,9,.1); }
+.kh-spin{ animation: khSpin .8s linear infinite; }
+@keyframes khSpin{ to{ transform: rotate(360deg); } }
 .kh-modal-text{ font-size: 1rem; font-weight: 600; color: var(--charcoal, #333); margin: 0 0 1.4rem; line-height: 1.5; }
 .kh-modal-actions{ display:flex; gap: .8rem; justify-content:center; flex-wrap: wrap; }
 .kh-modal-actions .btn3d{ flex: 1; min-width: 120px; }

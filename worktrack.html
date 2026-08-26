@@ -52,6 +52,7 @@
       <label class="kh-email-label" for="khPasswordInput">Password</label>
       <div class="kh-password-wrap">
         <input type="password" id="khPasswordInput" class="kh-email-input" placeholder="Enter your password" required autocomplete="current-password" minlength="6" aria-describedby="khPasswordError">
+        <button type="button" class="kh-eye-btn" id="khPasswordToggle" aria-label="Show password" aria-pressed="false" tabindex="-1"></button>
       </div>
       <span class="kh-field-error" id="khPasswordError" aria-live="polite"></span>
 
@@ -59,6 +60,7 @@
         <label class="kh-email-label" for="khConfirmPasswordInput">Confirm Password</label>
         <div class="kh-password-wrap">
           <input type="password" id="khConfirmPasswordInput" class="kh-email-input" placeholder="Confirm your password" autocomplete="new-password" minlength="6" aria-describedby="khConfirmPasswordError">
+          <button type="button" class="kh-eye-btn" id="khConfirmPasswordToggle" aria-label="Show password" aria-pressed="false" tabindex="-1"></button>
         </div>
         <span class="kh-field-error" id="khConfirmPasswordError" aria-live="polite"></span>
       </div>
@@ -233,10 +235,6 @@
   .kh-month-group .table-wrap{ padding: 0 14px 14px; }
 
   .member-chip{ display: inline-flex; align-items: center; gap: 6px; }
-  .kh-member-id{
-    font-size: .68rem; font-weight: 700; opacity: .75; font-family: monospace;
-    background: rgba(255,255,255,0.25); padding: 1px 7px; border-radius: 10px;
-  }
   .kh-remove-member{
     background: rgba(255,255,255,0.25); border: none; border-radius: 50%;
     width: 22px; height: 22px; font-size: .78rem; line-height: 1; cursor: pointer;
@@ -252,10 +250,16 @@
   }
   .kh-email-input:focus{ outline:none; border-color:#4F8CFF; }
   .kh-password-wrap{ position:relative; }
+  .kh-password-wrap .kh-email-input{ padding-right:46px; }
   .kh-eye-btn{
-    position:absolute; right:14px; top:50%; transform:translateY(-50%);
-    background:none; border:none; font-size:1rem; cursor:pointer; opacity:.6;
+    position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    background:none; border:none; cursor:pointer; opacity:.55;
+    width:32px; height:32px; padding:0; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#333; transition: opacity .15s ease, background .15s ease;
   }
+  .kh-eye-btn:hover{ opacity:.85; background:rgba(0,0,0,0.05); }
+  .kh-eye-btn svg{ width:20px; height:20px; }
   .kh-forgot-link{
     display:block; margin:10px 0 4px; background:none; border:none; color:#4F8CFF;
     font-size:.82rem; font-weight:700; cursor:pointer; text-align:right; width:100%;

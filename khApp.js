@@ -75,7 +75,6 @@ export function initKhApp(uid){
     memberChips.innerHTML = members.map((m, i) => `
       <span class="member-chip ${CHIP_COLORS[i % CHIP_COLORS.length]}">
         ${m.name}
-        <span class="kh-member-id">${m.memberId || "…"}</span>
         <button class="kh-remove-member" data-id="${m.id}" title="Remove">${ICON_CLOSE}</button>
       </span>`).join("");
     noMemberNote.style.display = members.length ? "none" : "block";

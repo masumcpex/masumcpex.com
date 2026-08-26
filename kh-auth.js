@@ -8,7 +8,7 @@ import {
 } from "./firebase.js";
 import { initKhApp } from "./khApp.js";
 
-const ADMIN_EMAIL = "admin@masumcpex.com"; // শুধু এই ইমেইল "পুরনো ডেটা claim করুন" বাটন দেখবে
+const ADMIN_EMAIL = "admin@masumcpex.com";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -135,6 +135,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmInput = document.getElementById("khConfirmPasswordInput");
   const confirmError = document.getElementById("khConfirmPasswordError");
 
+  const passwordToggle = document.getElementById("khPasswordToggle");
+  const confirmPasswordToggle = document.getElementById("khConfirmPasswordToggle");
+
   const termsTextEl = document.getElementById("khTermsText");
 
   const loginSignupBox = document.getElementById("khLoginSignupBox");
@@ -143,9 +146,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const backToLoginBtn  = document.getElementById("khBackToLoginBtn");
   const verifyError     = document.getElementById("khVerifyError");
 
-  if(!form || !submitBtn || !toggleModeBtn) return; // এই এলিমেন্টগুলো না থাকলে কিছু করার নেই
+  if(!form || !submitBtn || !toggleModeBtn) return;
 
-  let mode = "login"; // "login" | "signup"
+  let mode = "login";
   let isSubmitting = false;
 
   function showAuthError(msg){
@@ -177,6 +180,23 @@ document.addEventListener("DOMContentLoaded", () => {
   emailInput?.addEventListener("input", () => clearFieldError(emailInput, emailError));
   passwordInput?.addEventListener("input", () => clearFieldError(passwordInput, passwordError));
   confirmInput?.addEventListener("input", () => clearFieldError(confirmInput, confirmError));
+
+  const ICON_EYE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  const ICON_EYE_OFF = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a20.3 20.3 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a20.3 20.3 0 0 1-3.22 4.36M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+  function wirePasswordToggle(toggleBtn, input){
+    if(!toggleBtn || !input) return;
+    toggleBtn.innerHTML = ICON_EYE;
+    toggleBtn.addEventListener("click", () => {
+      const showing = input.type === "text";
+      input.type = showing ? "password" : "text";
+      toggleBtn.innerHTML = showing ? ICON_EYE : ICON_EYE_OFF;
+      toggleBtn.setAttribute("aria-pressed", String(!showing));
+      toggleBtn.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+    });
+  }
+  wirePasswordToggle(passwordToggle, passwordInput);
+  wirePasswordToggle(confirmPasswordToggle, confirmInput);
 
   function setMode(newMode){
     mode = newMode;
@@ -277,7 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if(isSubmitting) return; // ডুপ্লিকেট রিকোয়েস্ট প্রতিরোধ
+    if(isSubmitting) return;
     clearAuthError();
 
     let valid = validateEmail();

@@ -411,11 +411,11 @@ export function initKhApp(uid){
       const list = groups[ym].slice().sort((a,b) => b.date.localeCompare(a.date));
       const rows = list.map(r => `
         <tr>
-          <td>${r.date}</td>
-          <td>${r.member}</td>
-          <td class="status-${r.status}">${r.status === "duty" ? "Present" : "Leave"}</td>
-          <td class="hours-cell">${r.status === "duty" ? r.hours : "—"}</td>
-          <td class="row-actions-cell">
+          <td data-label="Date">${r.date}</td>
+          <td data-label="Name">${r.member}</td>
+          <td class="status-${r.status}" data-label="Status">${r.status === "duty" ? "Present" : "Leave"}</td>
+          <td class="hours-cell" data-label="Hours">${r.status === "duty" ? r.hours : "—"}</td>
+          <td class="row-actions-cell" data-label="Action">
             <div class="row-actions">
               <button type="button" class="row-menu-btn" data-id="${r.id}" aria-haspopup="true" aria-expanded="false" aria-label="Row actions">${ICON_KEBAB}</button>
               <div class="row-actions-menu" role="menu">

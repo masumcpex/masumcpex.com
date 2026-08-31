@@ -125,6 +125,34 @@
 .kh-table td.status-duty{ color: var(--teal); font-weight:600; }
 .kh-table td.hours-cell{ font-weight:600; }
 
+/* Mobile card/list view for the daily attendance register only.
+   Desktop/tablet table (>620px) and the monthly #summaryTable are untouched. */
+@media (max-width: 620px){
+  .kh-month-group .table-wrap{ overflow-x: visible; }
+  .kh-month-group .table-wrap thead{ display:none; }
+  .kh-month-group .table-wrap table.kh-table,
+  .kh-month-group .table-wrap table.kh-table tbody{ display:block; width:100%; }
+  .kh-month-group .table-wrap table.kh-table tr{
+    display:block; background: var(--card-bg); border:1px solid var(--line);
+    border-radius:14px; box-shadow: var(--shadow); padding:.85rem 1rem;
+    margin-bottom:.7rem;
+  }
+  .kh-month-group .table-wrap table.kh-table tr:last-child{ margin-bottom:0; }
+  .kh-month-group .table-wrap table.kh-table td{
+    display:flex; align-items:center; justify-content:space-between; gap:.8rem;
+    padding:.42rem 0; border-bottom:1px solid var(--line-soft); white-space:normal; text-align:right;
+  }
+  .kh-month-group .table-wrap table.kh-table td:last-child{ border-bottom:none; padding-bottom:0; }
+  .kh-month-group .table-wrap table.kh-table td:first-child{ padding-top:0; }
+  .kh-month-group .table-wrap table.kh-table td::before{
+    content: attr(data-label); font-family: var(--font-util); font-weight:700;
+    color: var(--muted); font-size:.72rem; letter-spacing:.05em; text-transform:uppercase;
+    text-align:left; flex-shrink:0;
+  }
+  .kh-month-group .table-wrap table.kh-table td.row-actions-cell{ justify-content:flex-end; }
+  .kh-month-group .table-wrap table.kh-table td.row-actions-cell::before{ margin-right:auto; }
+}
+
 .row-actions-cell{ text-align:right; white-space:nowrap; }
 .row-actions{ position:relative; display:inline-block; }
 .row-menu-btn{

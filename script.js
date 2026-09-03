@@ -162,11 +162,75 @@ document.addEventListener("DOMContentLoaded", () => {
   function findEntry(id, type){
     return (type === "journal" ? SITE_DATA.journal : SITE_DATA.articles).find(e => e.id === id);
   }
+
+  const AUDIO_ICONS = {
+    headphone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-3a8 8 0 0 1 16 0v3"></path><path d="M4 15a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1.5a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H4Z"></path><path d="M20 15a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1.5a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1H20Z"></path></svg>`,
+    play: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.5 5.6v12.8a1 1 0 0 0 1.53.85l10.2-6.4a1 1 0 0 0 0-1.7L9.03 4.75a1 1 0 0 0-1.53.85Z"></path></svg>`,
+    pause: `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4.5" height="14" rx="1.3"></rect><rect x="13.5" y="5" width="4.5" height="14" rx="1.3"></rect></svg>`,
+    stop: `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2.5"></rect></svg>`
+  };
+
+  function audioIconForState(state){
+    if(state === "playing") return "pause";
+    if(state === "paused") return "play";
+    return "headphone";
+  }
+  function audioLabelForState(state){
+    if(state === "playing") return "পজ করুন";
+    if(state === "paused") return "আবার শুনুন";
+    return "শুনুন";
+  }
+
+  function renderAudioControl(entry){
+    if(!entry.content) return "";
+    return `
+    <div class="audio-player" data-audio-player="${entry.id}">
+      <button type="button" class="audio-toggle" data-audio-toggle="${entry.id}" aria-label="শুনুন">
+        <span class="audio-icon">${AUDIO_ICONS.headphone}</span>
+        <span class="audio-toggle-label">শুনুন</span>
+        <span class="audio-eq"><span></span><span></span><span></span></span>
+      </button>
+      <button type="button" class="audio-stop" data-audio-stop="${entry.id}" aria-label="থামান" hidden>
+        ${AUDIO_ICONS.stop}
+      </button>
+    </div>`;
+  }
+
+  function applyAudioState(entry, state){
+    const wrap = document.querySelector(`[data-audio-player="${entry.id}"]`);
+    if(!wrap) return;
+    wrap.classList.toggle("is-playing", state === "playing");
+    wrap.classList.toggle("is-paused", state === "paused");
+    const toggleBtn = wrap.querySelector("[data-audio-toggle]");
+    toggleBtn.querySelector(".audio-icon").innerHTML = AUDIO_ICONS[audioIconForState(state)];
+    toggleBtn.querySelector(".audio-toggle-label").textContent = audioLabelForState(state);
+    toggleBtn.setAttribute("aria-label", audioLabelForState(state));
+    wrap.querySelector("[data-audio-stop]").hidden = state === "idle";
+  }
+
+  function wireAudioControl(entry){
+    const wrap = document.querySelector(`[data-audio-player="${entry.id}"]`);
+    if(!wrap || !window.JournalAudio) return;
+    window.JournalAudio.register(entry.id, state => applyAudioState(entry, state));
+    applyAudioState(entry, window.JournalAudio.getState(entry.id));
+    wrap.querySelector("[data-audio-toggle]").addEventListener("click", () => {
+      window.JournalAudio.toggle(entry.id, entry.content);
+    });
+    wrap.querySelector("[data-audio-stop]").addEventListener("click", () => {
+      window.JournalAudio.stopId(entry.id);
+    });
+  }
+
   function openModal(entry){
+    if(window.JournalAudio && window.JournalAudio.getActiveId() && window.JournalAudio.getActiveId() !== entry.id){
+      window.JournalAudio.stop();
+    }
     document.getElementById("modalCategory").textContent = entry.category;
     document.getElementById("modalTitle").textContent = entry.title;
     document.getElementById("modalDate").textContent = entry.date;
     document.getElementById("modalContent").innerHTML = entry.content;
+    document.getElementById("modalAudio").innerHTML = renderAudioControl(entry);
+    if(entry.content) wireAudioControl(entry);
     document.getElementById("readModal").classList.add("open");
   }
   document.body.addEventListener("click", e => {
@@ -178,9 +242,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("modalClose").addEventListener("click", () => {
     document.getElementById("readModal").classList.remove("open");
+    if(window.JournalAudio) window.JournalAudio.stop();
   });
   document.getElementById("readModal").addEventListener("click", e => {
-    if(e.target.id === "readModal") e.target.classList.remove("open");
+    if(e.target.id === "readModal"){
+      e.target.classList.remove("open");
+      if(window.JournalAudio) window.JournalAudio.stop();
+    }
   });
 
   const mystery = SITE_DATA.mystery;

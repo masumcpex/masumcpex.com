@@ -537,6 +537,54 @@ img{ max-width:100%; display:block; }
 .modal-date{ color: var(--muted); font-size:.86rem; margin-bottom: 1.4rem; }
 .modal-content{ color: var(--charcoal); line-height:1.9; white-space: pre-line; }
 
+.modal-audio{ margin: 0 0 1.6rem; }
+.audio-player{ display:flex; align-items:center; gap:.7rem; flex-wrap:wrap; }
+.audio-toggle{
+  display:inline-flex; align-items:center; gap:.6rem;
+  padding:.78rem 1.5rem; border-radius:999px; border:none; cursor:pointer;
+  background: var(--teal); color:#fff;
+  font-family: var(--font-nav); font-weight:600; font-size:.92rem;
+  box-shadow: 0 8px 22px rgba(14,110,92,.28); min-height:44px;
+  transition: transform .22s var(--ease), box-shadow .22s var(--ease), background .22s var(--ease);
+}
+.audio-toggle:hover{ transform: translateY(-2px); box-shadow: 0 12px 26px rgba(14,110,92,.36); }
+.audio-toggle:active{ transform: translateY(0); }
+.audio-player.is-playing .audio-toggle{ background: var(--gold); box-shadow: 0 8px 22px rgba(199,154,59,.32); }
+.audio-player.is-paused .audio-toggle{ background: var(--ink); box-shadow: 0 8px 22px rgba(27,42,69,.28); }
+.audio-icon{ width:19px; height:19px; display:inline-flex; flex-shrink:0; }
+.audio-icon svg{ width:100%; height:100%; display:block; }
+.audio-eq{ display:none; align-items:flex-end; gap:3px; height:15px; }
+.audio-player.is-playing .audio-eq{ display:inline-flex; }
+.audio-eq span{ width:3px; background:#fff; border-radius:2px; animation: audioEq .85s ease-in-out infinite; }
+.audio-eq span:nth-child(1){ height:5px; animation-delay:0s; }
+.audio-eq span:nth-child(2){ height:14px; animation-delay:.15s; }
+.audio-eq span:nth-child(3){ height:9px; animation-delay:.3s; }
+@keyframes audioEq{ 0%,100%{ transform: scaleY(.35); } 50%{ transform: scaleY(1); } }
+.audio-stop{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:44px; height:44px; border-radius:50%; cursor:pointer;
+  background: var(--paper-2); color: var(--ink); border:1.5px solid var(--line);
+  transition: background .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease);
+}
+.audio-stop:hover{ background: var(--ink); color:#fff; border-color: var(--ink); transform: translateY(-2px); }
+.audio-stop svg{ width:18px; height:18px; display:block; }
+
+.lyric-intro{
+  font-family:'Noto Serif Bengali', serif; font-style:italic; color: var(--muted);
+  font-size:1.02rem; margin:0 0 1.6rem; padding-bottom:1.2rem; border-bottom:1px solid var(--line-soft);
+}
+.lyric-section{ margin: 0 0 1.5rem; }
+.lyric-label{
+  display:inline-block; font-family: var(--font-util); font-size:.7rem; letter-spacing:.12em;
+  font-weight:700; text-transform:uppercase; color: var(--gold); margin-bottom:.55rem;
+}
+.lyric-section p{ margin:0 0 .35rem; line-height:1.9; }
+.lyric-section--chorus{ background: var(--paper-2); border-left:3px solid var(--teal); border-radius:10px; padding:1.1rem 1.3rem; }
+.lyric-section--chorus .lyric-label{ color: var(--teal); }
+.lyric-section--bridge{ background:#FBF7EC; border-left:3px solid var(--gold); border-radius:10px; padding:1.1rem 1.3rem; }
+.lyric-section--soft{ font-family:'Noto Serif Bengali', serif; font-style:italic; color: var(--muted); }
+.lyric-section--soft .lyric-label{ color: var(--muted); }
+
 .site-footer{
   text-align:center; padding: 2.4rem 1rem; color: var(--muted); font-size:.85rem;
   border-top: 1px solid var(--line-soft); background: var(--paper-2);

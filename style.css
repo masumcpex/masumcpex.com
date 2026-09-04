@@ -537,6 +537,25 @@ img{ max-width:100%; display:block; }
 .modal-date{ color: var(--muted); font-size:.86rem; margin-bottom: 1.4rem; }
 .modal-content{ color: var(--charcoal); line-height:1.9; white-space: pre-line; }
 
+.modal-footer{
+  display:flex; flex-wrap:wrap; gap:.8rem; justify-content:space-between;
+  margin-top: 2rem; padding-top: 1.4rem; border-top: 1px solid var(--line);
+}
+.modal-back, .modal-next{
+  display:inline-flex; align-items:center; gap:.5rem;
+  font-family: var(--font-util); font-size:.85rem; font-weight:700;
+  padding:.7rem 1.3rem; border-radius:999px; cursor:pointer; border:1.5px solid var(--ink);
+  background: transparent; color: var(--ink); transition: all .18s var(--ease);
+}
+.modal-back:hover{ background: var(--ink); color:#fff; }
+.modal-next{ border-color: var(--teal); color: var(--teal); margin-left:auto; }
+.modal-next:hover{ background: var(--teal); color:#fff; }
+@media (max-width:520px){
+  .modal-footer{ flex-direction:column; }
+  .modal-next{ margin-left:0; }
+  .modal-back, .modal-next{ justify-content:center; width:100%; }
+}
+
 .modal-audio{ margin: 0 0 1.6rem; }
 .audio-player{ display:flex; align-items:center; gap:.7rem; flex-wrap:wrap; }
 .audio-toggle{

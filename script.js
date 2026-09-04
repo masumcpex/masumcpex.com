@@ -221,6 +221,48 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function categorySiblings(entry){
+    const source = entry._type === "journal" ? SITE_DATA.journal : SITE_DATA.articles;
+    return source.filter(e => e.category === entry.category);
+  }
+
+  function nextEntryFor(entry){
+    const siblings = categorySiblings(entry);
+    if(siblings.length < 2) return null;
+    const idx = siblings.findIndex(e => e.id === entry.id);
+    if(idx === -1) return null;
+    return siblings[(idx + 1) % siblings.length];
+  }
+
+  function goToEntry(entry){
+    if(entry.url && entry.url !== "#"){ window.location.href = entry.url; return; }
+    openModal(entry);
+  }
+
+  function closeModal(){
+    document.getElementById("readModal").classList.remove("open");
+    if(window.JournalAudio) window.JournalAudio.stop();
+  }
+
+  function renderModalFooter(entry){
+    const next = nextEntryFor(entry);
+    return `
+    <button type="button" class="modal-back" id="modalBackBtn">← মূল আর্টিকেলে ফিরে যান</button>
+    ${next ? `<button type="button" class="modal-next" id="modalNextBtn">পরবর্তী স্টোরি দেখুন →</button>` : ""}`;
+  }
+
+  function wireModalFooter(entry){
+    const backBtn = document.getElementById("modalBackBtn");
+    if(backBtn) backBtn.addEventListener("click", closeModal);
+    const nextBtn = document.getElementById("modalNextBtn");
+    if(nextBtn){
+      nextBtn.addEventListener("click", () => {
+        const next = nextEntryFor(entry);
+        if(next) goToEntry(next);
+      });
+    }
+  }
+
   function openModal(entry){
     if(window.JournalAudio && window.JournalAudio.getActiveId() && window.JournalAudio.getActiveId() !== entry.id){
       window.JournalAudio.stop();
@@ -231,7 +273,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("modalContent").innerHTML = entry.content;
     document.getElementById("modalAudio").innerHTML = renderAudioControl(entry);
     if(entry.content) wireAudioControl(entry);
+    document.getElementById("modalFooter").innerHTML = renderModalFooter(entry);
+    wireModalFooter(entry);
     document.getElementById("readModal").classList.add("open");
+    const box = document.querySelector("#readModal .modal-box");
+    if(box) box.scrollTop = 0;
   }
   document.body.addEventListener("click", e => {
     const card = e.target.closest(".entry-card");
@@ -240,15 +286,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if(url && url !== "#"){ window.location.href = url; return; }
     openModal(findEntry(card.dataset.id, card.dataset.type));
   });
-  document.getElementById("modalClose").addEventListener("click", () => {
-    document.getElementById("readModal").classList.remove("open");
-    if(window.JournalAudio) window.JournalAudio.stop();
-  });
+  document.getElementById("modalClose").addEventListener("click", closeModal);
   document.getElementById("readModal").addEventListener("click", e => {
-    if(e.target.id === "readModal"){
-      e.target.classList.remove("open");
-      if(window.JournalAudio) window.JournalAudio.stop();
-    }
+    if(e.target.id === "readModal") closeModal();
   });
 
   const mystery = SITE_DATA.mystery;

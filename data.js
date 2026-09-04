@@ -289,14 +289,13 @@ const SITE_DATA = {
       id: "j10",
       title: "তুমি চলে গেছ, কিন্তু আমি রবকে পেয়েছি | থাকো দূরে",
       category: "Daily Notes",
-      date: "2026-09-03",
+      date: "2024-11-14",
       readingTime: "৫ মিনিট",
       image: "",
       excerpt: "একটি হৃদয়ভাঙা মন থেকে রবের পথে ফিরে আসার গল্প।",
       url: "",
       content: `
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">ইন্ট্রো</span>
           <p>কিছু মানুষ চলে যায়…
 কিন্তু তাদের রেখে যাওয়া স্মৃতিগুলো
 সহজে চলে যায় না।</p>
@@ -309,7 +308,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--chorus">
-          <span class="lyric-label">কোরাস</span>
           <p>তুমি চলে গেছ,
 ক্ষত দিয়ে গেছ,
 হৃদয় ভেঙে চুরমার করেছ—</p>
@@ -322,7 +320,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ১</span>
           <p>ভালোবাসার সেই দিনগুলোতে
 তোমার সব আবদার মেনে নিয়েছিলাম।</p>
           <p>তোমাকে মানানোর জন্য
@@ -342,7 +339,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">প্রি-কোরাস</span>
           <p>তুমি চলে গেছ,
 মুখ ফিরিয়ে নিয়েছ।</p>
           <p>আর আমি?</p>
@@ -354,7 +350,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--chorus">
-          <span class="lyric-label">কোরাস</span>
           <p>তুমি চলে গেছ,
 ক্ষত দিয়ে গেছ,
 হৃদয় ভেঙে চুরমার করেছ—</p>
@@ -367,7 +362,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ২</span>
           <p>তুমি কি জানো,
 বিচ্ছেদের সেই রাতগুলো
 আমরা কীভাবে কাটিয়েছি?</p>
@@ -389,7 +383,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--bridge">
-          <span class="lyric-label">ব্রিজ ১</span>
           <p>কিন্তু সেই রাতগুলোও
 একদিন শেষ হয়েছে।</p>
           <p>যে কষ্ট মনে হয়েছিল
@@ -405,7 +398,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--chorus">
-          <span class="lyric-label">কোরাস</span>
           <p>থাকো দূরে…
 হ্যাঁ, এবার থাকো দূরে।</p>
           <p>যে হৃদয় একবার ভেঙেছ,
@@ -418,7 +410,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ৩</span>
           <p>এই পৃথিবীর এখন
 আর কোনো মজনুর প্রয়োজন নেই।</p>
           <p>প্রয়োজন এমন মানুষের,
@@ -443,7 +434,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--bridge">
-          <span class="lyric-label">ব্রিজ ২</span>
           <p>আমরা প্রেমের গল্প থেকে
 এখন শিক্ষা নিয়েছি।</p>
           <p>আমরা বুঝেছি—</p>
@@ -457,7 +447,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ৪</span>
           <p>দুনিয়ার ক্ষণস্থায়ী সৌন্দর্যের
 মায়াজালে জড়িয়ে পড়া
 আমরা ছেড়ে দিয়েছি।</p>
@@ -476,7 +465,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">প্রি-কোরাস ২</span>
           <p>তাই এই সৌন্দর্যের জাদু
 আর আমাদের ওপর চালিয়ো না।</p>
           <p>যে পথ হৃদয়কে অন্ধ করে,
@@ -487,7 +475,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--chorus">
-          <span class="lyric-label">কোরাস</span>
           <p>তুমি চলে গেছ,
 ক্ষত দিয়ে গেছ,
 হৃদয় ভেঙে চুরমার করেছ—</p>
@@ -501,7 +488,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ৫</span>
           <p>ভালোবাসার নামে
 হাজার হাজার প্রতারণার শিকার হয়েছি।</p>
           <p>কাঁটা তো কাঁটাই,
@@ -523,7 +509,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--bridge">
-          <span class="lyric-label">শেষ ব্রিজ</span>
           <p>যদি আবার ফিরে আসো—</p>
           <p>আমাকে আর আগের মতো পাবে না।</p>
           <p>যে মানুষ তোমার জন্য
@@ -542,7 +527,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--chorus">
-          <span class="lyric-label">শেষ কোরাস</span>
           <p>তুমি চলে গেছ,
 ক্ষত দিয়ে গেছ,
 হৃদয় ভেঙে চুরমার করেছ—</p>
@@ -564,7 +548,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">আউটরো</span>
           <p>কিছু মানুষকে ভুলে যাওয়া যায় না…</p>
           <p>তাদের শুধু
 আল্লাহর কাছে সোপর্দ করে দিতে হয়।</p>
@@ -586,14 +569,13 @@ const SITE_DATA = {
       id: "j11",
       title: "মুখে দাবি করি ভালোবাসার, কিন্তু হৃদয়ে নেই তার প্রমাণ | ভালোবাসার সত্যতা",
       category: "Daily Notes",
-      date: "2026-09-04",
+      date: "2025-01-22",
       readingTime: "৩ মিনিট",
       image: "",
       excerpt: "মুখের দাবি আর হৃদয়ের সত্যতার মধ্যে যে ফারাক, রবের প্রতি ভালোবাসাকে নিজের কাছেই প্রশ্ন করার একটি উপলব্ধি।",
       url: "",
       content: `
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">ইন্ট্রো</span>
           <p>মানুষ বলে, সত্যিকারের ভালোবাসা
 হৃদয়ের ভেতর লুকিয়ে রাখা যায় না।</p>
           <p>কখনো তা চোখের ভাষায় প্রকাশ পায়,
@@ -601,7 +583,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ১</span>
           <p>তাহলে হে আমার রব—
 আপনার প্রতি যে ভালোবাসার দাবি করি,
 সেই ভালোবাসার প্রমাণ কোথায়?</p>
@@ -610,7 +591,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ২</span>
           <p>কেন আপনার স্মরণে হৃদয় কেঁপে ওঠে না?
 কেন আপনার জন্য রাতগুলো
 অশ্রুতে ভিজে যায় না?</p>
@@ -621,7 +601,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--bridge">
-          <span class="lyric-label">উপলব্ধি</span>
           <p>তবুও আমরা কত সহজেই বলি—
 "আমরা তো আল্লাহকে ভালোবাসি।"</p>
           <p>কী আশ্চর্য!
@@ -633,7 +612,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ৩</span>
           <p>একদিন যখন নিজের দাবির সামনে
 নিজেকেই দাঁড় করাতে হলো,
 তখন বুকের ভেতরটা কেঁপে উঠল।</p>
@@ -643,7 +621,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--chorus">
-          <span class="lyric-label">কোরাস</span>
           <p>ভালোবাসা হলো আত্মসমর্পণ।
 ভালোবাসা হলো ত্যাগ।</p>
           <p>ভালোবাসা হলো রবের জন্য
@@ -651,7 +628,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ৪</span>
           <p>তখন বুঝলাম—
 মানুষের ভালোবাসার সত্যতা
 কথায় নয়, কাজে প্রকাশ পায়।</p>
@@ -662,7 +638,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">দোয়া</span>
           <p>হে আল্লাহ,
 আমাদের ভালোবাসার দাবি নয়—
 আমাদের ভালোবাসাকে সত্য করে দিন।</p>
@@ -673,14 +648,13 @@ const SITE_DATA = {
       id: "j12",
       title: "পুরোনো প্রেমের সুর তুলে আর ডেকো না, সাহস নিয়ে দাঁড়াই | দূরে থাকো",
       category: "Daily Notes",
-      date: "2026-09-05",
+      date: "2025-03-09",
       readingTime: "৪ মিনিট",
       image: "",
       excerpt: "ভাঙা হৃদয়ের নীরবতা পেরিয়ে সাহস আর আত্মমর্যাদা নিয়ে সামনে এগিয়ে যাওয়ার একটি গল্প।",
       url: "",
       content: `
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">ইন্ট্রো</span>
           <p>ফিরে এসো না
 প্রেমের পুরোনো সুর তুলে
 আবার হৃদয় ছুঁয়ো না,</p>
@@ -689,7 +663,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ১</span>
           <p>যে পথ একদিন কাঁদিয়েছে,
 সে পথে ফিরতে চাই না,
 মায়ার কোনো মধুর কথায়
@@ -701,7 +674,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--chorus">
-          <span class="lyric-label">কোরাস</span>
           <p>তোমার কথার মায়াবী আলো
 এখন আর টানে না,
 চোখের তারার উপমা দিয়ে
@@ -713,7 +685,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--bridge">
-          <span class="lyric-label">ব্রিজ</span>
           <p>আমরা খুঁজছি এমন মানুষ,
 যাদের বুকে সাহস আছে,
 যারা বিপদের সামনে দাঁড়িয়ে
@@ -729,7 +700,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ২</span>
           <p>তাই ভাঙা হৃদয়ে
 আর নতুন বোঝা চাপিও না,
 ভালোবাসার নামে এসে
@@ -741,7 +711,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--chorus">
-          <span class="lyric-label">শেষ কোরাস</span>
           <p>তাই ফিরে এসে
 পুরোনো স্বপ্ন দেখিয়ো না,
 নির্জন হৃদয়ের উঠোনে
@@ -753,7 +722,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">আউটরো</span>
           <p>প্রেমের সেই পুরোনো সুরে
 আর আমাকে ডেকো না,
 ভাঙা হৃদয়ের নীরবতাকে
@@ -767,14 +735,13 @@ const SITE_DATA = {
       id: "j13",
       title: "🌙 আমার প্রিয়, তুমি কোথায়?",
       category: "Daily Notes",
-      date: "2026-09-06",
+      date: "2025-04-17",
       readingTime: "৩ মিনিট",
       image: "",
       excerpt: "রাতের পর রাত স্মৃতিতে কেটে যাওয়া এক ব্যাকুল হৃদয়ের গজল, যেখানে প্রার্থনাও প্রিয়জনের নামেই বাঁধা।",
       url: "",
       content: `
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">ইন্ট্রো</span>
           <p>আমার প্রিয়, তুমি কোথায়?
 তোমাকেই তো মনে করি,
 ফিরে এসো আবার—
@@ -782,7 +749,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ১</span>
           <p>তোমার স্মৃতিতে
 আমাদের অবস্থা আজ এমন হয়েছে—
 তুমি ছাড়া ঝরে পড়া
@@ -794,7 +760,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--chorus">
-          <span class="lyric-label">কোরাস</span>
           <p>যখনই এই হৃদয়ের পাতায়
 তোমার নাম লিখি,
 মনে হয়—
@@ -805,7 +770,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ২</span>
           <p>যখনই ভালোবাসার বই খুলে
 পুরোনো পাতাগুলো পড়ি,
 প্রতিটি অক্ষরের মাঝে
@@ -813,7 +777,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--bridge">
-          <span class="lyric-label">ব্রিজ</span>
           <p>জুলেখার মতো
 এমন ব্যাকুলতা যদি আমারও থাকত,
 আর আমি যদি ইউসুফের মতো
@@ -824,7 +787,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">আউটরো</span>
           <p>আমি আজ ভীষণ অসহায়,
 ব্যথায় জর্জরিত—
 একবার শুধু আমার খবর নিও।</p>
@@ -840,14 +802,13 @@ const SITE_DATA = {
       id: "j14",
       title: "অশ্রু ঝরার পর বুঝেছি",
       category: "Daily Notes",
-      date: "2026-09-07",
+      date: "2025-06-02",
       readingTime: "৪ মিনিট",
       image: "",
       excerpt: "চোখের জল, ভাঙা বিশ্বাস আর নীরবে বয়ে যাওয়া ব্যথা থেকে ভালোবাসার আসল অর্থ খুঁজে পাওয়ার একটি উপলব্ধি।",
       url: "",
       content: `
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">ইন্ট্রো</span>
           <p>চোখ থেকে অশ্রু ঝরার পর বুঝেছি,
 প্রেম যখন হৃদয়ে ব্যথা জাগায়—
 তখনই বুঝেছি ভালোবাসার আসল অর্থ।</p>
@@ -865,7 +826,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ১</span>
           <p>ভালোবাসার পাতায়
 আমি ঢেলে দিয়েছি হৃদয়ের রক্ত,
 মনের গভীরে জমে থাকা অনুভূতিগুলোকে
@@ -878,7 +838,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ২</span>
           <p>হয়তো হৃদয়ের সব ব্যথা
 লুকিয়ে রাখাই ভালো ছিল,
 হয়তো মনের গোপন কথাগুলো
@@ -892,7 +851,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ৩</span>
           <p>মানুষ কত অকারণেই
 ভালোবাসার পথে হারিয়ে থাকে,
 কত মানুষ আবার
@@ -908,7 +866,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--bridge">
-          <span class="lyric-label">ব্রিজ</span>
           <p>ভালোবাসার পথকে
 কখনো সহজ ভেবো না।</p>
           <p>এই প্রেমের পথ
@@ -923,7 +880,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--chorus">
-          <span class="lyric-label">শেষ কথা</span>
           <p>চোখ থেকে অশ্রু ঝরার পর বুঝেছি,
 প্রেম যখন হৃদয়ে ব্যথা জাগায়—
 তখনই বুঝেছি।</p>
@@ -937,14 +893,13 @@ const SITE_DATA = {
       id: "j15",
       title: "🌿 খুঁজেও যখন আপনজন মেলে না",
       category: "Daily Notes",
-      date: "2026-09-08",
+      date: "2025-08-19",
       readingTime: "৫ মিনিট",
       image: "",
       excerpt: "খুঁজেছি, দিয়েছি, সহ্য করেছি, অপেক্ষা করেছি—তবু মনের মতো মানুষ, ভালোবাসা আর বিশ্বাস না পাওয়ার এক নীরব উপলব্ধি।",
       url: "",
       content: `
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">ইন্ট্রো</span>
           <p>খুঁজেও যখন দুঃখ ভাগ করে নেওয়ার মতো কাউকে পেলাম না—
 তখন আর কী-ই বা করার থাকে?
 ভালোবাসা দিয়েও যখন ভালোবাসা ফিরে পেলাম না—
@@ -952,7 +907,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ১</span>
           <p>অহংকার আর আত্মমর্যাদার দ্বন্দ্বে
 দুই পক্ষের মাঝে কত দূরত্ব তৈরি হয়,
 তাদের মাঝখানে ভালোবাসার কোনো সেতু না থাকলে—
@@ -965,7 +919,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ২</span>
           <p>শত সংঘাত সহ্য করেও
 আমরা নিজের দেশ ছেড়ে যাইনি।
 তবু যখন আপনজনদের কাছ থেকেই
@@ -979,7 +932,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ৩</span>
           <p>সূর্য কিংবা চাঁদের আলো
 কখনো আমাদের চাওয়া ছিল না,
 এমনকি ধার করা জোনাকির আলোও
@@ -998,7 +950,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--bridge">
-          <span class="lyric-label">ব্রিজ</span>
           <p>সাবার কোনো খবর পাওয়ার জন্য
 লক্ষবার চেষ্টা করেছি,
 তবুও যখন সেই কাঙ্ক্ষিত সঙ্গীকে
@@ -1012,7 +963,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">🌙 শেষ কথা</span>
           <p>খুঁজেছি, দিয়েছি, সহ্য করেছি, অপেক্ষা করেছি—
 তবু যখন মনের মতো মানুষ, ভালোবাসা আর বিশ্বাস পেলাম না,
 তখন হয়তো মেনে নেওয়া ছাড়া
@@ -1024,14 +974,13 @@ const SITE_DATA = {
       id: "j16",
       title: "🌙 তুমি যদি একদিন দূরে চলে যাও",
       category: "Daily Notes",
-      date: "2026-09-09",
+      date: "2025-10-05",
       readingTime: "২ মিনিট",
       image: "",
       excerpt: "বিশ্বাস, বিষণ্ণতা আর সময়ের সঙ্গে বদলে যাওয়া মানুষ নিয়ে ছোট্ট একটি উপলব্ধি।",
       url: "",
       content: `
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">ইন্ট্রো</span>
           <p>তুমিও যদি একদিন
 আমার কাছ থেকে দূরে চলে যাও,
 তবুও তোমার স্মৃতিগুলো
@@ -1039,7 +988,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section">
-          <span class="lyric-label">ভার্স ১</span>
           <p>হে সাকী,
 যেদিন তোমার মদের আসর খুলবে,
 সেদিন আমি আবার ফিরে আসব—
@@ -1048,7 +996,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--bridge">
-          <span class="lyric-label">ব্রিজ</span>
           <p>যে মানুষটিকে আজ
 এতটা বিশ্বস্ত মনে হচ্ছে,
 হে সাইফি, মনে রেখো—
@@ -1058,7 +1005,6 @@ const SITE_DATA = {
         </div>
 
         <div class="lyric-section lyric-section--soft">
-          <span class="lyric-label">আউটরো</span>
           <p>মানুষ বদলে যায়,
 সময় বদলে যায়—
 কিন্তু কিছু স্মৃতি

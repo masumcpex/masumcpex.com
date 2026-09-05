@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window.JournalAudio.stop();
     }
     document.getElementById("modalCategory").textContent = entry.category;
-    document.getElementById("modalTitle").textContent = entry.title;
+    document.getElementById("modalTitle").innerHTML = entry.title;
     document.getElementById("modalDate").textContent = entry.date;
     document.getElementById("modalContent").innerHTML = entry.content;
     document.getElementById("modalAudio").innerHTML = renderAudioControl(entry);

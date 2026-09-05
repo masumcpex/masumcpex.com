@@ -599,6 +599,25 @@ img{ max-width:100%; display:block; }
 .lyric-section--bridge{ background:#FBF7EC; border-left:3px solid var(--gold); border-radius:10px; padding:1rem 1.2rem; }
 .lyric-section--soft{ font-family:'Noto Serif Bengali', serif; font-style:italic; color: var(--muted); }
 
+.title-icon{
+  display:inline-block; width:.85em; height:.85em; vertical-align:-.08em;
+  margin-right:.35rem; color: var(--gold); fill:none; stroke:currentColor; stroke-width:1.8;
+}
+
+.story-socials{
+  margin-top:1.8rem; padding-top:1.4rem; border-top:1px dashed var(--line);
+}
+.story-socials p{
+  font-family: var(--font-util); font-size:.78rem; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color: var(--gold); margin:0 0 .8rem;
+}
+.story-socials a{
+  display:inline-block; margin:0 .5rem .5rem 0; padding:.45rem 1.1rem; border-radius:999px;
+  border:1.5px solid var(--gold); color: var(--gold); text-decoration:none;
+  font-size:.82rem; font-weight:700; font-family: var(--font-util); transition: all .18s var(--ease);
+}
+.story-socials a:hover{ background: var(--gold); color:#fff; }
+
 .site-footer{
   text-align:center; padding: 2.4rem 1rem; color: var(--muted); font-size:.85rem;
   border-top: 1px solid var(--line-soft); background: var(--paper-2);

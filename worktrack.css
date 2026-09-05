@@ -351,20 +351,6 @@ html, body, .kh-register-actions, #downloadCsvBtn, .kh-month-delete, .kh-month-g
 .member-card-icon-btn.is-danger:hover{ background: rgba(192,57,43,.14); color:#C0392B; }
 .member-card-icon-btn svg{ width:16px; height:16px; }
 
-.kh-member-dashboard{
-  margin-top: 1.1rem; padding: 1rem 1.1rem; border-radius: 12px;
-  background: rgba(59,130,246,.05); border: 1px solid rgba(59,130,246,.18);
-}
-.kh-member-dashboard-title{ font-weight:800; color: var(--ink); margin-bottom:.5rem; font-size:.95rem; }
-.kh-member-dashboard-stats{ display:flex; gap:1.4rem; flex-wrap:wrap; margin-bottom:.7rem; }
-.kh-member-dashboard-stat{ font-size:.82rem; color: var(--muted); }
-.kh-member-dashboard-stat strong{ display:block; font-size:1.15rem; color: var(--ink); font-family: var(--font-display); }
-.kh-member-dashboard-recent{ font-size:.8rem; color: var(--muted); }
-.kh-member-dashboard-recent ul{ margin:.35rem 0 0; padding-left:1.1rem; }
-.kh-member-dashboard-close{
-  float:right; background:none; border:none; cursor:pointer; color: var(--muted); font-size:.78rem; font-weight:700;
-}
-
 .kh-advance-wrap{ display:flex; align-items:center; gap:.4rem; }
 .kh-advance-display{ font-weight:700; }
 .kh-advance-edit-btn{

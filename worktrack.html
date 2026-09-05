@@ -6,7 +6,7 @@
 <title>WorkTrack | Attendance & Work Hours Register</title>
 <meta name="description" content="A digital register for recording your team's daily attendance and work hours.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="worktrack.css">
 <link rel="icon" href="/bdflag.webp" type="image/webp">
@@ -127,7 +127,6 @@
     <h3 class="kh-subtitle">Team Overview</h3>
     <div class="member-card-grid" id="memberChips"><!-- JS injects member profile cards --></div>
     <p class="kh-empty-note" id="noMemberNote" style="display:none;">No members added yet. Enter a name above and click "Add Member".</p>
-    <div id="memberDashboard" class="kh-member-dashboard" style="display:none;"></div>
   </section>
 
   <section class="kh-card kh-card--sky">
@@ -175,7 +174,7 @@
     <p class="kh-empty-note" id="noSummaryNote" style="display:none;">No records for this month yet.</p>
   </section>
 
-  <section class="kh-card kh-card--violet">
+  <section class="kh-card kh-card--violet" id="attendanceRegisterSection">
     <h2 class="kh-card-title">Attendance Register</h2>
 
     <p class="kh-loading" id="registerLoading">

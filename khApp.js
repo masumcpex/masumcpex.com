@@ -29,7 +29,6 @@ export function initKhApp(uid){
   let selectedMemberId = null;
 
   const memberChips   = document.getElementById("memberChips");
-  const memberDashboard = document.getElementById("memberDashboard");
   const noMemberNote  = document.getElementById("noMemberNote");
   const noMemberWarn  = document.getElementById("noMemberWarn");
   const memberInput   = document.getElementById("memberInput");
@@ -137,7 +136,6 @@ export function initKhApp(uid){
     if(selectedMemberId && !members.some(m => m.id === selectedMemberId)){
       selectedMemberId = null;
     }
-    renderMemberDashboard();
 
     const currentEntryVal  = entryMember.value;
     const currentFilterVal = filterMember.value;
@@ -162,33 +160,7 @@ export function initKhApp(uid){
     });
   }
 
-  function renderMemberDashboard(){
-    if(!selectedMemberId){
-      memberDashboard.style.display = "none";
-      memberDashboard.innerHTML = "";
-      return;
-    }
-    const m = members.find(x => x.id === selectedMemberId);
-    if(!m){ memberDashboard.style.display = "none"; return; }
-    const ym = currentYearMonth();
-    const stats = monthStatsFor(m.name, ym);
-    const recent = records.filter(r => r.member === m.name)
-      .slice().sort((a,b) => b.date.localeCompare(a.date)).slice(0, 5);
-    const recentHtml = recent.length
-      ? `<ul>${recent.map(r => `<li>${escapeHtmlLocal(r.date)} — ${r.status === "duty" ? `Present, ${r.hours}h` : "Leave"}</li>`).join("")}</ul>`
-      : `<p style="margin:.3rem 0 0;">No records yet.</p>`;
-    memberDashboard.innerHTML = `
-      <button type="button" class="kh-member-dashboard-close" id="memberDashboardClose">${ICON_CLOSE} Close</button>
-      <div class="kh-member-dashboard-title">${escapeHtmlLocal(m.name)}'s Dashboard — ${monthLabel(ym)}</div>
-      <div class="kh-member-dashboard-stats">
-        <div class="kh-member-dashboard-stat"><strong>${stats.hours}</strong>Total Hours</div>
-        <div class="kh-member-dashboard-stat"><strong>${stats.duty}</strong>Duty Days</div>
-        <div class="kh-member-dashboard-stat"><strong>${stats.leave}</strong>Leave Days</div>
-      </div>
-      <div class="kh-member-dashboard-recent">Recent records:${recentHtml}</div>
-    `;
-    memberDashboard.style.display = "block";
-  }
+
 
   addMemberBtn.addEventListener("click", async () => {
     khBounce(addMemberBtn);
@@ -381,18 +353,16 @@ export function initKhApp(uid){
       const id = card.dataset.id;
       selectedMemberId = selectedMemberId === id ? null : id;
       const m = members.find(x => x.id === selectedMemberId);
-      if(m) entryMember.value = m.name;
-      renderMembers();
-      if(selectedMemberId){
-        memberDashboard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      if(m){
+        entryMember.value = m.name;
+        filterMember.value = m.name;
+      }else{
+        filterMember.value = "All";
       }
-    }
-  });
-
-  memberDashboard.addEventListener("click", e => {
-    if(e.target.closest("#memberDashboardClose")){
-      selectedMemberId = null;
-      renderMemberDashboard();
+      renderRegister();
+      renderMembers();
+      document.getElementById("attendanceRegisterSection")
+        .scrollIntoView({ behavior: "smooth", block: "start" });
     }
   });
 
@@ -819,7 +789,12 @@ export function initKhApp(uid){
     }
   });
 
-  filterMember.addEventListener("change", renderRegister);
+  filterMember.addEventListener("change", () => {
+    const m = members.find(x => x.name === filterMember.value);
+    selectedMemberId = m ? m.id : null;
+    renderRegister();
+    renderMembers();
+  });
 
   downloadCsvBtn.addEventListener("click", () => {
     khBounce(downloadCsvBtn);
@@ -881,7 +856,7 @@ export function initKhApp(uid){
     downloadPdfBtn.innerHTML = `${ICON_SPINNER}Generating PDF...`;
 
     try{
-      await generatePdfReport(ym, monthRecords);
+      await generatePdfReport(ym, monthRecords, filter);
     }catch(err){
       console.error(err);
       alert("Failed to generate PDF. Please try again.");
@@ -891,7 +866,7 @@ export function initKhApp(uid){
     }
   });
 
-  async function generatePdfReport(ym, monthRecords){
+  async function generatePdfReport(ym, monthRecords, filter){
     const byMember = {};
     monthRecords.forEach(r => {
       if(!byMember[r.member]) byMember[r.member] = { present:0, absent:0, hours:0 };
@@ -899,111 +874,206 @@ export function initKhApp(uid){
       else{ byMember[r.member].absent++; }
     });
     const memberNames = Object.keys(byMember).sort((a,b) => a.localeCompare(b));
+    const totalHoursAll = memberNames.reduce((sum,n) => sum + byMember[n].hours, 0);
 
-    const summaryRowsHtml = memberNames.map(name => {
-      const d = byMember[name];
-      const total = d.present + d.absent;
-      const pct = total > 0 ? Math.round((d.present / total) * 100) : 0;
-      return `
-        <tr>
-          <td class="pdf-td pdf-td-left">${escapeHtml(name)}</td>
-          <td class="pdf-td pdf-td-center">${toBn(d.present)}</td>
-          <td class="pdf-td pdf-td-center">${toBn(d.absent)}</td>
-          <td class="pdf-td pdf-td-center">${toBn(d.hours)}</td>
-          <td class="pdf-td pdf-td-center">${toBn(pct)}%</td>
-        </tr>`;
-    }).join("");
+    const PDF_BLUE   = "#0F4C81";
+    const PDF_INK    = "#172033";
+    const PDF_MUTED  = "#667085";
+    const PDF_BORDER = "#E4E7EC";
+    const PDF_LIGHT  = "#F8FAFC";
+    const PDF_GREEN  = "#16A085";
 
-    const detailRowsHtml = monthRecords
-      .slice().sort((a,b) => a.date.localeCompare(b.date))
-      .map(r => `
-        <tr>
-          <td class="pdf-td pdf-td-left">${escapeHtml(r.date)}</td>
-          <td class="pdf-td pdf-td-left">${escapeHtml(r.member)}</td>
-          <td class="pdf-td pdf-td-left">${r.status === "duty" ? "Present" : "Leave"}</td>
-          <td class="pdf-td pdf-td-center">${r.status === "duty" ? toBn(r.hours) : "—"}</td>
-        </tr>`).join("");
+    function prettyDate(dateStr){
+      const d = new Date(dateStr + "T00:00:00");
+      return d.toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
+    }
+    function dayName(dateStr){
+      const d = new Date(dateStr + "T00:00:00");
+      return d.toLocaleDateString("en-US", { weekday:"long" });
+    }
+    function money(n){
+      return `RM ${(n || 0).toFixed(2)}`;
+    }
+    function reportIdFor(suffix){
+      const clean = String(suffix || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,3) || "GEN";
+      return `WT-${ym}-${clean}`;
+    }
 
-    const totalPresent = memberNames.reduce((sum,n) => sum + byMember[n].present, 0);
-    const totalAbsent  = memberNames.reduce((sum,n) => sum + byMember[n].absent, 0);
-    const generatedAt = new Date().toLocaleString("en-US", { dateStyle:"medium", timeStyle:"short" });
+    const singleMember = filter !== "All" ? members.find(m => m.name === filter) : null;
+    const [yy, mm] = ym.split("-");
+    const daysInMonth = new Date(Number(yy), Number(mm), 0).getDate();
+    const periodLabel = `01 ${monthLabel(ym).split(" ")[0].slice(0,3)} ${yy} — ${String(daysInMonth).padStart(2,"0")} ${monthLabel(ym).split(" ")[0].slice(0,3)} ${yy}`;
+
+    const kpiCard = (label, value, sub) => `
+      <div style="flex:1; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:8px; padding:14px 12px;">
+        <div style="font-size:8.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:${PDF_MUTED};">${label}</div>
+        <div style="font-size:19px; font-weight:800; color:${PDF_INK}; margin:5px 0 2px;">${value}</div>
+        <div style="font-size:8.5px; color:${PDF_MUTED};">${sub}</div>
+      </div>`;
+
+    let identityBlockHtml, kpiCardsHtml, detailRowsHtml, tableColsHead, reportId, totalHoursLabelVal;
+
+    if(singleMember){
+      const stats = byMember[singleMember.name] || { present:0, absent:0, hours:0 };
+      const advanceVal = typeof singleMember.advance === "number" ? singleMember.advance : 0;
+      const initial = (singleMember.name || "?").trim().charAt(0).toUpperCase();
+      identityBlockHtml = `
+        <div style="display:flex; align-items:center; gap:14px; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:10px; padding:14px 18px; margin-bottom:20px;">
+          <div style="width:42px; height:42px; border-radius:50%; background:${PDF_BLUE}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:16px; flex-shrink:0;">${escapeHtml(initial)}</div>
+          <div>
+            <div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:${PDF_MUTED};">Employee</div>
+            <div style="font-size:17px; font-weight:800; color:${PDF_INK}; margin:2px 0 3px;">${escapeHtml(singleMember.name)}</div>
+            <div style="font-size:9px; color:${PDF_MUTED};">Monthly Attendance Report — ${monthLabel(ym)}</div>
+          </div>
+        </div>`;
+      kpiCardsHtml = `
+        <div style="display:flex; gap:10px; margin-bottom:22px;">
+          ${kpiCard("Present", toBn(stats.present), "Work Days")}
+          ${kpiCard("Leave", toBn(stats.absent), "Leave Days")}
+          ${kpiCard("Total Hours", toBn(stats.hours), "Hours")}
+          ${kpiCard("Advance", money(advanceVal), "Total Advance")}
+        </div>`;
+      detailRowsHtml = monthRecords
+        .filter(r => r.member === singleMember.name)
+        .slice().sort((a,b) => a.date.localeCompare(b.date))
+        .map(r => `
+          <tr>
+            <td class="pdf-td pdf-td-left">${escapeHtml(prettyDate(r.date))}</td>
+            <td class="pdf-td pdf-td-left">${escapeHtml(dayName(r.date))}</td>
+            <td class="pdf-td pdf-td-left">
+              <span style="color:${r.status === "duty" ? PDF_GREEN : PDF_MUTED}; font-weight:700;">${r.status === "duty" ? "PRESENT" : "LEAVE"}</span>
+            </td>
+            <td class="pdf-td pdf-td-right">${r.status === "duty" ? toBn(r.hours) : "—"}</td>
+          </tr>`).join("");
+      tableColsHead = `<th class="pdf-th pdf-th-left">Date</th><th class="pdf-th pdf-th-left">Day</th><th class="pdf-th pdf-th-left">Status</th><th class="pdf-th pdf-th-right">Work Hours</th>`;
+      reportId = reportIdFor(singleMember.memberId || singleMember.name);
+      totalHoursLabelVal = `${toBn(stats.hours)} hrs`;
+    }else{
+      identityBlockHtml = `
+        <div style="display:flex; align-items:center; gap:14px; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:10px; padding:14px 18px; margin-bottom:20px;">
+          <div>
+            <div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:${PDF_MUTED};">Team</div>
+            <div style="font-size:17px; font-weight:800; color:${PDF_INK}; margin:2px 0 3px;">All Members</div>
+            <div style="font-size:9px; color:${PDF_MUTED};">Monthly Attendance Report — ${monthLabel(ym)}</div>
+          </div>
+        </div>`;
+      const totalPresentAll = memberNames.reduce((sum,n) => sum + byMember[n].present, 0);
+      const totalLeaveAll   = memberNames.reduce((sum,n) => sum + byMember[n].absent, 0);
+      const totalAdvanceAll = memberNames.reduce((sum,n) => {
+        const m = members.find(x => x.name === n);
+        return sum + (m && typeof m.advance === "number" ? m.advance : 0);
+      }, 0);
+      kpiCardsHtml = `
+        <div style="display:flex; gap:10px; margin-bottom:22px;">
+          ${kpiCard("Present", toBn(totalPresentAll), "Work Days")}
+          ${kpiCard("Leave", toBn(totalLeaveAll), "Leave Days")}
+          ${kpiCard("Total Hours", toBn(totalHoursAll), "Hours")}
+          ${kpiCard("Advance", money(totalAdvanceAll), "Total Advance")}
+        </div>`;
+      detailRowsHtml = monthRecords
+        .slice().sort((a,b) => a.date.localeCompare(b.date) || a.member.localeCompare(b.member))
+        .map(r => `
+          <tr>
+            <td class="pdf-td pdf-td-left">${escapeHtml(prettyDate(r.date))}</td>
+            <td class="pdf-td pdf-td-left">${escapeHtml(r.member)}</td>
+            <td class="pdf-td pdf-td-left">
+              <span style="color:${r.status === "duty" ? PDF_GREEN : PDF_MUTED}; font-weight:700;">${r.status === "duty" ? "PRESENT" : "LEAVE"}</span>
+            </td>
+            <td class="pdf-td pdf-td-right">${r.status === "duty" ? toBn(r.hours) : "—"}</td>
+          </tr>`).join("");
+      tableColsHead = `<th class="pdf-th pdf-th-left">Date</th><th class="pdf-th pdf-th-left">Name</th><th class="pdf-th pdf-th-left">Status</th><th class="pdf-th pdf-th-right">Work Hours</th>`;
+      reportId = reportIdFor("ALL");
+      totalHoursLabelVal = `${toBn(totalHoursAll)} hrs`;
+    }
 
     const wrap = document.createElement("div");
     wrap.id = "pdfReportRoot";
-    wrap.style.cssText = "position:fixed; left:-99999px; top:0; width:800px; background:#fff; padding:32px 30px; font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif; color:#1B2A45; display:flex; flex-direction:column;";
+    wrap.style.cssText = `position:fixed; left:-99999px; top:0; width:800px; background:#fff; padding:40px 34px 30px; font-family:'Inter','Hind Siliguri',sans-serif; color:${PDF_INK};`;
     wrap.innerHTML = `
-      <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #0E6E5C; padding-bottom:16px; margin-bottom:24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:16px; border-bottom:1px solid ${PDF_BORDER}; margin-bottom:26px;">
         <div style="display:flex; align-items:center; gap:14px;">
-          <img src="masum-logo.webp" style="height:50px; object-fit:contain;" crossorigin="anonymous">
-          <div style="font-size:13px; font-weight:600; color:#1B2A45; white-space:nowrap;">WorkTrack — Attendance Management System</div>
+          <img src="masum-logo.webp" style="height:42px; object-fit:contain;" crossorigin="anonymous">
+          <div>
+            <div style="font-size:13px; font-weight:800; color:${PDF_INK}; letter-spacing:.03em;">WORKTRACK</div>
+            <div style="font-size:9px; color:${PDF_MUTED};">Attendance &amp; Workforce Management</div>
+          </div>
         </div>
         <div style="text-align:right;">
-          <div style="font-size:19px; font-weight:700; color:#0E6E5C; letter-spacing:.2px;">Attendance Report</div>
-          <div style="font-size:13px; color:#666; margin-top:2px;">${monthLabel(ym)}</div>
+          <div style="font-size:11px; font-weight:800; color:${PDF_BLUE}; letter-spacing:.05em;">ATTENDANCE REPORT</div>
+          <div style="font-size:9px; color:${PDF_MUTED}; margin-top:2px;">${monthLabel(ym)}</div>
         </div>
       </div>
 
-      <table class="pdf-table" style="margin-bottom:26px;">
-        <thead>
-          <tr>
-            <th class="pdf-th pdf-th-left">Name</th>
-            <th class="pdf-th">Present</th>
-            <th class="pdf-th">Absent</th>
-            <th class="pdf-th">Total Hours</th>
-            <th class="pdf-th">Attendance Rate</th>
-          </tr>
-        </thead>
-        <tbody>${summaryRowsHtml}</tbody>
+      <div style="margin-bottom:22px;">
+        <div style="font-size:24px; font-weight:800; color:${PDF_INK};">Attendance Report</div>
+        <div style="font-size:10.5px; color:${PDF_MUTED}; margin-top:4px;">${periodLabel}</div>
+      </div>
+
+      ${identityBlockHtml}
+      ${kpiCardsHtml}
+
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+        <div style="width:3px; height:16px; background:${PDF_BLUE}; border-radius:2px;"></div>
+        <div style="font-size:14px; font-weight:700; color:${PDF_INK};">Daily Attendance Details</div>
+      </div>
+
+      <table class="pdf-table">
+        <thead><tr>${tableColsHead}</tr></thead>
+        <tbody>${detailRowsHtml}</tbody>
         <tfoot>
           <tr class="pdf-tfoot-row">
-            <td class="pdf-td pdf-td-left" style="font-weight:700;">Total</td>
-            <td class="pdf-td pdf-td-center" style="font-weight:700;">${toBn(totalPresent)}</td>
-            <td class="pdf-td pdf-td-center" style="font-weight:700;">${toBn(totalAbsent)}</td>
-            <td class="pdf-td" colspan="2"></td>
+            <td class="pdf-td pdf-td-left" style="font-weight:800;" colspan="3">Total Work Hours</td>
+            <td class="pdf-td pdf-td-right" style="font-weight:800;">${totalHoursLabelVal}</td>
           </tr>
         </tfoot>
       </table>
-
-      <div style="font-size:14px; font-weight:700; color:#0E6E5C; margin-bottom:10px;">Daily Details</div>
-      <table class="pdf-table" style="font-size:12px;">
-        <thead>
-          <tr>
-            <th class="pdf-th pdf-th-left">Date</th>
-            <th class="pdf-th pdf-th-left">Name</th>
-            <th class="pdf-th pdf-th-left">Status</th>
-            <th class="pdf-th">Hours</th>
-          </tr>
-        </thead>
-        <tbody>${detailRowsHtml}</tbody>
-      </table>
-
-      <div style="flex:1;"></div>
-
-      <div style="margin-top:28px; padding-top:12px; border-top:1px solid #ccc; font-size:10.5px; color:#666; display:flex; justify-content:space-between; align-items:center;">
-        <span>masumcpex.com&nbsp;&nbsp;|&nbsp;&nbsp;contact@masumcpex.com&nbsp;&nbsp;|&nbsp;&nbsp;+601133192963</span>
-        <span>Generated: ${escapeHtml(generatedAt)}</span>
-      </div>
     `;
 
     const style = document.createElement("style");
     style.textContent = `
-      #pdfReportRoot .pdf-table{ width:100%; border-collapse:collapse; font-size:13px; }
+      #pdfReportRoot .pdf-table{ width:100%; border-collapse:collapse; font-size:10px; }
       #pdfReportRoot .pdf-th{
-        background:#0E6E5C; color:#fff; padding:10px 8px; text-align:center;
-        vertical-align:middle; font-weight:600; border:1px solid #0A5347;
+        background:${PDF_BLUE}; color:#fff; padding:9px 10px; text-align:center;
+        vertical-align:middle; font-weight:600; text-transform:uppercase; font-size:8.5px; letter-spacing:.04em;
       }
       #pdfReportRoot .pdf-th-left{ text-align:left; }
+      #pdfReportRoot .pdf-th-right{ text-align:right; }
       #pdfReportRoot .pdf-td{
-        padding:9px 8px; text-align:center; vertical-align:middle;
-        border:1px solid #e2e2e2; line-height:1.4;
+        padding:9px 10px; text-align:center; vertical-align:middle;
+        border-bottom:1px solid ${PDF_BORDER}; line-height:1.4; font-size:10px;
       }
       #pdfReportRoot .pdf-td-left{ text-align:left; }
-      #pdfReportRoot .pdf-td-center{ text-align:center; }
-      #pdfReportRoot .pdf-tfoot-row{ background:#F1F5F9; }
-      #pdfReportRoot tr{ height:38px; }
+      #pdfReportRoot .pdf-td-right{ text-align:right; }
+      #pdfReportRoot .pdf-tfoot-row td{ background:${PDF_LIGHT}; border-bottom:none; border-top:1px solid ${PDF_BORDER}; }
+      #pdfReportRoot tr{ height:34px; }
     `;
     document.body.appendChild(style);
     document.body.appendChild(wrap);
+
+    const FOOTER_MARGIN_MM = 14;
+    const generatedAt = new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
+
+    function drawFooter(pdf, pageNum, totalPages, pageWidthMM, pageHeightMM){
+      const bandTop = pageHeightMM - FOOTER_MARGIN_MM - 8;
+      pdf.setFillColor(255, 255, 255);
+      pdf.rect(0, bandTop, pageWidthMM, pageHeightMM - bandTop, "F");
+      const y = pageHeightMM - FOOTER_MARGIN_MM;
+      pdf.setDrawColor(228, 231, 236);
+      pdf.setLineWidth(0.2);
+      pdf.line(16, y - 5, pageWidthMM - 16, y - 5);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(7.5);
+      pdf.setTextColor(23, 32, 51);
+      pdf.text("WORKTRACK", 16, y);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(102, 112, 133);
+      pdf.text("Attendance & Workforce Management", 16, y + 4);
+      pdf.text(`Report ID: ${reportId}`, pageWidthMM / 2 - 15, y);
+      const rightText1 = `Generated: ${generatedAt}`;
+      const rightText2 = `Page ${pageNum} of ${totalPages}`;
+      pdf.text(rightText1, pageWidthMM - 16, y, { align: "right" });
+      pdf.text(rightText2, pageWidthMM - 16, y + 4, { align: "right" });
+    }
 
     try{
       const canvas = await window.html2canvas(wrap, { scale:2, useCORS:true, backgroundColor:"#ffffff" });
@@ -1011,28 +1081,21 @@ export function initKhApp(uid){
 
       const A4_WIDTH_MM  = 210;
       const A4_HEIGHT_MM = 297;
+      const CONTENT_HEIGHT_MM = A4_HEIGHT_MM - FOOTER_MARGIN_MM - 8;
       const imgWidthMM  = A4_WIDTH_MM;
       const imgHeightMM = (canvas.height * imgWidthMM) / canvas.width;
       const imgData = canvas.toDataURL("image/jpeg", 0.95);
 
-      if(imgHeightMM <= A4_HEIGHT_MM){
-        const pdf = new jsPDF({ orientation:"portrait", unit:"mm", format:[imgWidthMM, imgHeightMM] });
-        pdf.addImage(imgData, "JPEG", 0, 0, imgWidthMM, imgHeightMM);
-        pdf.save(`attendance-report-${ym}.pdf`);
-      }else{
-        const pdf = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
-        let heightLeft = imgHeightMM;
-        let position = 0;
+      const totalPages = Math.max(1, Math.ceil(imgHeightMM / CONTENT_HEIGHT_MM));
+      const pdf = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
+
+      for(let page = 0; page < totalPages; page++){
+        if(page > 0) pdf.addPage();
+        const position = -(page * CONTENT_HEIGHT_MM);
         pdf.addImage(imgData, "JPEG", 0, position, imgWidthMM, imgHeightMM);
-        heightLeft -= A4_HEIGHT_MM;
-        while(heightLeft > 0){
-          position = heightLeft - imgHeightMM;
-          pdf.addPage();
-          pdf.addImage(imgData, "JPEG", 0, position, imgWidthMM, imgHeightMM);
-          heightLeft -= A4_HEIGHT_MM;
-        }
-        pdf.save(`attendance-report-${ym}.pdf`);
+        drawFooter(pdf, page + 1, totalPages, A4_WIDTH_MM, A4_HEIGHT_MM);
       }
+      pdf.save(`attendance-report-${ym}${singleMember ? "-" + singleMember.name : ""}.pdf`);
     }finally{
       document.body.removeChild(wrap);
       document.body.removeChild(style);

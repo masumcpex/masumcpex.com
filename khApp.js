@@ -919,7 +919,7 @@ export function initKhApp(uid){
       const initial = (singleMember.name || "?").trim().charAt(0).toUpperCase();
       identityBlockHtml = `
         <div style="display:flex; align-items:center; gap:14px; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:10px; padding:14px 18px; margin-bottom:20px;">
-          <div style="width:42px; height:42px; border-radius:50%; background:${PDF_BLUE}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:16px; flex-shrink:0;">${escapeHtml(initial)}</div>
+          <div style="width:42px; height:42px; line-height:42px; border-radius:50%; background:${PDF_BLUE}; color:#fff; text-align:center; font-weight:800; font-size:16px; flex-shrink:0;">${escapeHtml(initial)}</div>
           <div>
             <div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:${PDF_MUTED};">Employee</div>
             <div style="font-size:17px; font-weight:800; color:${PDF_INK}; margin:2px 0 3px;">${escapeHtml(singleMember.name)}</div>
@@ -992,7 +992,7 @@ export function initKhApp(uid){
     wrap.innerHTML = `
       <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:16px; border-bottom:1px solid ${PDF_BORDER}; margin-bottom:26px;">
         <div style="display:flex; align-items:center; gap:14px;">
-          <img src="masum-logo.webp" style="height:42px; object-fit:contain;" crossorigin="anonymous">
+          <img src="masum.png" style="height:42px; object-fit:contain;" crossorigin="anonymous">
           <div>
             <div style="font-size:13px; font-weight:800; color:${PDF_INK}; letter-spacing:.03em;">WORKTRACK</div>
             <div style="font-size:9px; color:${PDF_MUTED};">Attendance &amp; Workforce Management</div>
@@ -1064,10 +1064,10 @@ export function initKhApp(uid){
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(7.5);
       pdf.setTextColor(23, 32, 51);
-      pdf.text("WORKTRACK", 16, y);
+      pdf.text("masumcpex.com", 16, y);
       pdf.setFont("helvetica", "normal");
       pdf.setTextColor(102, 112, 133);
-      pdf.text("Attendance & Workforce Management", 16, y + 4);
+      pdf.text("info@masumcpex.com", 16, y + 4);
       pdf.text(`Report ID: ${reportId}`, pageWidthMM / 2 - 15, y);
       const rightText1 = `Generated: ${generatedAt}`;
       const rightText2 = `Page ${pageNum} of ${totalPages}`;

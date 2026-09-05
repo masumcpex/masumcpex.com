@@ -13,6 +13,8 @@ const ICON_TRASH_LG = ICON_TRASH.replace("<svg ", '<svg class="kh-modal-icon-svg
 const ICON_WARNING = `<svg class="kh-modal-icon-svg kh-modal-icon-svg--warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
 const ICON_SPINNER = `<svg class="kh-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9"/></svg>`;
 const ICON_CLOSE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+const ICON_CHECK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+const ICON_INFO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
 
 let appStarted = false;
 
@@ -24,8 +26,10 @@ export function initKhApp(uid){
   let records = [];
   let membersLoaded = false;
   let recordsLoaded = false;
+  let selectedMemberId = null;
 
   const memberChips   = document.getElementById("memberChips");
+  const memberDashboard = document.getElementById("memberDashboard");
   const noMemberNote  = document.getElementById("noMemberNote");
   const noMemberWarn  = document.getElementById("noMemberWarn");
   const memberInput   = document.getElementById("memberInput");
@@ -33,6 +37,7 @@ export function initKhApp(uid){
   const filterMember  = document.getElementById("filterMember");
   const entryDate     = document.getElementById("entryDate");
   const entryHours    = document.getElementById("entryHours");
+  const entryHoursError = document.getElementById("entryHoursError");
   const hoursField    = document.getElementById("hoursField");
   const entryForm     = document.getElementById("entryForm");
   const saveBtn       = entryForm.querySelector(".kh-save-btn");
@@ -48,6 +53,28 @@ export function initKhApp(uid){
   const previousMonthHoursEl = document.getElementById("previousMonthHours");
 
   entryDate.value = new Date().toISOString().slice(0,10);
+
+  function ensureToastContainer(){
+    return document.getElementById("khToastContainer");
+  }
+  function showToast(message, type){
+    const container = ensureToastContainer();
+    if(!container) return;
+    const toast = document.createElement("div");
+    toast.className = "kh-toast" + (type ? ` kh-toast--${type}` : "");
+    const icon = type === "error" ? ICON_WARNING.replace('class="kh-modal-icon-svg kh-modal-icon-svg--warn"','class="kh-toast-icon"')
+      : type === "warning" ? ICON_WARNING.replace('class="kh-modal-icon-svg kh-modal-icon-svg--warn"','class="kh-toast-icon"')
+      : type === "info" ? ICON_INFO.replace('viewBox', 'class="kh-toast-icon" viewBox')
+      : ICON_CHECK.replace('viewBox', 'class="kh-toast-icon" viewBox');
+    toast.innerHTML = `${icon}<span>${escapeHtmlLocal(message)}</span><button type="button" class="kh-toast-close" aria-label="Close">${ICON_CLOSE}</button>`;
+    container.appendChild(toast);
+    const remove = () => { toast.remove(); };
+    const timer = setTimeout(remove, 4200);
+    toast.querySelector(".kh-toast-close").addEventListener("click", () => { clearTimeout(timer); remove(); });
+  }
+  function escapeHtmlLocal(str){
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
 
   function khBounce(el){
     if(!el) return;
@@ -69,24 +96,55 @@ export function initKhApp(uid){
     return `${prefix}-${String(seq).padStart(4, "0")}`;
   }
 
-  const CHIP_COLORS = ["chip-mint","chip-sky","chip-coral","chip-violet","chip-amber","chip-indigo","chip-rose","chip-teal"];
-  const backfillingIds = new Set(); 
+  const AVATAR_COLORS = ["#3B82F6","#2ECC71","#F5A623","#9B59B6","#EF6C6C","#14B8A6","#EC4899","#6366F1"];
+  function avatarColorFor(id){
+    let hash = 0;
+    for(let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+    return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+  }
+  function monthStatsFor(name, ym){
+    const monthRecords = records.filter(r => r.member === name && r.date.startsWith(ym));
+    let hours = 0, duty = 0, leave = 0;
+    monthRecords.forEach(r => {
+      if(r.status === "duty"){ duty++; hours += (r.hours || 0); }
+      else leave++;
+    });
+    return { hours, duty, leave };
+  }
   function renderMembers(){
-    memberChips.innerHTML = members.map((m, i) => `
-      <span class="member-chip ${CHIP_COLORS[i % CHIP_COLORS.length]}">
-        ${m.name}
-        <button class="kh-remove-member" data-id="${m.id}" title="Remove">${ICON_CLOSE}</button>
-      </span>`).join("");
+    const ym = currentYearMonth();
+    memberChips.innerHTML = members.map(m => {
+      const stats = monthStatsFor(m.name, ym);
+      const initial = (m.name || "?").trim().charAt(0).toUpperCase();
+      const isSelected = m.id === selectedMemberId;
+      return `
+      <div class="member-card${isSelected ? " is-selected" : ""}" data-id="${m.id}" data-name="${escapeHtmlLocal(m.name)}">
+        <div class="member-card-avatar" style="background:${avatarColorFor(m.id)}">${escapeHtmlLocal(initial)}</div>
+        <div class="member-card-body">
+          <div class="member-card-name">${escapeHtmlLocal(m.name)}</div>
+          <div class="member-card-stats">${stats.hours}h • ${stats.duty} Duty • ${stats.leave} Leave</div>
+        </div>
+        <div class="member-card-actions">
+          <button type="button" class="member-card-icon-btn member-card-edit" data-id="${m.id}" title="Edit member" aria-label="Edit member">${ICON_EDIT}</button>
+          <button type="button" class="member-card-icon-btn is-danger member-card-delete" data-id="${m.id}" title="Delete member" aria-label="Delete member">${ICON_TRASH}</button>
+        </div>
+      </div>`;
+    }).join("");
     noMemberNote.style.display = members.length ? "none" : "block";
     noMemberWarn.style.display = members.length ? "none" : "block";
     saveBtn.disabled = !members.length;
+
+    if(selectedMemberId && !members.some(m => m.id === selectedMemberId)){
+      selectedMemberId = null;
+    }
+    renderMemberDashboard();
 
     const currentEntryVal  = entryMember.value;
     const currentFilterVal = filterMember.value;
 
     const opts = members.map(m => `<option value="${m.name}">${m.name}</option>`).join("");
     entryMember.innerHTML = opts || `<option value="">— No members —</option>`;
-    filterMember.innerHTML = `<option value="All">All</option>` + opts;
+    filterMember.innerHTML = `<option value="All">All Members</option>` + opts;
 
     if(members.some(m => m.name === currentEntryVal)) entryMember.value = currentEntryVal;
     if(currentFilterVal === "All" || members.some(m => m.name === currentFilterVal)) filterMember.value = currentFilterVal;
@@ -104,6 +162,34 @@ export function initKhApp(uid){
     });
   }
 
+  function renderMemberDashboard(){
+    if(!selectedMemberId){
+      memberDashboard.style.display = "none";
+      memberDashboard.innerHTML = "";
+      return;
+    }
+    const m = members.find(x => x.id === selectedMemberId);
+    if(!m){ memberDashboard.style.display = "none"; return; }
+    const ym = currentYearMonth();
+    const stats = monthStatsFor(m.name, ym);
+    const recent = records.filter(r => r.member === m.name)
+      .slice().sort((a,b) => b.date.localeCompare(a.date)).slice(0, 5);
+    const recentHtml = recent.length
+      ? `<ul>${recent.map(r => `<li>${escapeHtmlLocal(r.date)} — ${r.status === "duty" ? `Present, ${r.hours}h` : "Leave"}</li>`).join("")}</ul>`
+      : `<p style="margin:.3rem 0 0;">No records yet.</p>`;
+    memberDashboard.innerHTML = `
+      <button type="button" class="kh-member-dashboard-close" id="memberDashboardClose">${ICON_CLOSE} Close</button>
+      <div class="kh-member-dashboard-title">${escapeHtmlLocal(m.name)}'s Dashboard — ${monthLabel(ym)}</div>
+      <div class="kh-member-dashboard-stats">
+        <div class="kh-member-dashboard-stat"><strong>${stats.hours}</strong>Total Hours</div>
+        <div class="kh-member-dashboard-stat"><strong>${stats.duty}</strong>Duty Days</div>
+        <div class="kh-member-dashboard-stat"><strong>${stats.leave}</strong>Leave Days</div>
+      </div>
+      <div class="kh-member-dashboard-recent">Recent records:${recentHtml}</div>
+    `;
+    memberDashboard.style.display = "block";
+  }
+
   addMemberBtn.addEventListener("click", async () => {
     khBounce(addMemberBtn);
     const name = memberInput.value.trim();
@@ -114,9 +200,10 @@ export function initKhApp(uid){
       const memberId = await generateMemberId(name);
       await addDoc(membersCol, { name, memberId, ownerId: uid, createdAt: serverTimestamp() });
       memberInput.value = "";
+      showToast("Member added successfully.");
     }catch(err){
       console.error(err);
-      alert("Failed to add member. Please check your internet connection and try again.");
+      showToast("Failed to add member. Please check your internet connection and try again.", "error");
     }finally{
       addMemberBtn.disabled = false;
     }
@@ -125,19 +212,187 @@ export function initKhApp(uid){
     if(e.key === "Enter"){ e.preventDefault(); addMemberBtn.click(); }
   });
 
-  memberChips.addEventListener("click", async e => {
-    const removeBtn = e.target.closest(".kh-remove-member");
-    if(removeBtn){
-      const m = members.find(x => x.id === removeBtn.dataset.id);
-      if(!m) return;
-      if(!confirm(`Remove "${m.name}" from the member list? (Existing records will not be deleted)`)) return;
-      khBounce(removeBtn);
+  function ensureEditMemberModal(){
+    let overlay = document.getElementById("khEditMemberOverlay");
+    if(overlay) return overlay;
+    overlay = document.createElement("div");
+    overlay.id = "khEditMemberOverlay";
+    overlay.className = "kh-modal-overlay";
+    overlay.innerHTML = `
+      <div class="kh-modal-card">
+        <p class="kh-modal-icon">${ICON_EDIT.replace("<svg ", '<svg class="kh-modal-icon-svg" ')}</p>
+        <p class="kh-modal-text" style="margin-bottom:.2rem;">Edit Member</p>
+        <input type="text" class="kh-edit-modal-input" id="khEditMemberInput" maxlength="60">
+        <span class="kh-field-error" id="khEditMemberError" aria-live="polite"></span>
+        <div class="kh-modal-actions" style="margin-top:1rem;">
+          <button type="button" class="btn3d btn-mint" id="khEditMemberSaveBtn">Save Changes</button>
+          <button type="button" class="btn3d btn-coral" id="khEditMemberCancelBtn">Cancel</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    return overlay;
+  }
+  function openEditMemberModal(member){
+    const overlay = ensureEditMemberModal();
+    const input = overlay.querySelector("#khEditMemberInput");
+    const errorEl = overlay.querySelector("#khEditMemberError");
+    const saveBtnEl = overlay.querySelector("#khEditMemberSaveBtn");
+    input.value = member.name;
+    errorEl.textContent = "";
+    input.classList.remove("kh-input-error");
+    overlay.style.display = "flex";
+    setTimeout(() => { input.focus(); input.select(); }, 30);
+
+    function cleanup(){
+      overlay.style.display = "none";
+      saveBtnEl.removeEventListener("click", onSave);
+      cancelBtnEl.removeEventListener("click", onCancel);
+      input.removeEventListener("keydown", onKeydown);
+    }
+    function onCancel(){ cleanup(); }
+    function onKeydown(e){
+      if(e.key === "Enter"){ e.preventDefault(); onSave(); }
+      if(e.key === "Escape"){ cleanup(); }
+    }
+    async function onSave(){
+      const newName = input.value.trim();
+      if(!newName){
+        errorEl.textContent = "Please enter a name.";
+        input.classList.add("kh-input-error");
+        return;
+      }
+      if(newName !== member.name && members.some(m => m.name === newName)){
+        errorEl.textContent = "A member with this name already exists.";
+        input.classList.add("kh-input-error");
+        return;
+      }
+      if(newName === member.name){ cleanup(); return; }
+      saveBtnEl.disabled = true;
       try{
-        await deleteDoc(doc(db, "kh_members", m.id));
+        await renameMember(member, newName);
+        cleanup();
+        showToast("Member updated successfully.");
       }catch(err){
         console.error(err);
-        alert("Failed to remove member. Please try again.");
+        errorEl.textContent = "Failed to update member. Please try again.";
+      }finally{
+        saveBtnEl.disabled = false;
       }
+    }
+    const cancelBtnEl = overlay.querySelector("#khEditMemberCancelBtn");
+    saveBtnEl.addEventListener("click", onSave);
+    cancelBtnEl.addEventListener("click", onCancel);
+    input.addEventListener("keydown", onKeydown);
+  }
+
+  async function renameMember(member, newName){
+    const oldName = member.name;
+    await updateDoc(doc(db, "kh_members", member.id), { name: newName });
+    const matching = records.filter(r => r.member === oldName);
+    const chunkSize = 400;
+    for(let i = 0; i < matching.length; i += chunkSize){
+      const batch = writeBatch(db);
+      matching.slice(i, i + chunkSize).forEach(r => batch.update(doc(db, "kh_records", r.id), { member: newName }));
+      await batch.commit();
+    }
+  }
+
+  function ensureDeleteMemberModal(){
+    let overlay = document.getElementById("khDeleteMemberOverlay");
+    if(overlay) return overlay;
+    overlay = document.createElement("div");
+    overlay.id = "khDeleteMemberOverlay";
+    overlay.className = "kh-modal-overlay";
+    overlay.innerHTML = `
+      <div class="kh-modal-card">
+        <p class="kh-modal-icon">${ICON_TRASH_LG}</p>
+        <p class="kh-modal-text" id="khDeleteMemberText"></p>
+        <ul class="kh-modal-list">
+          <li>Member profile</li>
+          <li>All related attendance records</li>
+          <li>Work hours history</li>
+        </ul>
+        <p class="kh-modal-text" style="font-size:.85rem; color:#C0392B; margin-bottom:1rem;">This action cannot be undone.</p>
+        <div class="kh-modal-actions">
+          <button type="button" class="btn3d btn-danger" id="khDeleteMemberYesBtn">Delete Member</button>
+          <button type="button" class="btn3d btn-mint" id="khDeleteMemberCancelBtn">Cancel</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    return overlay;
+  }
+  function askDeleteMember(member){
+    return new Promise(resolve => {
+      const overlay = ensureDeleteMemberModal();
+      overlay.querySelector("#khDeleteMemberText").textContent = `Are you sure you want to delete "${member.name}"?`;
+      overlay.style.display = "flex";
+      const yesBtn = overlay.querySelector("#khDeleteMemberYesBtn");
+      const noBtn  = overlay.querySelector("#khDeleteMemberCancelBtn");
+      function cleanup(result){
+        overlay.style.display = "none";
+        yesBtn.removeEventListener("click", onYes);
+        noBtn.removeEventListener("click", onNo);
+        resolve(result);
+      }
+      function onYes(){ cleanup(true); }
+      function onNo(){ cleanup(false); }
+      yesBtn.addEventListener("click", onYes);
+      noBtn.addEventListener("click", onNo);
+    });
+  }
+
+  async function deleteMemberCascade(member){
+    const matching = records.filter(r => r.member === member.name);
+    const chunkSize = 400;
+    for(let i = 0; i < matching.length; i += chunkSize){
+      const batch = writeBatch(db);
+      matching.slice(i, i + chunkSize).forEach(r => batch.delete(doc(db, "kh_records", r.id)));
+      await batch.commit();
+    }
+    await deleteDoc(doc(db, "kh_members", member.id));
+  }
+
+  memberChips.addEventListener("click", async e => {
+    const editBtn = e.target.closest(".member-card-edit");
+    if(editBtn){
+      const m = members.find(x => x.id === editBtn.dataset.id);
+      if(m) openEditMemberModal(m);
+      return;
+    }
+    const deleteBtn = e.target.closest(".member-card-delete");
+    if(deleteBtn){
+      const m = members.find(x => x.id === deleteBtn.dataset.id);
+      if(!m) return;
+      const ok = await askDeleteMember(m);
+      if(!ok) return;
+      deleteBtn.disabled = true;
+      try{
+        await deleteMemberCascade(m);
+        if(selectedMemberId === m.id) selectedMemberId = null;
+        showToast("Member and all related attendance records have been deleted.");
+      }catch(err){
+        console.error(err);
+        showToast("Failed to delete member. Please try again.", "error");
+      }
+      return;
+    }
+    const card = e.target.closest(".member-card");
+    if(card){
+      const id = card.dataset.id;
+      selectedMemberId = selectedMemberId === id ? null : id;
+      const m = members.find(x => x.id === selectedMemberId);
+      if(m) entryMember.value = m.name;
+      renderMembers();
+      if(selectedMemberId){
+        memberDashboard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+  });
+
+  memberDashboard.addEventListener("click", e => {
+    if(e.target.closest("#memberDashboardClose")){
+      selectedMemberId = null;
+      renderMemberDashboard();
     }
   });
 
@@ -147,8 +402,14 @@ export function initKhApp(uid){
       entryHours.disabled = isLeave;
       hoursField.style.opacity = isLeave ? .5 : 1;
       if(isLeave) entryHours.value = "";
+      clearHoursError();
     });
   });
+  entryHours.addEventListener("input", clearHoursError);
+  function clearHoursError(){
+    entryHoursError.textContent = "";
+    entryHours.classList.remove("kh-input-error");
+  }
 
   function findExistingRecord(date, member){
     return records.find(r => r.date === date && r.member === member);
@@ -247,11 +508,19 @@ export function initKhApp(uid){
     if(!members.length) return;
     khBounce(saveBtn);
     const status = entryForm.querySelector('input[name="status"]:checked').value;
+    const hoursVal = parseFloat(entryHours.value);
+    if(status === "duty" && (entryHours.value === "" || isNaN(hoursVal) || hoursVal <= 0)){
+      entryHoursError.textContent = "Please enter the number of hours worked.";
+      entryHours.classList.add("kh-input-error");
+      entryHours.focus();
+      return;
+    }
+    clearHoursError();
     const record = {
       date: entryDate.value,
       member: entryMember.value,
       status: status,
-      hours: status === "duty" ? (parseFloat(entryHours.value) || 0) : 0,
+      hours: status === "duty" ? hoursVal : 0,
       ownerId: uid,
       createdAt: serverTimestamp()
     };
@@ -272,9 +541,10 @@ export function initKhApp(uid){
         await addDoc(recordsCol, record);
       }
       entryHours.value = "";
+      showToast(`${record.member}'s attendance for ${record.date === new Date().toISOString().slice(0,10) ? "today" : "this date"} has been saved.`);
     }catch(err){
       console.error(err);
-      alert("Failed to save record. Please check your internet connection and try again.");
+      showToast("Failed to save record. Please check your internet connection and try again.", "error");
     }finally{
       saveBtn.disabled = !members.length;
     }
@@ -348,11 +618,11 @@ export function initKhApp(uid){
       const m = members.find(x => x.name === name);
       const advanceVal = m && typeof m.advance === "number" ? m.advance : 0;
       const advanceCell = m
-        ? `<div class="kh-advance-wrap">
-             <span class="kh-advance-prefix">RM</span>
-             <input type="number" class="kh-advance-input" data-id="${m.id}" value="${advanceVal}" step="0.01" min="0" placeholder="0">
+        ? `<div class="kh-advance-wrap" data-id="${m.id}" data-balance="${advanceVal}">
+             <span class="kh-advance-display">RM ${advanceVal.toFixed(2)}</span>
+             <button type="button" class="kh-advance-edit-btn" data-id="${m.id}" title="Add advance" aria-label="Add advance">${ICON_EDIT}</button>
            </div>`
-        : `<span class="kh-advance-prefix">RM 0</span>`;
+        : `<span class="kh-advance-prefix">RM 0.00</span>`;
       return `<tr><td>${name}</td><td>${d.days}</td><td>${d.leaves}</td><td><strong>${d.hours}</strong></td><td>${advanceCell}</td></tr>`;
     }).join("");
   }
@@ -365,20 +635,46 @@ export function initKhApp(uid){
 
   summaryMonthSelect?.addEventListener("change", renderSummary);
 
-  document.querySelector("#summaryTable tbody").addEventListener("change", async e => {
-    const input = e.target.closest(".kh-advance-input");
-    if(!input) return;
-    const val = parseFloat(input.value);
-    const safeVal = isNaN(val) ? 0 : val;
-    input.disabled = true;
-    try{
-      await updateDoc(doc(db, "kh_members", input.dataset.id), { advance: safeVal });
-    }catch(err){
-      console.error(err);
-      alert("Failed to save advance. Please try again.");
-    }finally{
-      input.disabled = false;
+  document.querySelector("#summaryTable tbody").addEventListener("click", e => {
+    const editBtn = e.target.closest(".kh-advance-edit-btn");
+    if(!editBtn) return;
+    const wrap = editBtn.closest(".kh-advance-wrap");
+    if(wrap.querySelector(".kh-advance-add-input")) return;
+    const currentBalance = parseFloat(wrap.dataset.balance) || 0;
+    const memberId = wrap.dataset.id;
+    wrap.innerHTML = `
+      <div class="kh-advance-add-wrap">
+        <span class="kh-advance-prefix">+RM</span>
+        <input type="number" class="kh-advance-add-input" step="0.01" placeholder="0" autofocus>
+      </div>`;
+    const input = wrap.querySelector(".kh-advance-add-input");
+    input.focus();
+    let saved = false;
+    async function commitAdd(){
+      if(saved) return;
+      const addVal = parseFloat(input.value);
+      if(isNaN(addVal) || addVal === 0){
+        renderSummary();
+        return;
+      }
+      saved = true;
+      const newBalance = currentBalance + addVal;
+      input.disabled = true;
+      try{
+        await updateDoc(doc(db, "kh_members", memberId), { advance: newBalance });
+        showToast("Advance updated successfully.");
+      }catch(err){
+        console.error(err);
+        showToast("Failed to save advance. Please try again.", "error");
+        saved = false;
+        input.disabled = false;
+      }
     }
+    input.addEventListener("blur", commitAdd);
+    input.addEventListener("keydown", ev => {
+      if(ev.key === "Enter"){ ev.preventDefault(); input.blur(); }
+      if(ev.key === "Escape"){ saved = true; renderSummary(); }
+    });
   });
 
   const EN_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -461,7 +757,7 @@ export function initKhApp(uid){
       }
     }catch(err){
       console.error(err);
-      alert("Failed to delete this month's records. Please try again.");
+      showToast("Failed to delete this month's records. Please try again.", "error");
     }finally{
       if(btn) btn.disabled = false;
     }
@@ -506,9 +802,10 @@ export function initKhApp(uid){
       khBounce(deleteBtn);
       try{
         await deleteDoc(doc(db, "kh_records", deleteBtn.dataset.id));
+        showToast("Attendance record deleted successfully.");
       }catch(err){
         console.error(err);
-        alert("Failed to delete entry. Please try again.");
+        showToast("Failed to delete entry. Please try again.", "error");
       }
       return;
     }
@@ -777,6 +1074,7 @@ export function initKhApp(uid){
   onSnapshot(myRecordsQuery, snapshot => {
     records = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     recordsLoaded = true;
+    renderMembers();
     refreshSummarySection();
     renderRegister();
     updateLoadingState();

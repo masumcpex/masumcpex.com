@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /unpublished.html
+Disallow: /nasir.html
+Disallow: /nazim.html
+Disallow: /hafsa.html
+Disallow: /amar-golpo.html
+Disallow: /offline.html
+
+Sitemap: https://masumcpex.com/sitemap.xml

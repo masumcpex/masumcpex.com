@@ -601,6 +601,27 @@ export function initKhApp(uid){
     updateMonthBadges();
     populateSummaryMonthOptions();
     renderSummary();
+    renderQuickStats();
+  }
+
+  function renderQuickStats(){
+    const ym = currentYearMonth();
+    const monthRecords = records.filter(r => r.date.startsWith(ym));
+    let present = 0, hours = 0;
+    monthRecords.forEach(r => {
+      if(r.status === "duty"){ present++; hours += (r.hours || 0); }
+    });
+    const totalAdvance = members.reduce((sum, m) => sum + (typeof m.advance === "number" ? m.advance : 0), 0);
+    const qsMembers = document.getElementById("qsMembers");
+    const qsPresent = document.getElementById("qsPresent");
+    const qsHours   = document.getElementById("qsHours");
+    const qsAdvance = document.getElementById("qsAdvance");
+    if(qsMembers) qsMembers.textContent = toBn(members.length);
+    if(qsPresent) qsPresent.textContent = toBn(present);
+    if(qsHours)   qsHours.textContent = toBn(hours);
+    if(qsAdvance) qsAdvance.textContent = `RM ${totalAdvance.toFixed(2)}`;
+    const pill = document.getElementById("dashboardMonthPill");
+    if(pill) pill.textContent = monthLabel(ym);
   }
 
   summaryMonthSelect?.addEventListener("change", renderSummary);

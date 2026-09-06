@@ -15,6 +15,10 @@ const ICON_SPINNER = `<svg class="kh-spin" viewBox="0 0 24 24" fill="none" strok
 const ICON_CLOSE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
 const ICON_CHECK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
 const ICON_INFO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+const ICON_USER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>`;
+const ICON_DOC = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>`;
+const ICON_SETTINGS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
+const ICON_LOGOUT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`;
 
 let appStarted = false;
 
@@ -124,11 +128,19 @@ export function initKhApp(uid){
           <div class="member-card-stats">${stats.hours}h • ${stats.duty} Duty • ${stats.leave} Leave</div>
         </div>
         <div class="member-card-actions">
-          <button type="button" class="member-card-icon-btn member-card-edit" data-id="${m.id}" title="Edit member" aria-label="Edit member">${ICON_EDIT}</button>
-          <button type="button" class="member-card-icon-btn is-danger member-card-delete" data-id="${m.id}" title="Delete member" aria-label="Delete member">${ICON_TRASH}</button>
+          <button type="button" class="member-card-icon-btn member-card-more" data-id="${m.id}" title="More options" aria-label="More options" aria-haspopup="true">${ICON_KEBAB}</button>
+          <div class="member-card-menu" data-id="${m.id}">
+            <button type="button" class="member-card-menu-item member-card-view" data-id="${m.id}">${ICON_USER}View Profile</button>
+            <button type="button" class="member-card-menu-item member-card-edit" data-id="${m.id}">${ICON_EDIT}Edit Member</button>
+            <button type="button" class="member-card-menu-item is-danger member-card-delete" data-id="${m.id}">${ICON_TRASH}Remove Member</button>
+          </div>
         </div>
       </div>`;
     }).join("");
+    const memberDots = document.getElementById("memberDots");
+    if(memberDots){
+      memberDots.innerHTML = members.map((_, i) => `<span class="${i === 0 ? "is-active" : ""}"></span>`).join("");
+    }
     noMemberNote.style.display = members.length ? "none" : "block";
     noMemberWarn.style.display = members.length ? "none" : "block";
     saveBtn.disabled = !members.length;
@@ -324,15 +336,124 @@ export function initKhApp(uid){
     await deleteDoc(doc(db, "kh_members", member.id));
   }
 
+  function closeAllMemberMenus(){
+    memberChips.querySelectorAll(".member-card-menu.is-open").forEach(m => m.classList.remove("is-open"));
+  }
+  if(!memberChips.dataset.scrollBound){
+    memberChips.dataset.scrollBound = "1";
+    let scrollTimer;
+    memberChips.addEventListener("scroll", () => {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        const cards = memberChips.querySelectorAll(".member-card");
+        const dots = document.querySelectorAll("#memberDots span");
+        if(!cards.length || !dots.length) return;
+        const center = memberChips.scrollLeft + memberChips.clientWidth / 2;
+        let closestIdx = 0, closestDist = Infinity;
+        cards.forEach((card, i) => {
+          const dist = Math.abs((card.offsetLeft + card.offsetWidth / 2) - center);
+          if(dist < closestDist){ closestDist = dist; closestIdx = i; }
+        });
+        dots.forEach((d, i) => d.classList.toggle("is-active", i === closestIdx));
+      }, 80);
+    }, { passive: true });
+  }
+  document.addEventListener("click", e => {
+    if(!e.target.closest(".member-card-actions")) closeAllMemberMenus();
+  });
+
+  function ensureMemberProfileModal(){
+    let overlay = document.getElementById("khMemberProfileOverlay");
+    if(overlay) return overlay;
+    overlay = document.createElement("div");
+    overlay.id = "khMemberProfileOverlay";
+    overlay.className = "kh-modal-overlay";
+    overlay.innerHTML = `
+      <div class="kh-modal-card kh-profile-card">
+        <button type="button" class="kh-modal-x" id="khProfileCloseBtn" aria-label="Close">${ICON_CLOSE}</button>
+        <div class="kh-profile-avatar" id="khProfileAvatar"></div>
+        <div class="kh-profile-name" id="khProfileName"></div>
+        <div class="kh-profile-month" id="khProfileMonth"></div>
+        <div class="kh-profile-stats" id="khProfileStats"></div>
+        <button type="button" class="btn3d btn-sky" id="khProfilePdfBtn" style="width:100%; margin-top:1rem;">${ICON_DOC} Download PDF Report</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click", e => { if(e.target === overlay) overlay.style.display = "none"; });
+    overlay.querySelector("#khProfileCloseBtn").addEventListener("click", () => { overlay.style.display = "none"; });
+    return overlay;
+  }
+
+  function openMemberProfileModal(member){
+    const overlay = ensureMemberProfileModal();
+    const ym = currentYearMonth();
+    const stats = monthStatsFor(member.name, ym);
+    const advanceVal = typeof member.advance === "number" ? member.advance : 0;
+    const initial = (member.name || "?").trim().charAt(0).toUpperCase();
+    overlay.querySelector("#khProfileAvatar").style.background = avatarColorFor(member.id);
+    overlay.querySelector("#khProfileAvatar").textContent = initial;
+    overlay.querySelector("#khProfileName").textContent = member.name;
+    overlay.querySelector("#khProfileMonth").textContent = monthLabel(ym);
+    overlay.querySelector("#khProfileStats").innerHTML = `
+      <div class="kh-profile-stat"><strong>${stats.hours}</strong><span>Total Hours</span></div>
+      <div class="kh-profile-stat"><strong>${stats.duty}</strong><span>Work Days</span></div>
+      <div class="kh-profile-stat"><strong>${stats.leave}</strong><span>Leave</span></div>
+      <div class="kh-profile-stat"><strong>RM ${advanceVal.toFixed(2)}</strong><span>Advance</span></div>
+    `;
+    const pdfBtn = overlay.querySelector("#khProfilePdfBtn");
+    pdfBtn.onclick = async () => {
+      if(typeof window.html2canvas === "undefined" || typeof window.jspdf === "undefined"){
+        showToast("PDF generation library failed to load. Please check your internet connection.", "error");
+        return;
+      }
+      const monthRecords = records
+        .filter(r => r.date.startsWith(ym) && r.member === member.name)
+        .slice().sort((a,b) => a.date.localeCompare(b.date));
+      if(!monthRecords.length){
+        showToast("No records for this member this month yet.", "warning");
+        return;
+      }
+      pdfBtn.disabled = true;
+      const originalLabel = pdfBtn.innerHTML;
+      pdfBtn.innerHTML = `${ICON_SPINNER}Generating PDF...`;
+      try{
+        await generatePdfReport(ym, monthRecords, member.name);
+      }catch(err){
+        console.error(err);
+        showToast("Failed to generate PDF. Please try again.", "error");
+      }finally{
+        pdfBtn.disabled = false;
+        pdfBtn.innerHTML = originalLabel;
+      }
+    };
+    overlay.style.display = "flex";
+  }
+
   memberChips.addEventListener("click", async e => {
+    const moreBtn = e.target.closest(".member-card-more");
+    if(moreBtn){
+      const menu = moreBtn.nextElementSibling;
+      const wasOpen = menu.classList.contains("is-open");
+      closeAllMemberMenus();
+      if(!wasOpen) menu.classList.add("is-open");
+      return;
+    }
+    const viewBtn = e.target.closest(".member-card-view");
+    if(viewBtn){
+      closeAllMemberMenus();
+      const m = members.find(x => x.id === viewBtn.dataset.id);
+      if(m) openMemberProfileModal(m);
+      return;
+    }
     const editBtn = e.target.closest(".member-card-edit");
     if(editBtn){
+      closeAllMemberMenus();
       const m = members.find(x => x.id === editBtn.dataset.id);
       if(m) openEditMemberModal(m);
       return;
     }
     const deleteBtn = e.target.closest(".member-card-delete");
     if(deleteBtn){
+      closeAllMemberMenus();
       const m = members.find(x => x.id === deleteBtn.dataset.id);
       if(!m) return;
       const ok = await askDeleteMember(m);
@@ -700,7 +821,7 @@ export function initKhApp(uid){
         <tr>
           <td data-label="Date">${r.date}</td>
           <td data-label="Name">${r.member}</td>
-          <td class="status-${r.status}" data-label="Status">${r.status === "duty" ? "Present" : "Leave"}</td>
+          <td class="status-${r.status}" data-label="Status"><span>${r.status === "duty" ? "Present" : "Leave"}</span></td>
           <td class="hours-cell" data-label="Hours">${r.status === "duty" ? r.hours : "—"}</td>
           <td class="row-actions-cell" data-label="Action">
             <div class="row-actions">
@@ -717,7 +838,7 @@ export function initKhApp(uid){
           <summary class="kh-month-summary">
             <span class="kh-month-label">${monthLabel(ym)}</span>
             <span class="kh-month-count">${list.length} entries</span>
-            <button type="button" class="btn3d btn-danger kh-month-delete" data-ym="${ym}">${ICON_TRASH}Delete This Month</button>
+            <button type="button" class="btn3d kh-month-delete kh-month-delete--outline" data-ym="${ym}">${ICON_TRASH}Delete Month</button>
           </summary>
           <div class="table-wrap">
             <table class="kh-table">
@@ -734,7 +855,7 @@ export function initKhApp(uid){
     if(!monthRecords.length) return;
 
     const ok = await askConfirm(
-      `All ${monthRecords.length} entries for "${monthLabel(ym)}" will be permanently deleted. This action cannot be undone.`
+      `Delete ${monthLabel(ym)} records? All ${monthRecords.length} entries will be permanently deleted. This action cannot be undone.`
     );
     if(!ok) return;
 
@@ -1196,4 +1317,36 @@ export function initKhApp(uid){
     console.error(err);
     registerLoading.textContent = "Failed to load data. Please check your internet connection.";
   });
+
+  const sidebarLinks = document.querySelectorAll(".kh-sidebar-link[data-section]");
+  if(sidebarLinks.length){
+    const sectionEls = Array.from(sidebarLinks)
+      .map(a => document.getElementById(a.dataset.section))
+      .filter(Boolean);
+    const setActive = id => {
+      sidebarLinks.forEach(a => a.classList.toggle("is-active", a.dataset.section === id));
+    };
+    if("IntersectionObserver" in window){
+      const observer = new IntersectionObserver(entries => {
+        const visible = entries.filter(e => e.isIntersecting);
+        if(visible.length) setActive(visible[0].target.id);
+      }, { rootMargin: "-15% 0px -70% 0px" });
+      sectionEls.forEach(el => observer.observe(el));
+    }
+    sidebarLinks.forEach(a => a.addEventListener("click", () => setActive(a.dataset.section)));
+    setActive("sectionDashboard");
+  }
 }
+
+document.addEventListener("click", e => {
+  const trigger = e.target.closest("#khAccountTrigger");
+  const dropdown = document.getElementById("khAccountDropdown");
+  if(!dropdown) return;
+  if(trigger){
+    dropdown.classList.toggle("is-open");
+    return;
+  }
+  if(!e.target.closest(".kh-account-wrap")){
+    dropdown.classList.remove("is-open");
+  }
+});

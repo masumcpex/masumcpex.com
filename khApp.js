@@ -911,7 +911,7 @@ export function initKhApp(uid){
         <div style="font-size:8.5px; color:${PDF_MUTED};">${sub}</div>
       </div>`;
 
-    let identityBlockHtml, kpiCardsHtml, detailRowsHtml, tableColsHead, reportId, totalHoursLabelVal;
+    let identityBlockHtml, kpiCardsHtml, teamSummaryHtml = "", detailRowsHtml, tableColsHead, reportId, totalHoursLabelVal;
 
     if(singleMember){
       const stats = byMember[singleMember.name] || { present:0, absent:0, hours:0 };
@@ -970,6 +970,35 @@ export function initKhApp(uid){
           ${kpiCard("Total Hours", toBn(totalHoursAll), "Hours")}
           ${kpiCard("Advance", money(totalAdvanceAll), "Total Advance")}
         </div>`;
+
+      const summaryRowsHtml = memberNames.map(name => {
+        const d = byMember[name];
+        const m = members.find(x => x.name === name);
+        const advanceVal = m && typeof m.advance === "number" ? m.advance : 0;
+        return `
+          <tr>
+            <td class="pdf-td pdf-td-left" style="font-weight:700;">${escapeHtml(name)}</td>
+            <td class="pdf-td pdf-td-center">${toBn(d.present)}</td>
+            <td class="pdf-td pdf-td-center">${toBn(d.absent)}</td>
+            <td class="pdf-td pdf-td-center">${toBn(d.hours)}</td>
+            <td class="pdf-td pdf-td-right">${money(advanceVal)}</td>
+          </tr>`;
+      }).join("");
+      teamSummaryHtml = `
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <div style="width:3px; height:16px; background:${PDF_BLUE}; border-radius:2px;"></div>
+          <div style="font-size:14px; font-weight:700; color:${PDF_INK};">Per-Member Summary</div>
+        </div>
+        <table class="pdf-table" style="margin-bottom:24px;">
+          <thead><tr>
+            <th class="pdf-th pdf-th-left">Name</th>
+            <th class="pdf-th">Present</th>
+            <th class="pdf-th">Leave</th>
+            <th class="pdf-th">Total Hours</th>
+            <th class="pdf-th pdf-th-right">Advance</th>
+          </tr></thead>
+          <tbody>${summaryRowsHtml}</tbody>
+        </table>`;
       detailRowsHtml = monthRecords
         .slice().sort((a,b) => a.date.localeCompare(b.date) || a.member.localeCompare(b.member))
         .map(r => `
@@ -1011,6 +1040,7 @@ export function initKhApp(uid){
 
       ${identityBlockHtml}
       ${kpiCardsHtml}
+      ${teamSummaryHtml}
 
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
         <div style="width:3px; height:16px; background:${PDF_BLUE}; border-radius:2px;"></div>

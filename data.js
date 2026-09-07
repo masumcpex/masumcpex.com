@@ -227,7 +227,7 @@ const SITE_DATA = {
       readingTime: "২২ মিনিট",
       image: "",
       excerpt: "মনোযোগই আজকের বিশ্বের সবচেয়ে দামি পণ্য। ইনফ্লুয়েন্সার কালচার, অ্যালগরিদম আর সোশ্যাল কম্পারিজন কীভাবে আমাদের নিজেদের ব্যর্থ মনে করাচ্ছে — একটি গভীর বিশ্লেষণ।",
-      url: "article-attention-economy.html",
+      url: "attention-economy.html",
       content: ""
     },
     {
@@ -238,7 +238,7 @@ const SITE_DATA = {
       readingTime: "৯ মিনিট",
       image: "",
       excerpt: "ভালোবাসা, বন্ধুত্ব, কষ্ট, বিশ্বাস আর জীবনের ছোট ছোট উপলব্ধির একগুচ্ছ ভাঙা টুকরো — কিছু মুহূর্তের ডায়েরি, যা হয়তো আপনারও চেনা লাগবে।",
-      url: "journal-unfinished-feelings.html",
+      url: "unfinished-feelings.html",
       content: ""
     },
     {
@@ -249,7 +249,7 @@ const SITE_DATA = {
       readingTime: "13 মিনিট",
       image: "",
       excerpt: "Facebook, IMO, Bigo Live-এ ছড়িয়ে থাকা ভুয়া প্রোফাইল, হানি ট্র্যাপ কৌশল, ব্ল্যাকমেইল আর প্রবাসীদের টার্গেট করার পদ্ধতি নিয়ে একটি অনুসন্ধানী প্রতিবেদন — সাথে নিরাপত্তা টিপস।",
-      url: "article-honeytrap-scam.html",
+      url: "honeytrap.html",
       content: ""
     },
     {
@@ -260,7 +260,7 @@ const SITE_DATA = {
       readingTime: "8-10 মিনিট",
       image: "",
       excerpt: "একটি নীরব ভালোবাসা, কিছু অপূর্ণ অপেক্ষা, আর নিজের ভেতরে লুকিয়ে রাখা অনুভূতির গল্প।",
-      url: "journal-first-love-story.html",
+      url: "broken-love.html",
       content: ""
     },
     {
@@ -1347,7 +1347,7 @@ const SITE_DATA = {
       readingTime: "17 মিনিট",
       image: "education-banner.webp",
       excerpt: "শিক্ষা একটি দেশের উন্নয়নের ভিত্তি। ভালো ফলাফল ও জিপিএর প্রতিযোগিতার বাইরে বাস্তব জীবনের জন্য কতটা প্রস্তুত হচ্ছে শিক্ষার্থীরা—সেটিই এখন সবচেয়ে বড় আলোচনার বিষয়।",
-      url: "education-system-bangladesh.html",
+      url: "education-bd.html",
       content: `
         <p><strong>ভূমিকা:</strong> শিক্ষা একটি দেশের উন্নয়নের ভিত্তি। একটি ভালো শিক্ষাব্যবস্থা শুধু পরীক্ষায় ভালো ফল করার জন্য নয়, বরং দক্ষ, সৃজনশীল, নৈতিক ও সমস্যা সমাধানে সক্ষম মানুষ তৈরির জন্য কাজ করে।</p>
         <h3 style="color: #2c5282; margin-top: 25px;">১. মুখস্থবিদ্যার উপর অতিরিক্ত নির্ভরতা</h3>
@@ -1364,7 +1364,7 @@ const SITE_DATA = {
       readingTime: "12–15 মিনিট",
       image: "education-banner.jpg.png",
       excerpt: "বাংলাদেশের মাদ্রাসা শিক্ষার ইতিহাস, বর্তমান বাস্তবতা, কাঠামোগত সীমাবদ্ধতা এবং আধুনিকায়নের সম্ভাবনা নিয়ে একটি গবেষণাধর্মী বিশ্লেষণ।",
-      url: "bangladesh-madrasa-education.html",
+      url: "madrasa.html",
       content: ""
     },
     {
@@ -1375,7 +1375,7 @@ const SITE_DATA = {
       readingTime: "16 মিনিট",
       image: "",
       excerpt: "AI কোড লিখে দিচ্ছে ঠিকই — কিন্তু যে বোঝে না কী লেখা হচ্ছে, সে-ই সবচেয়ে বেশি ঝুঁকিতে থাকে। সম্পূর্ণ রোডম্যাপ ও প্রয়োজনীয় স্কিলসহ।",
-      url: "article-ai-programming.html",
+      url: "ai-programming.html",
       content: "<p>AI যুগে প্রোগ্রামিং শেখার জন্য বেসিক লজিক ও প্রম্পট ইঞ্জিনিয়ারিং জানা জরুরি।</p>"
     },
     {
@@ -1386,7 +1386,7 @@ const SITE_DATA = {
       readingTime: "12 মিনিট",
       image: "",
       excerpt: "প্রতিভা গুরুত্বপূর্ণ, কিন্তু ধারাবাহিকতা তার চেয়েও বেশি গুরুত্বপূর্ণ। ছয়টি বাস্তবসম্মত অভ্যাস, যা আপনার জীবনে সত্যিকারের পার্থক্য তৈরি করতে পারে।",
-      url: "article-daily-habits.html",
+      url: "daily-habits.html",
       content: ""
     },
     {
@@ -1397,7 +1397,7 @@ const SITE_DATA = {
       readingTime: "14 মিনিট",
       image: "",
       excerpt: "ভালো রেজাল্ট আপনাকে একটি চাকরির দরজা পর্যন্ত নিয়ে যেতে পারে, কিন্তু দক্ষতাই আপনাকে জীবনে অনেক দূর এগিয়ে নিয়ে যায় — কমিউনিকেশন থেকে শুরু করে সেলফ ডিসিপ্লিন পর্যন্ত ১০টি জরুরি স্কিল।",
-      url: "article-10-skills.html",
+      url: "10-skills.html",
       content: "<p>স্কুল-কলেজ জীবনে যে ১০টি স্কিল রপ্ত করা উচিত তার সম্পূর্ণ গাইড।</p>"
     },
     {
@@ -1408,7 +1408,7 @@ const SITE_DATA = {
       readingTime: "10 মিনিট",
       image: "",
       excerpt: "সফল হয়েও আমরা কেন সুখী নই? একটি লক্ষ্য পূরণ হলেই কেন সামনে চলে আসে আরেকটি — আর কীভাবে থামা যায় এই না-শেষ-হওয়া দৌড়ে।",
-      url: "article-rat-race.html",
+      url: "rat-race.html",
       content: ""
     },
     {
@@ -1419,7 +1419,7 @@ const SITE_DATA = {
       readingTime: "22 মিনিট",
       image: "",
       excerpt: "মনোযোগই আজকের বিশ্বের সবচেয়ে দামি পণ্য। ইনফ্লুয়েন্সার কালচার, অ্যালগরিদম, Dunning-Kruger Effect আর সোশ্যাল কম্পারিজনের গভীর বিশ্লেষণ — গবেষণা ও সোর্স-সহ।",
-      url: "article-attention-economy.html",
+      url: "attention-economy.html",
       content: ""
     },
     {
@@ -1430,7 +1430,7 @@ const SITE_DATA = {
       readingTime: "9 মিনিট",
       image: "",
       excerpt: "ভালোবাসা, বন্ধুত্ব, কষ্ট, বিশ্বাস আর জীবনের ছোট ছোট উপলব্ধির একগুচ্ছ ভাঙা টুকরো — কিছু মুহূর্তের ডায়েরি, যা হয়তো আপনারও চেনা লাগবে।",
-      url: "journal-unfinished-feelings.html",
+      url: "unfinished-feelings.html",
       content: ""
     },
     {
@@ -1441,7 +1441,7 @@ const SITE_DATA = {
       readingTime: "13 মিনিট",
       image: "",
       excerpt: "Facebook, IMO, Bigo Live-এ ছড়িয়ে থাকা ভুয়া প্রোফাইল, হানি ট্র্যাপ কৌশল, ব্ল্যাকমেইল আর প্রবাসীদের টার্গেট করার পদ্ধতি নিয়ে একটি অনুসন্ধানী প্রতিবেদন — সাথে নিরাপত্তা টিপস ও যাচাইযোগ্য সোর্স।",
-      url: "article-honeytrap-scam.html",
+      url: "honeytrap.html",
       content: ""
     },
     {
@@ -1452,7 +1452,7 @@ const SITE_DATA = {
       readingTime: "12 মিনিট",
       image: "",
       excerpt: "সুন্দর পিচাই, সত্য নাদেলা, অরবিন্দ কৃষ্ণা থেকে শান্তনু নারায়েন — কেন বিশ্বের শীর্ষ কোম্পানিগুলোর CEO পদে ভারতীয়দের এই জয়জয়কার, আর বাংলাদেশ কী শিখতে পারে তা থেকে।",
-      url: "article-indian-ceos.html",
+      url: "indian-ceos.html",
       content: ""
     },
     {
@@ -1463,7 +1463,7 @@ const SITE_DATA = {
       readingTime: "14 মিনিট",
       image: "",
       excerpt: "বিশ্বজুড়ে মুসলিম সমাজের শিক্ষা, পেশা ও মানসিকতার একটি বিশ্লেষণাত্মক পর্যালোচনা — প্রবাসজীবন, জ্ঞানচর্চা এবং বাংলাদেশের অর্থনৈতিক বাস্তবতার আলোকে।",
-      url: "muslim-somaj-atmoupolobdhi.html",
+      url: "muslim-somaj.html",
       content: ""
     },
     {
@@ -1474,7 +1474,7 @@ const SITE_DATA = {
       readingTime: "11 মিনিট",
       image: "",
       excerpt: "শান্তি নিজের থেকে শুরু হয়, বিক্রির আগে বিক্রি হয় বিশ্বাস — ব্যবসা, ব্র্যান্ডিং আর জীবনের কিছু বাস্তব উপলব্ধি।",
-      url: "business-life-lessons.html",
+      url: "life-lessons.html",
       content: ""
     },
     {
@@ -1485,7 +1485,7 @@ const SITE_DATA = {
       readingTime: "10 মিনিট",
       image: "",
       excerpt: "আত্মসংযম, বিবাহের গুরুত্ব ও শালীনতা নিয়ে কুরআন ও সহিহ হাদিসের আলোকে একটি প্রামাণ্য আলোচনা।",
-      url: "purity-marriage-islam.html",
+      url: "purity-marriage.html",
       content: ""
     }
   ],

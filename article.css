@@ -83,6 +83,8 @@ code{
   background: var(--card-bg);
 }
 .callout-icon{ font-size: 1.4rem; line-height:1; }
+.callout-icon svg{ width:1.4rem; height:1.4rem; display:block; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.article-tag svg{ width:1em; height:1em; display:inline-block; vertical-align:-0.15em; margin-right:.3rem; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 .callout p{ margin:0; }
 .callout-quote{
   border-left-color: var(--gold);
@@ -221,11 +223,11 @@ code{
 .author-name{ font-family: var(--font-display); color: var(--ink); font-weight:700; font-size: .96rem; }
 .author-role{ color: var(--muted); font-size: .82rem; }
 
-/* ---------------- Sticky Table of Contents ---------------- */
+/* ---------------- Table of Contents ---------------- */
 .article-toc{
   max-width: 780px; margin: 0 auto 2rem; background: var(--card-bg);
   border: 1px solid var(--line); border-radius: 14px; padding: 1.2rem 1.4rem;
-  box-shadow: var(--shadow); position: sticky; top: 10px; z-index: 20;
+  box-shadow: var(--shadow); position: static !important; top: auto !important; z-index: auto !important;
 }
 .article-toc h5{
   font-family: var(--font-util); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase;

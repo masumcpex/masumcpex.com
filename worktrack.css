@@ -416,7 +416,7 @@ html, body, .kh-register-actions, #downloadCsvBtn, .kh-month-delete, .kh-month-g
 }
 .kh-advance-op-btn:active{ transform: scale(.96); }
 .kh-advance-op-btn:disabled{ opacity:.6; cursor:not-allowed; }
-.kh-advance-op-add{ background:#2ECC71; }
+.kh-advance-op-add{ background:#3B82F6; }
 .kh-advance-op-add:hover:not(:disabled){ filter:brightness(1.06); }
 .kh-advance-op-deduct{ background:#C0392B; }
 .kh-advance-op-deduct:hover:not(:disabled){ filter:brightness(1.08); }

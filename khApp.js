@@ -749,45 +749,62 @@ export function initKhApp(uid){
 
   document.querySelector("#summaryTable tbody").addEventListener("click", e => {
     const editBtn = e.target.closest(".kh-advance-edit-btn");
-    if(!editBtn) return;
-    const wrap = editBtn.closest(".kh-advance-wrap");
-    if(wrap.querySelector(".kh-advance-add-input")) return;
+    if(editBtn){
+      const wrap = editBtn.closest(".kh-advance-wrap");
+      if(wrap.querySelector(".kh-advance-add-input")) return;
+      wrap.innerHTML = `
+        <div class="kh-advance-edit-wrap">
+          <input type="number" class="kh-advance-add-input" min="0" step="0.01" placeholder="Amount" inputmode="decimal" autofocus>
+          <button type="button" class="kh-advance-op-btn kh-advance-op-add" data-op="add" title="Add to advance">+ Add</button>
+          <button type="button" class="kh-advance-op-btn kh-advance-op-deduct" data-op="deduct" title="Deduct from advance">&minus; Deduct</button>
+        </div>`;
+      const input = wrap.querySelector(".kh-advance-add-input");
+      input.focus();
+
+      input.addEventListener("keydown", ev => {
+        if(ev.key === "Escape"){ renderSummary(); }
+      });
+      input.addEventListener("blur", () => {
+        // Give a click on +Add / -Deduct a chance to register before cancelling.
+        setTimeout(() => {
+          if(!wrap.contains(document.activeElement)) renderSummary();
+        }, 150);
+      });
+      return;
+    }
+
+    const opBtn = e.target.closest(".kh-advance-op-btn");
+    if(opBtn) commitAdvanceOp(opBtn);
+  });
+
+  async function commitAdvanceOp(opBtn){
+    const wrap = opBtn.closest(".kh-advance-wrap");
+    const input = wrap.querySelector(".kh-advance-add-input");
+    const rawVal = parseFloat(input.value);
+    if(isNaN(rawVal) || rawVal <= 0){
+      input.focus();
+      input.classList.add("kh-input-error");
+      return;
+    }
     const currentBalance = parseFloat(wrap.dataset.balance) || 0;
     const memberId = wrap.dataset.id;
-    wrap.innerHTML = `
-      <div class="kh-advance-add-wrap">
-        <span class="kh-advance-prefix">+RM</span>
-        <input type="number" class="kh-advance-add-input" step="0.01" placeholder="0" autofocus>
-      </div>`;
-    const input = wrap.querySelector(".kh-advance-add-input");
-    input.focus();
-    let saved = false;
-    async function commitAdd(){
-      if(saved) return;
-      const addVal = parseFloat(input.value);
-      if(isNaN(addVal) || addVal === 0){
-        renderSummary();
-        return;
+    const op = opBtn.dataset.op;
+    const newBalance = op === "deduct" ? currentBalance - rawVal : currentBalance + rawVal;
+
+    wrap.querySelectorAll("input, button").forEach(el => el.disabled = true);
+    try{
+      await updateDoc(doc(db, "kh_members", memberId), { advance: newBalance });
+      if(newBalance < 0){
+        showToast(`Saved, but new balance is negative: RM ${newBalance.toFixed(2)}.`, "error");
+      }else{
+        showToast(`${op === "deduct" ? "Deducted" : "Added"} RM ${rawVal.toFixed(2)}. New balance: RM ${newBalance.toFixed(2)}.`);
       }
-      saved = true;
-      const newBalance = currentBalance + addVal;
-      input.disabled = true;
-      try{
-        await updateDoc(doc(db, "kh_members", memberId), { advance: newBalance });
-        showToast("Advance updated successfully.");
-      }catch(err){
-        console.error(err);
-        showToast("Failed to save advance. Please try again.", "error");
-        saved = false;
-        input.disabled = false;
-      }
+    }catch(err){
+      console.error(err);
+      showToast("Failed to save advance. Please try again.", "error");
+      wrap.querySelectorAll("input, button").forEach(el => el.disabled = false);
     }
-    input.addEventListener("blur", commitAdd);
-    input.addEventListener("keydown", ev => {
-      if(ev.key === "Enter"){ ev.preventDefault(); input.blur(); }
-      if(ev.key === "Escape"){ saved = true; renderSummary(); }
-    });
-  });
+  }
 
   const EN_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   function toBn(n){ return String(n); }

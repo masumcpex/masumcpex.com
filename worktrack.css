@@ -405,10 +405,21 @@ html, body, .kh-register-actions, #downloadCsvBtn, .kh-month-delete, .kh-month-g
 }
 .kh-advance-edit-btn:hover{ opacity:1; background: rgba(0,0,0,.1); }
 .kh-advance-edit-btn svg{ width:13px; height:13px; }
-.kh-advance-add-wrap{ display:flex; align-items:center; gap:.3rem; }
+.kh-advance-edit-wrap{ display:flex; align-items:center; gap:.35rem; flex-wrap:wrap; }
 .kh-advance-add-input{
-  width:90px; padding:.35rem .5rem; border-radius:8px; border:1.5px solid #3B82F6; font-size:.85rem;
+  width:80px; padding:.35rem .5rem; border-radius:8px; border:1.5px solid #3B82F6; font-size:.85rem;
 }
+.kh-advance-add-input:focus{ outline:none; border-color:#3B82F6; box-shadow:0 0 0 2px rgba(59,130,246,.18); }
+.kh-advance-op-btn{
+  border:none; border-radius:8px; padding:.35rem .6rem; font-size:.78rem; font-weight:700; cursor:pointer;
+  color:#fff; transition: filter .15s ease, transform .1s ease;
+}
+.kh-advance-op-btn:active{ transform: scale(.96); }
+.kh-advance-op-btn:disabled{ opacity:.6; cursor:not-allowed; }
+.kh-advance-op-add{ background:#2ECC71; }
+.kh-advance-op-add:hover:not(:disabled){ filter:brightness(1.06); }
+.kh-advance-op-deduct{ background:#C0392B; }
+.kh-advance-op-deduct:hover:not(:disabled){ filter:brightness(1.08); }
 
 .kh-input-error{ border-color:#C0392B !important; background:#FFF6F5; }
 

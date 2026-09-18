@@ -559,14 +559,19 @@ html{ scroll-behavior:smooth; }
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
 }
 .kh-account-avatar svg{ width:14px; height:14px; }
-.kh-account-trigger .kh-user-email{ font-size:.8rem; margin-right:0; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.kh-account-avatar-img{ width:26px; height:26px; border-radius:50%; object-fit:cover; display:block; }
+.kh-account-trigger .kh-user-email{ font-size:.8rem; margin-right:0; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-transform:capitalize; }
 .kh-account-chevron{ width:14px; height:14px; color: var(--muted); flex-shrink:0; }
 .kh-account-dropdown{
   display:none; position:absolute; top:calc(100% + 6px); right:0; z-index:30;
   background:#fff; border:1px solid var(--wt-border, var(--line)); border-radius:10px;
-  box-shadow: 0 10px 24px rgba(16,24,40,.14); min-width:190px; padding:.35rem;
+  box-shadow: 0 10px 24px rgba(16,24,40,.14); min-width:210px; padding:.35rem;
 }
 .kh-account-dropdown.is-open{ display:block; }
+.kh-account-dropdown-info{
+  padding:.3rem .7rem .55rem; margin-bottom:.25rem; border-bottom:1px solid var(--wt-border, var(--line));
+}
+.kh-account-dropdown-email{ font-size:.75rem; color: var(--muted); word-break:break-all; display:block; }
 .kh-account-menu-item{
   display:flex; align-items:center; gap:.6rem; width:100%; padding:.6rem .7rem; border:none;
   background:none; border-radius:7px; cursor:pointer; font-size:.85rem; font-weight:600; color: var(--ink); text-align:left;

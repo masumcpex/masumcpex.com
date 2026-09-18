@@ -12,15 +12,55 @@ const ADMIN_EMAIL = "admin@masumcpex.com";
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const gate        = document.getElementById("khAuthGate");
-  const mainEl      = document.getElementById("khMain");
-  const userBar     = document.getElementById("khUserBar");
-  const userEmailEl = document.getElementById("khUserEmail");
-  const signInBtn   = document.getElementById("googleSignInBtn");
-  const fbSignInBtn = document.getElementById("facebookSignInBtn");
-  const signOutBtn  = document.getElementById("khSignOutBtn");
-  const authError   = document.getElementById("khAuthError");
-  const claimBtn    = document.getElementById("khClaimOldDataBtn");
+  const gate         = document.getElementById("khAuthGate");
+  const mainEl       = document.getElementById("khMain");
+  const userBar      = document.getElementById("khUserBar");
+  const userEmailEl  = document.getElementById("khUserEmail");
+  const userEmailFullEl = document.getElementById("khUserEmailFull");
+  const avatarImgEl  = document.getElementById("khAccountAvatarImg");
+  const avatarIconEl = document.getElementById("khAccountAvatarIcon");
+  const signInBtn    = document.getElementById("googleSignInBtn");
+  const fbSignInBtn  = document.getElementById("facebookSignInBtn");
+  const signOutBtn   = document.getElementById("khSignOutBtn");
+  const authError    = document.getElementById("khAuthError");
+  const claimBtn     = document.getElementById("khClaimOldDataBtn");
+
+  function ensureLogoutConfirmModal(){
+    let overlay = document.getElementById("khLogoutConfirmOverlay");
+    if(overlay) return overlay;
+    overlay = document.createElement("div");
+    overlay.id = "khLogoutConfirmOverlay";
+    overlay.className = "kh-modal-overlay";
+    overlay.innerHTML = `
+      <div class="kh-modal-card">
+        <p class="kh-modal-icon"><svg class="kh-modal-icon-svg kh-modal-icon-svg--warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></p>
+        <p class="kh-modal-text">Are you sure you want to log out?</p>
+        <div class="kh-modal-actions">
+          <button type="button" class="btn3d btn-coral" id="khLogoutConfirmYesBtn">Yes, Log Out</button>
+          <button type="button" class="btn3d btn-mint" id="khLogoutConfirmNoBtn">Cancel</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    return overlay;
+  }
+  function askLogoutConfirm(){
+    return new Promise(resolve => {
+      const overlay = ensureLogoutConfirmModal();
+      overlay.style.display = "flex";
+      const yesBtn = overlay.querySelector("#khLogoutConfirmYesBtn");
+      const noBtn  = overlay.querySelector("#khLogoutConfirmNoBtn");
+      function cleanup(result){
+        overlay.style.display = "none";
+        yesBtn.removeEventListener("click", onYes);
+        noBtn.removeEventListener("click", onNo);
+        resolve(result);
+      }
+      function onYes(){ cleanup(true); }
+      function onNo(){ cleanup(false); }
+      yesBtn.addEventListener("click", onYes);
+      noBtn.addEventListener("click", onNo);
+    });
+  }
 
   function showAuthError(msg){
     authError.textContent = msg;
@@ -53,14 +93,40 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  signOutBtn.addEventListener("click", () => signOut(auth));
+  signOutBtn.addEventListener("click", async () => {
+    const dropdown = document.getElementById("khAccountDropdown");
+    if(dropdown) dropdown.classList.remove("is-open");
+    const confirmed = await askLogoutConfirm();
+    if(confirmed) await signOut(auth);
+  });
 
   onAuthStateChanged(auth, (user) => {
     if(user){
       gate.style.display = "none";
       mainEl.style.display = "block";
       userBar.style.display = "flex";
-      userEmailEl.textContent = user.email || user.phoneNumber || "";
+
+      const email = user.email || user.phoneNumber || "";
+      let displayName = user.displayName || (email.includes("@") ? email.split("@")[0] : email);
+      userEmailEl.textContent = displayName;
+      if(userEmailFullEl) userEmailFullEl.textContent = email;
+
+      if(avatarImgEl && avatarIconEl){
+        if(user.photoURL){
+          avatarImgEl.src = user.photoURL;
+          avatarImgEl.alt = displayName;
+          avatarImgEl.style.display = "block";
+          avatarIconEl.style.display = "none";
+          avatarImgEl.onerror = () => {
+            avatarImgEl.style.display = "none";
+            avatarIconEl.style.display = "block";
+          };
+        }else{
+          avatarImgEl.style.display = "none";
+          avatarImgEl.src = "";
+          avatarIconEl.style.display = "block";
+        }
+      }
 
       if(user.email === ADMIN_EMAIL && claimBtn){
         claimBtn.style.display = "inline-block";
@@ -74,6 +140,11 @@ document.addEventListener("DOMContentLoaded", () => {
       gate.style.display = "flex";
       mainEl.style.display = "none";
       userBar.style.display = "none";
+      if(avatarImgEl && avatarIconEl){
+        avatarImgEl.style.display = "none";
+        avatarImgEl.src = "";
+        avatarIconEl.style.display = "block";
+      }
       if(window.__khHideVerifyGate) window.__khHideVerifyGate();
     }
   });

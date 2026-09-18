@@ -1,4 +1,4 @@
-const SW_VERSION   = "v1.0.2";
+const SW_VERSION   = "v1.0.3";
 const STATIC_CACHE = `masumcpex-static-${SW_VERSION}`;
 const PAGES_CACHE   = `masumcpex-pages-${SW_VERSION}`;
 const OFFLINE_URL   = "offline.html";
@@ -56,6 +56,21 @@ function isNeverCacheHost(url) {
   return NEVER_CACHE_HOSTS.some((host) => url.hostname.endsWith(host));
 }
 
+const NETWORK_FIRST_FILES = [
+  "data.js",
+  "script.js",
+  "style.css",
+  "contact.js",
+  "invest.js",
+  "attendance.js",
+  "khApp.js",
+  "kh-auth.js"
+];
+
+function isNetworkFirstAsset(url) {
+  return NETWORK_FIRST_FILES.some((name) => url.pathname.endsWith(name));
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -66,7 +81,11 @@ self.addEventListener("fetch", (event) => {
 
   if (url.origin !== self.location.origin) return;
 
-  if (request.mode === "navigate" || (request.headers.get("accept") || "").includes("text/html")) {
+  if (
+    request.mode === "navigate" ||
+    (request.headers.get("accept") || "").includes("text/html") ||
+    isNetworkFirstAsset(url)
+  ) {
     event.respondWith(
       fetch(request)
         .then((response) => {

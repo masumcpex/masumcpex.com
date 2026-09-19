@@ -200,6 +200,7 @@ export function initKhApp(uid, isAdmin){
     const ids = otherOwnerIds();
     wrap.querySelector("#khTeamOverviewCount").textContent = `${ids.length} member${ids.length === 1 ? "" : "s"}`;
     if(teamModalOpen) renderTeamModalList();
+    if(openOwnerDetailId) renderOwnerDetailModal();
   }
 
   function closeAllTeamRowMenus(root){
@@ -231,11 +232,15 @@ export function initKhApp(uid, isAdmin){
         if(!wasOpen) menu.classList.add("is-open");
         return;
       }
-      const actionBtn = e.target.closest(".kh-team-row-view, .kh-team-row-menu-item");
+      const actionBtn = e.target.closest("[data-team-action]");
       if(actionBtn){
         closeAllTeamRowMenus(list);
         const oid = actionBtn.dataset.oid;
-        if(oid) openOwnerDetailModal(oid);
+        const action = actionBtn.dataset.teamAction;
+        if(!oid) return;
+        if(action === "profile") openOwnerDetailModal(oid, { editable: false });
+        else if(action === "edit") openOwnerDetailModal(oid, { editable: true });
+        else if(action === "delete") deleteOwnerAccount(oid);
       }
     });
     document.addEventListener("click", e => {
@@ -261,10 +266,12 @@ export function initKhApp(uid, isAdmin){
           <div class="member-card-stats">${stats.hours}h • ${stats.duty} Duty • ${stats.leave} Leave${email ? " • " + escapeHtmlLocal(email) : ""}</div>
         </div>
         <div class="member-card-actions kh-team-row-actions">
-          <button type="button" class="member-card-icon-btn kh-team-row-view" data-oid="${oid}" title="View" aria-label="View">${ICON_EYE}</button>
+          <button type="button" class="member-card-icon-btn kh-team-row-view" data-oid="${oid}" data-team-action="profile" title="View" aria-label="View">${ICON_EYE}</button>
           <button type="button" class="member-card-icon-btn kh-team-row-more" title="More" aria-label="More" aria-haspopup="true">${ICON_KEBAB}</button>
           <div class="member-card-menu kh-team-row-menu">
-            <button type="button" class="member-card-menu-item kh-team-row-menu-item" data-oid="${oid}">${ICON_USER}View Details</button>
+            <button type="button" class="member-card-menu-item" data-oid="${oid}" data-team-action="profile">${ICON_USER}Profile</button>
+            <button type="button" class="member-card-menu-item" data-oid="${oid}" data-team-action="edit">${ICON_EDIT}Edit</button>
+            <button type="button" class="member-card-menu-item is-danger" data-oid="${oid}" data-team-action="delete">${ICON_TRASH}Delete</button>
           </div>
         </div>
       </div>`;
@@ -282,6 +289,39 @@ export function initKhApp(uid, isAdmin){
     if(overlay) overlay.style.display = "none";
   }
 
+  async function deleteOwnerAccount(oid){
+    const label = ownerLabelFor(oid);
+    const mCount = allMembers.filter(m => m.ownerId === oid).length;
+    const rCount = allRecords.filter(r => r.ownerId === oid).length;
+    const ok = await askConfirm(
+      `"${label}" এর ${mCount} জন member ও ${rCount}টি attendance রেকর্ড স্থায়ীভাবে ডিলিট হয়ে যাবে। এটা আর ফিরিয়ে আনা যাবে না — নিশ্চিত?`
+    );
+    if(!ok) return;
+    try{
+      const memberIds = allMembers.filter(m => m.ownerId === oid).map(m => m.id);
+      const recordIds = allRecords.filter(r => r.ownerId === oid).map(r => r.id);
+      const allIds = [
+        ...memberIds.map(id => ["kh_members", id]),
+        ...recordIds.map(id => ["kh_records", id])
+      ];
+      const chunkSize = 400;
+      for(let i = 0; i < allIds.length; i += chunkSize){
+        const batch = writeBatch(db);
+        allIds.slice(i, i + chunkSize).forEach(([col, id]) => batch.delete(doc(db, col, id)));
+        await batch.commit();
+      }
+      if(openOwnerDetailId === oid) closeOwnerDetail();
+      showToast(`"${label}" এর সব ডেটা ডিলিট হয়েছে।`);
+    }catch(err){
+      console.error(err);
+      showToast("ডিলিট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।", "error");
+    }
+  }
+
+  // ---- Owner detail modal (Profile = read-only, Edit = full control) ----
+  let openOwnerDetailId = null;
+  let openOwnerDetailEditable = false;
+
   function ensureOwnerDetailModal(){
     let overlay = document.getElementById("khOwnerDetailOverlay");
     if(overlay) return overlay;
@@ -297,17 +337,225 @@ export function initKhApp(uid, isAdmin){
     document.body.appendChild(overlay);
     overlay.addEventListener("click", e => { if(e.target === overlay) closeOwnerDetail(); });
     overlay.querySelector("#khOwnerDetailCloseBtn").addEventListener("click", closeOwnerDetail);
+
+    // Event delegation: content inside #khOwnerDetailBody is re-rendered often,
+    // so all handlers live on the stable overlay instead of being re-bound each time.
+    overlay.addEventListener("click", async e => {
+      const oid = openOwnerDetailId;
+      if(!oid) return;
+
+      const memEdit = e.target.closest(".kh-owner-member-edit");
+      if(memEdit){
+        await renameOwnerMember(memEdit.dataset.id, memEdit.dataset.name, oid);
+        return;
+      }
+      const memDel = e.target.closest(".kh-owner-member-delete");
+      if(memDel){
+        const ok = await askConfirm(`"${memDel.dataset.name}" কে ডিলিট করবেন? তার সব attendance রেকর্ডও মুছে যাবে।`);
+        if(ok) await deleteOwnerMemberCascade(memDel.dataset.id, memDel.dataset.name, oid);
+        return;
+      }
+      const recEdit = e.target.closest(".kh-owner-record-edit");
+      if(recEdit){
+        openOwnerRecordEditModal({
+          id: recEdit.dataset.id,
+          member: recEdit.dataset.member,
+          date: recEdit.dataset.date,
+          status: recEdit.dataset.status,
+          hours: recEdit.dataset.hours
+        });
+        return;
+      }
+      const recDel = e.target.closest(".kh-owner-record-delete");
+      if(recDel){
+        const ok = await askConfirm("এই এন্ট্রিটা ডিলিট করবেন?");
+        if(!ok) return;
+        try{
+          await deleteDoc(doc(db, "kh_records", recDel.dataset.id));
+          showToast("Entry deleted successfully.");
+        }catch(err){
+          console.error(err);
+          showToast("Failed to delete entry. Please try again.", "error");
+        }
+        return;
+      }
+    });
+
+    overlay.addEventListener("submit", async e => {
+      const form = e.target.closest("#khOwnerAddEntryForm");
+      if(!form) return;
+      e.preventDefault();
+      const oid = openOwnerDetailId;
+      if(!oid) return;
+      const memberSel = form.querySelector("#khOwnerEntryMember");
+      const dateInput = form.querySelector("#khOwnerEntryDate");
+      const statusSel = form.querySelector("#khOwnerEntryStatus");
+      const hoursInput = form.querySelector("#khOwnerEntryHours");
+      const member = memberSel.value;
+      const dateVal = dateInput.value;
+      const status = statusSel.value;
+      const hours = status === "duty" ? (parseFloat(hoursInput.value) || 0) : 0;
+      if(!member || !dateVal) return;
+
+      const saveBtn = form.querySelector("button[type=submit]");
+      if(saveBtn) saveBtn.disabled = true;
+      try{
+        const existing = allRecords.find(r => r.ownerId === oid && r.member === member && r.date === dateVal);
+        if(existing){
+          await updateDoc(doc(db, "kh_records", existing.id), { status, hours });
+          showToast("Attendance record updated successfully.");
+        }else{
+          await addDoc(recordsCol, { member, date: dateVal, status, hours, ownerId: oid, createdAt: serverTimestamp() });
+          showToast("Attendance record added successfully.");
+        }
+        form.reset();
+      }catch(err){
+        console.error(err);
+        showToast("Failed to save entry. Please try again.", "error");
+      }finally{
+        if(saveBtn) saveBtn.disabled = false;
+      }
+    });
+
+    overlay.addEventListener("change", e => {
+      const statusSel = e.target.closest("#khOwnerEntryStatus");
+      if(statusSel){
+        const hoursInput = overlay.querySelector("#khOwnerEntryHours");
+        if(hoursInput) hoursInput.style.display = statusSel.value === "duty" ? "" : "none";
+      }
+    });
+
     return overlay;
   }
+
   function closeOwnerDetail(){
+    openOwnerDetailId = null;
+    openOwnerDetailEditable = false;
     const overlay = document.getElementById("khOwnerDetailOverlay");
     if(overlay) overlay.style.display = "none";
   }
-  function openOwnerDetailModal(oid){
+
+  async function renameOwnerMember(id, currentName, oid){
+    const newName = prompt("নতুন নাম লিখুন:", currentName);
+    if(newName === null) return;
+    const trimmed = newName.trim();
+    if(!trimmed || trimmed === currentName) return;
+    try{
+      await updateDoc(doc(db, "kh_members", id), { name: trimmed });
+      const matching = allRecords.filter(r => r.ownerId === oid && r.member === currentName);
+      const chunkSize = 400;
+      for(let i = 0; i < matching.length; i += chunkSize){
+        const batch = writeBatch(db);
+        matching.slice(i, i + chunkSize).forEach(r => batch.update(doc(db, "kh_records", r.id), { member: trimmed }));
+        await batch.commit();
+      }
+      showToast("Member updated successfully.");
+    }catch(err){
+      console.error(err);
+      showToast("Failed to update member. Please try again.", "error");
+    }
+  }
+
+  async function deleteOwnerMemberCascade(id, name, oid){
+    try{
+      const matching = allRecords.filter(r => r.ownerId === oid && r.member === name);
+      const chunkSize = 400;
+      for(let i = 0; i < matching.length; i += chunkSize){
+        const batch = writeBatch(db);
+        matching.slice(i, i + chunkSize).forEach(r => batch.delete(doc(db, "kh_records", r.id)));
+        await batch.commit();
+      }
+      await deleteDoc(doc(db, "kh_members", id));
+      showToast("Member deleted successfully.");
+    }catch(err){
+      console.error(err);
+      showToast("Failed to delete member. Please try again.", "error");
+    }
+  }
+
+  function ensureOwnerRecordEditModal(){
+    let overlay = document.getElementById("khOwnerRecordEditOverlay");
+    if(overlay) return overlay;
+    overlay = document.createElement("div");
+    overlay.id = "khOwnerRecordEditOverlay";
+    overlay.className = "kh-modal-overlay";
+    overlay.innerHTML = `
+      <div class="kh-modal-card">
+        <p class="kh-modal-icon">${ICON_EDIT.replace("<svg ", '<svg class="kh-modal-icon-svg" ')}</p>
+        <p class="kh-modal-text" style="margin-bottom:.2rem;" id="khOwnerRecEditTitle">Edit Entry</p>
+        <select id="khOwnerRecEditStatus" class="kh-edit-modal-input">
+          <option value="duty">Present</option>
+          <option value="leave">Leave</option>
+        </select>
+        <input type="number" id="khOwnerRecEditHours" class="kh-edit-modal-input" placeholder="Hours" min="0" step="0.5" style="margin-top:.5rem;">
+        <div class="kh-modal-actions" style="margin-top:1rem;">
+          <button type="button" class="btn3d btn-mint" id="khOwnerRecEditSaveBtn">Save Changes</button>
+          <button type="button" class="btn3d btn-coral" id="khOwnerRecEditCancelBtn">Cancel</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click", e => { if(e.target === overlay) overlay.style.display = "none"; });
+    return overlay;
+  }
+
+  function openOwnerRecordEditModal(record){
+    const overlay = ensureOwnerRecordEditModal();
+    const titleEl = overlay.querySelector("#khOwnerRecEditTitle");
+    const statusSel = overlay.querySelector("#khOwnerRecEditStatus");
+    const hoursInput = overlay.querySelector("#khOwnerRecEditHours");
+    const saveBtn = overlay.querySelector("#khOwnerRecEditSaveBtn");
+    const cancelBtn = overlay.querySelector("#khOwnerRecEditCancelBtn");
+
+    titleEl.textContent = `${record.member} — ${record.date}`;
+    statusSel.value = record.status;
+    hoursInput.value = record.hours || 0;
+    hoursInput.style.display = record.status === "duty" ? "" : "none";
+    overlay.style.display = "flex";
+
+    function cleanup(){
+      overlay.style.display = "none";
+      saveBtn.removeEventListener("click", onSave);
+      cancelBtn.removeEventListener("click", onCancel);
+      statusSel.removeEventListener("change", onStatusChange);
+    }
+    function onCancel(){ cleanup(); }
+    function onStatusChange(){ hoursInput.style.display = statusSel.value === "duty" ? "" : "none"; }
+    async function onSave(){
+      const status = statusSel.value;
+      const hours = status === "duty" ? (parseFloat(hoursInput.value) || 0) : 0;
+      saveBtn.disabled = true;
+      try{
+        await updateDoc(doc(db, "kh_records", record.id), { status, hours });
+        showToast("Entry updated successfully.");
+        cleanup();
+      }catch(err){
+        console.error(err);
+        showToast("Failed to update entry. Please try again.", "error");
+      }finally{
+        saveBtn.disabled = false;
+      }
+    }
+    statusSel.addEventListener("change", onStatusChange);
+    saveBtn.addEventListener("click", onSave);
+    cancelBtn.addEventListener("click", onCancel);
+  }
+
+  function openOwnerDetailModal(oid, opts){
+    openOwnerDetailId = oid;
+    openOwnerDetailEditable = !!(opts && opts.editable);
+    renderOwnerDetailModal();
+    ensureOwnerDetailModal().style.display = "flex";
+  }
+
+  function renderOwnerDetailModal(){
+    const oid = openOwnerDetailId;
+    if(!oid) return;
     const overlay = ensureOwnerDetailModal();
+    const editable = openOwnerDetailEditable;
     const label = ownerLabelFor(oid);
     const email = ownerEmailFor(oid);
-    overlay.querySelector("#khOwnerDetailTitle").textContent = email ? `${label} (${email})` : label;
+    overlay.querySelector("#khOwnerDetailTitle").textContent =
+      (email ? `${label} (${email})` : label) + (editable ? " — Edit Mode" : "");
 
     const ownerMembers = allMembers.filter(m => m.ownerId === oid)
       .slice().sort((a,b) => (a.name||"").localeCompare(b.name||"", "bn"));
@@ -330,6 +578,11 @@ export function initKhApp(uid, isAdmin){
               <div class="member-card-name">${escapeHtmlLocal(m.name)}</div>
               <div class="member-card-stats">${hours}h • ${duty} Duty • ${leave} Leave</div>
             </div>
+            ${editable ? `
+            <div class="member-card-actions">
+              <button type="button" class="member-card-icon-btn kh-owner-member-edit" data-id="${m.id}" data-name="${escapeHtmlLocal(m.name)}" title="Rename" aria-label="Rename">${ICON_EDIT}</button>
+              <button type="button" class="member-card-icon-btn kh-owner-member-delete" data-id="${m.id}" data-name="${escapeHtmlLocal(m.name)}" title="Delete" aria-label="Delete">${ICON_TRASH}</button>
+            </div>` : ""}
           </div>`;
         }).join("")}
       </div>` : `<p class="kh-empty-note">এই ইউজার এখনো কোনো member যোগ করেননি।</p>`;
@@ -340,25 +593,49 @@ export function initKhApp(uid, isAdmin){
         <td data-label="Name">${escapeHtmlLocal(r.member)}</td>
         <td class="status-${r.status}" data-label="Status"><span>${r.status === "duty" ? "Present" : "Leave"}</span></td>
         <td class="hours-cell" data-label="Hours">${r.status === "duty" ? r.hours : "—"}</td>
+        ${editable ? `
+        <td class="row-actions-cell" data-label="Action">
+          <div class="row-actions kh-owner-row-actions">
+            <button type="button" class="member-card-icon-btn kh-owner-record-edit" data-id="${r.id}" data-member="${escapeHtmlLocal(r.member)}" data-date="${r.date}" data-status="${r.status}" data-hours="${r.hours || 0}" title="Edit" aria-label="Edit">${ICON_EDIT}</button>
+            <button type="button" class="member-card-icon-btn kh-owner-record-delete" data-id="${r.id}" title="Delete" aria-label="Delete">${ICON_TRASH}</button>
+          </div>
+        </td>` : ""}
       </tr>`).join("");
 
     const registerHtml = ownerRecords.length ? `
       <h4 class="kh-subtitle">Recent Attendance</h4>
       <div class="table-wrap">
         <table class="kh-table">
-          <thead><tr><th>Date</th><th>Name</th><th>Status</th><th>Hours</th></tr></thead>
+          <thead><tr><th>Date</th><th>Name</th><th>Status</th><th>Hours</th>${editable ? "<th></th>" : ""}</tr></thead>
           <tbody>${recentRows}</tbody>
         </table>
       </div>
       ${ownerRecords.length > 40 ? `<p class="kh-empty-note">সর্বশেষ ৪০টি এন্ট্রি দেখানো হচ্ছে (মোট ${ownerRecords.length}টি)।</p>` : ""}
     ` : `<p class="kh-empty-note">এই ইউজারের এখনো কোনো attendance রেকর্ড নেই।</p>`;
 
+    const addEntryHtml = editable ? `
+      <h4 class="kh-subtitle">Add / Update Attendance</h4>
+      <form id="khOwnerAddEntryForm" class="kh-owner-add-entry">
+        <select id="khOwnerEntryMember" required>
+          <option value="">Select member</option>
+          ${ownerMembers.map(m => `<option value="${escapeHtmlLocal(m.name)}">${escapeHtmlLocal(m.name)}</option>`).join("")}
+        </select>
+        <input type="date" id="khOwnerEntryDate" required>
+        <select id="khOwnerEntryStatus">
+          <option value="duty">Present</option>
+          <option value="leave">Leave</option>
+        </select>
+        <input type="number" id="khOwnerEntryHours" placeholder="Hours" min="0" step="0.5">
+        <button type="submit" class="btn3d btn-mint">Save</button>
+      </form>
+    ` : "";
+
     overlay.querySelector("#khOwnerDetailBody").innerHTML = `
+      ${addEntryHtml}
       <h4 class="kh-subtitle">Members</h4>
       ${membersHtml}
       ${registerHtml}
     `;
-    overlay.style.display = "flex";
   }
   // ================= /Admin: cross-account overview =================
 

@@ -548,6 +548,67 @@ html{ scroll-behavior:smooth; }
 .kh-profile-stat strong{ display:block; font-size:1.15rem; color: var(--ink); font-family: var(--font-display); }
 .kh-profile-stat span{ font-size:.72rem; color: var(--muted); }
 
+/* ===== Admin: cross-account "Team Members" overview (only shown to admin) ===== */
+.kh-admin-overview{
+  display:grid; grid-template-columns: 1fr 1fr; gap:.6rem; margin-bottom:1.6rem;
+}
+.kh-you-card{
+  cursor:default; padding:.7rem .8rem; min-height:0;
+  background: rgba(46,204,113,.06); border-color: rgba(46,204,113,.35);
+}
+.kh-you-card:hover{ box-shadow:none; }
+.kh-you-card .member-card-avatar{ width:38px; height:38px; font-size:.85rem; }
+.kh-you-card .member-card-name{ font-size:.88rem; }
+.kh-you-card .member-card-stats{ font-size:.72rem; }
+.kh-you-badge{
+  display:inline-block; font-size:.58rem; font-weight:800; letter-spacing:.05em;
+  color:#0F766A; background: rgba(21,154,134,.14); border-radius:999px; padding:.05rem .45rem; margin-bottom:.15rem;
+}
+.kh-team-overview-card{
+  display:flex; align-items:center; gap:.6rem; padding:.7rem .8rem;
+  background:#fff; border:1.5px solid var(--line); border-radius:14px; cursor:pointer;
+  font-family: inherit; text-align:left; transition: border-color .15s ease, box-shadow .15s ease;
+  width:100%; min-height:0;
+}
+.kh-team-overview-card:hover{ border-color:#3B82F6; box-shadow: 0 4px 14px rgba(59,130,246,.12); }
+.kh-team-overview-icon{
+  flex-shrink:0; width:34px; height:34px; border-radius:50%; background: rgba(59,130,246,.1);
+  color:#3B82F6; display:flex; align-items:center; justify-content:center;
+}
+.kh-team-overview-icon svg{ width:16px; height:16px; display:block; }
+.kh-team-overview-text{ flex:1; min-width:0; display:flex; flex-direction:column; }
+.kh-team-overview-title{ font-weight:700; color: var(--ink); font-size:.85rem; line-height:1.2; }
+.kh-team-overview-sub{ font-size:.72rem; color: var(--muted); margin-top:1px; line-height:1.2; }
+.kh-team-overview-chevron{ flex-shrink:0; color: var(--muted); display:flex; }
+.kh-team-overview-chevron svg{ width:16px; height:16px; display:block; }
+@media (max-width: 560px){
+  .kh-admin-overview{ grid-template-columns: 1fr; }
+}
+
+.kh-team-modal-card{ max-width:460px; text-align:left; max-height:80vh; overflow-y:auto; }
+.kh-team-modal-title{ font-family: var(--font-display); color: var(--ink); font-size:1.05rem; margin:0 0 1rem; padding-right:1.6rem; }
+.kh-team-modal-list{ display:flex; flex-direction:column; gap:.6rem; }
+.kh-team-row{ cursor:default; }
+.kh-team-row:hover{ box-shadow:none; border-color: var(--line); }
+.kh-owner-detail-card{ max-width:560px; }
+.kh-owner-detail-members{ grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); margin-bottom:1rem; }
+.kh-readonly-card{ cursor:default; }
+.kh-readonly-card:hover{ box-shadow:none; border-color: var(--line); }
+.member-card-menu-item.is-danger{ color:#C0392B; }
+.member-card-menu-item.is-danger:hover{ background: rgba(192,57,43,.1); }
+.kh-owner-row-actions{ display:flex; gap:.3rem; justify-content:flex-end; }
+.kh-owner-add-entry{
+  display:grid; grid-template-columns: 1.4fr 1fr .9fr .8fr auto; gap:.5rem; align-items:center; margin-bottom:1.2rem;
+}
+.kh-owner-add-entry select, .kh-owner-add-entry input{
+  padding:.5rem .6rem; border:1.5px solid var(--line); border-radius:10px; font-size:.85rem; font-family:inherit; width:100%;
+}
+.kh-owner-add-entry button{ white-space:nowrap; }
+@media (max-width: 620px){
+  .kh-owner-add-entry{ grid-template-columns: 1fr 1fr; }
+  .kh-owner-add-entry button{ grid-column: 1 / -1; }
+}
+
 /* ===== Account menu dropdown ===== */
 .kh-account-wrap{ position:relative; margin-left:auto; }
 .kh-account-trigger{

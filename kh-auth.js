@@ -3,12 +3,15 @@ import {
   signInWithPopup,
   signOut, onAuthStateChanged,
   collection, getDocs, writeBatch,
+  doc, setDoc, serverTimestamp,
   createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail,
   sendEmailVerification, updateProfile
 } from "./firebase.js";
 import { initKhApp } from "./khApp.js";
 
-const ADMIN_EMAIL = "admin@masumcpex.com";
+// আপনার নিজের Firebase UID — এই UID দিয়ে লগইন করা অ্যাকাউন্টটাই admin হিসেবে গণ্য হবে
+// (masumcpex@gmail.com দিয়ে সাইন-ইন করলে আপনার UID এটাই)
+const ADMIN_UID = "dhVV4XAquCZw8u5Bb3egTK4Zb0U2";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -128,14 +131,24 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      if(user.email === ADMIN_EMAIL && claimBtn){
+      const isAdmin = user.uid === ADMIN_UID;
+
+      if(isAdmin && claimBtn){
         claimBtn.style.display = "inline-block";
         claimBtn.onclick = () => claimOldData(user.uid, claimBtn);
       } else if(claimBtn){
         claimBtn.style.display = "none";
       }
 
-      initKhApp(user.uid);
+      // প্রতিবার লগইনে নিজের প্রোফাইল তথ্য kh_users এ সেভ/আপডেট করা হয়,
+      // যাতে admin অন্য সবার নাম/ইমেইল দেখতে পারে (নিজেরটাই লেখা হয়, তাই rules-এর সাথে সমস্যা হবে না)
+      setDoc(doc(db, "kh_users", user.uid), {
+        email: email || null,
+        displayName: displayName || null,
+        updatedAt: serverTimestamp()
+      }, { merge: true }).catch(err => console.error("kh_users sync failed:", err));
+
+      initKhApp(user.uid, isAdmin);
     }else{
       gate.style.display = "flex";
       mainEl.style.display = "none";

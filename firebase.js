@@ -3,6 +3,7 @@ import {
   getFirestore,
   collection,
   doc,
+  setDoc,
   addDoc,
   updateDoc,
   deleteDoc,
@@ -51,7 +52,7 @@ export const auth = getAuth(app);
 isSupported().then((ok) => { if (ok) getAnalytics(app); }).catch(() => {});
 
 export {
-  collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, getDocs, getDoc, runTransaction,
+  collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, getDocs, getDoc, runTransaction,
   serverTimestamp, writeBatch,
   GoogleAuthProvider, FacebookAuthProvider, RecaptchaVerifier,
   signInWithPopup, signInWithRedirect, getRedirectResult,

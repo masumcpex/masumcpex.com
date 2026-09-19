@@ -5,6 +5,7 @@ import {
 
 const membersCol = collection(db, "kh_members");
 const recordsCol = collection(db, "kh_records");
+const usersCol   = collection(db, "kh_users");
 
 const ICON_KEBAB = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>`;
 const ICON_EDIT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
@@ -19,18 +20,29 @@ const ICON_USER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const ICON_DOC = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>`;
 const ICON_SETTINGS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
 const ICON_LOGOUT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`;
+const ICON_EYE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const ICON_CHEVRON_RIGHT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
 
 let appStarted = false;
 
-export function initKhApp(uid){
+export function initKhApp(uid, isAdmin){
   if(appStarted) return; 
   appStarted = true;
+
+  const isAdminUser = !!isAdmin;
 
   let members = [];
   let records = [];
   let membersLoaded = false;
   let recordsLoaded = false;
   let selectedMemberId = null;
+
+  // Admin-only: every user's data + profiles, kept separate from `members`/`records`
+  // above so the admin's own Team Members / Attendance sections behave exactly as before.
+  let allMembers = [];
+  let allRecords = [];
+  let ownerProfiles = {}; // { uid: { email, displayName } }
+  let teamModalOpen = false;
 
   const memberChips   = document.getElementById("memberChips");
   const noMemberNote  = document.getElementById("noMemberNote");
@@ -114,6 +126,242 @@ export function initKhApp(uid){
     });
     return { hours, duty, leave };
   }
+  // ================= Admin: cross-account overview =================
+  function ownerLabelFor(oid){
+    const p = ownerProfiles[oid];
+    if(p && p.displayName) return p.displayName;
+    if(p && p.email) return p.email.split("@")[0];
+    return oid ? (oid.slice(0,6) + "…") : "Unknown";
+  }
+  function ownerEmailFor(oid){
+    const p = ownerProfiles[oid];
+    return (p && p.email) || "";
+  }
+  function ownerStatsFor(oid){
+    let hours = 0, duty = 0, leave = 0;
+    allRecords.forEach(r => {
+      if(r.ownerId !== oid) return;
+      if(r.status === "duty"){ duty++; hours += (r.hours || 0); }
+      else leave++;
+    });
+    return { hours, duty, leave };
+  }
+  function otherOwnerIds(){
+    const ids = new Set(Object.keys(ownerProfiles));
+    allMembers.forEach(m => { if(m.ownerId) ids.add(m.ownerId); });
+    allRecords.forEach(r => { if(r.ownerId) ids.add(r.ownerId); });
+    ids.delete(uid);
+    return Array.from(ids);
+  }
+
+  function ensureAdminOverviewUI(){
+    if(!isAdminUser) return null;
+    let wrap = document.getElementById("khAdminOverview");
+    if(wrap) return wrap;
+    wrap = document.createElement("div");
+    wrap.id = "khAdminOverview";
+    wrap.className = "kh-admin-overview";
+    wrap.innerHTML = `
+      <div class="member-card kh-you-card">
+        <div class="member-card-avatar" id="khYouAvatar"></div>
+        <div class="member-card-body">
+          <span class="kh-you-badge">YOU</span>
+          <div class="member-card-name" id="khYouName"></div>
+          <div class="member-card-stats" id="khYouStats"></div>
+        </div>
+      </div>
+      <button type="button" class="kh-team-overview-card" id="khTeamOverviewBtn">
+        <span class="kh-team-overview-icon">${ICON_USER}</span>
+        <span class="kh-team-overview-text">
+          <span class="kh-team-overview-title">Team Members</span>
+          <span class="kh-team-overview-sub" id="khTeamOverviewCount">0 members</span>
+        </span>
+        <span class="kh-team-overview-chevron">${ICON_CHEVRON_RIGHT}</span>
+      </button>`;
+    const anchor = document.getElementById("quickStats");
+    if(anchor && anchor.parentNode){
+      anchor.parentNode.insertBefore(wrap, anchor);
+    }
+    wrap.querySelector("#khTeamOverviewBtn").addEventListener("click", openTeamModal);
+    return wrap;
+  }
+
+  function renderAdminOverview(){
+    if(!isAdminUser) return;
+    const wrap = ensureAdminOverviewUI();
+    if(!wrap) return;
+    const myStats = ownerStatsFor(uid);
+    const myLabel = ownerLabelFor(uid);
+    const avatarEl = wrap.querySelector("#khYouAvatar");
+    avatarEl.style.background = avatarColorFor(uid);
+    avatarEl.textContent = (myLabel || "?").trim().charAt(0).toUpperCase();
+    wrap.querySelector("#khYouName").textContent = myLabel;
+    wrap.querySelector("#khYouStats").textContent = `${myStats.hours}h • ${myStats.duty} Duty • ${myStats.leave} Leave`;
+    const ids = otherOwnerIds();
+    wrap.querySelector("#khTeamOverviewCount").textContent = `${ids.length} member${ids.length === 1 ? "" : "s"}`;
+    if(teamModalOpen) renderTeamModalList();
+  }
+
+  function closeAllTeamRowMenus(root){
+    root.querySelectorAll(".kh-team-row-menu.is-open").forEach(m => m.classList.remove("is-open"));
+  }
+
+  function ensureTeamModal(){
+    let overlay = document.getElementById("khTeamModalOverlay");
+    if(overlay) return overlay;
+    overlay = document.createElement("div");
+    overlay.id = "khTeamModalOverlay";
+    overlay.className = "kh-modal-overlay";
+    overlay.innerHTML = `
+      <div class="kh-modal-card kh-team-modal-card">
+        <button type="button" class="kh-modal-x" id="khTeamModalCloseBtn" aria-label="Close">${ICON_CLOSE}</button>
+        <h3 class="kh-team-modal-title">Team Members — <span id="khTeamModalCount">0</span></h3>
+        <div class="kh-team-modal-list" id="khTeamModalList"></div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click", e => { if(e.target === overlay) closeTeamModal(); });
+    overlay.querySelector("#khTeamModalCloseBtn").addEventListener("click", closeTeamModal);
+    const list = overlay.querySelector("#khTeamModalList");
+    list.addEventListener("click", e => {
+      const moreBtn = e.target.closest(".kh-team-row-more");
+      if(moreBtn){
+        const menu = moreBtn.parentElement.querySelector(".kh-team-row-menu");
+        const wasOpen = menu.classList.contains("is-open");
+        closeAllTeamRowMenus(list);
+        if(!wasOpen) menu.classList.add("is-open");
+        return;
+      }
+      const actionBtn = e.target.closest(".kh-team-row-view, .kh-team-row-menu-item");
+      if(actionBtn){
+        closeAllTeamRowMenus(list);
+        const oid = actionBtn.dataset.oid;
+        if(oid) openOwnerDetailModal(oid);
+      }
+    });
+    document.addEventListener("click", e => {
+      if(!e.target.closest(".kh-team-row-actions")) closeAllTeamRowMenus(overlay);
+    });
+    return overlay;
+  }
+
+  function renderTeamModalList(){
+    const overlay = ensureTeamModal();
+    const ids = otherOwnerIds().sort((a,b) => ownerLabelFor(a).localeCompare(ownerLabelFor(b), "bn"));
+    overlay.querySelector("#khTeamModalCount").textContent = ids.length;
+    overlay.querySelector("#khTeamModalList").innerHTML = ids.length ? ids.map(oid => {
+      const stats = ownerStatsFor(oid);
+      const label = ownerLabelFor(oid);
+      const email = ownerEmailFor(oid);
+      const initial = (label || "?").trim().charAt(0).toUpperCase();
+      return `
+      <div class="member-card kh-team-row" data-oid="${oid}">
+        <div class="member-card-avatar" style="background:${avatarColorFor(oid)}">${escapeHtmlLocal(initial)}</div>
+        <div class="member-card-body">
+          <div class="member-card-name">${escapeHtmlLocal(label)}</div>
+          <div class="member-card-stats">${stats.hours}h • ${stats.duty} Duty • ${stats.leave} Leave${email ? " • " + escapeHtmlLocal(email) : ""}</div>
+        </div>
+        <div class="member-card-actions kh-team-row-actions">
+          <button type="button" class="member-card-icon-btn kh-team-row-view" data-oid="${oid}" title="View" aria-label="View">${ICON_EYE}</button>
+          <button type="button" class="member-card-icon-btn kh-team-row-more" title="More" aria-label="More" aria-haspopup="true">${ICON_KEBAB}</button>
+          <div class="member-card-menu kh-team-row-menu">
+            <button type="button" class="member-card-menu-item kh-team-row-menu-item" data-oid="${oid}">${ICON_USER}View Details</button>
+          </div>
+        </div>
+      </div>`;
+    }).join("") : `<p class="kh-empty-note">এখনো অন্য কোনো ইউজার নেই।</p>`;
+  }
+
+  function openTeamModal(){
+    teamModalOpen = true;
+    renderTeamModalList();
+    ensureTeamModal().style.display = "flex";
+  }
+  function closeTeamModal(){
+    teamModalOpen = false;
+    const overlay = document.getElementById("khTeamModalOverlay");
+    if(overlay) overlay.style.display = "none";
+  }
+
+  function ensureOwnerDetailModal(){
+    let overlay = document.getElementById("khOwnerDetailOverlay");
+    if(overlay) return overlay;
+    overlay = document.createElement("div");
+    overlay.id = "khOwnerDetailOverlay";
+    overlay.className = "kh-modal-overlay";
+    overlay.innerHTML = `
+      <div class="kh-modal-card kh-team-modal-card kh-owner-detail-card">
+        <button type="button" class="kh-modal-x" id="khOwnerDetailCloseBtn" aria-label="Close">${ICON_CLOSE}</button>
+        <h3 class="kh-team-modal-title" id="khOwnerDetailTitle"></h3>
+        <div id="khOwnerDetailBody"></div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click", e => { if(e.target === overlay) closeOwnerDetail(); });
+    overlay.querySelector("#khOwnerDetailCloseBtn").addEventListener("click", closeOwnerDetail);
+    return overlay;
+  }
+  function closeOwnerDetail(){
+    const overlay = document.getElementById("khOwnerDetailOverlay");
+    if(overlay) overlay.style.display = "none";
+  }
+  function openOwnerDetailModal(oid){
+    const overlay = ensureOwnerDetailModal();
+    const label = ownerLabelFor(oid);
+    const email = ownerEmailFor(oid);
+    overlay.querySelector("#khOwnerDetailTitle").textContent = email ? `${label} (${email})` : label;
+
+    const ownerMembers = allMembers.filter(m => m.ownerId === oid)
+      .slice().sort((a,b) => (a.name||"").localeCompare(b.name||"", "bn"));
+    const ownerRecords = allRecords.filter(r => r.ownerId === oid)
+      .slice().sort((a,b) => b.date.localeCompare(a.date));
+
+    const membersHtml = ownerMembers.length ? `
+      <div class="member-card-grid kh-owner-detail-members">
+        ${ownerMembers.map(m => {
+          let hours = 0, duty = 0, leave = 0;
+          ownerRecords.filter(r => r.member === m.name).forEach(r => {
+            if(r.status === "duty"){ duty++; hours += (r.hours || 0); }
+            else leave++;
+          });
+          const initial = (m.name || "?").trim().charAt(0).toUpperCase();
+          return `
+          <div class="member-card kh-readonly-card">
+            <div class="member-card-avatar" style="background:${avatarColorFor(m.id)}">${escapeHtmlLocal(initial)}</div>
+            <div class="member-card-body">
+              <div class="member-card-name">${escapeHtmlLocal(m.name)}</div>
+              <div class="member-card-stats">${hours}h • ${duty} Duty • ${leave} Leave</div>
+            </div>
+          </div>`;
+        }).join("")}
+      </div>` : `<p class="kh-empty-note">এই ইউজার এখনো কোনো member যোগ করেননি।</p>`;
+
+    const recentRows = ownerRecords.slice(0, 40).map(r => `
+      <tr>
+        <td data-label="Date">${r.date}</td>
+        <td data-label="Name">${escapeHtmlLocal(r.member)}</td>
+        <td class="status-${r.status}" data-label="Status"><span>${r.status === "duty" ? "Present" : "Leave"}</span></td>
+        <td class="hours-cell" data-label="Hours">${r.status === "duty" ? r.hours : "—"}</td>
+      </tr>`).join("");
+
+    const registerHtml = ownerRecords.length ? `
+      <h4 class="kh-subtitle">Recent Attendance</h4>
+      <div class="table-wrap">
+        <table class="kh-table">
+          <thead><tr><th>Date</th><th>Name</th><th>Status</th><th>Hours</th></tr></thead>
+          <tbody>${recentRows}</tbody>
+        </table>
+      </div>
+      ${ownerRecords.length > 40 ? `<p class="kh-empty-note">সর্বশেষ ৪০টি এন্ট্রি দেখানো হচ্ছে (মোট ${ownerRecords.length}টি)।</p>` : ""}
+    ` : `<p class="kh-empty-note">এই ইউজারের এখনো কোনো attendance রেকর্ড নেই।</p>`;
+
+    overlay.querySelector("#khOwnerDetailBody").innerHTML = `
+      <h4 class="kh-subtitle">Members</h4>
+      ${membersHtml}
+      ${registerHtml}
+    `;
+    overlay.style.display = "flex";
+  }
+  // ================= /Admin: cross-account overview =================
+
   function renderMembers(){
     const ym = currentYearMonth();
     memberChips.innerHTML = members.map(m => {
@@ -1306,6 +1554,7 @@ export function initKhApp(uid){
   renderMembers();
   refreshSummarySection();
   renderRegister();
+  renderAdminOverview();
 
   const myMembersQuery = query(membersCol, where("ownerId", "==", uid));
   const myRecordsQuery = query(recordsCol, where("ownerId", "==", uid));
@@ -1334,6 +1583,28 @@ export function initKhApp(uid){
     console.error(err);
     registerLoading.textContent = "Failed to load data. Please check your internet connection.";
   });
+
+  // Admin-only: read every account's data (Firestore rules grant this to the admin UID)
+  // so the "Team Members" overview can tag rows by owner. This never touches
+  // `members`/`records` above, so the admin's own dashboard behaves as before.
+  if(isAdminUser){
+    onSnapshot(membersCol, snapshot => {
+      allMembers = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderAdminOverview();
+    }, err => console.error("Admin all-members snapshot failed:", err));
+
+    onSnapshot(recordsCol, snapshot => {
+      allRecords = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderAdminOverview();
+    }, err => console.error("Admin all-records snapshot failed:", err));
+
+    onSnapshot(usersCol, snapshot => {
+      const next = {};
+      snapshot.docs.forEach(d => { next[d.id] = d.data(); });
+      ownerProfiles = next;
+      renderAdminOverview();
+    }, err => console.error("Admin kh_users snapshot failed:", err));
+  }
 
   const sidebarLinks = document.querySelectorAll(".kh-sidebar-link[data-section]");
   if(sidebarLinks.length){

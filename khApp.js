@@ -1158,6 +1158,14 @@ export function initKhApp(uid, isAdmin){
       }
       entryHours.value = "";
       showToast(`${record.member}'s attendance for ${record.date === new Date().toISOString().slice(0,10) ? "today" : "this date"} has been saved.`);
+
+      // Auto-advance to the next member in the list, so you don't have to
+      // reselect each time when entering attendance for many people in a row.
+      const currentIdx = members.findIndex(m => m.name === record.member);
+      if(currentIdx > -1 && currentIdx < members.length - 1){
+        entryMember.value = members[currentIdx + 1].name;
+        autoFillFromExisting();
+      }
     }catch(err){
       console.error(err);
       showToast("Failed to save record. Please check your internet connection and try again.", "error");

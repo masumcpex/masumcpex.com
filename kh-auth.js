@@ -2,7 +2,6 @@ import {
   auth, db, GoogleAuthProvider, FacebookAuthProvider,
   signInWithPopup,
   signOut, onAuthStateChanged,
-  collection, getDocs, writeBatch,
   doc, setDoc, serverTimestamp,
   createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail,
   sendEmailVerification, updateProfile
@@ -26,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const fbSignInBtn  = document.getElementById("facebookSignInBtn");
   const signOutBtn   = document.getElementById("khSignOutBtn");
   const authError    = document.getElementById("khAuthError");
-  const claimBtn     = document.getElementById("khClaimOldDataBtn");
 
   function ensureLogoutConfirmModal(){
     let overlay = document.getElementById("khLogoutConfirmOverlay");
@@ -133,13 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const isAdmin = user.uid === ADMIN_UID;
 
-      if(isAdmin && claimBtn){
-        claimBtn.style.display = "inline-block";
-        claimBtn.onclick = () => claimOldData(user.uid, claimBtn);
-      } else if(claimBtn){
-        claimBtn.style.display = "none";
-      }
-
       // প্রতিবার লগইনে নিজের প্রোফাইল তথ্য kh_users এ সেভ/আপডেট করা হয়,
       // যাতে admin অন্য সবার নাম/ইমেইল দেখতে পারে (নিজেরটাই লেখা হয়, তাই rules-এর সাথে সমস্যা হবে না)
       setDoc(doc(db, "kh_users", user.uid), {
@@ -161,35 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if(window.__khHideVerifyGate) window.__khHideVerifyGate();
     }
   });
-
-  async function claimOldData(uid, btn){
-    if(!confirm("All attendance/member data from before the login system was enabled (regardless of previous ownerId) will be assigned to this account. This should only be done once. Do you want to proceed?")) return;
-    btn.disabled = true;
-    btn.textContent = "Processing...";
-    try{
-      const batch = writeBatch(db);
-      let count = 0;
-
-      const membersSnap = await getDocs(collection(db, "kh_members"));
-      membersSnap.forEach(d => {
-        if(d.data().ownerId !== uid){ batch.update(d.ref, { ownerId: uid }); count++; }
-      });
-
-      const recordsSnap = await getDocs(collection(db, "kh_records"));
-      recordsSnap.forEach(d => {
-        if(d.data().ownerId !== uid){ batch.update(d.ref, { ownerId: uid }); count++; }
-      });
-
-      if(count > 0) await batch.commit();
-      alert(`Done! ${count} old entries have been added to your account.`);
-      btn.style.display = "none";
-    }catch(err){
-      console.error(err);
-      alert("Couldn't claim old data. Check the console for errors / verify Firestore Rules.");
-      btn.disabled = false;
-      btn.textContent = "Claim Old Data";
-    }
-  }
 
 });
 

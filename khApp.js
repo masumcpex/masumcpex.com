@@ -1175,7 +1175,8 @@ export function initKhApp(uid, isAdmin){
   });
 
   function currentYearMonth(){
-    return new Date().toISOString().slice(0,7);
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   }
   function previousYearMonth(){
     const d = new Date();
@@ -1388,7 +1389,11 @@ export function initKhApp(uid, isAdmin){
           <summary class="kh-month-summary">
             <span class="kh-month-label">${monthLabel(ym)}</span>
             <span class="kh-month-count">${list.length} entries</span>
-            <button type="button" class="btn3d kh-month-delete kh-month-delete--outline" data-ym="${ym}">${ICON_TRASH}Delete Month</button>
+            <span style="margin-left:auto;display:flex;flex-wrap:wrap;gap:6px;">
+              <button type="button" class="btn3d btn-download btn-download--secondary kh-month-pdf" data-ym="${ym}" style="padding:.4rem .7rem !important;font-size:.78rem !important;">${ICON_DOC}PDF</button>
+              <button type="button" class="btn3d btn-download btn-download--secondary kh-month-csv" data-ym="${ym}" style="padding:.4rem .7rem !important;font-size:.78rem !important;">CSV</button>
+              <button type="button" class="btn3d kh-month-delete kh-month-delete--outline" data-ym="${ym}">${ICON_TRASH}Delete Month</button>
+            </span>
           </summary>
           <div class="table-wrap">
             <table class="kh-table">
@@ -1472,6 +1477,22 @@ export function initKhApp(uid, isAdmin){
       return;
     }
 
+    const monthPdfBtn = e.target.closest(".kh-month-pdf");
+    if(monthPdfBtn){
+      e.preventDefault();
+      e.stopPropagation();
+      await exportMonthPdf(monthPdfBtn.dataset.ym, monthPdfBtn);
+      return;
+    }
+
+    const monthCsvBtn = e.target.closest(".kh-month-csv");
+    if(monthCsvBtn){
+      e.preventDefault();
+      e.stopPropagation();
+      exportMonthCsv(monthCsvBtn.dataset.ym, monthCsvBtn);
+      return;
+    }
+
     const monthDeleteBtn = e.target.closest(".kh-month-delete");
     if(monthDeleteBtn){
       e.preventDefault();
@@ -1488,17 +1509,20 @@ export function initKhApp(uid, isAdmin){
     renderMembers();
   });
 
-  downloadCsvBtn.addEventListener("click", () => {
-    khBounce(downloadCsvBtn);
-    const ym = currentYearMonth();
+  function getMonthRecordsForExport(ym){
     const filter = filterMember.value;
-    const monthRecords = records
+    return records
       .filter(r => r.date.startsWith(ym))
       .filter(r => filter === "All" || r.member === filter)
       .slice().sort((a,b) => a.date.localeCompare(b.date));
+  }
+
+  function exportMonthCsv(ym, btn){
+    khBounce(btn);
+    const monthRecords = getMonthRecordsForExport(ym);
 
     if(!monthRecords.length){
-      alert("No records for this month yet.");
+      alert(`No records for ${monthLabel(ym)} yet.`);
       return;
     }
 
@@ -1522,30 +1546,26 @@ export function initKhApp(uid, isAdmin){
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  });
+  }
 
-  downloadPdfBtn.addEventListener("click", async () => {
+  async function exportMonthPdf(ym, btn){
     if(typeof window.html2canvas === "undefined" || typeof window.jspdf === "undefined"){
       alert("PDF generation library failed to load. Please check your internet connection and try again.");
       return;
     }
 
-    khBounce(downloadPdfBtn);
-    const ym = currentYearMonth();
+    khBounce(btn);
     const filter = filterMember.value;
-    const monthRecords = records
-      .filter(r => r.date.startsWith(ym))
-      .filter(r => filter === "All" || r.member === filter)
-      .slice().sort((a,b) => a.date.localeCompare(b.date));
+    const monthRecords = getMonthRecordsForExport(ym);
 
     if(!monthRecords.length){
-      alert("No records for this month yet.");
+      alert(`No records for ${monthLabel(ym)} yet.`);
       return;
     }
 
-    downloadPdfBtn.disabled = true;
-    const originalLabel = downloadPdfBtn.innerHTML;
-    downloadPdfBtn.innerHTML = `${ICON_SPINNER}Generating PDF...`;
+    btn.disabled = true;
+    const originalLabel = btn.innerHTML;
+    btn.innerHTML = `${ICON_SPINNER}Generating PDF...`;
 
     try{
       await generatePdfReport(ym, monthRecords, filter);
@@ -1553,10 +1573,14 @@ export function initKhApp(uid, isAdmin){
       console.error(err);
       alert("Failed to generate PDF. Please try again.");
     }finally{
-      downloadPdfBtn.disabled = false;
-      downloadPdfBtn.innerHTML = originalLabel;
+      btn.disabled = false;
+      btn.innerHTML = originalLabel;
     }
-  });
+  }
+
+  // Top buttons: current month. Each month in the register has its own PDF/CSV buttons.
+  downloadCsvBtn.addEventListener("click", () => exportMonthCsv(currentYearMonth(), downloadCsvBtn));
+  downloadPdfBtn.addEventListener("click", () => exportMonthPdf(currentYearMonth(), downloadPdfBtn));
 
   async function generatePdfReport(ym, monthRecords, filter){
     const byMember = {};

@@ -25,9 +25,138 @@ const ICON_CHEVRON_RIGHT = `<svg viewBox="0 0 24 24" fill="none" stroke="current
 
 let appStarted = false;
 
+const ICON_CHEVRON_UP = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>`;
+const ICON_TABLE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>`;
+
+/* ===== Attendance Register (Month → Date → Members) — styles live here so the whole feature ships in ONE file ===== */
+function injectRegisterStyles(){
+  if(document.getElementById("khRegisterStyles")) return;
+  const st = document.createElement("style");
+  st.id = "khRegisterStyles";
+  st.textContent = `
+.kh-reg-month-menu{
+  margin-left:auto; display:inline-flex; align-items:center; justify-content:center;
+  width:40px; height:40px; padding:0; border-radius:10px; cursor:pointer;
+  border:1px solid var(--line,#E5E7EB); background:#fff; color:var(--muted,#667085);
+}
+.kh-reg-month-menu svg{ width:20px; height:20px; }
+.kh-reg-month > .kh-month-summary{ gap:6px 12px; }
+.kh-reg-month .kh-month-label{ order:1; }
+.kh-reg-month .kh-reg-month-menu{ order:2; }
+.kh-reg-brk{ order:3; flex-basis:100%; height:0; }
+.kh-reg-month .kh-month-count{ order:4; margin-left:22px; }
+@media (min-width:621px){
+  .kh-reg-brk{ display:none; }
+  .kh-reg-month .kh-month-count{ order:2; margin-left:0; }
+  .kh-reg-month .kh-reg-month-menu{ order:3; }
+}
+.kh-reg-month-menu:hover, .kh-reg-month-menu:focus-visible{ background:#F3F6F9; color:#173B63; outline:none; }
+
+.kh-reg-days{ padding:0 8px 10px; display:flex; flex-direction:column; gap:10px; }
+.kh-reg-day{
+  background:#fff; border:1px solid var(--line,#E5E7EB); border-radius:14px;
+  box-shadow:var(--shadow,0 1px 3px rgba(16,24,40,.06)); overflow:hidden;
+}
+.kh-reg-day[open]{ border-color:#BFD0E4; }
+.kh-reg-day-sum{
+  display:flex; align-items:center; gap:10px; padding:12px; min-height:64px;
+  cursor:pointer; list-style:none; -webkit-tap-highlight-color:transparent;
+}
+.kh-reg-day-sum::-webkit-details-marker{ display:none; }
+.kh-reg-day-main{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.kh-reg-day-title{ font-weight:800; font-size:1rem; color:var(--wt-navy,#173B63); }
+.kh-reg-day-meta{ font-size:.83rem; font-weight:600; color:var(--muted,#667085); line-height:1.35; }
+.kh-reg-ok{ color:#0F766A; }
+.kh-reg-lv{ color:#9C6B0F; }
+.kh-reg-chev{
+  flex-shrink:0; width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  color:#667085; border-radius:50%; background:#F3F6F9; transition:transform .2s ease;
+}
+.kh-reg-chev svg{ width:18px; height:18px; }
+.kh-reg-day[open] .kh-reg-chev{ transform:rotate(90deg); }
+
+.kh-reg-day-body{ border-top:1px solid var(--line-soft,#EEF1F4); background:#FBFCFD; padding:2px 12px 8px; }
+.kh-reg-list{ list-style:none; margin:0; padding:0; }
+.kh-reg-row{
+  display:grid; grid-template-columns:36px 1fr auto;
+  grid-template-areas:"av name hours" "av badge acts";
+  column-gap:10px; row-gap:4px; align-items:center;
+  padding:10px 0; border-bottom:1px solid var(--line-soft,#EEF1F4);
+}
+.kh-reg-row:last-child{ border-bottom:none; }
+.kh-reg-avatar{
+  grid-area:av; width:36px; height:36px; border-radius:50%; color:#fff;
+  display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.95rem;
+}
+.kh-reg-name{
+  grid-area:name; font-weight:700; font-size:1rem; color:var(--ink,#172033);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.kh-reg-hours{ grid-area:hours; text-align:right; font-weight:800; font-size:1.05rem; color:#173B63; }
+.kh-reg-hours.is-off{ color:#98A2B3; font-weight:600; }
+.kh-reg-badge{
+  grid-area:badge; justify-self:start; display:inline-flex; align-items:center;
+  padding:3px 11px; border-radius:999px; font-size:.78rem; font-weight:700;
+}
+.kh-reg-badge--duty{ background:rgba(21,154,134,.12); color:#0F766A; }
+.kh-reg-badge--leave{ background:rgba(217,154,36,.14); color:#9C6B0F; }
+.kh-reg-actions{ grid-area:acts; justify-self:end; display:flex; gap:6px; }
+.kh-reg-act{
+  width:40px; height:40px; padding:0; border-radius:10px; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center;
+  border:1px solid var(--line,#E5E7EB); background:#fff; color:#475467;
+}
+.kh-reg-act svg{ width:18px; height:18px; }
+.kh-reg-act:hover, .kh-reg-act:focus-visible{ background:#F3F6F9; outline:none; }
+.kh-reg-act.row-action-delete{ color:#C0392B; border-color:#F1C9C5; }
+.kh-reg-act.row-action-delete:hover{ background:#FEF2F2; }
+.kh-reg-hide{
+  display:flex; align-items:center; justify-content:center; gap:6px; width:100%;
+  min-height:42px; margin-top:4px; border:none; border-radius:10px; background:transparent;
+  color:#173B63; font-weight:700; font-size:.88rem; font-family:inherit; cursor:pointer;
+}
+.kh-reg-hide svg{ width:16px; height:16px; }
+.kh-reg-hide:hover{ background:#EEF3F8; }
+
+@media (min-width:621px){
+  .kh-reg-days{ padding:0 14px 14px; gap:12px; }
+  .kh-reg-day-sum{ padding:14px 18px; }
+  .kh-reg-day-body{ padding:4px 18px 10px; }
+  .kh-reg-row{
+    grid-template-columns:36px 1fr 120px 80px auto;
+    grid-template-areas:"av name badge hours acts";
+  }
+}
+
+.kh-reg-sheet-overlay{ align-items:flex-end; padding:0; }
+.kh-reg-sheet{
+  max-width:440px; text-align:left; padding:1.2rem 1.1rem 1.1rem;
+  border-radius:18px 18px 0 0;
+}
+.kh-reg-sheet-title{ margin:0; font-weight:800; font-size:1.08rem; color:#173B63; }
+.kh-reg-sheet-sub{ margin:2px 0 14px; font-size:.85rem; color:#667085; }
+.kh-reg-sheet-btn{
+  display:flex; align-items:center; gap:12px; width:100%; min-height:48px; padding:0 14px;
+  margin-bottom:8px; border:1px solid #E5E7EB; border-radius:12px; background:#fff;
+  color:#173B63; font-weight:700; font-size:.95rem; font-family:inherit; cursor:pointer; text-align:left;
+}
+.kh-reg-sheet-btn svg{ width:20px; height:20px; flex-shrink:0; }
+.kh-reg-sheet-btn:hover{ background:#F3F6F9; }
+.kh-reg-sheet-btn.is-danger{ color:#C0392B; border-color:#F1C9C5; }
+.kh-reg-sheet-btn.is-danger:hover{ background:#FEF2F2; }
+.kh-reg-sheet-btn.is-cancel{ justify-content:center; margin-bottom:0; background:#F3F6F9; border-color:transparent; color:#475467; }
+@media (min-width:621px){
+  .kh-reg-sheet-overlay{ align-items:center; padding:1.2rem; }
+  .kh-reg-sheet{ border-radius:18px; }
+}
+`;
+  document.head.appendChild(st);
+}
+
 export function initKhApp(uid, isAdmin){
   if(appStarted) return; 
   appStarted = true;
+  injectRegisterStyles();
 
   const isAdminUser = !!isAdmin;
 
@@ -1347,62 +1476,187 @@ export function initKhApp(uid, isAdmin){
     return `${EN_MONTHS[m-1]} ${y}`;
   }
 
+  // ===== Attendance Register: Month → Date → Members =====
+  // UI/rendering only. Reads the already-loaded `records` (no extra Firebase reads, no data changes).
+  const regMonthOpen = {};       // ym -> true/false (what the user chose; default = current month open, older closed)
+  const regDayOpen = new Set();  // "YYYY-MM-DD" dates the user expanded
+  let regIndex = { months: [], byMonth: {}, total: 0 };
+
+  function fmtHours(n){ return String(Math.round((Number(n) || 0) * 100) / 100); }
+
+  function regDateLabel(dateStr){
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return `${String(d).padStart(2, "0")} ${EN_MONTHS[m - 1]} ${y}`;
+  }
+
+  function regDaySummary(list){
+    const names = new Set();
+    let hours = 0, present = 0, leave = 0;
+    list.forEach(r => {
+      names.add(r.member);
+      if(r.status === "duty"){ present++; hours += (Number(r.hours) || 0); }
+      else leave++;
+    });
+    return { members: names.size, hours, present, leave };
+  }
+
+  function buildRegisterIndex(){
+    const filter = filterMember.value;
+    const src = filter === "All" ? records : records.filter(r => r.member === filter);
+    const byMonth = {};
+    src.forEach(r => {
+      if(!r.date) return;
+      const ym = r.date.slice(0, 7);
+      const mo = byMonth[ym] || (byMonth[ym] = { records: 0, days: {} });
+      mo.records++;
+      (mo.days[r.date] = mo.days[r.date] || []).push(r);
+    });
+    const months = Object.keys(byMonth).sort((a, b) => b.localeCompare(a));
+    return { months, byMonth, total: src.length };
+  }
+
+  function regDayBodyHtml(list){
+    const rows = list.slice().sort((a, b) => String(a.member).localeCompare(String(b.member))).map(r => {
+      const isDuty = r.status === "duty";
+      const mem = members.find(m => m.name === r.member);
+      const initial = (r.member || "?").trim().charAt(0).toUpperCase();
+      const safeName = escapeHtml(r.member);
+      return `
+        <li class="kh-reg-row">
+          <span class="kh-reg-avatar" style="background:${avatarColorFor(mem ? mem.id : String(r.member))}">${escapeHtml(initial)}</span>
+          <span class="kh-reg-name">${safeName}</span>
+          <span class="kh-reg-badge ${isDuty ? "kh-reg-badge--duty" : "kh-reg-badge--leave"}">${isDuty ? "Present" : "Leave"}</span>
+          <span class="kh-reg-hours${isDuty ? "" : " is-off"}">${isDuty ? fmtHours(r.hours) + "h" : "—"}</span>
+          <span class="kh-reg-actions">
+            <button type="button" class="kh-reg-act row-action-edit" data-id="${r.id}" data-member="${safeName}" data-date="${r.date}" aria-label="Edit ${safeName}" title="Edit">${ICON_EDIT}</button>
+            <button type="button" class="kh-reg-act row-action-delete" data-id="${r.id}" aria-label="Delete ${safeName}" title="Delete">${ICON_TRASH}</button>
+          </span>
+        </li>`;
+    }).join("");
+    return `<ul class="kh-reg-list">${rows}</ul><button type="button" class="kh-reg-hide">Hide details ${ICON_CHEVRON_UP}</button>`;
+  }
+
+  function regDayCardHtml(date, list){
+    const s = regDaySummary(list);
+    const open = regDayOpen.has(date);
+    return `
+      <details class="kh-reg-day" data-date="${date}"${open ? " open" : ""}>
+        <summary class="kh-reg-day-sum">
+          <span class="kh-reg-day-main">
+            <span class="kh-reg-day-title">${regDateLabel(date)}</span>
+            <span class="kh-reg-day-meta">${s.members} ${s.members === 1 ? "Member" : "Members"} · ${fmtHours(s.hours)} Total Hours</span>
+            <span class="kh-reg-day-meta">Present: <b class="kh-reg-ok">${s.present}</b> · Leave: <b class="kh-reg-lv">${s.leave}</b></span>
+          </span>
+          <span class="kh-reg-chev">${ICON_CHEVRON_RIGHT}</span>
+        </summary>
+        <div class="kh-reg-day-body">${open ? regDayBodyHtml(list) : ""}</div>
+      </details>`;
+  }
+
+  function regDaysHtml(ym){
+    const mo = regIndex.byMonth[ym];
+    if(!mo) return "";
+    return Object.keys(mo.days).sort((a, b) => b.localeCompare(a))
+      .map(d => regDayCardHtml(d, mo.days[d])).join("");
+  }
+
+  function regMonthHtml(ym){
+    const mo = regIndex.byMonth[ym];
+    const dayCount = Object.keys(mo.days).length;
+    const isOpen = (ym in regMonthOpen) ? regMonthOpen[ym] : (ym === currentYearMonth());
+    return `
+      <details class="kh-month-group kh-reg-month" data-ym="${ym}"${isOpen ? " open" : ""}>
+        <summary class="kh-month-summary">
+          <span class="kh-month-label">${monthLabel(ym)}</span>
+          <button type="button" class="kh-reg-month-menu" data-ym="${ym}" aria-label="Actions for ${monthLabel(ym)}" aria-haspopup="dialog" title="Month actions">${ICON_KEBAB}</button>
+          <span class="kh-reg-brk"></span>
+          <span class="kh-month-count">${dayCount} ${dayCount === 1 ? "day" : "days"} · ${mo.records} ${mo.records === 1 ? "record" : "records"}</span>
+        </summary>
+        <div class="kh-reg-days">${isOpen ? regDaysHtml(ym) : ""}</div>
+      </details>`;
+  }
+
   function renderRegister(){
     const noRecordsNote = document.getElementById("noRecordsNote");
-    const filter = filterMember.value;
-    const filtered = filter === "All" ? records : records.filter(r => r.member === filter);
+    regIndex = buildRegisterIndex();
 
-    if(!filtered.length){
+    if(!regIndex.total){
       registerGroups.innerHTML = "";
       noRecordsNote.style.display = "block";
       return;
     }
     noRecordsNote.style.display = "none";
+    registerGroups.innerHTML = regIndex.months.map(ym => regMonthHtml(ym)).join("");
+  }
 
-    const groups = {};
-    filtered.forEach(r => {
-      const ym = r.date.slice(0,7);
-      (groups[ym] = groups[ym] || []).push(r);
+  // Remember what the user expanded/collapsed, and build the heavy content only when something is opened.
+  registerGroups.addEventListener("toggle", e => {
+    const el = e.target;
+    if(!el || !el.classList) return;
+
+    if(el.classList.contains("kh-reg-month")){
+      const ym = el.dataset.ym;
+      regMonthOpen[ym] = el.open;
+      if(el.open){
+        const box = el.querySelector(":scope > .kh-reg-days");
+        if(box && !box.firstElementChild) box.innerHTML = regDaysHtml(ym);
+      }
+    }else if(el.classList.contains("kh-reg-day")){
+      const date = el.dataset.date;
+      if(el.open) regDayOpen.add(date); else regDayOpen.delete(date);
+      if(el.open){
+        const body = el.querySelector(":scope > .kh-reg-day-body");
+        const mo = regIndex.byMonth[date.slice(0, 7)];
+        if(body && !body.firstElementChild && mo && mo.days[date]) body.innerHTML = regDayBodyHtml(mo.days[date]);
+      }
+    }
+  }, true);
+
+  // Month actions (PDF / CSV / Delete) in a clean bottom sheet instead of three buttons per month.
+  function openMonthSheet(ym){
+    const mo = regIndex.byMonth[ym];
+    if(!mo) return;
+    const old = document.getElementById("khMonthSheetOverlay");
+    if(old) old.remove();
+
+    const dayCount = Object.keys(mo.days).length;
+    const overlay = document.createElement("div");
+    overlay.id = "khMonthSheetOverlay";
+    overlay.className = "kh-modal-overlay kh-reg-sheet-overlay";
+    overlay.innerHTML = `
+      <div class="kh-modal-card kh-reg-sheet" role="dialog" aria-modal="true" aria-label="${monthLabel(ym)} actions">
+        <p class="kh-reg-sheet-title">${monthLabel(ym)}</p>
+        <p class="kh-reg-sheet-sub">${dayCount} ${dayCount === 1 ? "day" : "days"} · ${mo.records} ${mo.records === 1 ? "record" : "records"}</p>
+        <button type="button" class="kh-reg-sheet-btn" data-act="pdf">${ICON_DOC}Download PDF Report</button>
+        <button type="button" class="kh-reg-sheet-btn" data-act="csv">${ICON_TABLE}Export CSV</button>
+        <button type="button" class="kh-reg-sheet-btn is-danger" data-act="delete">${ICON_TRASH}Delete Month</button>
+        <button type="button" class="kh-reg-sheet-btn is-cancel" data-act="cancel">Cancel</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.style.display = "flex";
+
+    function onKey(ev){ if(ev.key === "Escape") close(); }
+    function close(){
+      document.removeEventListener("keydown", onKey);
+      overlay.remove();
+    }
+    document.addEventListener("keydown", onKey);
+
+    overlay.addEventListener("click", ev => {
+      if(ev.target === overlay){ close(); return; }
+      const b = ev.target.closest("[data-act]");
+      if(!b) return;
+      const act = b.dataset.act;
+      close();
+      if(act === "pdf"){
+        showToast(`Preparing ${monthLabel(ym)} PDF...`);
+        exportMonthPdf(ym, document.createElement("button"));
+      }else if(act === "csv"){
+        exportMonthCsv(ym, document.createElement("button"));
+      }else if(act === "delete"){
+        deleteMonthRecords(ym, null);   // existing confirmation dialog is kept
+      }
     });
-    const months = Object.keys(groups).sort((a,b) => b.localeCompare(a));
-
-    registerGroups.innerHTML = months.map((ym, idx) => {
-      const list = groups[ym].slice().sort((a,b) => b.date.localeCompare(a.date));
-      const rows = list.map(r => `
-        <tr>
-          <td data-label="Date">${r.date}</td>
-          <td data-label="Name">${r.member}</td>
-          <td class="status-${r.status}" data-label="Status"><span>${r.status === "duty" ? "Present" : "Leave"}</span></td>
-          <td class="hours-cell" data-label="Hours">${r.status === "duty" ? r.hours : "—"}</td>
-          <td class="row-actions-cell" data-label="Action">
-            <div class="row-actions">
-              <button type="button" class="row-menu-btn" data-id="${r.id}" aria-haspopup="true" aria-expanded="false" aria-label="Row actions">${ICON_KEBAB}</button>
-              <div class="row-actions-menu" role="menu">
-                <button type="button" class="row-action-edit" role="menuitem" data-id="${r.id}" data-member="${r.member}" data-date="${r.date}">${ICON_EDIT}Edit</button>
-                <button type="button" class="row-action-delete" role="menuitem" data-id="${r.id}">${ICON_TRASH}Delete</button>
-              </div>
-            </div>
-          </td>
-        </tr>`).join("");
-      return `
-        <details class="kh-month-group"${idx === 0 ? " open" : ""}>
-          <summary class="kh-month-summary">
-            <span class="kh-month-label">${monthLabel(ym)}</span>
-            <span class="kh-month-count">${list.length} entries</span>
-            <span style="margin-left:auto;display:flex;flex-wrap:wrap;gap:6px;">
-              <button type="button" class="btn3d btn-download btn-download--secondary kh-month-pdf" data-ym="${ym}" style="padding:.4rem .7rem !important;font-size:.78rem !important;">${ICON_DOC}PDF</button>
-              <button type="button" class="btn3d btn-download btn-download--secondary kh-month-csv" data-ym="${ym}" style="padding:.4rem .7rem !important;font-size:.78rem !important;">CSV</button>
-              <button type="button" class="btn3d kh-month-delete kh-month-delete--outline" data-ym="${ym}">${ICON_TRASH}Delete Month</button>
-            </span>
-          </summary>
-          <div class="table-wrap">
-            <table class="kh-table">
-              <thead><tr><th>Date</th><th>Name</th><th>Status</th><th>Hours</th><th></th></tr></thead>
-              <tbody>${rows}</tbody>
-            </table>
-          </div>
-        </details>`;
-    }).join("");
   }
 
   async function deleteMonthRecords(ym, btn){
@@ -1477,19 +1731,24 @@ export function initKhApp(uid, isAdmin){
       return;
     }
 
-    const monthPdfBtn = e.target.closest(".kh-month-pdf");
-    if(monthPdfBtn){
-      e.preventDefault();
-      e.stopPropagation();
-      await exportMonthPdf(monthPdfBtn.dataset.ym, monthPdfBtn);
+    const hideBtn = e.target.closest(".kh-reg-hide");
+    if(hideBtn){
+      const day = hideBtn.closest(".kh-reg-day");
+      if(day){
+        day.open = false;
+        const sum = day.querySelector("summary");
+        if(sum && sum.getBoundingClientRect().top < 90){
+          sum.scrollIntoView({ block: "center", behavior: "smooth" });
+        }
+      }
       return;
     }
 
-    const monthCsvBtn = e.target.closest(".kh-month-csv");
-    if(monthCsvBtn){
+    const monthMenuBtn = e.target.closest(".kh-reg-month-menu");
+    if(monthMenuBtn){
       e.preventDefault();
       e.stopPropagation();
-      exportMonthCsv(monthCsvBtn.dataset.ym, monthCsvBtn);
+      openMonthSheet(monthMenuBtn.dataset.ym);
       return;
     }
 

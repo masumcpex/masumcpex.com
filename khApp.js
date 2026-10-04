@@ -1,6 +1,6 @@
 import {
   db, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot,
-  query, where, serverTimestamp, writeBatch, runTransaction, getDoc
+  query, where, serverTimestamp, writeBatch, runTransaction, getDoc, setDoc, getDocs
 } from "./firebase.js";
 
 const membersCol = collection(db, "kh_members");
@@ -153,16 +153,106 @@ function injectRegisterStyles(){
   document.head.appendChild(st);
 }
 
+const SHARE_VIEW_URL = "https://masumcpex.com/attendanceview/";
+const SHARE_COLLECTION = "attendance_shares";
+const REPORT_COLLECTION = "attendance_reports";
+const ICON_SHARE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg>`;
+const ICON_COPY = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>`;
+const ICON_BAN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>`;
+const ICON_FLAG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-1.5 4L16 12H5"/></svg>`;
+const REPORT_CATEGORIES = {
+  status: "Incorrect attendance status",
+  hours: "Incorrect work hours",
+  missing: "Missing attendance record",
+  leave: "Incorrect leave record",
+  duplicate: "Duplicate attendance",
+  date: "Incorrect date",
+  other: "Other"
+};
+
+function injectShareStyles(){
+  if(document.getElementById("khShareStyles")) return;
+  const st = document.createElement("style");
+  st.id = "khShareStyles";
+  st.textContent = `
+.kh-share-overlay{ align-items:flex-end; padding:0; }
+.kh-share-card{
+  position:relative; width:100%; max-width:440px; max-height:92vh; overflow-y:auto; text-align:left;
+  padding:1.2rem 1.1rem 1.1rem; border-radius:18px 18px 0 0;
+}
+@media (min-width:621px){
+  .kh-share-overlay{ align-items:center; padding:1.2rem; }
+  .kh-share-card{ border-radius:18px; }
+}
+.kh-share-head{ display:flex; align-items:center; gap:10px; margin:0 0 .9rem; padding-right:34px; }
+.kh-share-head-ico{
+  width:36px; height:36px; border-radius:10px; background:#EAF1F8; color:#173B63;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.kh-share-head-ico svg{ width:20px; height:20px; }
+.kh-share-title{ margin:0; font-size:1.1rem; font-weight:800; color:#173B63; }
+.kh-share-row{
+  display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+  padding:9px 0; border-bottom:1px solid var(--line-soft,#EEF1F4); font-size:.92rem;
+}
+.kh-share-row span:first-child{ color:#667085; font-weight:600; flex-shrink:0; }
+.kh-share-row span:last-child{ color:#172033; font-weight:700; text-align:right; overflow-wrap:anywhere; }
+.kh-share-perms{ display:grid; grid-template-columns:1fr; gap:6px; margin:.8rem 0; }
+@media (min-width:380px){ .kh-share-perms{ grid-template-columns:1fr 1fr; } }
+.kh-share-perm{ display:flex; align-items:center; gap:8px; font-size:.86rem; font-weight:600; color:#344054; }
+.kh-share-perm svg{ width:16px; height:16px; flex-shrink:0; }
+.kh-share-perm.is-yes svg{ color:#0F766A; }
+.kh-share-perm.is-no{ color:#98A2B3; }
+.kh-share-perm.is-no svg{ color:#C0392B; }
+.kh-dot{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; background:#98A2B3; }
+.kh-dot.is-on{ background:#16A34A; }
+.kh-share-actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:1rem; }
+.kh-share-btn{
+  flex:1 1 150px; min-height:48px; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border-radius:12px; font-weight:700; font-size:.95rem; font-family:inherit; cursor:pointer;
+  border:1px solid #173B63; background:#173B63; color:#fff; padding:0 14px;
+}
+.kh-share-btn svg{ width:18px; height:18px; }
+.kh-share-btn.is-ghost{ background:#fff; color:#173B63; }
+.kh-share-btn.is-danger{ background:#fff; color:#C0392B; border-color:#F1C9C5; }
+.kh-share-btn:disabled{ opacity:.6; cursor:default; }
+.kh-share-note{ margin:.8rem 0 0; font-size:.8rem; color:#667085; line-height:1.45; }
+.kh-share-manual{ width:100%; margin-top:10px; padding:10px; border:1px solid #D0D5DD; border-radius:10px; font-size:.8rem; }
+
+.kh-rep-head{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.kh-rep-count{ background:#FEF3C7; color:#92400E; font-weight:800; font-size:.8rem; padding:2px 10px; border-radius:999px; }
+.kh-rep-list{ display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+.kh-rep-item{
+  border:1px solid var(--line,#E5E7EB); border-radius:14px; background:#fff; padding:12px 14px;
+  display:flex; flex-direction:column; gap:4px;
+}
+.kh-rep-item b{ color:#173B63; font-size:1rem; overflow-wrap:anywhere; }
+.kh-rep-meta{ font-size:.84rem; color:#667085; font-weight:600; }
+.kh-rep-msg{
+  font-size:.88rem; color:#344054; margin:2px 0 0; overflow-wrap:anywhere;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.kh-rep-item .kh-share-btn{ flex:none; align-self:flex-start; min-height:42px; margin-top:6px; }
+.kh-rep-empty{ margin:12px 0 0; color:#667085; font-size:.9rem; }
+.kh-rep-toggle{ margin-top:12px; background:none; border:none; color:#173B63; font-weight:700; cursor:pointer; padding:8px 0; font-family:inherit; }
+.kh-rep-detail dt{ font-size:.75rem; color:#667085; font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-top:10px; }
+.kh-rep-detail dd{ margin:2px 0 0; font-weight:600; color:#172033; overflow-wrap:anywhere; white-space:pre-wrap; }
+`;
+  document.head.appendChild(st);
+}
+
 export function initKhApp(uid, isAdmin){
   if(appStarted) return; 
   appStarted = true;
   injectRegisterStyles();
+  injectShareStyles();
 
   const isAdminUser = !!isAdmin;
 
   let members = [];
   let records = [];
   let membersLoaded = false;
+  const backfillingIds = new Set();   // was used but never declared (crashed for members without a memberId)
   let recordsLoaded = false;
   let selectedMemberId = null;
 
@@ -786,6 +876,7 @@ export function initKhApp(uid, isAdmin){
           <div class="member-card-menu" data-id="${m.id}">
             <button type="button" class="member-card-menu-item member-card-view" data-id="${m.id}">${ICON_USER}View Profile</button>
             <button type="button" class="member-card-menu-item member-card-edit" data-id="${m.id}">${ICON_EDIT}Edit Member</button>
+            <button type="button" class="member-card-menu-item member-card-share" data-id="${m.id}">${ICON_SHARE}Share Attendance</button>
             <button type="button" class="member-card-menu-item is-danger member-card-delete" data-id="${m.id}">${ICON_TRASH}Remove Member</button>
           </div>
         </div>
@@ -1103,6 +1194,13 @@ export function initKhApp(uid, isAdmin){
       closeAllMemberMenus();
       const m = members.find(x => x.id === editBtn.dataset.id);
       if(m) openEditMemberModal(m);
+      return;
+    }
+    const shareBtn = e.target.closest(".member-card-share");
+    if(shareBtn){
+      closeAllMemberMenus();
+      const m = members.find(x => x.id === shareBtn.dataset.id);
+      if(m) openShareModal(m);
       return;
     }
     const deleteBtn = e.target.closest(".member-card-delete");
@@ -2113,6 +2211,368 @@ export function initKhApp(uid, isAdmin){
       .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
   }
 
+  // ================= Share Attendance (view-only links) + Reports =================
+  // Security model (enforced by Firestore Rules, not by hiding buttons):
+  //  - each link = one document in `attendance_shares`, whose ID is a 256-bit random token
+  //  - that document contains ONLY one member's attendance (name, date, status, hours)
+  //  - nobody can list the collection, so tokens can't be discovered; the owner alone can write
+  //  - disabling clears the data in that document, so the old link shows nothing
+  let shares = [];                // this owner's share docs: { id: token, memberId, active, hash, memberName, ... }
+  let sharesLoaded = false;
+  let reports = [];               // this owner's OPEN reports
+  let reportsListenerOk = false;
+  let shareSyncTimer = null;
+  let shareModalMemberId = null;
+
+  function makeShareToken(){
+    const bytes = new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    let bin = "";
+    bytes.forEach(b => { bin += String.fromCharCode(b); });
+    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  function hashShareData(str){
+    let h1 = 0x811c9dc5, h2 = 5381;
+    for(let i = 0; i < str.length; i++){
+      const c = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ c, 16777619) >>> 0;
+      h2 = (((h2 << 5) + h2) ^ c) >>> 0;
+    }
+    return h1.toString(36) + "-" + h2.toString(36) + "-" + str.length;
+  }
+
+  // Only the minimum the viewer needs: date, status, hours — for ONE member. No advance, no other members.
+  function buildSharePayload(member){
+    const recs = records
+      .filter(r => r.member === member.name && r.date)
+      .map(r => ({ d: r.date, s: r.status === "duty" ? "duty" : "leave", h: r.status === "duty" ? (Number(r.hours) || 0) : 0 }))
+      .sort((a, b) => a.d.localeCompare(b.d));
+    const dates = Array.from(new Set(recs.map(r => r.d)));
+    const hash = hashShareData(member.name + "|" + recs.map(r => r.d + r.s + r.h).join(","));
+    return { memberName: member.name, records: recs, dates, hash };
+  }
+
+  function activeShareFor(memberId){
+    return shares.find(x => x.memberId === memberId && x.active === true) || null;
+  }
+
+  async function syncShares(){
+    if(!membersLoaded || !recordsLoaded || !sharesLoaded) return;   // never push half-loaded (empty) data
+    for(const sh of shares){
+      if(sh.active !== true) continue;
+      const ref = doc(db, SHARE_COLLECTION, sh.id);
+      const m = members.find(x => x.id === sh.memberId);
+      try{
+        if(!m){
+          await updateDoc(ref, { active: false, memberName: "", records: [], dates: [], hash: "", disabledAt: serverTimestamp(), updatedAt: serverTimestamp() });
+          continue;
+        }
+        const payload = buildSharePayload(m);
+        if(payload.hash === sh.hash && payload.memberName === sh.memberName) continue;   // nothing changed → no write
+        await updateDoc(ref, { ...payload, updatedAt: serverTimestamp() });
+      }catch(err){
+        console.warn("Share sync failed:", err);
+      }
+    }
+  }
+
+  function scheduleShareSync(){
+    if(!shares.length) return;
+    clearTimeout(shareSyncTimer);
+    shareSyncTimer = setTimeout(syncShares, 1200);   // batches bursts (e.g. Delete Month) into one write
+  }
+
+  async function copyToClipboard(text){
+    try{
+      if(navigator.clipboard && window.isSecureContext){
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    }catch(_){}
+    try{
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.cssText = "position:fixed;left:-9999px;top:0;";
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      ta.remove();
+      return ok;
+    }catch(_){ return false; }
+  }
+
+  function mountKhModal(id, innerHtml, extraClass){
+    const old = document.getElementById(id);
+    if(old) old.remove();
+    const overlay = document.createElement("div");
+    overlay.id = id;
+    overlay.className = "kh-modal-overlay kh-share-overlay";
+    overlay.innerHTML = `<div class="kh-modal-card kh-share-card ${extraClass || ""}" role="dialog" aria-modal="true">
+      <button type="button" class="kh-modal-x" data-close aria-label="Close">${ICON_CLOSE}</button>
+      ${innerHtml}
+    </div>`;
+    document.body.appendChild(overlay);
+    overlay.style.display = "flex";
+    const onKey = ev => { if(ev.key === "Escape") close(); };
+    function close(){
+      document.removeEventListener("keydown", onKey);
+      overlay.remove();
+      if(id === "khShareModal") shareModalMemberId = null;
+    }
+    document.addEventListener("keydown", onKey);
+    overlay.addEventListener("click", ev => {
+      if(ev.target === overlay || ev.target.closest("[data-close]")) close();
+    });
+    return { overlay, close };
+  }
+
+  function shareModalHtml(member){
+    const sh = activeShareFor(member.id);
+    const everShared = shares.some(x => x.memberId === member.id);
+    const status = sh ? `<span class="kh-dot is-on"></span>Active`
+      : everShared ? `<span class="kh-dot"></span>Disabled`
+      : `<span class="kh-dot"></span>Not created`;
+    const yes = t => `<div class="kh-share-perm is-yes">${ICON_CHECK}${t}</div>`;
+    const no = t => `<div class="kh-share-perm is-no">${ICON_CLOSE}${t}</div>`;
+    const actions = sh
+      ? `<button type="button" class="kh-share-btn" data-share-act="copy">${ICON_COPY}Copy Link</button>
+         <button type="button" class="kh-share-btn is-danger" data-share-act="disable">${ICON_BAN}Disable Link</button>`
+      : `<button type="button" class="kh-share-btn" data-share-act="create">${ICON_SHARE}${everShared ? "Create New Link" : "Create Link"}</button>`;
+    return `
+      <div class="kh-share-head">
+        <span class="kh-share-head-ico">${ICON_SHARE}</span>
+        <h3 class="kh-share-title">Share Attendance</h3>
+      </div>
+      <div class="kh-share-row"><span>Member</span><span>${escapeHtml(member.name)}</span></div>
+      <div class="kh-share-row"><span>Access</span><span><span class="kh-dot is-on"></span>View only</span></div>
+      <div class="kh-share-perms">
+        ${yes("View attendance")}${yes("View work hours")}${yes("Download PDF")}${yes("Report an issue")}
+        ${no("Add attendance")}${no("Edit attendance")}${no("Delete attendance")}
+      </div>
+      <div class="kh-share-row"><span>Link status</span><span>${status}</span></div>
+      <div class="kh-share-row"><span>Expiration</span><span>No expiration</span></div>
+      <div class="kh-share-actions">${actions}</div>
+      <p class="kh-share-note">${sh
+        ? "Anyone with this link can see only this member's attendance. Disable it any time."
+        : "Creating a link shares only this member's date, status and work hours. No advance or other members."}</p>
+      <div id="khShareManualBox"></div>`;
+  }
+
+  function openShareModal(member){
+    shareModalMemberId = member.id;
+    const { overlay } = mountKhModal("khShareModal", shareModalHtml(member));
+    overlay.addEventListener("click", async ev => {
+      const btn = ev.target.closest("[data-share-act]");
+      if(!btn) return;
+      const act = btn.dataset.shareAct;
+      const m = members.find(x => x.id === member.id);
+      if(!m) return;
+
+      if(act === "create"){
+        if(!membersLoaded || !recordsLoaded){ showToast("Please wait, data is still loading.", "warning"); return; }
+        btn.disabled = true;
+        try{
+          await setDoc(doc(db, SHARE_COLLECTION, makeShareToken()), {
+            ownerId: uid,
+            memberId: m.id,
+            ...buildSharePayload(m),
+            active: true,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+          showToast("Share link created.");
+        }catch(err){
+          console.error(err);
+          btn.disabled = false;
+          showToast("Could not create the link. Sharing needs the new Firestore Rules to be published first.", "error");
+        }
+        return;
+      }
+
+      const sh = activeShareFor(m.id);
+      if(!sh) return;
+
+      if(act === "copy"){
+        const url = SHARE_VIEW_URL + "?token=" + encodeURIComponent(sh.id);
+        const ok = await copyToClipboard(url);
+        if(ok){
+          showToast("Attendance view link copied");
+        }else{
+          const box = overlay.querySelector("#khShareManualBox");
+          box.innerHTML = `<input class="kh-share-manual" readonly value="${escapeHtml(url)}" aria-label="Share link">`;
+          const inp = box.querySelector("input");
+          inp.focus(); inp.select();
+          showToast("Copy was blocked. Select the link and copy it manually.", "warning");
+        }
+        return;
+      }
+
+      if(act === "disable"){
+        const ok = await askConfirm("Disable this link? Anyone using it will lose access immediately.");
+        if(!ok) return;
+        btn.disabled = true;
+        try{
+          await updateDoc(doc(db, SHARE_COLLECTION, sh.id), {
+            active: false, memberName: "", records: [], dates: [], hash: "",
+            disabledAt: serverTimestamp(), updatedAt: serverTimestamp()
+          });
+          showToast("Link disabled.");
+        }catch(err){
+          console.error(err);
+          btn.disabled = false;
+          showToast("Could not disable the link. Please try again.", "error");
+        }
+      }
+    });
+  }
+
+  function refreshShareModal(){
+    if(!shareModalMemberId) return;
+    const overlay = document.getElementById("khShareModal");
+    if(!overlay){ shareModalMemberId = null; return; }
+    const m = members.find(x => x.id === shareModalMemberId);
+    if(!m) return;
+    const card = overlay.querySelector(".kh-share-card");
+    const x = card.querySelector("[data-close]");
+    card.innerHTML = "";
+    card.appendChild(x);
+    card.insertAdjacentHTML("beforeend", shareModalHtml(m));
+  }
+
+  // ---------- Reports inbox ----------
+  function reportDateLabel(dateStr){
+    if(!dateStr) return "No date selected";
+    return regDateLabel(dateStr);
+  }
+  function reportTime(rep){
+    const t = rep.createdAt && rep.createdAt.seconds ? rep.createdAt.seconds : 0;
+    return t;
+  }
+
+  function ensureReportsCard(){
+    let card = document.getElementById("sectionReports");
+    if(card) return card;
+    const anchorEl = document.getElementById("attendanceRegisterSection");
+    if(!anchorEl) return null;
+    card = document.createElement("section");
+    card.id = "sectionReports";
+    card.className = "kh-card kh-card--amber";
+    card.style.display = "none";
+    card.innerHTML = `
+      <div class="kh-rep-head"><h2 class="kh-card-title" style="margin:0;">Attendance Reports</h2><span class="kh-rep-count" id="khRepCount">0</span></div>
+      <p class="kh-rep-empty" id="khRepEmpty" style="display:none;">No open reports.</p>
+      <div class="kh-rep-list" id="khRepList"></div>
+      <button type="button" class="kh-rep-toggle" id="khRepResolvedBtn">Show resolved</button>
+      <div class="kh-rep-list" id="khRepResolvedList"></div>`;
+    anchorEl.parentNode.insertBefore(card, anchorEl);
+    card.addEventListener("click", ev => {
+      const rv = ev.target.closest("[data-rep-id]");
+      if(rv){
+        const rep = reports.find(x => x.id === rv.dataset.repId) || resolvedReports.find(x => x.id === rv.dataset.repId);
+        if(rep) openReportModal(rep);
+        return;
+      }
+      if(ev.target.closest("#khRepResolvedBtn")) loadResolvedReports();
+    });
+    return card;
+  }
+
+  let resolvedReports = [];
+  function reportItemHtml(rep){
+    return `
+      <div class="kh-rep-item">
+        <b>${escapeHtml(rep.memberName || "Member")}</b>
+        <span class="kh-rep-meta">${escapeHtml(reportDateLabel(rep.date))} · ${escapeHtml(REPORT_CATEGORIES[rep.category] || "Other")}</span>
+        ${rep.message ? `<p class="kh-rep-msg">“${escapeHtml(rep.message)}”</p>` : ""}
+        <button type="button" class="kh-share-btn is-ghost" data-rep-id="${escapeHtml(rep.id)}">Review</button>
+      </div>`;
+  }
+
+  function renderReportsCard(){
+    if(!reportsListenerOk && !reports.length) return;
+    const card = ensureReportsCard();
+    if(!card) return;
+    card.style.display = (reports.length || shares.length) ? "" : "none";
+    card.querySelector("#khRepCount").textContent = String(reports.length);
+    card.querySelector("#khRepCount").style.display = reports.length ? "" : "none";
+    card.querySelector("#khRepEmpty").style.display = reports.length ? "none" : "";
+    card.querySelector("#khRepList").innerHTML = reports.slice().sort((a, b) => reportTime(b) - reportTime(a)).map(reportItemHtml).join("");
+  }
+
+  async function loadResolvedReports(){
+    const btn = document.getElementById("khRepResolvedBtn");
+    const list = document.getElementById("khRepResolvedList");
+    if(list.dataset.open === "1"){
+      list.innerHTML = ""; list.dataset.open = ""; btn.textContent = "Show resolved";
+      return;
+    }
+    btn.disabled = true;
+    try{
+      const snap = await getDocs(query(collection(db, REPORT_COLLECTION), where("ownerId", "==", uid), where("status", "==", "resolved")));
+      resolvedReports = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => reportTime(b) - reportTime(a));
+      list.innerHTML = resolvedReports.length ? resolvedReports.map(reportItemHtml).join("") : `<p class="kh-rep-empty">No resolved reports.</p>`;
+      list.dataset.open = "1";
+      btn.textContent = "Hide resolved";
+    }catch(err){
+      console.error(err);
+      showToast("Could not load resolved reports.", "error");
+    }finally{
+      btn.disabled = false;
+    }
+  }
+
+  function openReportModal(rep){
+    const isOpen = rep.status !== "resolved";
+    const { overlay, close } = mountKhModal("khReportModal", `
+      <div class="kh-share-head">
+        <span class="kh-share-head-ico">${ICON_FLAG}</span>
+        <h3 class="kh-share-title">Report Details</h3>
+      </div>
+      <dl class="kh-rep-detail">
+        <dt>Member</dt><dd>${escapeHtml(rep.memberName || "")}</dd>
+        <dt>Date</dt><dd>${escapeHtml(reportDateLabel(rep.date))}</dd>
+        <dt>Issue</dt><dd>${escapeHtml(REPORT_CATEGORIES[rep.category] || "Other")}</dd>
+        <dt>Message</dt><dd>${rep.message ? escapeHtml(rep.message) : "—"}</dd>
+        <dt>Status</dt><dd>${isOpen ? "Open" : "Resolved"}</dd>
+      </dl>
+      <div class="kh-share-actions">
+        <button type="button" class="kh-share-btn is-ghost" data-rep-act="view">View Attendance</button>
+        ${isOpen ? `<button type="button" class="kh-share-btn" data-rep-act="resolve">${ICON_CHECK}Mark as Resolved</button>` : ""}
+      </div>`);
+    overlay.addEventListener("click", async ev => {
+      const b = ev.target.closest("[data-rep-act]");
+      if(!b) return;
+      if(b.dataset.repAct === "view"){
+        close();
+        const m = members.find(x => x.id === rep.memberId);
+        if(m) filterMember.value = m.name;
+        if(rep.date){
+          regMonthOpen[rep.date.slice(0, 7)] = true;
+          regDayOpen.add(rep.date);
+        }
+        renderRegister();
+        const sec = document.getElementById("attendanceRegisterSection");
+        if(sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      if(b.dataset.repAct === "resolve"){
+        b.disabled = true;
+        try{
+          await updateDoc(doc(db, REPORT_COLLECTION, rep.id), { status: "resolved", resolvedAt: serverTimestamp() });
+          showToast("Report marked as resolved.");
+          close();
+        }catch(err){
+          console.error(err);
+          b.disabled = false;
+          showToast("Could not update the report. Please try again.", "error");
+        }
+      }
+    });
+  }
+  // ================= /Share Attendance =================
+
   function updateLoadingState(){
     if(membersLoaded && recordsLoaded){
       registerLoading.style.display = "none";
@@ -2135,6 +2595,7 @@ export function initKhApp(uid, isAdmin){
     refreshSummarySection();
     renderRegister();
     updateLoadingState();
+    scheduleShareSync();
   }, err => {
     console.error(err);
     registerLoading.textContent = "Failed to load data. Please check your internet connection.";
@@ -2147,9 +2608,30 @@ export function initKhApp(uid, isAdmin){
     refreshSummarySection();
     renderRegister();
     updateLoadingState();
+    scheduleShareSync();
   }, err => {
     console.error(err);
     registerLoading.textContent = "Failed to load data. Please check your internet connection.";
+  });
+
+  // Share links + reports (one small listener each, only this owner's documents).
+  // If the new Firestore Rules are not published yet these just log a warning; the rest of the app is unaffected.
+  onSnapshot(query(collection(db, SHARE_COLLECTION), where("ownerId", "==", uid)), snapshot => {
+    shares = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    sharesLoaded = true;
+    refreshShareModal();
+    renderReportsCard();
+    scheduleShareSync();
+  }, err => {
+    console.warn("Share links unavailable (publish the new Firestore Rules):", err && err.code);
+  });
+
+  onSnapshot(query(collection(db, REPORT_COLLECTION), where("ownerId", "==", uid), where("status", "==", "open")), snapshot => {
+    reports = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    reportsListenerOk = true;
+    renderReportsCard();
+  }, err => {
+    console.warn("Reports unavailable (publish the new Firestore Rules):", err && err.code);
   });
 
   // Admin-only: read every account's data (Firestore rules grant this to the admin UID)

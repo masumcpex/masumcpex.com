@@ -1,396 +1,359 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="robots" content="noindex, nofollow, noarchive">
-<meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#173B63">
-<title>Shared Attendance | WorkTrack</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>মাসুম | Masum Cpex</title>
+<meta name="description" content="মাসুম বিল্লাহর ব্যক্তিগত ডিজিটাল প্ল্যাটফর্ম — লেখা, বই, গল্প, জার্নাল, প্রজেক্ট ও জীবনের নানা অভিজ্ঞতার একটি নিজস্ব সংগ্রহ।">
+
+<meta property="og:title" content="মাসুম | Masum Cpex">
+<meta property="og:description" content="মাসুম বিল্লাহর ব্যক্তিগত ডিজিটাল প্ল্যাটফর্ম — লেখা, বই, গল্প, জার্নাল, প্রজেক্ট ও জীবনের নানা অভিজ্ঞতার একটি নিজস্ব সংগ্রহ।">
+<meta property="og:image" content="https://masumcpex.com/masum.webp">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://masumcpex.com">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://masumcpex.com/masum.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@500;600;700&family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 <link rel="icon" href="/bdflag.webp" type="image/webp">
-<style>
-:root{
-  --navy:#173B63; --ink:#172033; --muted:#667085; --line:#E5E7EB; --soft:#EEF1F4;
-  --bg:#F6F8FA; --card:#fff; --ok:#0F766A; --okbg:rgba(21,154,134,.12); --lv:#9C6B0F; --lvbg:rgba(217,154,36,.16);
-  --danger:#C0392B;
-  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Bengali","Hind Siliguri","Noto Sans",Arial,sans-serif;
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0E6E5C">
+<meta name="color-scheme" content="light">
+<link rel="apple-touch-icon" href="/bdflag.webp">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Masumcpex Hub">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "মাসুম | Masum Cpex",
+  "url": "https://masumcpex.com",
+  "author": {
+    "@type": "Person",
+    "name": "Masum Billah"
+  },
+  "hasPart": [
+    {
+      "@type": "SiteNavigationElement",
+      "name": "WorkTrack",
+      "url": "https://masumcpex.com/worktrack.html"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "About",
+      "url": "https://masumcpex.com/#about"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "Library",
+      "url": "https://masumcpex.com/#library"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "Journal",
+      "url": "https://masumcpex.com/#journal"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "Projects",
+      "url": "https://masumcpex.com/#projects"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "Articles",
+      "url": "https://masumcpex.com/#articles"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "Contact",
+      "url": "https://masumcpex.com/#contact"
+    }
+  ]
 }
-*{ box-sizing:border-box; }
-html{ -webkit-text-size-adjust:100%; }
-body{
-  margin:0; background:var(--bg); color:var(--ink); font-family:var(--font); font-size:16px; line-height:1.45;
-  padding-bottom:env(safe-area-inset-bottom,0);
-}
-button,select,textarea,input{ font-family:inherit; font-size:1rem; }
-.bar{
-  background:var(--navy); color:#fff; padding:calc(12px + env(safe-area-inset-top,0)) 16px 12px;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-}
-.brand{ font-weight:800; letter-spacing:.02em; font-size:1.05rem; }
-.brand small{ display:block; font-weight:500; font-size:.72rem; opacity:.8; letter-spacing:.04em; }
-.chip{ background:rgba(255,255,255,.14); border-radius:999px; padding:4px 12px; font-size:.78rem; font-weight:700; white-space:nowrap; }
-main{ width:100%; max-width:720px; margin:0 auto; padding:16px 14px 28px; }
-.card{
-  background:var(--card); border:1px solid var(--line); border-top:4px solid var(--navy);
-  border-radius:16px; padding:18px 16px; box-shadow:0 1px 3px rgba(16,24,40,.06);
-}
-.eyebrow{ font-size:.72rem; font-weight:800; letter-spacing:.12em; color:var(--ok); text-transform:uppercase; margin:0 0 4px; }
-h1{ margin:0; font-size:1.55rem; line-height:1.2; color:var(--navy); overflow-wrap:anywhere; }
-.sub{ margin:6px 0 0; color:var(--muted); font-size:.85rem; }
-label.fl{ display:block; margin:16px 0 6px; font-size:.78rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
-select,textarea{
-  width:100%; border:1.5px solid #CBD5E1; border-radius:12px; background:#fff; color:var(--ink);
-  padding:12px 12px; min-height:48px;
-}
-select:focus,textarea:focus{ outline:none; border-color:var(--navy); box-shadow:0 0 0 3px rgba(23,59,99,.12); }
-.tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px; }
-.tile{ background:#F3F6F9; border-radius:12px; padding:10px 6px; text-align:center; min-width:0; }
-.tile b{ display:block; font-size:1.25rem; color:var(--navy); }
-.tile span{ font-size:.7rem; color:var(--muted); font-weight:600; }
-.actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
-.btn{
-  flex:1 1 150px; min-height:48px; border-radius:12px; border:1.5px solid var(--navy); background:var(--navy); color:#fff;
-  font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; padding:0 14px;
-}
-.btn.sec{ background:#fff; color:var(--navy); }
-.btn:disabled{ opacity:.6; cursor:default; }
-.btn svg{ width:18px; height:18px; flex-shrink:0; }
-.list{ list-style:none; margin:14px 0 0; padding:0; }
-.row{
-  display:grid; grid-template-columns:1fr auto auto auto; align-items:center; gap:8px;
-  padding:10px 0; border-bottom:1px solid var(--soft);
-}
-.row:last-child{ border-bottom:none; }
-.d b{ display:block; font-size:1rem; }
-.d small{ color:var(--muted); font-size:.78rem; }
-.badge{ padding:3px 11px; border-radius:999px; font-size:.78rem; font-weight:700; }
-.badge.duty{ background:var(--okbg); color:var(--ok); }
-.badge.leave{ background:var(--lvbg); color:var(--lv); }
-.h{ min-width:40px; text-align:right; font-weight:800; color:var(--navy); }
-.h.off{ color:#98A2B3; font-weight:600; }
-.flag{
-  width:40px; height:40px; border-radius:10px; border:1px solid var(--line); background:#fff; color:#667085;
-  display:inline-flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
-}
-.flag svg{ width:18px; height:18px; }
-.empty,.msg{ color:var(--muted); text-align:center; padding:22px 8px; }
-.state{ text-align:center; padding:28px 10px; }
-.state h2{ margin:10px 0 6px; color:var(--navy); font-size:1.3rem; }
-.state p{ margin:0 auto; max-width:420px; color:var(--muted); }
-.state .ico{ width:54px; height:54px; margin:0 auto; border-radius:50%; background:#FDECEA; color:var(--danger); display:flex; align-items:center; justify-content:center; }
-.state .ico svg{ width:28px; height:28px; }
-.state .ico.ok{ background:var(--okbg); color:var(--ok); }
-footer{ text-align:center; color:var(--muted); font-size:.8rem; padding:6px 14px 22px; }
-footer a, .state a{ color:var(--navy); font-weight:700; }
-.ov{ position:fixed; inset:0; background:rgba(16,24,40,.55); display:flex; align-items:flex-end; justify-content:center; z-index:50; }
-.sheet{
-  background:#fff; width:100%; max-width:480px; max-height:94vh; overflow-y:auto; border-radius:18px 18px 0 0;
-  padding:18px 16px calc(16px + env(safe-area-inset-bottom,0));
-}
-@media (min-width:621px){ .ov{ align-items:center; padding:16px; } .sheet{ border-radius:18px; } }
-.sheet h2{ margin:0 0 4px; font-size:1.2rem; color:var(--navy); }
-.sheet p.lead{ margin:0 0 12px; color:var(--muted); font-size:.9rem; }
-.cat{
-  display:flex; align-items:center; gap:12px; min-height:48px; padding:6px 12px; margin-bottom:8px;
-  border:1.5px solid var(--line); border-radius:12px; cursor:pointer; font-weight:600;
-}
-.cat input{ width:20px; height:20px; accent-color:var(--navy); flex-shrink:0; }
-.cat.on{ border-color:var(--navy); background:#F3F7FB; }
-.cnt{ text-align:right; font-size:.75rem; color:var(--muted); margin-top:4px; }
-.err{ color:var(--danger); font-size:.85rem; font-weight:600; margin:10px 0 0; min-height:1.2em; }
-.toast{
-  position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0)); transform:translateX(-50%);
-  background:#0F172A; color:#fff; padding:11px 16px; border-radius:12px; font-weight:600; font-size:.9rem; z-index:70; max-width:92vw;
-}
-.skel{ height:14px; border-radius:7px; background:linear-gradient(90deg,#EEF1F4,#F8FAFB,#EEF1F4); margin:12px 0; }
-</style>
+</script>
 </head>
 <body>
-<header class="bar">
-  <div class="brand">WORKTRACK<small>Attendance &amp; Workforce Management</small></div>
-  <span class="chip">View only</span>
+
+<header class="site-header" id="siteHeader">
+  <div class="header-inner">
+    <a href="#home" class="brand" data-nav="home">
+  <span class="brand-mark">
+    <span class="brand-mark"><img src="photo.png" alt="Logo" style="width:100%;height:100%;object-fit:cover;display:block;"></span>
+  </span>
+  <span class="brand-name">Masum</span>
+</a>
+
+    <nav class="main-nav" id="mainNav">
+      <a href="#home" data-nav="home"><span class="ic"></span>Home</a>
+      <a href="worktrack.html"><span class="ic"></span>WorkTrack</a>
+      <a href="#about" data-nav="about"><span class="ic"></span>About</a>
+      <a href="#library" data-nav="library"><span class="ic"></span>Library</a>
+      <a href="#journal" data-nav="journal"><span class="ic"></span>Journal</a>
+      <a href="#projects" data-nav="projects"><span class="ic"></span>Projects</a>
+      <a href="#articles" data-nav="articles"><span class="ic"></span>Articles</a>
+      <a href="#private-chapters" data-nav="private-chapters"><span class="ic"></span>Unrevealed Chapter</a>
+      <a href="#contact" data-nav="contact"><span class="ic"></span>Contact</a>
+    </nav>
+
+    <div class="header-tools">
+      <button class="icon-btn" id="searchToggle" aria-label="সার্চ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
+      <button class="icon-btn menu-toggle" id="menuToggle" aria-label="মেনু"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+    </div>
+  </div>
+
+  <div class="search-panel" id="searchPanel">
+    <div class="search-panel-inner">
+      <input type="text" id="searchInput" placeholder="বই, জার্নাল, আর্টিকেল বা প্রজেক্ট খুঁজুন...">
+      <button class="icon-btn" id="searchClose">✕</button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
 </header>
-<main id="app" aria-live="polite">
-  <div class="card"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;height:24px"></div><div class="skel"></div><div class="skel" style="width:85%"></div></div>
-</main>
-<footer>© Masum Cpex · <a href="mailto:info@masumcpex.com">info@masumcpex.com</a></footer>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore, doc, getDoc, collection, writeBatch, serverTimestamp, increment
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-lite.js";
+<main>
 
-const CONTACT = "info@masumcpex.com";
-const H2C = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-const JSPDF = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
-const CATS = {
-  status: "Incorrect attendance status", hours: "Incorrect work hours", missing: "Missing attendance record",
-  leave: "Incorrect leave record", duplicate: "Duplicate attendance", date: "Incorrect date", other: "Other"
-};
-const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const ICON_FLAG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-1.5 4L16 12H5"/></svg>';
-const ICON_DL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>';
-const ICON_LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
-const ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  <section class="page active" id="home">
 
-const app = document.getElementById("app");
-const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-const fmtH = n => String(Math.round((Number(n) || 0) * 100) / 100);
-const dayLabel = d => { const [y,m,dd] = d.split("-").map(Number); return String(dd).padStart(2,"0") + " " + MONTHS[m-1]; };
-const fullLabel = d => dayLabel(d) + " " + d.slice(0,4);
-const weekday = d => { const [y,m,dd] = d.split("-").map(Number); return new Date(y, m-1, dd).toLocaleDateString("en-US", { weekday: "long" }); };
-const monthLabel = ym => MONTHS[Number(ym.slice(5,7)) - 1] + " " + ym.slice(0,4);
+    <div class="hero">
+      <div class="hero-photo-wrap">
+        <img class="hero-photo" id="heroPhoto" src="" alt="Masum Billah">
+      </div>
+      <h1 class="hero-name" id="heroName"></h1>
+      <p class="hero-role" id="heroRole"></p>
+      <p class="hero-tagline" id="heroTagline"></p>
+      <a class="btn btn-primary" id="heroCta" href="#library"></a>
 
-const params = new URLSearchParams(location.search);
-const token = params.get("token") || "";
-const TOKEN_OK = /^[A-Za-z0-9_-]{40,64}$/.test(token);
+      <div class="bdflag-mobile">
+        <img src="bdflag.webp" alt="Bangladesh">
+      </div>
+    </div>
 
-let db = null, share = null, curYm = "";
+    <div class="section-block">
+      <div class="eyebrow">সর্বশেষ</div>
+      <h2 class="section-title">সাম্প্রতিক সংযোজন</h2>
+      <div class="highlight-grid" id="homeHighlights"><!-- JS injects: Latest Book / Journal / Article / Featured Project --></div>
+    </div>
 
-function unavailable(title, text){
-  app.innerHTML = `<div class="card"><div class="state"><div class="ico">${ICON_LOCK}</div><h2>${esc(title)}</h2><p>${esc(text)}</p></div></div>`;
-}
-function toast(t){
-  const el = document.createElement("div");
-  el.className = "toast"; el.textContent = t; document.body.appendChild(el);
-  setTimeout(() => el.remove(), 3200);
-}
+  </section>
 
-async function load(){
-  if(!TOKEN_OK){ unavailable("Access Unavailable", "This attendance link is not valid."); return; }
-  app.innerHTML = `<div class="card"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;height:24px"></div><div class="skel"></div><div class="skel" style="width:85%"></div></div>`;
-  try{
-    if(!db){
-      const fb = initializeApp({
-        apiKey: "AIzaSyDp8J-8XI-wGtn3MYNjauEyDHolt7WhnCY",
-        authDomain: "masumcpex-f65cf.firebaseapp.com",
-        projectId: "masumcpex-f65cf",
-        appId: "1:535080144365:web:2836f3fd49f33d4cf76be4"
-      });
-      db = getFirestore(fb);
-    }
-    const snap = await getDoc(doc(db, "attendance_shares", token));
-    if(!snap.exists()){ unavailable("Access Unavailable", "This attendance link is not valid."); return; }
-    const data = snap.data();
-    if(data.active !== true){ unavailable("Access Unavailable", "This attendance sharing link has been disabled."); return; }
-    share = data;
-    share.records = Array.isArray(data.records) ? data.records : [];
-    const months = monthsList();
-    curYm = months[0] || "";
-    render();
-  }catch(err){
-    console.error(err);
-    const denied = err && (err.code === "permission-denied" || err.code === "unauthenticated");
-    if(denied){ unavailable("Access Unavailable", "This attendance link cannot be opened."); return; }
-    app.innerHTML = `<div class="card"><div class="state"><h2>Couldn't load</h2><p>Please check your internet connection and try again.</p><div class="actions" style="justify-content:center"><button class="btn" id="retry" style="flex:0 1 200px">Try again</button></div></div></div>`;
-    document.getElementById("retry").onclick = load;
-  }
-}
+  <section class="page" id="about">
+    <div class="page-inner narrow">
+      <div class="eyebrow">পরিচিতি</div>
+      <h2 class="section-title" id="aboutTitle"></h2>
+      <div class="about-grid">
+        <img class="about-photo" id="aboutPhoto" src="" alt="Masum">
+        <div class="about-text" id="aboutText"></div>
+      </div>
+      <div class="stat-row" id="aboutStats"></div>
+    </div>
+  </section>
 
-function monthsList(){
-  return Array.from(new Set(share.records.map(r => r.d.slice(0,7)))).sort().reverse();
-}
-function monthRecords(ym){
-  return share.records.filter(r => r.d.startsWith(ym)).sort((a,b) => b.d.localeCompare(a.d));
-}
-function stats(list){
-  let duty = 0, leave = 0, hours = 0;
-  list.forEach(r => { if(r.s === "duty"){ duty++; hours += Number(r.h) || 0; } else leave++; });
-  return { duty, leave, hours };
-}
+  <section class="page" id="library">
+    <div class="page-inner">
+      <div class="eyebrow">Library</div>
+      <h2 class="section-title">বইয়ের জগতে প্রবেশ করুন</h2>
+      <p class="section-sub">নিচের তালিকা থেকে আপনার পছন্দের বইটি নির্বাচন করুন এবং সরাসরি পড়ুন বা ডাউনলোড করুন।</p>
+      <div class="card-grid" id="bookGrid"><!-- JS injects book cards --></div>
+    </div>
+  </section>
 
-function render(){
-  const months = monthsList();
-  const list = monthRecords(curYm);
-  const st = stats(list);
-  let updated = "";
-  try{ if(share.updatedAt && share.updatedAt.toDate){ const u = share.updatedAt.toDate(); updated = "Last updated " + String(u.getDate()).padStart(2,"0") + " " + MONTHS[u.getMonth()].slice(0,3) + " " + u.getFullYear(); } }catch(_){}
-  app.innerHTML = `
-    <div class="card">
-      <p class="eyebrow">Shared Attendance</p>
-      <h1>${esc(share.memberName || "")}</h1>
-      ${updated ? `<p class="sub">${esc(updated)}</p>` : ""}
-      ${months.length ? `
-        <label class="fl" for="month">Month</label>
-        <select id="month">${months.map(m => `<option value="${m}"${m === curYm ? " selected" : ""}>${monthLabel(m)}</option>`).join("")}</select>
-        <div class="tiles">
-          <div class="tile"><b>${st.duty}</b><span>Work Days</span></div>
-          <div class="tile"><b>${st.leave}</b><span>Leave Days</span></div>
-          <div class="tile"><b>${fmtH(st.hours)}</b><span>Total Hours</span></div>
-        </div>
-        <div class="actions">
-          <button class="btn" id="pdfBtn">${ICON_DL}Download PDF</button>
-          <button class="btn sec" id="repBtn">${ICON_FLAG}Report an Issue</button>
-        </div>
-        <ul class="list" id="rows">${list.map(r => `
-          <li class="row">
-            <div class="d"><b>${dayLabel(r.d)}</b><small>${weekday(r.d)}</small></div>
-            <span class="badge ${r.s === "duty" ? "duty" : "leave"}">${r.s === "duty" ? "Present" : "Leave"}</span>
-            <span class="h${r.s === "duty" ? "" : " off"}">${r.s === "duty" ? fmtH(r.h) + "h" : "—"}</span>
-            <button class="flag" data-date="${r.d}" aria-label="Report an issue for ${fullLabel(r.d)}" title="Report an issue">${ICON_FLAG}</button>
-          </li>`).join("")}</ul>`
-      : `<div class="empty">No attendance records yet.</div>`}
-    </div>`;
-}
+  <section class="page" id="journal">
+    <div class="page-inner">
+      <div class="eyebrow">Journal</div>
+      <h2 class="section-title">ব্যক্তিগত জার্নাল</h2>
+      <p class="section-sub">গল্প, অনুভূতি আর দৈনন্দিন ভাবনার পাতা।</p>
+      <div class="filter-row" id="journalFilters"><!-- JS injects category chips --></div>
+      <div class="list-grid" id="journalList"><!-- JS injects journal cards --></div>
+    </div>
+  </section>
 
-// ---- one set of delegated listeners (no per-row listeners) ----
-app.addEventListener("change", e => {
-  if(e.target.id === "month"){ curYm = e.target.value; render(); }
-});
-app.addEventListener("click", e => {
-  const f = e.target.closest(".flag");
-  if(f){ openReport(f.dataset.date); return; }
-  if(e.target.closest("#repBtn")) openReport("");
-  else if(e.target.closest("#pdfBtn")) downloadPdf(e.target.closest("#pdfBtn"));
-});
+  <section class="page" id="projects">
+    <div class="page-inner">
+      <div class="eyebrow">Projects</div>
+      <h2 class="section-title">যা তৈরি করছি</h2>
+      <div class="card-grid projects-grid" id="projectGrid"><!-- JS injects project cards --></div>
+    </div>
+  </section>
 
-// ---- Report an issue ----
-function openReport(preDate){
-  const dates = share.records.map(r => r.d).sort().reverse();
-  const ov = document.createElement("div");
-  ov.className = "ov";
-  ov.innerHTML = `
-    <div class="sheet" role="dialog" aria-modal="true" aria-label="Report an Attendance Issue">
-      <div id="repForm">
-        <h2>Report an Attendance Issue</h2>
-        <p class="lead">Please select the issue you want to report.</p>
-        ${Object.entries(CATS).map(([k, v]) => `<label class="cat"><input type="radio" name="cat" value="${k}"><span>${v}</span></label>`).join("")}
-        <label class="fl" for="rdate">Related date</label>
-        <select id="rdate"><option value="">Select attendance date</option>${dates.map(d => `<option value="${d}"${d === preDate ? " selected" : ""}>${fullLabel(d)}</option>`).join("")}</select>
-        <label class="fl" for="rmsg">Additional details</label>
-        <textarea id="rmsg" rows="4" maxlength="500" placeholder="Please describe the issue..."></textarea>
-        <div class="cnt"><span id="rcnt">0</span>/500</div>
-        <p class="err" id="rerr"></p>
-        <div class="actions">
-          <button class="btn" id="rsubmit">Submit Report</button>
-          <button class="btn sec" id="rcancel">Cancel</button>
+  <section class="page" id="articles">
+    <div class="page-inner">
+      <div class="eyebrow">Articles</div>
+      <h2 class="section-title">ব্লগ ও লেখালেখি</h2>
+      <div class="filter-row" id="articleFilters"><!-- JS injects category chips --></div>
+      <div class="list-grid" id="articleList"><!-- JS injects article cards --></div>
+    </div>
+  </section>
+
+  <section class="page" id="mystery">
+    <div class="page-inner narrow center">
+      <h2 class="mystery-title" id="mysteryTitle"></h2>
+      <p class="mystery-notice" id="mysteryNotice"></p>
+      <a class="btn btn-outline" id="mysteryBtn" href="#" target="_blank" rel="noopener"></a>
+    </div>
+  </section>
+
+  <section class="page" id="private-chapters">
+    <div class="page-inner narrow center">
+
+      <div class="private-gate" id="homePasswordStep">
+        <div class="eyebrow">Private</div>
+        <h2 class="section-title"> ব্যক্তিগত অধ্যায়</h2>
+        <p class="section-sub">এই অংশটি শুধুমাত্র নির্দিষ্ট পাসওয়ার্ডধারীদের জন্য উন্মুক্ত।</p>
+        <input type="password" id="homePasswordInput" placeholder="Enter private password" class="private-password-input">
+        <button type="button" class="btn btn-primary" id="homePasswordBtn"> প্রবেশ করুন</button>
+        <p class="private-gate-status" id="homePrivateGateStatus" style="display:none;"></p>
+      </div>
+
+      <div id="homePrivateContent" style="display:none;">
+        <div class="eyebrow">Private</div>
+        <h2 class="section-title"> বাস্তবতার অন্ধকার পৃষ্ঠা</h2>
+        <p class="section-sub">আমার জীবনের কিছু বাস্তব ঘটনা, স্মৃতি, কষ্ট ও না-বলা কথা।</p>
+        <p class="chapter-count-line"> 4টি অপ্রকাশিত অধ্যায়</p>
+        <a href="unpublished.html" class="btn btn-outline">বিস্তারিত দেখুন</a>
+        <div class="private-signout-row">
+          <button type="button" class="btn btn-outline" id="homePrivateSignOutBtn"> Logout</button>
         </div>
       </div>
-    </div>`;
-  document.body.appendChild(ov);
-  const close = () => { document.removeEventListener("keydown", onKey); ov.remove(); };
-  const onKey = e => { if(e.key === "Escape") close(); };
-  document.addEventListener("keydown", onKey);
-  const q = s => ov.querySelector(s);
-  ov.addEventListener("click", e => { if(e.target === ov) close(); });
-  q("#rcancel").onclick = close;
-  q("#rmsg").addEventListener("input", () => { q("#rcnt").textContent = q("#rmsg").value.length; });
-  ov.addEventListener("change", e => {
-    if(e.target.name === "cat") ov.querySelectorAll(".cat").forEach(l => l.classList.toggle("on", l.querySelector("input").checked));
+
+    </div>
+  </section>
+
+  <section class="page" id="contact">
+    <div class="page-inner center contact-intro">
+      <div class="eyebrow">Connect</div>
+      <h2 class="section-title">Connect With Me</h2>
+      <p class="section-sub center-sub">If you have any questions, suggestions, or feedback feel free to reach out via the form below or through direct channels</p>
+    </div>
+
+    <div class="contact-wrap">
+      <div class="contact-card" id="contactCard">
+
+        <div class="contact-info">
+          <div class="contact-info-head">
+            <span class="ci-badge" aria-hidden="true">📬</span>
+            <h3>Contact Me</h3>
+            <p>Have a question, suggestion, or feedback? Feel free to reach out anytime.</p>
+          </div>
+
+          <ul class="contact-list" id="contactList">
+            <li class="contact-item" data-copy="admin@masumcpex.com">
+              <span class="ci-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M22 6l-10 7L2 6"></path></svg></span>
+              <span class="ci-text">
+                <span class="ci-label">Primary Email</span>
+                <a href="mailto:admin@masumcpex.com">admin@masumcpex.com</a>
+              </span>
+            </li>
+            <li class="contact-item" data-copy="contact@masumcpex.com">
+              <span class="ci-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></span>
+              <span class="ci-text">
+                <span class="ci-label">Alternative Email</span>
+                <a href="mailto:contact@masumcpex.com">contact@masumcpex.com</a>
+              </span>
+            </li>
+            <li class="contact-item" data-copy="https://masumcpex.com">
+              <span class="ci-icon" aria-hidden="true">🌐</span>
+              <span class="ci-text">
+                <span class="ci-label">Website</span>
+                <a href="https://masumcpex.com" target="_blank" rel="noopener">masumcpex.com</a>
+              </span>
+            </li>
+            <li class="contact-item" data-copy="Malaysia">
+              <span class="ci-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
+              <span class="ci-text">
+                <span class="ci-label">Location</span>
+                <span class="ci-value">Malaysia</span>
+              </span>
+            </li>
+            <li class="contact-item" data-copy="@masumcpex">
+              <span class="ci-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></span>
+              <span class="ci-text">
+                <span class="ci-label">Telegram</span>
+                <a href="https://t.me/masumcpex" target="_blank" rel="noopener">@masumcpex</a>
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="contact-form-side">
+          <h3 class="cf-title">Send a Message</h3>
+          <p class="cf-sub">I'll try to reply as soon as possible.</p>
+
+          <form id="contactForm" class="contact-form" novalidate>
+            <div class="form-grid">
+              <div class="field">
+                <label for="cf-name">Name</label>
+                <input type="text" id="cf-name" name="name" autocomplete="name" required>
+                <span class="field-error" id="err-name" role="alert"></span>
+              </div>
+              <div class="field">
+                <label for="cf-email">Email</label>
+                <input type="email" id="cf-email" name="email" autocomplete="email" required>
+                <span class="field-error" id="err-email" role="alert"></span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="cf-subject">Subject</label>
+              <input type="text" id="cf-subject" name="subject" required>
+              <span class="field-error" id="err-subject" role="alert"></span>
+            </div>
+
+            <div class="field">
+              <label for="cf-message">Message</label>
+              <textarea id="cf-message" name="message" rows="5" required></textarea>
+              <span class="field-error" id="err-message" role="alert"></span>
+            </div>
+
+            <button type="submit" class="btn btn-send" id="cfSubmit">
+              <span class="btn-label">Send Message</span>
+              <span class="btn-spinner" aria-hidden="true"></span>
+            </button>
+
+            <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+     
+<div class="modal-overlay" id="readModal">
+  <div class="modal-box">
+    <button class="icon-btn modal-close" id="modalClose">✕</button>
+    <div class="modal-eyebrow" id="modalCategory"></div>
+    <h3 class="modal-title" id="modalTitle"></h3>
+    <div class="modal-date" id="modalDate"></div>
+    <div class="modal-audio" id="modalAudio"></div>
+    <div class="modal-content" id="modalContent"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>© 2026 <b>Masum Cpex</b>. All Rights Reserved.</p>
+</footer>
+
+<script src="data.js"></script>
+<script src="journal-audio.js"></script>
+<script src="script.js"></script>
+<script src="contact.js"></script>
+<script src="/pwa.js" defer></script>
+
+<script type="module">
+  import { initPrivateGate } from "./private-access.js";
+  initPrivateGate({
+    passwordStepId: "homePasswordStep",
+    contentId: "homePrivateContent",
+    passwordInputId: "homePasswordInput",
+    passwordSubmitBtnId: "homePasswordBtn",
+    signOutBtnId: "homePrivateSignOutBtn",
+    statusId: "homePrivateGateStatus"
   });
-
-  q("#rsubmit").onclick = async () => {
-    const cat = (ov.querySelector('input[name="cat"]:checked') || {}).value || "";
-    const date = q("#rdate").value;
-    const msg = q("#rmsg").value.trim();
-    const err = q("#rerr");
-    if(!cat){ err.textContent = "Please select an issue type."; return; }
-    if(cat === "other" && msg.length < 5){ err.textContent = "Please describe the issue (at least 5 characters)."; return; }
-    if(!date && cat !== "missing" && cat !== "other"){ err.textContent = "Please select the related date."; return; }
-    try{
-      const last = Number(localStorage.getItem("wt_rep_ts") || 0);
-      const wait = 60 - Math.floor((Date.now() - last) / 1000);
-      if(wait > 0){ err.textContent = "Please wait " + wait + " seconds before sending another report."; return; }
-    }catch(_){}
-    err.textContent = "";
-    const btn = q("#rsubmit"); btn.disabled = true; btn.textContent = "Sending...";
-    try{
-      // The backend (Firestore Rules) checks the token, and that member/owner/name match the share document.
-      const batch = writeBatch(db);
-      batch.set(doc(collection(db, "attendance_reports")), {
-        token, ownerId: share.ownerId, memberId: share.memberId, memberName: share.memberName,
-        date, category: cat, message: msg, status: "open", createdAt: serverTimestamp()
-      });
-      batch.update(doc(db, "attendance_shares", token), { lastReportAt: serverTimestamp(), reportCount: increment(1) });
-      await batch.commit();
-      try{ localStorage.setItem("wt_rep_ts", String(Date.now())); }catch(_){}
-      q("#repForm").innerHTML = `
-        <div class="state">
-          <div class="ico ok">${ICON_OK}</div>
-          <h2>Report submitted successfully</h2>
-          <p>Thank you. Your report has been sent to the administrator for review.</p>
-          <p style="margin-top:10px">If you need to provide additional information, please contact: <a href="mailto:${CONTACT}">${CONTACT}</a></p>
-          <div class="actions"><button class="btn" id="rdone">Done</button></div>
-        </div>`;
-      q("#rdone").onclick = close;
-    }catch(e2){
-      console.error(e2);
-      btn.disabled = false; btn.textContent = "Submit Report";
-      err.textContent = (e2 && e2.code === "permission-denied")
-        ? "The report could not be sent. The link may have been disabled, or you may be sending reports too quickly. Please wait a minute and try again."
-        : "Couldn't send the report. Please check your connection and try again.";
-    }
-  };
-}
-
-// ---- PDF: this member only, selected month, libraries loaded only when needed ----
-function loadScript(src){
-  return new Promise((res, rej) => {
-    const s = document.createElement("script");
-    s.src = src; s.onload = res; s.onerror = () => rej(new Error("load " + src));
-    document.head.appendChild(s);
-  });
-}
-function pdfPagesHtml(ym, list){
-  const asc = list.slice().sort((a, b) => a.d.localeCompare(b.d));
-  const st = stats(asc);
-  const FIRST = 22, NEXT = 28;
-  const chunks = [asc.slice(0, FIRST)];
-  for(let i = FIRST; i < asc.length; i += NEXT) chunks.push(asc.slice(i, i + NEXT));
-  const gen = new Date(); const genTxt = String(gen.getDate()).padStart(2,"0") + " " + MONTHS[gen.getMonth()].slice(0,3) + " " + gen.getFullYear();
-  const th = "text-align:left;padding:9px 10px;font-size:12px;color:#fff;background:#173B63;";
-  const table = rows => `<table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr>
-      <th style="${th}">Date</th><th style="${th}">Day</th><th style="${th}">Status</th><th style="${th}text-align:right;">Hours</th></tr></thead><tbody>
-      ${rows.map((r, i) => `<tr style="background:${i % 2 ? "#F6F8FA" : "#fff"};height:34px;">
-        <td style="padding:0 10px;font-weight:600;">${fullLabel(r.d)}</td><td style="padding:0 10px;color:#667085;">${weekday(r.d)}</td>
-        <td style="padding:0 10px;color:${r.s === "duty" ? "#0F766A" : "#9C6B0F"};font-weight:700;">${r.s === "duty" ? "Present" : "Leave"}</td>
-        <td style="padding:0 10px;text-align:right;font-weight:700;">${r.s === "duty" ? fmtH(r.h) + "h" : "—"}</td></tr>`).join("")}
-      </tbody></table>`;
-  const kpi = (l, v) => `<div style="flex:1;background:#F3F6F9;border-radius:10px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#173B63;">${v}</div><div style="font-size:11px;color:#667085;font-weight:600;">${l}</div></div>`;
-  const page = (inner, n, total) => `<div class="pdfp" style="width:794px;height:1123px;padding:44px 48px;background:#fff;position:relative;font-family:${getComputedStyle(document.body).fontFamily};color:#172033;">
-      ${inner}
-      <div style="position:absolute;left:48px;right:48px;bottom:26px;display:flex;justify-content:space-between;font-size:11px;color:#98A2B3;border-top:1px solid #EEF1F4;padding-top:8px;">
-        <span>Generated ${genTxt} · View-only attendance report</span><span>Page ${n} of ${total}</span></div></div>`;
-  const total = chunks.length;
-  return chunks.map((rows, i) => page(i === 0 ? `
-      <div style="background:#173B63;color:#fff;border-radius:12px;padding:18px 20px;margin-bottom:18px;">
-        <div style="font-size:12px;letter-spacing:.12em;opacity:.8;">WORKTRACK · ATTENDANCE REPORT</div>
-        <div style="font-size:26px;font-weight:800;margin-top:4px;">${esc(share.memberName)}</div>
-        <div style="font-size:14px;opacity:.9;margin-top:2px;">${monthLabel(ym)}</div></div>
-      <div style="display:flex;gap:10px;margin-bottom:18px;">${kpi("Work Days", st.duty)}${kpi("Leave Days", st.leave)}${kpi("Total Hours", fmtH(st.hours))}</div>
-      ${table(rows)}` : table(rows), i + 1, total)).join("");
-}
-async function downloadPdf(btn){
-  const list = monthRecords(curYm);
-  if(!list.length){ toast("No records for this month."); return; }
-  const old = btn.innerHTML; btn.disabled = true; btn.textContent = "Preparing PDF...";
-  let wrap = null;
-  try{
-    await Promise.all([window.html2canvas ? 0 : loadScript(H2C), window.jspdf ? 0 : loadScript(JSPDF)]);
-    wrap = document.createElement("div");
-    wrap.style.cssText = "position:fixed;left:-10000px;top:0;width:794px;";
-    wrap.innerHTML = pdfPagesHtml(curYm, list);
-    document.body.appendChild(wrap);
-    const pdf = new window.jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    const pages = wrap.querySelectorAll(".pdfp");
-    for(let i = 0; i < pages.length; i++){
-      const canvas = await window.html2canvas(pages[i], { scale: 1.6, backgroundColor: "#ffffff", useCORS: true });
-      if(i) pdf.addPage();
-      pdf.addImage(canvas.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, 210, 297);
-    }
-    const safe = String(share.memberName).replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") || "member";
-    pdf.save("attendance-" + safe + "-" + curYm + ".pdf");
-  }catch(err){
-    console.error(err);
-    toast("Couldn't create the PDF. Please check your connection and try again.");
-  }finally{
-    if(wrap) wrap.remove();
-    btn.disabled = false; btn.innerHTML = old;
-  }
-}
-
-load();
 </script>
 </body>
 </html>

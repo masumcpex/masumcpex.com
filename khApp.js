@@ -241,11 +241,122 @@ function injectShareStyles(){
   document.head.appendChild(st);
 }
 
+
+const ICON_CHEV_DOWN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+const ICON_SEARCH = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`;
+const ICON_FILTER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>`;
+const ICON_CHEV_LEFT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`;
+
+function injectDashboardStyles(){
+  if(document.getElementById("khDashStyles")) return;
+  const st = document.createElement("style");
+  st.id = "khDashStyles";
+  st.textContent = `
+/* ---------- collapsible sections ---------- */
+.kh-sec-toggle{ cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:10px; user-select:none; -webkit-tap-highlight-color:transparent; }
+.kh-sec-toggle:focus-visible{ outline:2px solid #173B63; outline-offset:3px; border-radius:6px; }
+.kh-sec-chev{ width:30px; height:30px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:#F3F6F9; color:#667085; transition:transform .2s ease; }
+.kh-sec-chev svg{ width:18px; height:18px; }
+.kh-collapsed .kh-sec-chev{ transform:rotate(-90deg); }
+.kh-collapsed > :not(.kh-sec-head){ display:none !important; }
+.kh-sec-head{ margin-bottom:0; }
+.kh-collapsible:not(.kh-collapsed) > .kh-sec-head{ margin-bottom:.9rem; }
+
+/* ---------- Attendance Overview ---------- */
+.kh-ov-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+.kh-ov-top select{ min-height:42px; max-width:100%; }
+.kh-ov-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+.kh-ov-tile{ background:#F6F8FA; border:1px solid var(--line,#E5E7EB); border-radius:14px; padding:12px 14px; min-width:0; }
+.kh-ov-tile b{ display:block; font-size:1.45rem; line-height:1.2; color:#173B63; font-family:var(--font-display,inherit); }
+.kh-ov-tile span{ font-size:.78rem; color:#667085; font-weight:600; }
+.kh-ov-tile:last-child:nth-child(odd){ grid-column:1 / -1; }
+.kh-ov-bar{ height:6px; border-radius:99px; background:#E5E7EB; overflow:hidden; margin-top:8px; }
+.kh-ov-bar i{ display:block; height:100%; background:#159A86; border-radius:99px; }
+@media (min-width:700px){ .kh-ov-grid{ grid-template-columns:repeat(5,1fr); } .kh-ov-tile:last-child:nth-child(odd){ grid-column:auto; } }
+
+/* ---------- Calendar ---------- */
+.kh-cal-nav{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+.kh-cal-title{ font-weight:800; color:#173B63; font-size:1.05rem; text-align:center; flex:1; }
+.kh-cal-btn{ width:42px; height:42px; border-radius:12px; border:1px solid var(--line,#E5E7EB); background:#fff; color:#475467; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+.kh-cal-btn svg{ width:18px; height:18px; }
+.kh-cal-btn:hover,.kh-cal-btn:focus-visible{ background:#F3F6F9; outline:none; }
+.kh-cal-today{ font-size:.78rem; font-weight:700; color:#173B63; background:none; border:none; cursor:pointer; padding:6px 4px; font-family:inherit; }
+.kh-cal-grid{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; }
+.kh-cal-dow{ text-align:center; font-size:.68rem; font-weight:700; color:#98A2B3; text-transform:uppercase; padding:4px 0; }
+.kh-cal-cell{ min-height:52px; border:1px solid var(--line-soft,#EEF1F4); border-radius:10px; background:#fff; padding:4px 2px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:1px; cursor:default; font-family:inherit; color:#344054; }
+.kh-cal-cell.is-empty{ border-color:transparent; background:transparent; }
+button.kh-cal-cell{ cursor:pointer; }
+.kh-cal-cell .n{ font-size:.82rem; font-weight:700; }
+.kh-cal-cell .p, .kh-cal-cell .l{ font-size:.64rem; font-weight:700; line-height:1.15; }
+.kh-cal-cell .p{ color:#0F766A; }
+.kh-cal-cell .l{ color:#9C6B0F; }
+.kh-cal-cell.has-data{ background:#FBFCFD; }
+.kh-cal-cell.is-today{ border-color:#173B63; box-shadow:inset 0 0 0 1px #173B63; }
+.kh-cal-cell.is-selected{ background:#EAF1F8; border-color:#173B63; }
+.kh-cal-cell:focus-visible{ outline:2px solid #173B63; outline-offset:1px; }
+.kh-cal-legend{ display:flex; gap:14px; flex-wrap:wrap; margin:10px 0 0; font-size:.74rem; color:#667085; font-weight:600; }
+.kh-cal-legend .p{ color:#0F766A; } .kh-cal-legend .l{ color:#9C6B0F; }
+.kh-cal-detail{ margin-top:12px; border-top:1px solid var(--line-soft,#EEF1F4); padding-top:12px; }
+.kh-cal-detail h4{ margin:0 0 2px; color:#173B63; font-size:1rem; }
+.kh-cal-detail .sub{ margin:0 0 8px; color:#667085; font-size:.82rem; font-weight:600; }
+.kh-cal-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line-soft,#EEF1F4); }
+.kh-cal-row:last-child{ border-bottom:none; }
+.kh-cal-row .nm{ flex:1; min-width:0; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.kh-cal-row .h{ min-width:42px; text-align:right; font-weight:800; color:#173B63; }
+
+/* ---------- Register search + filters ---------- */
+.kh-reg-tools{ display:flex; flex-direction:column; gap:10px; margin:0 0 12px; }
+.kh-reg-search{ position:relative; }
+.kh-reg-search svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); width:18px; height:18px; color:#98A2B3; pointer-events:none; }
+.kh-reg-search input{ width:100%; box-sizing:border-box; min-height:46px; padding:0 14px 0 38px; border:1.5px solid #CBD5E1; border-radius:12px; font:inherit; background:#fff; }
+.kh-reg-search input:focus{ outline:none; border-color:#173B63; box-shadow:0 0 0 3px rgba(23,59,99,.12); }
+.kh-reg-filterbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.kh-reg-fbtn{ display:inline-flex; align-items:center; gap:8px; min-height:42px; padding:0 14px; border-radius:12px; border:1px solid var(--line,#E5E7EB); background:#fff; color:#173B63; font-weight:700; font-family:inherit; cursor:pointer; }
+.kh-reg-fbtn svg{ width:16px; height:16px; }
+.kh-reg-fcount{ background:#173B63; color:#fff; border-radius:99px; font-size:.72rem; padding:1px 8px; }
+.kh-reg-clear{ background:none; border:none; color:#C0392B; font-weight:700; cursor:pointer; padding:8px 4px; font-family:inherit; }
+.kh-reg-panel{ display:none; grid-template-columns:1fr; gap:10px; padding:12px; border:1px solid var(--line,#E5E7EB); border-radius:14px; background:#FBFCFD; }
+.kh-reg-panel.is-open{ display:grid; }
+.kh-reg-panel label{ display:flex; flex-direction:column; gap:4px; font-size:.74rem; font-weight:700; color:#667085; text-transform:uppercase; letter-spacing:.04em; }
+.kh-reg-panel select, .kh-reg-panel input{ min-height:44px; border:1.5px solid #CBD5E1; border-radius:10px; padding:0 10px; font:inherit; background:#fff; width:100%; box-sizing:border-box; }
+.kh-reg-result{ font-size:.82rem; color:#667085; font-weight:600; margin:2px 0 0; }
+@media (min-width:621px){ .kh-reg-tools{ flex-direction:row; flex-wrap:wrap; align-items:center; } .kh-reg-search{ flex:1 1 260px; } .kh-reg-panel.is-open{ grid-template-columns:repeat(3,1fr); flex-basis:100%; } .kh-reg-result{ flex-basis:100%; } }
+
+/* ---------- Reports ---------- */
+.kh-rep-clear{ display:flex; align-items:center; gap:10px; margin-top:10px; padding:12px 14px; border-radius:12px; background:rgba(21,154,134,.08); color:#0F766A; font-weight:700; }
+.kh-rep-clear svg{ width:20px; height:20px; flex-shrink:0; }
+.kh-rep-clear small{ display:block; font-weight:500; color:#475467; }
+.kh-rep-dot{ display:inline-block; width:9px; height:9px; border-radius:50%; background:#C0392B; margin-right:6px; }
+
+/* ---------- Profile history ---------- */
+.kh-ph{ text-align:left; margin-top:14px; }
+.kh-ph h4{ margin:0 0 6px; font-size:.95rem; color:#173B63; }
+.kh-ph-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line-soft,#EEF1F4); font-size:.92rem; }
+.kh-ph-row .d{ flex:1; font-weight:700; }
+.kh-ph-row .h{ min-width:42px; text-align:right; font-weight:800; color:#173B63; }
+.kh-ph-more{ width:100%; margin-top:6px; min-height:42px; border:none; border-radius:10px; background:#F3F6F9; color:#173B63; font-weight:700; font-family:inherit; cursor:pointer; }
+
+/* ---------- Monthly Summary: cards on phones (no sideways scrolling) ---------- */
+@media (max-width:620px){
+  #summaryTable, #summaryTable tbody{ display:block; width:100%; }
+  #summaryTable thead{ display:none; }
+  #summaryTable tr{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px 8px; padding:12px; margin-bottom:10px; border:1px solid var(--line,#E5E7EB); border-radius:14px; background:#fff; }
+  #summaryTable td{ display:block; padding:0; border:none; min-width:0; font-size:.95rem; }
+  #summaryTable td::before{ content:attr(data-label); display:block; font-size:.66rem; font-weight:700; color:#98A2B3; text-transform:uppercase; letter-spacing:.04em; }
+  #summaryTable td:first-child{ grid-column:1 / -1; font-weight:800; font-size:1.02rem; color:#173B63; }
+  #summaryTable td:first-child::before{ display:none; }
+  #summaryTable td:last-child{ grid-column:1 / -1; padding-top:6px; border-top:1px solid var(--line-soft,#EEF1F4); }
+}
+`;
+  document.head.appendChild(st);
+}
+
 export function initKhApp(uid, isAdmin){
   if(appStarted) return; 
   appStarted = true;
   injectRegisterStyles();
   injectShareStyles();
+  injectDashboardStyles();
 
   const isAdminUser = !!isAdmin;
 
@@ -1120,7 +1231,8 @@ export function initKhApp(uid, isAdmin){
         <div class="kh-profile-name" id="khProfileName"></div>
         <div class="kh-profile-month" id="khProfileMonth"></div>
         <div class="kh-profile-stats" id="khProfileStats"></div>
-        <button type="button" class="btn3d btn-sky" id="khProfilePdfBtn" style="width:100%; margin-top:1rem;">${ICON_DOC} Download PDF Report</button>
+        <div class="kh-ph" id="khProfileHistory"></div>
+        <button type="button" class="btn3d btn-sky" id="khProfilePdfBtn" style="width:100%; margin-top:1rem;">${ICON_DOC} Download Member Report</button>
       </div>`;
     document.body.appendChild(overlay);
     overlay.addEventListener("click", e => { if(e.target === overlay) overlay.style.display = "none"; });
@@ -1144,9 +1256,10 @@ export function initKhApp(uid, isAdmin){
       <div class="kh-profile-stat"><strong>${stats.leave}</strong><span>Leave</span></div>
       <div class="kh-profile-stat"><strong>RM ${advanceVal.toFixed(2)}</strong><span>Advance</span></div>
     `;
+    renderProfileHistory(overlay.querySelector("#khProfileHistory"), member, 10);
     const pdfBtn = overlay.querySelector("#khProfilePdfBtn");
     pdfBtn.onclick = async () => {
-      if(typeof window.html2canvas === "undefined" || typeof window.jspdf === "undefined"){
+      if(!(await ensurePdfLibs())){
         showToast("PDF generation library failed to load. Please check your internet connection.", "error");
         return;
       }
@@ -1475,7 +1588,7 @@ export function initKhApp(uid, isAdmin){
              <button type="button" class="kh-advance-edit-btn" data-id="${m.id}" title="Add advance" aria-label="Add advance">${ICON_EDIT}</button>
            </div>`
         : `<span class="kh-advance-prefix">RM 0.00</span>`;
-      return `<tr><td>${name}</td><td>${d.days}</td><td>${d.leaves}</td><td><strong>${d.hours}</strong></td><td>${advanceCell}</td></tr>`;
+      return `<tr><td data-label="Name">${escapeHtml(name)}</td><td data-label="Work Days">${d.days}</td><td data-label="Leave Days">${d.leaves}</td><td data-label="Work Hours"><strong>${d.hours}</strong></td><td data-label="Advance (RM)">${advanceCell}</td></tr>`;
     }).join("");
   }
 
@@ -1484,6 +1597,8 @@ export function initKhApp(uid, isAdmin){
     populateSummaryMonthOptions();
     renderSummary();
     renderQuickStats();
+    renderOverview();
+    renderCalendar();
   }
 
   function renderQuickStats(){
@@ -1506,7 +1621,7 @@ export function initKhApp(uid, isAdmin){
     if(pill) pill.textContent = monthLabel(ym);
   }
 
-  summaryMonthSelect?.addEventListener("change", renderSummary);
+  summaryMonthSelect?.addEventListener("change", () => { renderSummary(); renderOverview(); });
 
   document.querySelector("#summaryTable tbody").addEventListener("click", e => {
     const editBtn = e.target.closest(".kh-advance-edit-btn");
@@ -1518,6 +1633,7 @@ export function initKhApp(uid, isAdmin){
           <input type="number" class="kh-advance-add-input" min="0" step="0.01" placeholder="Amount" inputmode="decimal" autofocus>
           <button type="button" class="kh-advance-op-btn kh-advance-op-add" data-op="add" title="Add to advance">+ Add</button>
           <button type="button" class="kh-advance-op-btn kh-advance-op-deduct" data-op="deduct" title="Deduct from advance">&minus; Deduct</button>
+          <input type="date" class="kh-advance-date-input" value="${localTodayStr()}" aria-label="Advance date" title="Date of this advance" style="flex:1 1 100%; width:100%; max-width:140px; box-sizing:border-box; padding:.3rem .4rem; border-radius:8px; border:1.5px solid #CBD5E1; font-size:.8rem;">
         </div>`;
       const input = wrap.querySelector(".kh-advance-add-input");
       input.focus();
@@ -1538,23 +1654,41 @@ export function initKhApp(uid, isAdmin){
     if(opBtn) commitAdvanceOp(opBtn);
   });
 
+  function localTodayStr(){
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+
+  // Advance history lives in the member document (`advanceLog`: [{ d: "YYYY-MM-DD", a: +taken / -deducted }]).
+  // `advance` stays the running balance exactly as before. A transaction keeps balance + history in sync.
   async function commitAdvanceOp(opBtn){
     const wrap = opBtn.closest(".kh-advance-wrap");
     const input = wrap.querySelector(".kh-advance-add-input");
+    const dateInput = wrap.querySelector(".kh-advance-date-input");
     const rawVal = parseFloat(input.value);
     if(isNaN(rawVal) || rawVal <= 0){
       input.focus();
       input.classList.add("kh-input-error");
       return;
     }
-    const currentBalance = parseFloat(wrap.dataset.balance) || 0;
     const memberId = wrap.dataset.id;
     const op = opBtn.dataset.op;
-    const newBalance = op === "deduct" ? currentBalance - rawVal : currentBalance + rawVal;
+    const entryDate = (dateInput && /^\d{4}-\d{2}-\d{2}$/.test(dateInput.value)) ? dateInput.value : localTodayStr();
+    let newBalance = 0;
 
     wrap.querySelectorAll("input, button").forEach(el => el.disabled = true);
     try{
-      await updateDoc(doc(db, "kh_members", memberId), { advance: newBalance });
+      const ref = doc(db, "kh_members", memberId);
+      await runTransaction(db, async tx => {
+        const snap = await tx.get(ref);
+        if(!snap.exists()) throw new Error("member-missing");
+        const cur = snap.data();
+        const bal = typeof cur.advance === "number" ? cur.advance : 0;
+        newBalance = op === "deduct" ? bal - rawVal : bal + rawVal;
+        const log = Array.isArray(cur.advanceLog) ? cur.advanceLog.slice() : [];
+        log.push({ d: entryDate, a: op === "deduct" ? -rawVal : rawVal });
+        tx.update(ref, { advance: newBalance, advanceLog: log });
+      });
       if(newBalance < 0){
         showToast(`Saved, but new balance is negative: RM ${newBalance.toFixed(2)}.`, "error");
       }else{
@@ -1598,9 +1732,27 @@ export function initKhApp(uid, isAdmin){
     return { members: names.size, hours, present, leave };
   }
 
+  // Register search + filters (in-memory, on the data that is already loaded — no extra Firebase reads)
+  const regFilters = { q: "", status: "all", from: "", to: "" };
+  function regFilterActive(){
+    return !!(regFilters.q || regFilters.status !== "all" || regFilters.from || regFilters.to);
+  }
+  function regMatches(r){
+    if(regFilters.status !== "all" && r.status !== regFilters.status) return false;
+    if(regFilters.from && r.date < regFilters.from) return false;
+    if(regFilters.to && r.date > regFilters.to) return false;
+    if(regFilters.q){
+      const q = regFilters.q;
+      const hay = (String(r.member).toLowerCase() + " " + r.date + " " + regDateLabel(r.date).toLowerCase());
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  }
+
   function buildRegisterIndex(){
     const filter = filterMember.value;
-    const src = filter === "All" ? records : records.filter(r => r.member === filter);
+    let src = filter === "All" ? records : records.filter(r => r.member === filter);
+    if(regFilterActive()) src = src.filter(regMatches);
     const byMonth = {};
     src.forEach(r => {
       if(!r.date) return;
@@ -1661,7 +1813,7 @@ export function initKhApp(uid, isAdmin){
   function regMonthHtml(ym){
     const mo = regIndex.byMonth[ym];
     const dayCount = Object.keys(mo.days).length;
-    const isOpen = (ym in regMonthOpen) ? regMonthOpen[ym] : (ym === currentYearMonth());
+    const isOpen = regFilterActive() ? true : ((ym in regMonthOpen) ? regMonthOpen[ym] : (ym === currentYearMonth()));
     return `
       <details class="kh-month-group kh-reg-month" data-ym="${ym}"${isOpen ? " open" : ""}>
         <summary class="kh-month-summary">
@@ -1678,13 +1830,75 @@ export function initKhApp(uid, isAdmin){
     const noRecordsNote = document.getElementById("noRecordsNote");
     regIndex = buildRegisterIndex();
 
+    updateRegisterResultLine();
     if(!regIndex.total){
       registerGroups.innerHTML = "";
+      noRecordsNote.textContent = regFilterActive() ? "No attendance matches your search or filters." : "No entries yet.";
       noRecordsNote.style.display = "block";
       return;
     }
     noRecordsNote.style.display = "none";
     registerGroups.innerHTML = regIndex.months.map(ym => regMonthHtml(ym)).join("");
+  }
+
+  function updateRegisterResultLine(){
+    const line = document.getElementById("khRegResult");
+    if(!line) return;
+    if(!regFilterActive()){ line.style.display = "none"; return; }
+    const days = regIndex.months.reduce((n, ym) => n + Object.keys(regIndex.byMonth[ym].days).length, 0);
+    line.textContent = `Showing ${regIndex.total} ${regIndex.total === 1 ? "record" : "records"} in ${days} ${days === 1 ? "day" : "days"}`;
+    line.style.display = "";
+  }
+
+  function buildRegisterTools(){
+    if(document.getElementById("khRegTools")) return;
+    const row = filterMember.closest(".filter-row");
+    if(!row) return;
+    const tools = document.createElement("div");
+    tools.id = "khRegTools";
+    tools.className = "kh-reg-tools";
+    tools.innerHTML = `
+      <div class="kh-reg-search">${ICON_SEARCH}<input type="search" id="khRegSearch" placeholder="Search name or date…" aria-label="Search attendance by member name or date" autocomplete="off"></div>
+      <div class="kh-reg-filterbar">
+        <button type="button" class="kh-reg-fbtn" id="khRegFilterBtn" aria-expanded="false" aria-controls="khRegPanel">${ICON_FILTER}Filters <span class="kh-reg-fcount" id="khRegFcount" style="display:none;">0</span></button>
+        <button type="button" class="kh-reg-clear" id="khRegClear" style="display:none;">Clear all</button>
+      </div>
+      <div class="kh-reg-panel" id="khRegPanel">
+        <label>Status<select id="khRegStatus"><option value="all">All status</option><option value="duty">Present</option><option value="leave">Leave</option></select></label>
+        <label>From<input type="date" id="khRegFrom"></label>
+        <label>To<input type="date" id="khRegTo"></label>
+      </div>
+      <p class="kh-reg-result" id="khRegResult" style="display:none;"></p>`;
+    row.insertAdjacentElement("afterend", tools);
+
+    let timer = null;
+    const apply = () => {
+      const n = (regFilters.status !== "all" ? 1 : 0) + (regFilters.from ? 1 : 0) + (regFilters.to ? 1 : 0);
+      const c = document.getElementById("khRegFcount");
+      c.textContent = String(n); c.style.display = n ? "" : "none";
+      document.getElementById("khRegClear").style.display = regFilterActive() ? "" : "none";
+      renderRegister();
+    };
+    tools.querySelector("#khRegSearch").addEventListener("input", e => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { regFilters.q = e.target.value.trim().toLowerCase(); apply(); }, 180);
+    });
+    tools.querySelector("#khRegFilterBtn").addEventListener("click", e => {
+      const panel = tools.querySelector("#khRegPanel");
+      const open = panel.classList.toggle("is-open");
+      e.currentTarget.setAttribute("aria-expanded", String(open));
+    });
+    tools.querySelector("#khRegStatus").addEventListener("change", e => { regFilters.status = e.target.value; apply(); });
+    tools.querySelector("#khRegFrom").addEventListener("change", e => { regFilters.from = e.target.value; apply(); });
+    tools.querySelector("#khRegTo").addEventListener("change", e => { regFilters.to = e.target.value; apply(); });
+    tools.querySelector("#khRegClear").addEventListener("click", () => {
+      regFilters.q = ""; regFilters.status = "all"; regFilters.from = ""; regFilters.to = "";
+      tools.querySelector("#khRegSearch").value = "";
+      tools.querySelector("#khRegStatus").value = "all";
+      tools.querySelector("#khRegFrom").value = "";
+      tools.querySelector("#khRegTo").value = "";
+      apply();
+    });
   }
 
   // Remember what the user expanded/collapsed, and build the heavy content only when something is opened.
@@ -1874,6 +2088,25 @@ export function initKhApp(uid, isAdmin){
       .slice().sort((a,b) => a.date.localeCompare(b.date));
   }
 
+  // Advance numbers for one member in one month, from the history log.
+  function advanceStatsFor(member, ym){
+    const log = Array.isArray(member && member.advanceLog) ? member.advanceLog : [];
+    let taken = 0, deducted = 0, all = 0;
+    const entries = [];
+    log.forEach(e => {
+      const a = Number(e && e.a) || 0;
+      all += a;
+      if(e && typeof e.d === "string" && e.d.startsWith(ym)){
+        if(a > 0) taken += a; else deducted += -a;
+        entries.push({ d: e.d, a });
+      }
+    });
+    entries.sort((x, y) => x.d.localeCompare(y.d));
+    const balance = member && typeof member.advance === "number" ? member.advance : 0;
+    const untracked = Math.round((balance - all) * 100) / 100;   // part of the balance saved before history existed
+    return { taken, deducted, balance, entries, untracked };
+  }
+
   function exportMonthCsv(ym, btn){
     khBounce(btn);
     const monthRecords = getMonthRecordsForExport(ym);
@@ -1890,7 +2123,28 @@ export function initKhApp(uid, isAdmin){
       r.status === "duty" ? "Present" : "Leave",
       r.status === "duty" ? r.hours : ""
     ]);
-    const csvContent = [header, ...rows]
+    // Advance section (this month's history + current balance), for the members in this export.
+    const csvNames = Array.from(new Set(monthRecords.map(r => r.member))).sort((a, b) => a.localeCompare(b));
+    const csvMembers = csvNames.map(n => members.find(x => x.name === n)).filter(Boolean);
+    const advSummary = csvMembers.map(m => {
+      const st = advanceStatsFor(m, ym);
+      return [m.name, st.taken.toFixed(2), st.deducted.toFixed(2), st.balance.toFixed(2)];
+    });
+    const advEntries = [];
+    csvMembers.forEach(m => advanceStatsFor(m, ym).entries.forEach(e => advEntries.push([e.d, m.name, e.a > 0 ? "Taken" : "Deducted", Math.abs(e.a).toFixed(2)])));
+    advEntries.sort((x, y) => x[0].localeCompare(y[0]) || x[1].localeCompare(y[1]));
+    const advanceBlock = [
+      [],
+      ["Advance summary (" + monthLabel(ym) + ")"],
+      ["Name", "Advance Taken (RM)", "Deducted (RM)", "Current Balance (RM)"],
+      ...advSummary,
+      [],
+      ["Advance details (" + monthLabel(ym) + ")"],
+      ["Date", "Name", "Type", "Amount (RM)"],
+      ...(advEntries.length ? advEntries : [["No advance recorded this month"]])
+    ];
+
+    const csvContent = [header, ...rows, ...advanceBlock]
       .map(row => row.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(","))
       .join("\r\n");
 
@@ -1906,7 +2160,7 @@ export function initKhApp(uid, isAdmin){
   }
 
   async function exportMonthPdf(ym, btn){
-    if(typeof window.html2canvas === "undefined" || typeof window.jspdf === "undefined"){
+    if(!(await ensurePdfLibs())){
       alert("PDF generation library failed to load. Please check your internet connection and try again.");
       return;
     }
@@ -1988,7 +2242,7 @@ export function initKhApp(uid, isAdmin){
 
     if(singleMember){
       const stats = byMember[singleMember.name] || { present:0, absent:0, hours:0 };
-      const advanceVal = typeof singleMember.advance === "number" ? singleMember.advance : 0;
+      const advSingle = advanceStatsFor(singleMember, ym);
       const initial = (singleMember.name || "?").trim().charAt(0).toUpperCase();
       identityBlockHtml = `
         <div style="display:flex; align-items:center; gap:14px; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:10px; padding:14px 18px; margin-bottom:20px;">
@@ -2004,7 +2258,7 @@ export function initKhApp(uid, isAdmin){
           ${kpiCard("Present", toBn(stats.present), "Work Days")}
           ${kpiCard("Leave", toBn(stats.absent), "Leave Days")}
           ${kpiCard("Total Hours", toBn(stats.hours), "Hours")}
-          ${kpiCard("Advance", money(advanceVal), "Total Advance")}
+          ${kpiCard("Advance Taken", money(advSingle.taken), `Balance ${money(advSingle.balance)}`)}
         </div>`;
       detailRowsHtml = monthRecords
         .filter(r => r.member === singleMember.name)
@@ -2032,29 +2286,28 @@ export function initKhApp(uid, isAdmin){
         </div>`;
       const totalPresentAll = memberNames.reduce((sum,n) => sum + byMember[n].present, 0);
       const totalLeaveAll   = memberNames.reduce((sum,n) => sum + byMember[n].absent, 0);
-      const totalAdvanceAll = memberNames.reduce((sum,n) => {
-        const m = members.find(x => x.name === n);
-        return sum + (m && typeof m.advance === "number" ? m.advance : 0);
-      }, 0);
+      const advTakenAll = memberNames.reduce((sum,n) => sum + advanceStatsFor(members.find(x => x.name === n), ym).taken, 0);
+      const advBalanceAll = memberNames.reduce((sum,n) => sum + advanceStatsFor(members.find(x => x.name === n), ym).balance, 0);
       kpiCardsHtml = `
         <div style="display:flex; gap:10px; margin-bottom:22px;">
           ${kpiCard("Present", toBn(totalPresentAll), "Work Days")}
           ${kpiCard("Leave", toBn(totalLeaveAll), "Leave Days")}
           ${kpiCard("Total Hours", toBn(totalHoursAll), "Hours")}
-          ${kpiCard("Advance", money(totalAdvanceAll), "Total Advance")}
+          ${kpiCard("Advance Taken", money(advTakenAll), `Balance ${money(advBalanceAll)}`)}
         </div>`;
 
       const summaryRowsHtml = memberNames.map(name => {
         const d = byMember[name];
         const m = members.find(x => x.name === name);
-        const advanceVal = m && typeof m.advance === "number" ? m.advance : 0;
+        const adv = advanceStatsFor(m, ym);
         return `
           <tr>
             <td class="pdf-td pdf-td-left" style="font-weight:700;">${escapeHtml(name)}</td>
             <td class="pdf-td pdf-td-center">${toBn(d.present)}</td>
             <td class="pdf-td pdf-td-center">${toBn(d.absent)}</td>
             <td class="pdf-td pdf-td-center">${toBn(d.hours)}</td>
-            <td class="pdf-td pdf-td-right">${money(advanceVal)}</td>
+            <td class="pdf-td pdf-td-right">${money(adv.taken)}</td>
+            <td class="pdf-td pdf-td-right">${money(adv.balance)}${Math.abs(adv.untracked) >= 0.01 ? "*" : ""}</td>
           </tr>`;
       }).join("");
       teamSummaryHtml = `
@@ -2068,7 +2321,8 @@ export function initKhApp(uid, isAdmin){
             <th class="pdf-th">Present</th>
             <th class="pdf-th">Leave</th>
             <th class="pdf-th">Total Hours</th>
-            <th class="pdf-th pdf-th-right">Advance</th>
+            <th class="pdf-th pdf-th-right">Advance Taken</th>
+            <th class="pdf-th pdf-th-right">Balance</th>
           </tr></thead>
           <tbody>${summaryRowsHtml}</tbody>
         </table>`;
@@ -2087,6 +2341,47 @@ export function initKhApp(uid, isAdmin){
       reportId = reportIdFor("ALL");
       totalHoursLabelVal = `${toBn(totalHoursAll)} hrs`;
     }
+
+    // ----- Advance details for this month (who took how much, and when) -----
+    const advTargets = singleMember ? [singleMember] : memberNames.map(n => members.find(x => x.name === n)).filter(Boolean);
+    const advEntriesPdf = [];
+    let advTakenTotal = 0, advDeductedTotal = 0, advUntrackedTotal = 0;
+    advTargets.forEach(m => {
+      const st = advanceStatsFor(m, ym);
+      advTakenTotal += st.taken; advDeductedTotal += st.deducted;
+      if(Math.abs(st.untracked) >= 0.01) advUntrackedTotal += st.untracked;
+      st.entries.forEach(e => advEntriesPdf.push({ name: m.name, d: e.d, a: e.a }));
+    });
+    advEntriesPdf.sort((x, y) => x.d.localeCompare(y.d) || x.name.localeCompare(y.name));
+    const advRowsHtml = advEntriesPdf.map(e => `
+      <tr>
+        <td class="pdf-td pdf-td-left">${escapeHtml(prettyDate(e.d))}</td>
+        <td class="pdf-td pdf-td-left">${escapeHtml(e.name)}</td>
+        <td class="pdf-td pdf-td-left"><span style="color:${e.a > 0 ? PDF_BLUE : PDF_MUTED}; font-weight:700;">${e.a > 0 ? "TAKEN" : "DEDUCTED"}</span></td>
+        <td class="pdf-td pdf-td-right">${money(Math.abs(e.a))}</td>
+      </tr>`).join("");
+    const advNoteHtml = Math.abs(advUntrackedTotal) >= 0.01
+      ? `<div style="font-size:9px; color:${PDF_MUTED}; margin-top:10px;">* Current balance includes ${money(advUntrackedTotal)} saved before advance history started (dates not available).</div>`
+      : "";
+    const advanceSectionHtml = `
+      <div style="display:flex; align-items:center; gap:8px; margin:26px 0 12px;">
+        <div style="width:3px; height:16px; background:${PDF_BLUE}; border-radius:2px;"></div>
+        <div style="font-size:14px; font-weight:700; color:${PDF_INK};">Advance Details — ${monthLabel(ym)}</div>
+      </div>
+      ${advEntriesPdf.length ? `
+        <table class="pdf-table">
+          <thead><tr>
+            <th class="pdf-th pdf-th-left">Date</th><th class="pdf-th pdf-th-left">Name</th>
+            <th class="pdf-th pdf-th-left">Type</th><th class="pdf-th pdf-th-right">Amount</th>
+          </tr></thead>
+          <tbody>${advRowsHtml}</tbody>
+          <tfoot>
+            <tr class="pdf-tfoot-row"><td class="pdf-td pdf-td-left" style="font-weight:800;" colspan="3">Total Advance Taken</td><td class="pdf-td pdf-td-right" style="font-weight:800;">${money(advTakenTotal)}</td></tr>
+            ${advDeductedTotal > 0 ? `<tr class="pdf-tfoot-row"><td class="pdf-td pdf-td-left" style="font-weight:800;" colspan="3">Total Deducted</td><td class="pdf-td pdf-td-right" style="font-weight:800;">${money(advDeductedTotal)}</td></tr>` : ""}
+          </tfoot>
+        </table>`
+      : `<div style="font-size:10px; color:${PDF_MUTED};">No advance recorded for ${monthLabel(ym)}.</div>`}
+      ${advNoteHtml}`;
 
     const wrap = document.createElement("div");
     wrap.id = "pdfReportRoot";
@@ -2130,6 +2425,7 @@ export function initKhApp(uid, isAdmin){
           </tr>
         </tfoot>
       </table>
+      ${advanceSectionHtml}
     `;
 
     const style = document.createElement("style");
@@ -2461,12 +2757,13 @@ export function initKhApp(uid, isAdmin){
     card.className = "kh-card kh-card--amber";
     card.style.display = "none";
     card.innerHTML = `
-      <div class="kh-rep-head"><h2 class="kh-card-title" style="margin:0;">Attendance Reports</h2><span class="kh-rep-count" id="khRepCount">0</span></div>
-      <p class="kh-rep-empty" id="khRepEmpty" style="display:none;">No open reports.</p>
+      <div class="kh-rep-head"><h2 class="kh-card-title" style="margin:0;">Attendance Reports</h2><span class="kh-rep-count" id="khRepCount"><span class="kh-rep-dot" aria-hidden="true"></span>0</span></div>
+      <div class="kh-rep-clear" id="khRepEmpty" style="display:none;">${ICON_CHECK}<div>All clear<small>No open attendance reports</small></div></div>
       <div class="kh-rep-list" id="khRepList"></div>
       <button type="button" class="kh-rep-toggle" id="khRepResolvedBtn">Show resolved</button>
       <div class="kh-rep-list" id="khRepResolvedList"></div>`;
     anchorEl.parentNode.insertBefore(card, anchorEl);
+    makeCollapsible(card, card.querySelector(".kh-rep-head"), "reports");
     card.addEventListener("click", ev => {
       const rv = ev.target.closest("[data-rep-id]");
       if(rv){
@@ -2491,12 +2788,13 @@ export function initKhApp(uid, isAdmin){
   }
 
   function renderReportsCard(){
-    if(!reportsListenerOk && !reports.length) return;
+    if(!reportsListenerOk) return;
     const card = ensureReportsCard();
     if(!card) return;
-    card.style.display = (reports.length || shares.length) ? "" : "none";
-    card.querySelector("#khRepCount").textContent = String(reports.length);
-    card.querySelector("#khRepCount").style.display = reports.length ? "" : "none";
+    card.style.display = "";
+    const badge = card.querySelector("#khRepCount");
+    badge.innerHTML = `<span class="kh-rep-dot" aria-hidden="true"></span>${reports.length} open`;
+    badge.style.display = reports.length ? "" : "none";
     card.querySelector("#khRepEmpty").style.display = reports.length ? "none" : "";
     card.querySelector("#khRepList").innerHTML = reports.slice().sort((a, b) => reportTime(b) - reportTime(a)).map(reportItemHtml).join("");
   }
@@ -2572,6 +2870,229 @@ export function initKhApp(uid, isAdmin){
     });
   }
   // ================= /Share Attendance =================
+
+  // ================= Dashboard sections: collapsible, Overview, Calendar, profile history =================
+  // One source of truth: everything below reads the same `records` / `members` arrays as Monthly Summary
+  // and the Attendance Register. No new Firebase listeners and no extra reads.
+  const PDF_LIBS = [
+    "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+  ];
+  function loadScriptOnce(src){
+    return new Promise(resolve => {
+      const el = document.createElement("script");
+      el.src = src; el.onload = () => resolve(true); el.onerror = () => resolve(false);
+      document.head.appendChild(el);
+    });
+  }
+  // PDF libraries are only needed when someone downloads a report, so they can load on demand.
+  async function ensurePdfLibs(){
+    if(window.html2canvas && window.jspdf) return true;
+    const results = await Promise.all([
+      window.html2canvas ? true : loadScriptOnce(PDF_LIBS[0]),
+      window.jspdf ? true : loadScriptOnce(PDF_LIBS[1])
+    ]);
+    return results.every(Boolean) && !!window.html2canvas && !!window.jspdf;
+  }
+
+  function secStateGet(key){ try{ return localStorage.getItem("kh_sec_" + key); }catch(_){ return null; } }
+  function secStateSet(key, v){ try{ localStorage.setItem("kh_sec_" + key, v); }catch(_){} }
+
+  // Turns a card's title row into an accessible expand/collapse control (state remembered per device).
+  function makeCollapsible(card, head, key, defaultCollapsed, onExpand){
+    if(!card || !head || card.dataset.collapsible) return;
+    card.dataset.collapsible = key;
+    card.classList.add("kh-collapsible");
+    head.classList.add("kh-sec-head", "kh-sec-toggle");
+    head.setAttribute("role", "button");
+    head.setAttribute("tabindex", "0");
+    head.insertAdjacentHTML("beforeend", `<span class="kh-sec-chev" aria-hidden="true">${ICON_CHEV_DOWN}</span>`);
+    const saved = secStateGet(key);
+    const collapsed = saved === null ? !!defaultCollapsed : saved === "1";
+    card.classList.toggle("kh-collapsed", collapsed);
+    head.setAttribute("aria-expanded", String(!collapsed));
+    const toggle = () => {
+      const now = card.classList.toggle("kh-collapsed");
+      head.setAttribute("aria-expanded", String(!now));
+      secStateSet(key, now ? "1" : "0");
+      if(!now && onExpand) onExpand();
+    };
+    head.addEventListener("click", e => { if(e.target.closest("a, select, input")) return; toggle(); });
+    head.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); } });
+  }
+  const isCollapsed = card => !card || card.classList.contains("kh-collapsed");
+
+  // ---- Shared month numbers: the same rules as Monthly Summary ----
+  function monthTotals(ym){
+    let duty = 0, leave = 0, hours = 0;
+    records.forEach(r => {
+      if(!r.date || !r.date.startsWith(ym)) return;
+      if(r.status === "duty"){ duty++; hours += (Number(r.hours) || 0); } else leave++;
+    });
+    return { duty, leave, hours };
+  }
+
+  // ---- Attendance Overview ----
+  let overviewCard = null;
+  function ensureOverviewCard(){
+    if(overviewCard) return overviewCard;
+    const anchorEl = document.getElementById("sectionAttendance");
+    if(!anchorEl) return null;
+    overviewCard = document.createElement("section");
+    overviewCard.id = "sectionOverview";
+    overviewCard.className = "kh-card kh-card--mint";
+    overviewCard.innerHTML = `
+      <h2 class="kh-card-title">Attendance Overview</h2>
+      <div class="kh-ov-top"><label for="khOvMonth" style="font-weight:700;">Month</label><select id="khOvMonth" aria-label="Overview month"></select></div>
+      <div id="khOvBody"></div>`;
+    anchorEl.insertAdjacentElement("afterend", overviewCard);
+    overviewCard.querySelector("#khOvMonth").addEventListener("change", e => {
+      if(summaryMonthSelect){ summaryMonthSelect.value = e.target.value; renderSummary(); }
+      renderOverview();
+    });
+    return overviewCard;
+  }
+  function renderOverview(){
+    const card = ensureOverviewCard();
+    if(!card) return;
+    const sel = card.querySelector("#khOvMonth");
+    if(summaryMonthSelect){
+      if(sel.innerHTML !== summaryMonthSelect.innerHTML) sel.innerHTML = summaryMonthSelect.innerHTML;
+      sel.value = summaryMonthSelect.value;
+    }
+    const ym = (summaryMonthSelect && summaryMonthSelect.value) || currentYearMonth();
+    const body = card.querySelector("#khOvBody");
+    if(!recordsLoaded){ body.innerHTML = `<p class="kh-loading">Loading attendance...</p>`; return; }
+    const t = monthTotals(ym);
+    const total = t.duty + t.leave;
+    if(!total){ body.innerHTML = `<p class="kh-empty-note" style="display:block;">No attendance data available for this period.</p>`; return; }
+    const rate = Math.round((t.duty / total) * 100);
+    const avg = t.duty ? Math.round((t.hours / t.duty) * 10) / 10 : 0;
+    body.innerHTML = `
+      <div class="kh-ov-grid">
+        <div class="kh-ov-tile"><b>${rate}%</b><span>Present Rate</span><div class="kh-ov-bar" aria-hidden="true"><i style="width:${rate}%"></i></div></div>
+        <div class="kh-ov-tile"><b>${t.duty}</b><span>Duty Days</span></div>
+        <div class="kh-ov-tile"><b>${t.leave}</b><span>Leave Days</span></div>
+        <div class="kh-ov-tile"><b>${fmtHours(t.hours)}h</b><span>Total Hours</span></div>
+        <div class="kh-ov-tile"><b>${fmtHours(avg)}h</b><span>Average / Duty Day</span></div>
+      </div>`;
+  }
+
+  // ---- Attendance Calendar ----
+  let calCard = null, calYm = "", calSelected = "";
+  function ensureCalendarCard(){
+    if(calCard) return calCard;
+    const sumTable = document.getElementById("summaryTable");
+    const sumCard = sumTable ? sumTable.closest("section") : null;
+    if(!sumCard) return null;
+    if(!sumCard.id) sumCard.id = "sectionSummary";
+    makeCollapsible(sumCard, sumCard.querySelector(".kh-card-title"), "summary", false);
+    calCard = document.createElement("section");
+    calCard.id = "sectionCalendar";
+    calCard.className = "kh-card kh-card--sky";
+    calCard.innerHTML = `
+      <h2 class="kh-card-title">Attendance Calendar</h2>
+      <div id="khCalBody"></div>`;
+    sumCard.insertAdjacentElement("afterend", calCard);
+    makeCollapsible(calCard, calCard.querySelector(".kh-card-title"), "calendar", true, () => renderCalendar());
+    calCard.addEventListener("click", e => {
+      const nav = e.target.closest("[data-cal]");
+      if(nav){
+        const act = nav.dataset.cal;
+        if(act === "today"){ calYm = currentYearMonth(); calSelected = localTodayStr(); }
+        else{
+          const [y, m] = calYm.split("-").map(Number);
+          const d = new Date(y, m - 1 + (act === "next" ? 1 : -1), 1);
+          calYm = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+          calSelected = "";
+        }
+        renderCalendar();
+        return;
+      }
+      const cell = e.target.closest("[data-date]");
+      if(cell){ calSelected = cell.dataset.date; renderCalendar(); }
+    });
+    return calCard;
+  }
+  function renderCalendar(){
+    const card = ensureCalendarCard();
+    if(!card || isCollapsed(card)) return;          // secondary section: only render while it is open
+    const body = card.querySelector("#khCalBody");
+    if(!recordsLoaded){ body.innerHTML = `<p class="kh-loading">Loading attendance...</p>`; return; }
+    if(!calYm){ calYm = currentYearMonth(); calSelected = localTodayStr(); }
+    const [y, m] = calYm.split("-").map(Number);
+    const daysInMonth = new Date(y, m, 0).getDate();
+    const firstDow = (new Date(y, m - 1, 1).getDay() + 6) % 7;     // Monday first
+    const byDate = {};
+    records.forEach(r => { if(r.date && r.date.startsWith(calYm)) (byDate[r.date] = byDate[r.date] || []).push(r); });
+    const today = localTodayStr();
+    let cells = "";
+    for(let i = 0; i < firstDow; i++) cells += `<div class="kh-cal-cell is-empty" aria-hidden="true"></div>`;
+    for(let d = 1; d <= daysInMonth; d++){
+      const ds = `${calYm}-${String(d).padStart(2, "0")}`;
+      const list = byDate[ds];
+      const cls = ["kh-cal-cell"];
+      if(ds === today) cls.push("is-today");
+      if(ds === calSelected) cls.push("is-selected");
+      if(list){
+        const s = regDaySummary(list);
+        cls.push("has-data");
+        cells += `<button type="button" class="${cls.join(" ")}" data-date="${ds}" aria-label="${regDateLabel(ds)}: ${s.present} present, ${s.leave} leave"${ds === calSelected ? ' aria-pressed="true"' : ""}>
+          <span class="n">${d}</span>${s.present ? `<span class="p">✓${s.present}</span>` : ""}${s.leave ? `<span class="l">L${s.leave}</span>` : ""}</button>`;
+      }else{
+        cells += `<div class="${cls.join(" ")}"><span class="n" style="color:#98A2B3;">${d}</span></div>`;
+      }
+    }
+    const dows = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(x => `<div class="kh-cal-dow">${x}</div>`).join("");
+    let detail = `<p class="kh-empty-note" style="display:block;">Select a date to see attendance.</p>`;
+    if(calSelected && calSelected.startsWith(calYm)){
+      const list = byDate[calSelected];
+      if(list){
+        const s = regDaySummary(list);
+        detail = `<h4>${regDateLabel(calSelected)}</h4>
+          <p class="sub">${s.members} ${s.members === 1 ? "Member" : "Members"} · ${fmtHours(s.hours)} Total Hours · Present: ${s.present} · Leave: ${s.leave}</p>
+          ${list.slice().sort((a, b) => String(a.member).localeCompare(String(b.member))).map(r => {
+            const duty = r.status === "duty";
+            return `<div class="kh-cal-row"><span class="nm">${escapeHtml(r.member)}</span>
+              <span class="kh-reg-badge ${duty ? "kh-reg-badge--duty" : "kh-reg-badge--leave"}" style="grid-area:auto;">${duty ? "Present" : "Leave"}</span>
+              <span class="h">${duty ? fmtHours(r.hours) + "h" : "—"}</span></div>`;
+          }).join("")}`;
+      }else{
+        detail = `<h4>${regDateLabel(calSelected)}</h4><p class="sub">No attendance recorded for this date.</p>`;
+      }
+    }
+    body.innerHTML = `
+      <div class="kh-cal-nav">
+        <button type="button" class="kh-cal-btn" data-cal="prev" aria-label="Previous month">${ICON_CHEV_LEFT}</button>
+        <div class="kh-cal-title">${monthLabel(calYm)}<br><button type="button" class="kh-cal-today" data-cal="today">Today</button></div>
+        <button type="button" class="kh-cal-btn" data-cal="next" aria-label="Next month">${ICON_CHEVRON_RIGHT}</button>
+      </div>
+      <div class="kh-cal-grid">${dows}${cells}</div>
+      <div class="kh-cal-legend"><span class="p">✓ Present</span><span class="l">L Leave</span></div>
+      <div class="kh-cal-detail" aria-live="polite">${detail}</div>`;
+  }
+
+  // ---- Member profile: attendance history (same records as the register) ----
+  function renderProfileHistory(box, member, limit){
+    if(!box) return;
+    const list = records.filter(r => r.member === member.name && r.date)
+      .slice().sort((a, b) => b.date.localeCompare(a.date));
+    if(!list.length){ box.innerHTML = `<h4>Attendance History</h4><p class="kh-empty-note" style="display:block;">No attendance data available for this period.</p>`; return; }
+    const shown = list.slice(0, limit);
+    box.innerHTML = `<h4>Attendance History</h4>
+      ${shown.map(r => {
+        const duty = r.status === "duty";
+        return `<div class="kh-ph-row"><span class="d">${regDateLabel(r.date).slice(0, 6)}</span>
+          <span class="kh-reg-badge ${duty ? "kh-reg-badge--duty" : "kh-reg-badge--leave"}" style="grid-area:auto;">${duty ? "Present" : "Leave"}</span>
+          <span class="h">${duty ? fmtHours(r.hours) + "h" : "—"}</span></div>`;
+      }).join("")}
+      ${list.length > limit ? `<button type="button" class="kh-ph-more">Show more</button>` : ""}`;
+    const more = box.querySelector(".kh-ph-more");
+    if(more) more.addEventListener("click", () => renderProfileHistory(box, member, limit + 15));
+  }
+
+  buildRegisterTools();
+  // ================= /Dashboard sections =================
 
   function updateLoadingState(){
     if(membersLoaded && recordsLoaded){

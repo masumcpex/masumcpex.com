@@ -6,23 +6,34 @@
 <title>WorkTrack | Attendance & Work Hours Register</title>
 <meta name="description" content="A digital register for recording your team's daily attendance and work hours.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="worktrack.css">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js" crossorigin>
+<link rel="modulepreload" href="firebase.js">
+<link rel="modulepreload" href="khApp.js">
+<link rel="modulepreload" href="kh-auth.js">
 <link rel="icon" href="/bdflag.webp" type="image/webp">
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0E6E5C">
-<link rel="apple-touch-icon" href="/bdflag.webp">
+<link rel="manifest" href="/worktrack.webmanifest">
+<meta name="theme-color" content="#173B63">
+<meta name="application-name" content="WorkTrack">
+<link rel="apple-touch-icon" href="/wt-icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Masumcpex Hub">
+<meta name="apple-mobile-web-app-title" content="WorkTrack">
 </head>
 <body>
 
 <header class="kh-header">
   <div class="kh-header-inner">
     <a href="index.html" class="brand kh-brand">
-      <img class="kh-profile-photo" src="https://masumcpex.github.io/masumcpex/masum.webp" alt="Masum Billah">
+      <img class="kh-profile-photo" src="masum.webp" alt="Masum Billah" decoding="async">
       <img class="kh-logo-img" src="masum2.png" alt="Masum">
       <span class="brand-name kh-brand-name">
         <span class="kh-brand-sub">WorkTrack</span>
@@ -403,8 +414,6 @@
   <p>© 2026 <b>Masum Cpex</b>. Your data is securely protected.</p>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script type="module" src="firebase.js"></script>
 <script type="module" src="khApp.js"></script>
 <script type="module" src="kh-auth.js"></script>

@@ -3105,6 +3105,22 @@ export function initKhApp(uid, isAdmin){
   renderRegister();
   renderAdminOverview();
 
+  // Members and records arrive as two separate snapshots within milliseconds of each other.
+  // Draw the screen once for both (less work on low-end phones) instead of twice.
+  let renderAllQueued = false;
+  function scheduleRenderAll(){
+    if(renderAllQueued) return;
+    renderAllQueued = true;
+    setTimeout(() => {
+      renderAllQueued = false;
+      renderMembers();
+      refreshSummarySection();
+      renderRegister();
+      updateLoadingState();
+      scheduleShareSync();
+    }, 0);
+  }
+
   const myMembersQuery = query(membersCol, where("ownerId", "==", uid));
   const myRecordsQuery = query(recordsCol, where("ownerId", "==", uid));
 
@@ -3112,11 +3128,7 @@ export function initKhApp(uid, isAdmin){
     members = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
       .sort((a,b) => (a.name || "").localeCompare(b.name || "", "bn"));
     membersLoaded = true;
-    renderMembers();
-    refreshSummarySection();
-    renderRegister();
-    updateLoadingState();
-    scheduleShareSync();
+    scheduleRenderAll();
   }, err => {
     console.error(err);
     registerLoading.textContent = "Failed to load data. Please check your internet connection.";
@@ -3125,11 +3137,7 @@ export function initKhApp(uid, isAdmin){
   onSnapshot(myRecordsQuery, snapshot => {
     records = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     recordsLoaded = true;
-    renderMembers();
-    refreshSummarySection();
-    renderRegister();
-    updateLoadingState();
-    scheduleShareSync();
+    scheduleRenderAll();
   }, err => {
     console.error(err);
     registerLoading.textContent = "Failed to load data. Please check your internet connection.";

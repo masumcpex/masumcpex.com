@@ -4,7 +4,8 @@ import {
   signOut, onAuthStateChanged,
   doc, setDoc, serverTimestamp,
   createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail,
-  sendEmailVerification, updateProfile
+  sendEmailVerification, updateProfile,
+  EmailAuthProvider, linkWithCredential, updatePassword, reauthenticateWithPopup
 } from "./firebase.js";
 import { initKhApp } from "./khApp.js";
 
@@ -100,6 +101,116 @@ document.addEventListener("DOMContentLoaded", () => {
     const confirmed = await askLogoutConfirm();
     if(confirmed) await signOut(auth);
   });
+
+  // ---------- Set / change password (adds email + password login to the CURRENT account) ----------
+  // Same account, same data: the password is linked to the user who is already signed in
+  // (e.g. via Google), so the Firebase UID — and therefore every member, record and admin right — stays the same.
+  const setPasswordBtn = document.getElementById("khSetPasswordBtn");
+
+  function pwErrorText(err){
+    const code = err && err.code;
+    if(code === "auth/weak-password") return "That password is too weak. Use at least 10 characters.";
+    if(code === "auth/requires-recent-login") return "For security, please log in again and then retry.";
+    if(code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return "Google confirmation was cancelled. Nothing was changed.";
+    if(code === "auth/popup-blocked") return "The Google confirmation window was blocked. Allow pop-ups and try again.";
+    if(code === "auth/email-already-in-use" || code === "auth/credential-already-in-use") return "This email already has a separate password account. Please contact support before continuing.";
+    if(code === "auth/provider-already-linked") return "A password is already set. Use the same option again to change it.";
+    if(code === "auth/operation-not-allowed") return "Email/password sign-in is switched off in Firebase (Authentication → Sign-in method).";
+    if(code === "auth/network-request-failed") return "No internet connection. Please try again.";
+    return "Could not save the password. Please try again.";
+  }
+
+  async function saveAccountPassword(password){
+    const user = auth.currentUser;
+    if(!user || !user.email) throw Object.assign(new Error("no-email"), { code: "custom/no-email" });
+    const hasPassword = user.providerData.some(p => p.providerId === "password");
+    const apply = async () => {
+      if(hasPassword) await updatePassword(user, password);
+      else await linkWithCredential(user, EmailAuthProvider.credential(user.email, password));
+    };
+    try{
+      await apply();
+    }catch(err){
+      if(err && err.code === "auth/requires-recent-login" && user.providerData.some(p => p.providerId === "google.com")){
+        await reauthenticateWithPopup(user, new GoogleAuthProvider());   // asks Google once, then retry
+        await apply();
+      }else{
+        throw err;
+      }
+    }
+  }
+
+  function openSetPasswordModal(){
+    const user = auth.currentUser;
+    if(!user) return;
+    const old = document.getElementById("khSetPwOverlay");
+    if(old) old.remove();
+    const hasPassword = user.providerData.some(p => p.providerId === "password");
+    const email = user.email || "";
+    const overlay = document.createElement("div");
+    overlay.id = "khSetPwOverlay";
+    overlay.className = "kh-modal-overlay";
+    overlay.style.display = "flex";
+    const field = "width:100%;box-sizing:border-box;min-height:46px;padding:0 12px;border:1.5px solid #CBD5E1;border-radius:10px;font:inherit;background:#fff;";
+    overlay.innerHTML = `
+      <div class="kh-modal-card" role="dialog" aria-modal="true" aria-labelledby="khSetPwTitle" style="max-width:420px;text-align:left;">
+        <h3 id="khSetPwTitle" style="margin:0 0 .3rem;color:#173B63;">${hasPassword ? "Change password" : "Set a password"}</h3>
+        <p style="margin:0 0 1rem;color:#667085;font-size:.9rem;line-height:1.45;">
+          ${hasPassword ? "Choose a new password for" : "After this you can log in with"} <b style="overflow-wrap:anywhere;">${email.replace(/[<>&"]/g, "")}</b> ${hasPassword ? "." : "and this password, as well as with Google."}
+        </p>
+        <label style="display:block;font-size:.75rem;font-weight:700;color:#667085;text-transform:uppercase;margin-bottom:4px;" for="khPw1">New password</label>
+        <input id="khPw1" type="password" autocomplete="new-password" minlength="10" style="${field}margin-bottom:12px;">
+        <label style="display:block;font-size:.75rem;font-weight:700;color:#667085;text-transform:uppercase;margin-bottom:4px;" for="khPw2">Confirm password</label>
+        <input id="khPw2" type="password" autocomplete="new-password" style="${field}">
+        <label style="display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:.85rem;color:#475467;cursor:pointer;"><input type="checkbox" id="khPwShow" style="width:18px;height:18px;"> Show password</label>
+        <p style="margin:10px 0 0;font-size:.78rem;color:#98A2B3;">At least 10 characters. Use a password you do not use anywhere else.</p>
+        <p id="khPwMsg" role="alert" style="min-height:1.3em;margin:10px 0 0;font-size:.88rem;font-weight:600;color:#C0392B;"></p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+          <button type="button" id="khPwSave" class="btn3d btn-sky" style="flex:1 1 150px;min-height:46px;white-space:nowrap;">Save password</button>
+          <button type="button" id="khPwCancel" class="btn3d" style="flex:1 1 110px;min-height:46px;background:#fff;color:#173B63;border:1px solid #CBD5E1;box-shadow:none;white-space:nowrap;">Cancel</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const q = id => overlay.querySelector(id);
+    const close = () => { document.removeEventListener("keydown", onKey); overlay.remove(); };
+    const onKey = e => { if(e.key === "Escape") close(); };
+    document.addEventListener("keydown", onKey);
+    overlay.addEventListener("click", e => { if(e.target === overlay) close(); });
+    q("#khPwCancel").addEventListener("click", close);
+    q("#khPwShow").addEventListener("change", e => { q("#khPw1").type = q("#khPw2").type = e.target.checked ? "text" : "password"; });
+    q("#khPw1").focus();
+
+    q("#khPwSave").addEventListener("click", async () => {
+      const msg = q("#khPwMsg"); const p1 = q("#khPw1").value; const p2 = q("#khPw2").value;
+      msg.style.color = "#C0392B";
+      if(p1.length < 10){ msg.textContent = "Use at least 10 characters."; return; }
+      if(/^\d+$/.test(p1)){ msg.textContent = "Do not use only numbers."; return; }
+      if(email && p1.toLowerCase().includes(email.split("@")[0].toLowerCase()) && email.split("@")[0].length >= 4){ msg.textContent = "Do not include your email name in the password."; return; }
+      if(p1 !== p2){ msg.textContent = "The two passwords do not match."; return; }
+      const btn = q("#khPwSave"); btn.disabled = true; btn.textContent = "Saving...";
+      try{
+        await saveAccountPassword(p1);
+        q("#khPw1").value = q("#khPw2").value = "";
+        msg.style.color = "#0F766A";
+        msg.textContent = "Password saved. You can now log in with your email and this password.";
+        btn.textContent = "Done";
+        btn.disabled = false;
+        btn.onclick = close;
+      }catch(err){
+        console.error("Set password failed:", err && err.code);
+        msg.textContent = err && err.code === "custom/no-email" ? "This account has no email address, so a password cannot be added." : pwErrorText(err);
+        btn.disabled = false; btn.textContent = "Save password";
+      }
+    });
+  }
+
+  if(setPasswordBtn){
+    setPasswordBtn.addEventListener("click", () => {
+      const dropdown = document.getElementById("khAccountDropdown");
+      if(dropdown) dropdown.classList.remove("is-open");
+      openSetPasswordModal();
+    });
+  }
 
   onAuthStateChanged(auth, (user) => {
     if(user){

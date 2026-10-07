@@ -31,7 +31,11 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   sendEmailVerification,
-  updateProfile
+  updateProfile,
+  EmailAuthProvider,
+  linkWithCredential,
+  updatePassword,
+  reauthenticateWithPopup
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
@@ -58,5 +62,6 @@ export {
   signInWithPopup, signInWithRedirect, getRedirectResult,
   signInWithPhoneNumber, signOut, onAuthStateChanged,
   createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail,
-  sendEmailVerification, updateProfile
+  sendEmailVerification, updateProfile,
+  EmailAuthProvider, linkWithCredential, updatePassword, reauthenticateWithPopup
 };

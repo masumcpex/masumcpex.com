@@ -27,6 +27,30 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="WorkTrack">
+<style id="khBrandLogoCss">
+/* Brand logo in the top bar. masum2.png is a WHITE logo, so it is tinted with the WorkTrack navy using a mask
+   (otherwise it would be invisible on the white bar). Shown only when the navy header above is hidden
+   (installed app); in a normal browser tab the navy header already shows the logo on the left. */
+.kh-bar-logo{ display:none; }
+@media (display-mode: standalone), (display-mode: minimal-ui), (display-mode: fullscreen){
+  @supports ((-webkit-mask-image: url(masum2.png)) or (mask-image: url(masum2.png))){
+    .kh-user-bar .kh-bar-logo{
+      display:block; flex:0 1 auto; min-width:0; margin-right:auto;
+      --logo-h: clamp(26px, 4.2vw, 38px);
+      height:var(--logo-h); aspect-ratio:2.822 / 1; max-width:42vw;
+      background:#173B63;
+      -webkit-mask:url(masum2.png) no-repeat; mask:url(masum2.png) no-repeat;
+      -webkit-mask-size:132.88% auto; mask-size:132.88% auto;
+      -webkit-mask-position:56.04% 53.38%; mask-position:56.04% 53.38%;
+      transition:opacity .15s ease, transform .15s ease;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .kh-user-bar .kh-bar-logo:hover{ opacity:.78; }
+    .kh-user-bar .kh-bar-logo:active{ opacity:.65; transform:scale(.97); }
+    .kh-user-bar .kh-bar-logo:focus-visible{ outline:2px solid #173B63; outline-offset:4px; border-radius:6px; }
+  }
+}
+</style>
 </head>
 <body>
 
@@ -117,6 +141,7 @@
 </div>
 
 <div id="khUserBar" class="kh-user-bar" style="display:none;">
+  <a class="kh-bar-logo" href="https://masumcpex.com/" aria-label="Masum Cpex — open the main website" title="Masum Cpex"></a>
   <div class="kh-account-wrap">
     <button type="button" class="kh-account-trigger" id="khAccountTrigger" aria-haspopup="true" aria-label="Account menu">
       <span class="kh-account-avatar" id="khAccountAvatar">

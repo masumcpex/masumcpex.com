@@ -20,6 +20,11 @@
 
   if (isStandalone()) return; /* already installed: no install button needed */
 
+  var DEBUG = /(?:^|[?&])pwa=debug(?:&|$)/.test(location.search);
+  var dbg = { bip: "not fired yet", installed: "no" };
+  window.addEventListener("beforeinstallprompt", function () { dbg.bip = "FIRED ✔ (Chrome says installable)"; if (DEBUG) renderDebug(); });
+  window.addEventListener("appinstalled", function () { dbg.installed = "yes"; if (DEBUG) renderDebug(); });
+
   var DISMISS_KEY = "masumcpex_install_dismissed_at";
   var DISMISS_DAYS = 14;
 
@@ -124,6 +129,61 @@
     removeButton();
     clearDismissed();
   });
+
+  /* ---- Diagnostics: open the page with ?pwa=debug to see why Chrome does or does not offer "Install" ---- */
+  var dbgLines = [];
+  async function collectDebug() {
+    var L = [];
+    var ua = navigator.userAgent || "";
+    var mobileUA = /android.+mobile|iphone|ipad/i.test(ua);
+    L.push("URL: " + location.pathname + location.search);
+    L.push("Secure (https): " + window.isSecureContext);
+    L.push("Mobile browser mode: " + (mobileUA ? "yes" : "NO  ← 'Desktop site' is probably ON"));
+    L.push("Screen width (css px): " + window.innerWidth + "  dpr " + window.devicePixelRatio);
+    L.push("Opened as installed app: " + (window.matchMedia("(display-mode: standalone)").matches ? "yes" : "no"));
+    var link = document.querySelector('link[rel="manifest"]');
+    L.push("Manifest link: " + (link ? link.getAttribute("href") : "MISSING"));
+    if (link) {
+      try {
+        var r = await fetch(link.href, { cache: "no-store" });
+        L.push("Manifest fetch: " + r.status + " " + (r.headers.get("content-type") || ""));
+        var m = await r.json();
+        L.push("  name: " + m.name + " | id: " + m.id);
+        L.push("  scope: " + m.scope + " | start: " + m.start_url);
+        for (var i = 0; i < (m.icons || []).length; i++) {
+          var ic = m.icons[i];
+          try { var ir = await fetch(ic.src, { cache: "no-store" }); L.push("  icon " + ic.sizes + " " + ic.purpose + ": " + ir.status); }
+          catch (e) { L.push("  icon " + ic.sizes + ": ERROR"); }
+        }
+      } catch (e) { L.push("Manifest fetch/parse: ERROR " + e.message); }
+    }
+    try {
+      var reg = await navigator.serviceWorker.getRegistration();
+      L.push("Service worker: " + (reg ? (reg.active ? reg.active.state : "installing/waiting") : "none") + " | controls this page: " + !!navigator.serviceWorker.controller);
+      if (reg && reg.active) {
+        var t = await (await fetch("/service-worker.js", { cache: "no-store" })).text();
+        L.push("  service-worker.js file: " + (/v2\.0\.0/.test(t) ? "NEW (v2)" : "OLD version"));
+      }
+    } catch (e) { L.push("Service worker: ERROR " + e.message); }
+    L.push("Install event: " + dbg.bip);
+    L.push("App already installed (this session): " + dbg.installed);
+    L.push("'Not now' saved: " + (readDismissed() ? "yes (button hidden for " + DISMISS_DAYS + " days)" : "no"));
+    return L;
+  }
+  async function renderDebug() {
+    var el = document.getElementById("pwaDebug");
+    if (!el) {
+      el = document.createElement("pre");
+      el.id = "pwaDebug";
+      el.style.cssText = "position:fixed;left:6px;right:6px;top:6px;z-index:2147483647;margin:0;padding:10px;background:rgba(15,23,42,.94);color:#e2e8f0;font:12px/1.45 monospace;white-space:pre-wrap;word-break:break-word;border-radius:10px;max-height:92vh;overflow:auto;";
+      document.body.appendChild(el);
+    }
+    dbgLines = await collectDebug();
+    el.textContent = "PWA CHECK (send a screenshot)\n\n" + dbgLines.join("\n");
+  }
+  if (DEBUG) {
+    window.addEventListener("load", function () { setTimeout(renderDebug, 1500); setTimeout(renderDebug, 6000); });
+  }
 
   /* iPhone / iPad Safari has no install prompt: show a short "Add to Home Screen" hint instead. */
   var ua = navigator.userAgent || "";

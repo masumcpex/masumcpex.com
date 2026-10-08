@@ -153,7 +153,7 @@ function injectRegisterStyles(){
   document.head.appendChild(st);
 }
 
-const SHARE_VIEW_URL = "https://masumcpex.com/attendanceview/";
+const SHARE_VIEW_URL = "https://masumcpex.com/attendanceview.html";
 const SHARE_COLLECTION = "attendance_shares";
 const REPORT_COLLECTION = "attendance_reports";
 const ICON_SHARE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg>`;
@@ -2520,12 +2520,28 @@ export function initKhApp(uid, isAdmin){
   let shareSyncTimer = null;
   let shareModalMemberId = null;
 
-  function makeShareToken(){
-    const bytes = new Uint8Array(32);
-    crypto.getRandomValues(bytes);
-    let bin = "";
-    bytes.forEach(b => { bin += String.fromCharCode(b); });
-    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  // Link key = readable name + 14 random characters, e.g. "jakir-k7q2m9x4vr8t3z".
+  // Only the random part is the secret (36^14 ≈ 2^72 possibilities, cannot be guessed).
+  // The name part is just a label, so knowing someone's name does NOT give access.
+  function makeShareToken(name){
+    const slug = String(name || "")
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .split("-")
+      .reduce((acc, w) => (acc ? acc + "-" + w : w).length <= 12 ? (acc ? acc + "-" + w : w) : acc, "")
+      .slice(0, 12) || "view";
+    const ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let random = "";
+    while(random.length < 14){
+      const bytes = new Uint8Array(24);
+      crypto.getRandomValues(bytes);
+      for(const b of bytes){
+        if(b < 252 && random.length < 14) random += ALPHABET[b % 36];   // 252 = 7 × 36 → no bias
+      }
+    }
+    return slug + "-" + random;
   }
 
   function hashShareData(str){
@@ -2670,7 +2686,7 @@ export function initKhApp(uid, isAdmin){
         if(!membersLoaded || !recordsLoaded){ showToast("Please wait, data is still loading.", "warning"); return; }
         btn.disabled = true;
         try{
-          await setDoc(doc(db, SHARE_COLLECTION, makeShareToken()), {
+          await setDoc(doc(db, SHARE_COLLECTION, makeShareToken(m.name)), {
             ownerId: uid,
             memberId: m.id,
             ...buildSharePayload(m),

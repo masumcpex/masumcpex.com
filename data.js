@@ -7,7 +7,7 @@ const SITE_DATA = {
 
   /* ---------------- হিরো সেকশন ---------------- */
   hero: {
-    photo: "https://masumcpex.github.io/masumcpex/masum.webp",
+    photo: "/masum.webp",
     name: "Masum Billah",
     role: "Writer • Learner • Builder",
     tagline: "Learning never stops. Build something meaningful every day.",
@@ -18,7 +18,7 @@ const SITE_DATA = {
   /* ---------------- About সেকশন ---------------- */
   about: {
     title: "আমি মাসুম",
-    photo: "https://masumcpex.github.io/masumcpex/masum.png",
+    photo: "/masum.png",
     paragraphs: [
       "আমি মাসুম। বই লিখতে ভালোবাসি, অনুভূতি ও জীবনের ছোট ছোট শিক্ষা ছড়িয়ে দিতে পছন্দ করি — একই সাথে স্মার্ট ওয়েব টুলস তৈরি করি।",
       "লেখালেখি আমার কাছে অনুভূতি প্রকাশের একটি অন্যতম মাধ্যম। পাশাপাশি প্রোডাক্টিভ কোডিং সলিউশন তৈরি করে জীবনকে সহজ করতে আমি পছন্দ করি।"
@@ -34,7 +34,7 @@ const SITE_DATA = {
   books: [
     {
       id: "book1",
-      cover: "https://masumcpex.github.io/masumcpex/book1.webp",
+      cover: "/book1.webp",
       title: "যার জন্যে কাঁদি সে কাঁদার যোগ্য নয়",
       category: "অনুপ্রেরণা ও জীবন",
       description: "হৃদয়ের গল্প ও আত্মোপলব্ধির সাবলীল সমন্বয়।",
@@ -46,7 +46,7 @@ const SITE_DATA = {
     },
     {
       id: "book2",
-      cover: "https://masumcpex.github.io/masumcpex/eka.jpg",
+      cover: "/eka.jpg",
       title: "একাকিত্বের নোটবুক",
       category: "ভাবনা ও ডায়েরি",
       description: "নিঃসঙ্গতার প্রহরে ডায়েরির পাতায় আঁকা কিছু অনুভূতি।",
@@ -58,7 +58,7 @@ const SITE_DATA = {
     },
     {
       id: "book3",
-      cover: "https://masumcpex.github.io/masumcpex/book3.webp",
+      cover: "/book3.webp",
       title: "ইংলিশ শেখার সহজ রোডম্যাপ",
       category: "শিক্ষা ও ক্যারিয়ার",
       description: "সহজ গাইডলাইনে ইংরেজি শেখার সম্পূর্ণ পথ রেখা।",
@@ -70,7 +70,7 @@ const SITE_DATA = {
     },
     {
       id: "book4",
-      cover: "https://masumcpex.github.io/masumcpex/enhlishsmart.webp",
+      cover: "/enhlishsmart.webp",
       title: "Smart Spoken English",
       category: "ভাষা ও স্কিল",
       description: "স্মার্টলি ও অনর্গল ইংরেজি বলার প্র্যাক্টিক্যাল বই।",
@@ -82,7 +82,7 @@ const SITE_DATA = {
     },
     {
       id: "book5",
-      cover: "https://masumcpex.github.io/masumcpex/bookb.png",
+      cover: "/bookb.png",
       title: "Easy English Mastery",
       category: "ভাষা ও স্কিল",
       description: "সহজ নিয়মে ইংরেজি গ্রামার ও স্পোকেন আয়ত্ত করার গাইড।",
@@ -94,7 +94,7 @@ const SITE_DATA = {
     },
     {
       id: "book6",
-      cover: "https://masumcpex.github.io/masumcpex/cpex.webp",
+      cover: "/cpex.webp",
       title: "চলার পথে আমার গল্প",
       category: "ব্যক্তিগত / সংগ্রহ",
       description: "এই বইটি সবার জন্য উন্মুক্ত নয়। এটি একটি বিশেষ ব্যক্তিগত সংস্করণ।",
@@ -1334,7 +1334,7 @@ const SITE_DATA = {
       category: "ব্যবসা ও জীবন",
       date: "2025-11-04",
       readingTime: "10 মিনিট",
-      image: "https://masumcpex.github.io/masumcpex/masum.webp",
+      image: "/masum.webp",
       excerpt: "22 ট্রিলিয়ন ডলারের সম্পদ পরিচালনা করা দুটি প্রতিষ্ঠান আসলে কী — আর কী নয়। AUM, ETF, Aladdin ও কর্পোরেট ভোটিং পাওয়ার নিয়ে তথ্যভিত্তিক বিশ্লেষণ।",
       url: "invest.html",
       content: ""

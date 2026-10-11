@@ -1498,7 +1498,7 @@ const SITE_DATA = {
       icon: "",
       description: "টিমের দৈনিক হাজিরা ও কাজের ঘণ্টা লিখে রাখার ডিজিটাল খাতা — সদস্য যোগ/বাদ দেওয়া, সামারি ও রেজিস্টারসহ।",
       status: "লাইভ",
-      url: "worktrack.html"
+      url: "attendance.html"
     },
     {
       id: "p1",

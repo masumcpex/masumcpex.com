@@ -952,11 +952,15 @@ const FinanceCore = (() => {
           body: body === undefined ? undefined : JSON.stringify(body)
         });
       } catch (err) {
+        if (retryable && method === "GET" && attempt < 3) {
+          await sleep(800 * (attempt + 1));
+          continue;
+        }
         throw new ApiError("network", 0, "network");
       }
       const issued = res.headers.get("x-fallback-cookies");
       if (issued) writeStorage(FALLBACK_KEY, issued);
-      if (res.status === 429 && retryable && attempt < 4) {
+      if ((res.status === 429 || (res.status >= 500 && method === "GET")) && retryable && attempt < 4) {
         await sleep(1500 * (attempt + 1));
         continue;
       }
@@ -970,8 +974,10 @@ const FinanceCore = (() => {
       if (!res.ok) {
         let message = (data && data.message) || `HTTP ${res.status}`;
         const missing = path.match(/\/tables\/([^/]+)/);
-        if (res.status === 404 && missing && data && /table_not_found|database_not_found/.test(data.type || "")) {
-          message = `টেবিল "${decodeURIComponent(missing[1])}" পাওয়া যায়নি। Appwrite-এ এই ID-তে টেবিল বানান।`;
+        if (res.status === 404 && missing && data && /database_not_found/.test(data.type || "")) {
+          message = `ডাটাবেস "${APPWRITE.databaseId}" পাওয়া যায়নি। নাম নয়, Database ID লাগবে।`;
+        } else if (res.status === 404 && missing && data && /table_not_found/.test(data.type || "")) {
+          message = `টেবিল "${decodeURIComponent(missing[1])}" পাওয়া যায়নি। নাম নয়, Table ID লাগবে।`;
         }
         throw new ApiError(message, res.status, data && data.type);
       }
@@ -1093,7 +1099,29 @@ const FinanceCore = (() => {
   };
 
   async function reloadState() {
-    const lists = await Promise.all([...STORES, "completion"].map((s) => cloud.listAll(s)));
+    const tables = [...STORES, "completion"];
+    const settled = [];
+    for (const t of tables) {
+      try {
+        settled.push({ status: "fulfilled", value: await cloud.listAll(t) });
+      } catch (err) {
+        settled.push({ status: "rejected", reason: err });
+      }
+    }
+    const failed = settled.map((r, i) => ({ r, table: tables[i] })).filter((x) => x.r.status === "rejected");
+    if (failed.length) {
+      const notFound = failed.filter((x) => x.r.reason && x.r.reason.status === 404 && /not_found/.test(x.r.reason.type));
+      if (notFound.length === failed.length) {
+        if (notFound.some((x) => /database_not_found/.test(x.r.reason.type))) {
+          throw new ApiError(`ডাটাবেস "${APPWRITE.databaseId}" পাওয়া যায়নি। নাম নয়, Database ID লাগবে।`, 404, "database_not_found");
+        }
+        const names = notFound.map((x) => `"${APPWRITE.tables[x.table]}"`).join(", ");
+        throw new ApiError(`এই টেবিলগুলো পাওয়া যায়নি: ${names}। প্রতিটি টেবিলের Settings থেকে Table ID কপি করে Finance.html-এর tables ব্লকে বসান।`, 404, "table_not_found");
+      }
+      const detail = failed.map((x) => `${x.table}: ${(x.r.reason && x.r.reason.message) || "error"} [${(x.r.reason && x.r.reason.status) || ""}]`).join(" | ");
+      throw new ApiError(detail, failed[0].r.reason.status, failed[0].r.reason.type);
+    }
+    const lists = settled.map((r) => r.value);
     STORES.forEach((s, i) => {
       state[s] = lists[i].map((row) => fromRow(s, row));
     });
@@ -1112,7 +1140,7 @@ const FinanceCore = (() => {
     if (!err) return "অজানা সমস্যা হয়েছে।";
     if (err.status === 0) return "Appwrite-এ পৌঁছানো যায়নি। ইন্টারনেট দেখুন এবং Appwrite-এর Platform-এ এই সাইটের হোস্টনেম যোগ করা আছে কিনা যাচাই করুন।";
     if (err.status === 401) return "লগইন সেশন শেষ হয়েছে। আবার লগইন করুন।";
-    if (err.status === 404) return /^টেবিল/.test(err.message) ? err.message : "ডাটাবেস বা টেবিল পাওয়া যায়নি। Database ID ও Table ID যাচাই করুন।";
+    if (err.status === 404) return /^(টেবিল|ডাটাবেস|এই টেবিলগুলো)/.test(err.message) ? err.message : "ডাটাবেস বা টেবিল পাওয়া যায়নি। Database ID ও Table ID যাচাই করুন।";
     if (err.status === 409) return "এই রেকর্ড বা ইমেইল আগে থেকেই আছে।";
     if (err.status === 429) return "অনেকবার অনুরোধ হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।";
     return err.message || "অজানা সমস্যা হয়েছে।";

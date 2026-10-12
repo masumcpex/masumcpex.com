@@ -906,7 +906,7 @@ const FinanceCore = (() => {
     support: ["date", "amountMinor", "recipient", "method", "reference"]
   };
   const column = (store, field) => (APPWRITE.columns[store] && APPWRITE.columns[store][field]) || field;
-  const BUILD = "v2-seq-retry";
+  const BUILD = "v3-dbid";
   const techInfo = (e) => (e ? `<div style="margin-top:8px;font-size:12px;opacity:.75;word-break:break-all">[${BUILD}] status=${esc(String(e.status))} type=${esc(String(e.type || "-"))} msg=${esc(String(e.message || ""))}</div>` : "");
   const FALLBACK_KEY = "cookieFallback";
   const PAGE_SIZE = 100;

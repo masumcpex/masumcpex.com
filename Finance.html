@@ -896,7 +896,7 @@ const FinanceCore = (() => {
     endpoint: "https://nyc.cloud.appwrite.io/v1",
     projectId: "6acc23d6003ccd10471a",
     databaseId: "finance",
-    tables: { income: "income", expenses: "expenses", support: "support", completion: "completion" },
+    tables: { income: "6acd07620019ee3376e1", expenses: "6acd09540027fea0889d", support: "6accc844001141aa61f9", completion: "6acccdeb0018b7a39fe9" },
     columns: { expenses: { category: "type", description: "note", note: "reference" } }
   };
   const STORES = ["income", "expenses", "support"];
@@ -906,6 +906,8 @@ const FinanceCore = (() => {
     support: ["date", "amountMinor", "recipient", "method", "reference"]
   };
   const column = (store, field) => (APPWRITE.columns[store] && APPWRITE.columns[store][field]) || field;
+  const BUILD = "v2-seq-retry";
+  const techInfo = (e) => (e ? `<div style="margin-top:8px;font-size:12px;opacity:.75;word-break:break-all">[${BUILD}] status=${esc(String(e.status))} type=${esc(String(e.type || "-"))} msg=${esc(String(e.message || ""))}</div>` : "");
   const FALLBACK_KEY = "cookieFallback";
   const PAGE_SIZE = 100;
   const LEGACY_DB = "personal-finance-tracker";
@@ -1670,12 +1672,12 @@ const FinanceCore = (() => {
   }
 
   function connectionView() {
-    return `<div class="auth-wrap"><section class="card auth-card"><div class="auth-logo">${icon("wifi-off", "lg")}</div><h1>সংযোগ হয়নি</h1><div class="banner err">${icon("alert")}<span>${esc(errorMessage(state.bootError))}</span></div><div class="actions"><button type="button" class="btn primary" data-act="retry-start">${icon("refresh", "sm")} আবার চেষ্টা করুন</button></div></section></div>`;
+    return `<div class="auth-wrap"><section class="card auth-card"><div class="auth-logo">${icon("wifi-off", "lg")}</div><h1>সংযোগ হয়নি</h1><div class="banner err">${icon("alert")}<span>${esc(errorMessage(state.bootError))}${techInfo(state.bootError)}</span></div><div class="actions"><button type="button" class="btn primary" data-act="retry-start">${icon("refresh", "sm")} আবার চেষ্টা করুন</button></div></section></div>`;
   }
 
   function loadErrorView() {
     return `<div class="page-head"><div><h1>ডেটা লোড হয়নি</h1></div></div>
-    <div class="banner err">${icon("alert")}<span>${esc(errorMessage(state.loadError))}</span></div>
+    <div class="banner err">${icon("alert")}<span>${esc(errorMessage(state.loadError))}${techInfo(state.loadError)}</span></div>
     <div class="actions"><button type="button" class="btn primary" data-act="retry-load">${icon("refresh", "sm")} আবার চেষ্টা করুন</button><button type="button" class="btn" data-act="logout">${icon("log-out", "sm")} সাইন আউট</button></div>`;
   }
 

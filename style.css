@@ -347,6 +347,8 @@ img{ max-width:100%; display:block; }
 
 .projects-grid .book-card{ padding: 0; }
 .project-icon{ font-size:1.9rem; padding: 1.3rem 1.4rem 0; }
+
+.project-subtitle{ margin:.1rem 0 .55rem; font-weight:600; color: var(--teal-dark); font-size:.92rem; line-height:1.5; }
 .project-status{
   display:inline-block; margin-top:.5rem; font-family: var(--font-util);
   font-size:.7rem; letter-spacing:.08em; padding:.28rem .7rem; border-radius:999px;

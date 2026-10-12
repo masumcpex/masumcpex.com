@@ -106,10 +106,11 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="project-icon">${p.icon}</div>
       <div class="book-body">
         <h3 class="book-title">${p.title}</h3>
+        ${p.subtitle ? `<p class="project-subtitle">${p.subtitle}</p>` : ""}
         <p class="book-desc">${p.description}</p>
         <span class="project-status">${p.status}</span>
         <div class="book-actions" style="margin-top:.9rem;">
-          <a class="solid" href="${p.url}" target="_blank" rel="noopener">দেখুন</a>
+          <a class="solid" href="${p.url}" target="_blank" rel="noopener">${p.buttonText || "দেখুন"}</a>
         </div>
       </div>
     </div>`;

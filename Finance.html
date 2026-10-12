@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Personal Finance Tracker</title>
+<meta name="description" content="ব্যক্তিগত আয়-ব্যয়, মাসিক হিসাব ও পরিবারকে পাঠানো টাকার হিসাব। ডেটা শুধু আপনার ডিভাইসে থাকে।">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0F1B2D">
+<link rel="manifest" href="finance.webmanifest">
+<link rel="icon" type="image/png" href="finance-icon-192.png">
+<link rel="apple-touch-icon" href="finance-icon-192.png">
+<style>
+:root{
+  --navy:#0F1B2D;--navy-2:#16273F;--navy-3:#223551;
+  --teal:#0E6E5C;--teal-dark:#0A5347;--teal-soft:#E2F3EE;--mint:#5EEAD4;
+  --bg:#F3F5F8;--card:#FFFFFF;--ink:#142033;--muted:#546173;--line:#E2E7EE;--line-strong:#CBD3DE;
+  --red:#B42318;--red-soft:#FDECEA;--green:#067647;--green-soft:#E3F6EC;--amber:#8A4B08;--amber-soft:#FEF3C7;
+  --rm:#0E6E5C;--bdt:#23446E;--bdt-soft:#E6EDF7;
+  --radius:16px;--radius-sm:10px;--side:256px;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 4px 16px rgba(16,24,40,.05);
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Bengali","Nirmala UI","Hind Siliguri",sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;font:16px/1.55 var(--font);color:var(--ink);background:var(--bg);min-height:100vh}
+h1,h2,h3,p{margin:0}
+button,input,select{font:inherit;color:inherit}
+a{color:var(--teal-dark)}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px;border-radius:6px}
+.side :focus-visible,.tabbar :focus-visible,.top :focus-visible{outline-color:var(--mint)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:8px;top:-60px;background:#fff;color:var(--ink);padding:10px 14px;border-radius:8px;z-index:100;box-shadow:var(--shadow)}
+.skip:focus{top:8px}
+.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.ic.lg{width:28px;height:28px}
+.ic.sm{width:16px;height:16px}
+
+.app{display:flex;min-height:100vh}
+.side{display:none;position:fixed;inset:0 auto 0 0;width:var(--side);background:var(--navy);color:#CBD5E4;padding:22px 14px;flex-direction:column;gap:6px;overflow-y:auto;z-index:20}
+.brand{display:flex;align-items:center;gap:12px;color:#fff;text-decoration:none;padding:4px 8px 20px}
+.brand-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#128A74,#0A5347);display:grid;place-items:center;color:#fff}
+.brand b{display:block;font-size:1.02rem;line-height:1.2}
+.brand small{display:block;color:#8FA3BF;font-size:.78rem}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;color:#CBD5E4;text-decoration:none;font-weight:500;min-height:44px}
+.nav a:hover{background:var(--navy-2);color:#fff}
+.nav a[aria-current="page"]{background:var(--navy-3);color:#fff;box-shadow:inset 3px 0 0 var(--mint)}
+.side .pill{margin:8px 10px 0;align-self:flex-start}
+.side-foot{margin-top:auto;padding:14px 10px 4px;font-size:.8rem;color:#8FA3BF;display:flex;gap:8px;align-items:flex-start}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:15;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top))}
+.top .brand{padding:0}
+.top .brand-mark{width:34px;height:34px;border-radius:10px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.1);color:#D7E0EC}
+.pill.off{background:#FEF3C7;color:var(--amber)}
+.content{width:100%;max-width:1060px;margin:0 auto;padding:18px 16px 110px}
+.page-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.page-head h1{font-size:1.55rem;line-height:1.25;letter-spacing:-.01em}
+.page-head p{color:var(--muted);font-size:.93rem;margin-top:2px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+
+.tabbar{position:fixed;inset:auto 0 0 0;z-index:20;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:60px;padding:6px 2px;text-decoration:none;color:var(--muted);font-size:.72rem;font-weight:600}
+.tabbar a[aria-current="page"]{color:var(--teal-dark)}
+.tabbar a[aria-current="page"] .ic{stroke-width:2.4}
+.tabbar a[aria-current="page"]::before{content:"";width:28px;height:3px;border-radius:0 0 3px 3px;background:var(--teal);margin-top:-6px;margin-bottom:3px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--line-strong);background:#fff;font-weight:600;cursor:pointer;text-decoration:none;color:var(--ink);transition:background .15s,border-color .15s}
+.btn:hover{background:#F8FAFC}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.primary:hover{background:var(--teal-dark)}
+.btn.danger{background:var(--red);border-color:var(--red);color:#fff}
+.btn.danger:hover{background:#912018}
+.btn.ghost{background:transparent}
+.btn.sm{min-height:40px;padding:0 12px;font-size:.9rem}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.icon-btn{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;border:1px solid transparent;background:transparent;cursor:pointer;color:var(--muted)}
+.icon-btn:hover{background:#EEF2F6;color:var(--ink)}
+.icon-btn.del:hover{background:var(--red-soft);color:var(--red)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.content>*+*,.region>*+*{margin-top:16px}
+.content>.sec-head{margin-top:26px}
+.content>.sec-head+*{margin-top:10px}
+.content>.page-head+.sec-head{margin-top:20px}
+.card h3{font-size:1.02rem;margin-bottom:10px}
+.sec-head{display:flex;align-items:center;gap:10px}
+.sec-head h2{font-size:1.1rem}
+.chip{font-size:.74rem;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:999px}
+.chip.rm{background:var(--teal-soft);color:var(--teal-dark)}
+.chip.bdt{background:var(--bdt-soft);color:var(--bdt)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(146px,1fr));gap:10px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:flex;flex-direction:column;gap:4px;min-width:0;box-shadow:var(--shadow)}
+.tile .k{font-size:.82rem;color:var(--muted);font-weight:500}
+.tile .v{font-size:clamp(1rem,4.5vw,1.2rem);font-weight:700;letter-spacing:-.01em;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.tile .s{font-size:.78rem;color:var(--muted)}
+.tile.rm{border-top:3px solid var(--rm)}
+.tile.bdt{border-top:3px solid var(--bdt)}
+.tile.strong{background:var(--navy);border-color:var(--navy);color:#fff}
+.tile.strong .k,.tile.strong .s{color:#AFC0D6}
+.tile .v.neg{color:var(--red)}
+.tile.strong .v.neg{color:#FCA5A5}
+
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:12px;font-size:.84rem;font-weight:700;width:fit-content}
+.badge.up{background:var(--green-soft);color:var(--green)}
+.badge.down{background:var(--red-soft);color:var(--red)}
+.badge.same{background:#EDF0F4;color:var(--muted)}
+.badge.warn{background:var(--amber-soft);color:var(--amber)}
+.badge.ok{background:var(--green-soft);color:var(--green)}
+.badge.mute{background:#EDF0F4;color:var(--muted)}
+.banner{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;font-size:.92rem;margin-top:12px}
+.banner.warn{background:var(--amber-soft);color:var(--amber)}
+.banner.info{background:var(--bdt-soft);color:var(--bdt)}
+.banner.err{background:var(--red-soft);color:var(--red)}
+.banner .ic{margin-top:2px}
+
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fld>label,.fld>span{font-size:.84rem;font-weight:600;color:var(--muted)}
+.fld .req{color:var(--red)}
+.fld small{color:var(--muted);font-size:.8rem}
+.fld input,.fld select{width:100%;min-height:46px;padding:0 12px;border:1px solid var(--line-strong);border-radius:12px;background:#fff;font-size:16px}
+.fld input:focus,.fld select:focus{outline:3px solid rgba(14,110,92,.35);outline-offset:0;border-color:var(--teal)}
+.fld [aria-invalid="true"]{border-color:var(--red);background:#FFF8F7}
+.fld .err,.form-err{color:var(--red);font-size:.84rem;font-weight:600}
+.amount-wrap{display:flex;align-items:stretch}
+.amount-wrap .unit{display:grid;place-items:center;padding:0 14px;border:1px solid var(--line-strong);border-right:0;border-radius:12px 0 0 12px;background:#F1F5F9;font-weight:700;color:var(--muted)}
+.amount-wrap input{border-radius:0 12px 12px 0}
+.sbox{position:relative}
+.sbox .ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.sbox input{padding-left:38px}
+
+.rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:1fr auto;grid-template-areas:"main amt" "act act";gap:2px 12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row-main{grid-area:main;min-width:0}
+.row-title{display:block;font-weight:600;overflow-wrap:anywhere}
+.row-meta{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;color:var(--muted);font-size:.85rem;margin-top:2px}
+.tag{background:#EDF1F6;color:#35465E;border-radius:999px;padding:1px 9px;font-size:.78rem;font-weight:600}
+.row-amt{grid-area:amt;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;align-self:start;white-space:nowrap}
+.row-amt.rm{color:var(--teal-dark)}
+.row-amt.bdt{color:var(--bdt)}
+.row-act{grid-area:act;display:flex;justify-content:flex-end;gap:2px}
+.empty{text-align:center;padding:30px 16px;color:var(--muted)}
+.empty .ic{display:block;width:36px;height:36px;margin:0 auto 8px;color:var(--line-strong)}
+.actions.center{justify-content:center}
+#view:focus{outline:none}
+.legend .rm-in{background:var(--teal)}
+.legend .rm-out{background:#8795A8}
+.legend .bdt{background:var(--bdt)}
+.empty p{margin:0 0 14px}
+.empty b{display:block;color:var(--ink);font-size:1.02rem;margin-bottom:4px}
+
+.cmp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.cmp-grid>div{display:flex;flex-direction:column;gap:5px;padding:12px;border-radius:12px;background:#F7F9FB;border:1px solid var(--line)}
+.cmp-grid .k{font-size:.82rem;color:var(--muted);font-weight:600}
+.cmp-grid b{font-size:1.15rem;font-variant-numeric:tabular-nums}
+.cmp-result{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:12px}
+.cmp-note{font-size:.86rem;color:var(--muted);margin-top:8px}
+.comp-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.comp-row:first-of-type{margin-top:12px}
+.comp-row span{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+.picker{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+.picker .fld{flex:1;min-width:120px}
+.picker .icon-btn{border-color:var(--line-strong);background:#fff}
+
+.vchart{display:flex;gap:6px;align-items:flex-end;padding-top:6px}
+.vcol{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px}
+.vcol .val{font-size:.7rem;color:var(--muted);font-weight:600;height:1.1em;white-space:nowrap}
+.vcol .bars{display:flex;align-items:flex-end;gap:2px;height:140px;width:100%;justify-content:center}
+.vcol .bar{display:block;flex:1;max-width:30px;min-width:4px;border-radius:5px 5px 0 0;background:#B8C4D4}
+.vcol .bar.bdt{background:var(--bdt)}
+.vcol .bar.rm-in{background:var(--teal)}
+.vcol .bar.rm-out{background:#8795A8}
+.vcol.sel .bar.bdt{background:#14335A}
+.vcol .lab{font-size:.74rem;color:var(--muted);text-align:center;line-height:1.2;overflow-wrap:anywhere}
+.vcol.sel .lab{color:var(--ink);font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:.82rem;color:var(--muted)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.hbars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.hbars li{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+.hbars .name{font-size:.92rem;font-weight:600}
+.hbars .amt{font-size:.9rem;font-weight:700;font-variant-numeric:tabular-nums}
+.hbars .track{grid-column:1/-1;height:9px;border-radius:999px;background:#EDF1F6;overflow:hidden}
+.hbars .track i{display:block;height:100%;border-radius:999px;background:var(--teal)}
+
+.yrows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.yrow{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.yrow-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px}
+.yrow-head b{font-size:1rem}
+.ygrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
+.ygrid div{display:flex;flex-direction:column;min-width:0}
+.ygrid .k{font-size:.76rem;color:var(--muted);font-weight:600}
+.ygrid .v{font-weight:700;font-size:.95rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ygrid .v.bdt{color:var(--bdt)}
+.ygrid .v.neg{color:var(--red)}
+
+.stack{display:flex;flex-direction:column;gap:10px}
+.more-list{display:flex;flex-direction:column;gap:10px}
+.more-list a{display:flex;align-items:center;gap:14px;padding:14px 16px;background:#fff;border:1px solid var(--line);border-radius:14px;text-decoration:none;color:var(--ink);font-weight:600;min-height:64px;box-shadow:var(--shadow)}
+.more-list a small{display:block;color:var(--muted);font-weight:400;font-size:.85rem}
+.more-list .ico{width:42px;height:42px;border-radius:12px;background:var(--teal-soft);color:var(--teal-dark);display:grid;place-items:center;flex:none}
+.notes{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:8px;color:#2F3D52}
+.preview-table{width:100%;border-collapse:collapse;font-size:.9rem;margin:10px 0}
+.preview-table th,.preview-table td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+.preview-table th:first-child,.preview-table td:first-child{text-align:left}
+.preview-table th{font-size:.78rem;color:var(--muted)}
+.radio{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line-strong);border-radius:12px;margin-top:8px;cursor:pointer}
+.radio input{margin-top:5px;width:18px;height:18px;accent-color:var(--teal)}
+.radio b{display:block}
+.radio small{color:var(--muted)}
+.btn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:10px}
+
+dialog{border:0;padding:0;border-radius:18px;width:min(520px,calc(100% - 24px));max-height:calc(100dvh - 24px);background:#fff;color:var(--ink);box-shadow:0 24px 60px rgba(15,27,45,.35);overflow:hidden}
+dialog[open]{display:flex;flex-direction:column}
+dialog::backdrop{background:rgba(15,27,45,.55)}
+.dlg-form,.dlg-confirm{display:flex;flex-direction:column;min-height:0;flex:1}
+.dlg-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 12px 10px 18px;border-bottom:1px solid var(--line)}
+.dlg-head h2{font-size:1.1rem}
+.dlg-body{padding:16px 18px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.dlg-foot{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;padding:12px 18px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#FAFBFC}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--navy);color:#fff;padding:11px 16px;border-radius:12px;font-weight:600;font-size:.92rem;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:520px){
+  dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:18px 18px 0 0;max-height:92dvh}
+  .two{grid-template-columns:1fr}
+}
+@media (min-width:640px){
+  .row{grid-template-columns:1fr auto auto;grid-template-areas:"main amt act";align-items:center}
+  .row-act{justify-content:flex-end}
+  .ygrid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (min-width:900px){
+  .side{display:flex}
+  .top,.tabbar{display:none}
+  .main{margin-left:var(--side)}
+  .content{padding:30px 28px 60px}
+  .toast{bottom:28px}
+  .page-head h1{font-size:1.8rem}
+  .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="i-layout" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
+    <symbol id="i-trend-up" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></symbol>
+    <symbol id="i-trend-down" viewBox="0 0 24 24"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+    <symbol id="i-bars" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></symbol>
+    <symbol id="i-infinity" viewBox="0 0 24 24"><path d="M6 16c5 0 7-8 12-8a4 4 0 0 1 0 8c-5 0-7-8-12-8a4 4 0 1 0 0 8"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6M14 11v6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M7 7l10 10"/><path d="M17 7v10H7"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m22 4-10 10.01-3-3"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></symbol>
+    <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M12 20h.01M8.5 16.43a6 6 0 0 1 7 0M5 12.86a11 11 0 0 1 5.17-2.69M19 12.86a11 11 0 0 0-2.28-1.7M2 8.82a15 15 0 0 1 4.17-2.65M22 8.82a15 15 0 0 0-11.29-3.76M2 2l20 20"/></symbol>
+    <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5Z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></symbol>
+    <symbol id="i-smartphone" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+  </defs>
+</svg>
+<a class="skip" href="#view" id="skip">মূল কনটেন্টে যান</a>
+<div class="app">
+  <aside class="side" aria-label="Sidebar">
+    <a class="brand" href="#/dashboard" aria-label="Personal Finance Tracker — Dashboard">
+      <span class="brand-mark"><svg class="ic lg" aria-hidden="true" focusable="false"><use href="#i-wallet"/></svg></span>
+      <span><b>Finance Tracker</b><small>ব্যক্তিগত হিসাব</small></span>
+    </a>
+    <nav class="nav" id="nav-side" aria-label="Main navigation"></nav>
+    <div class="side-foot"><svg class="ic sm" aria-hidden="true" focusable="false"><use href="#i-shield"/></svg><span>ডেটা শুধু এই ডিভাইসের ব্রাউজারে সংরক্ষিত। কোনো সার্ভারে যায় না।</span></div>
+    <span class="pill js-net" role="status"></span>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <a class="brand" href="#/dashboard" aria-label="Personal Finance Tracker — Dashboard">
+        <span class="brand-mark"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wallet"/></svg></span>
+        <span><b>Finance Tracker</b></span>
+      </a>
+      <span class="pill js-net" role="status"></span>
+    </header>
+    <main class="content" id="view" tabindex="-1"></main>
+  </div>
+</div>
+<nav class="tabbar" id="nav-tab" aria-label="Mobile navigation"></nav>
+<dialog id="dlg" aria-labelledby="dlg-title"></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script id="core">
+const FinanceCore = (() => {
+  const APP_ID = "personal-finance-tracker";
+  const SCHEMA_VERSION = 1;
+  const MAX_MINOR = 100000000000;
+  const MAX_RECORDS = 200000;
+  const STORES = ["income", "expenses", "support"];
+  const STORE_LABELS = { income: "Income", expenses: "Expenses", support: "Family Support" };
+  const INCOME_TYPES = ["salary", "bonus", "overtime", "other"];
+  const EXPENSE_CATEGORIES = ["food", "transport", "mobile", "clothing", "medical", "accommodation", "personal", "other"];
+  const TRANSFER_METHODS = ["bank", "remittance", "other"];
+  const BN_DIGITS = "০১২৩৪৫৬৭৮৯";
+
+  const SCHEMA = {
+    income: {
+      enums: { type: INCOME_TYPES },
+      optional: [],
+      text: { note: 200, reference: 80 },
+      required: [],
+      content: ["date", "amountMinor", "type", "note", "reference"]
+    },
+    expenses: {
+      enums: { category: EXPENSE_CATEGORIES },
+      optional: [],
+      text: { description: 120, note: 200 },
+      required: ["description"],
+      content: ["date", "amountMinor", "category", "description", "note"]
+    },
+    support: {
+      enums: { method: TRANSFER_METHODS },
+      optional: ["method"],
+      text: { recipient: 60, reference: 200 },
+      required: ["recipient"],
+      content: ["date", "amountMinor", "recipient", "method", "reference"]
+    }
+  };
+
+  const pad = (n) => String(n).padStart(2, "0");
+  const clean = (v) => String(v === undefined || v === null ? "" : v).trim();
+
+  function escapeHtml(value) {
+    return String(value === undefined || value === null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function toLatinDigits(value) {
+    return String(value).replace(/[০-৯]/g, (d) => String(BN_DIGITS.indexOf(d)));
+  }
+
+  function isValidDate(value) {
+    if (typeof value !== "string") return false;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!m) return false;
+    const y = Number(m[1]);
+    const mo = Number(m[2]);
+    const d = Number(m[3]);
+    if (y < 2000 || y > 2100 || mo < 1 || mo > 12 || d < 1) return false;
+    const leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+    const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return d <= days[mo - 1];
+  }
+
+  function isValidMonthKey(value) {
+    return typeof value === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(value);
+  }
+
+  function parseMinor(input) {
+    const s = toLatinDigits(input).trim().replace(/,/g, "");
+    if (!/^\d{1,11}(\.\d{1,2})?$/.test(s)) return null;
+    const parts = s.split(".");
+    const minor = Number(parts[0]) * 100 + Number((parts[1] || "").padEnd(2, "0"));
+    if (minor <= 0 || minor > MAX_MINOR) return null;
+    return minor;
+  }
+
+  function minorToDecimal(minor) {
+    const a = Math.abs(minor);
+    return `${minor < 0 ? "-" : ""}${Math.floor(a / 100)}.${pad(a % 100)}`;
+  }
+
+  const groupWestern = (s) => s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const groupLakh = (s) => (s.length <= 3 ? s : `${s.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",")},${s.slice(-3)}`);
+
+  function splitMinor(minor) {
+    const a = Math.abs(minor);
+    return { neg: minor < 0, whole: String(Math.floor(a / 100)), frac: pad(a % 100) };
+  }
+
+  function formatRM(minor) {
+    const p = splitMinor(minor);
+    return `${p.neg ? "-" : ""}RM ${groupWestern(p.whole)}.${p.frac}`;
+  }
+
+  function formatBDT(minor) {
+    const p = splitMinor(minor);
+    return `${p.neg ? "-" : ""}৳${groupLakh(p.whole)}${p.frac === "00" ? "" : `.${p.frac}`}`;
+  }
+
+  const formatSignedBDT = (minor) => (minor > 0 ? `+${formatBDT(minor)}` : formatBDT(minor));
+  const formatSignedRM = (minor) => (minor > 0 ? `+${formatRM(minor)}` : formatRM(minor));
+
+  const toDateString = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const monthKey = (date) => date.slice(0, 7);
+
+  function shiftMonth(key, delta) {
+    const [y, m] = key.split("-").map(Number);
+    const t = y * 12 + (m - 1) + delta;
+    return `${Math.floor(t / 12)}-${pad((t % 12) + 1)}`;
+  }
+
+  const sum = (list) => list.reduce((total, r) => total + r.amountMinor, 0);
+  const inMonth = (list, key) => list.filter((r) => monthKey(r.date) === key);
+
+  function supportState(count, complete) {
+    if (count > 0) return complete ? "complete" : "incomplete";
+    return complete ? "confirmed-zero" : "no-records";
+  }
+
+  function monthSummary(data, key, completion) {
+    const inc = inMonth(data.income, key);
+    const exp = inMonth(data.expenses, key);
+    const sup = inMonth(data.support, key);
+    const incomeMinor = sum(inc);
+    const expenseMinor = sum(exp);
+    const supportComplete = Boolean(completion && completion[key]);
+    return {
+      month: key,
+      incomeMinor,
+      expenseMinor,
+      balanceMinor: incomeMinor - expenseMinor,
+      supportMinor: sum(sup),
+      incomeCount: inc.length,
+      expenseCount: exp.length,
+      supportCount: sup.length,
+      supportComplete,
+      supportState: supportState(sup.length, supportComplete)
+    };
+  }
+
+  function lifetimeSummary(data) {
+    const incomeMinor = sum(data.income);
+    const expenseMinor = sum(data.expenses);
+    return {
+      incomeMinor,
+      expenseMinor,
+      balanceMinor: incomeMinor - expenseMinor,
+      supportMinor: sum(data.support),
+      incomeCount: data.income.length,
+      expenseCount: data.expenses.length,
+      supportCount: data.support.length,
+      recordCount: data.income.length + data.expenses.length + data.support.length
+    };
+  }
+
+  function compareAmounts(prevMinor, curMinor) {
+    const diffMinor = curMinor - prevMinor;
+    const status = diffMinor > 0 ? "up" : diffMinor < 0 ? "down" : "same";
+    const percentAvailable = prevMinor > 0;
+    const percent = percentAvailable ? Math.round((Math.abs(diffMinor) * 10000) / prevMinor) / 100 : null;
+    return {
+      status,
+      diffMinor,
+      percentAvailable,
+      percent,
+      zeroBaseline: !percentAvailable && diffMinor !== 0
+    };
+  }
+
+  function yearSummary(data, year, completion) {
+    const months = [];
+    for (let i = 1; i <= 12; i++) months.push(monthSummary(data, `${year}-${pad(i)}`, completion));
+    const totals = {
+      incomeMinor: months.reduce((t, m) => t + m.incomeMinor, 0),
+      expenseMinor: months.reduce((t, m) => t + m.expenseMinor, 0),
+      supportMinor: months.reduce((t, m) => t + m.supportMinor, 0),
+      supportCount: months.reduce((t, m) => t + m.supportCount, 0)
+    };
+    totals.balanceMinor = totals.incomeMinor - totals.expenseMinor;
+    const withSupport = months.filter((m) => m.supportCount > 0);
+    let highest = null;
+    let lowest = null;
+    for (const m of withSupport) {
+      if (!highest || m.supportMinor > highest.supportMinor) highest = m;
+      if (!lowest || m.supportMinor < lowest.supportMinor) lowest = m;
+    }
+    return { year: String(year), months, totals, highest, lowest };
+  }
+
+  function filterRecords(list, f) {
+    const o = f || {};
+    const q = clean(o.query).toLowerCase();
+    const fields = o.searchFields || [];
+    return list.filter((r) => {
+      if (o.year && r.date.slice(0, 4) !== String(o.year)) return false;
+      if (o.month && Number(r.date.slice(5, 7)) !== Number(o.month)) return false;
+      if (o.field && o.value && r[o.field] !== o.value) return false;
+      if (q) {
+        const hay = fields.map((k) => r[k] || "").join(" ").toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  const sortRecords = (list) =>
+    [...list].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : (b.createdAt || 0) - (a.createdAt || 0)));
+
+  function yearsPresent(data) {
+    const years = new Set();
+    for (const store of STORES) for (const r of data[store]) years.add(r.date.slice(0, 4));
+    return [...years].sort().reverse();
+  }
+
+  function sumByKey(list, field) {
+    const out = {};
+    for (const r of list) out[r[field]] = (out[r[field]] || 0) + r.amountMinor;
+    return out;
+  }
+
+  function checkDateAmount(raw, errors) {
+    const date = clean(raw.date);
+    if (!isValidDate(date)) errors.date = "সঠিক তারিখ দিন।";
+    const amountMinor = parseMinor(raw.amount === undefined || raw.amount === null ? "" : raw.amount);
+    if (amountMinor === null) errors.amount = "সঠিক পরিমাণ দিন, যেমন 1250 বা 1250.50 (সর্বোচ্চ ২ দশমিক ঘর)।";
+    return { date, amountMinor };
+  }
+
+  function lengthCheck(errors, field, value, max) {
+    if (value.length > max) errors[field] = `সর্বোচ্চ ${max} অক্ষর।`;
+  }
+
+  function validateIncome(raw) {
+    const errors = {};
+    const { date, amountMinor } = checkDateAmount(raw, errors);
+    const type = clean(raw.type);
+    if (!INCOME_TYPES.includes(type)) errors.type = "আয়ের ধরন বাছুন।";
+    const note = clean(raw.note);
+    const reference = clean(raw.reference);
+    lengthCheck(errors, "note", note, 200);
+    lengthCheck(errors, "reference", reference, 80);
+    return Object.keys(errors).length ? { ok: false, errors } : { ok: true, value: { date, amountMinor, type, note, reference } };
+  }
+
+  function validateExpense(raw) {
+    const errors = {};
+    const { date, amountMinor } = checkDateAmount(raw, errors);
+    const category = clean(raw.category);
+    if (!EXPENSE_CATEGORIES.includes(category)) errors.category = "খরচের ক্যাটাগরি বাছুন।";
+    const description = clean(raw.description);
+    if (!description) errors.description = "খরচের বিবরণ লিখুন।";
+    lengthCheck(errors, "description", description, 120);
+    const note = clean(raw.note);
+    lengthCheck(errors, "note", note, 200);
+    return Object.keys(errors).length ? { ok: false, errors } : { ok: true, value: { date, amountMinor, category, description, note } };
+  }
+
+  function validateSupport(raw) {
+    const errors = {};
+    const { date, amountMinor } = checkDateAmount(raw, errors);
+    const recipient = clean(raw.recipient);
+    if (!recipient) errors.recipient = "প্রাপকের নাম লিখুন।";
+    lengthCheck(errors, "recipient", recipient, 60);
+    const method = clean(raw.method);
+    if (method && !TRANSFER_METHODS.includes(method)) errors.method = "পদ্ধতি অবৈধ।";
+    const reference = clean(raw.reference);
+    lengthCheck(errors, "reference", reference, 200);
+    return Object.keys(errors).length ? { ok: false, errors } : { ok: true, value: { date, amountMinor, recipient, method, reference } };
+  }
+
+  function normalizeRecord(store, raw, fail) {
+    const spec = SCHEMA[store];
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return fail("অবৈধ রেকর্ড।");
+    if (typeof raw.id !== "string" || raw.id.length < 1 || raw.id.length > 64) return fail("আইডি অবৈধ।");
+    if (!isValidDate(raw.date)) return fail("তারিখ অবৈধ।");
+    if (!Number.isSafeInteger(raw.amountMinor) || raw.amountMinor <= 0 || raw.amountMinor > MAX_MINOR) return fail("পরিমাণ অবৈধ।");
+    const rec = { id: raw.id, date: raw.date, amountMinor: raw.amountMinor };
+    for (const [field, allowed] of Object.entries(spec.enums)) {
+      const value = raw[field] === undefined || raw[field] === null ? "" : raw[field];
+      if (value === "" && spec.optional.includes(field)) {
+        rec[field] = "";
+        continue;
+      }
+      if (!allowed.includes(value)) return fail(`"${field}" মান অবৈধ।`);
+      rec[field] = value;
+    }
+    for (const [field, max] of Object.entries(spec.text)) {
+      const value = raw[field] === undefined || raw[field] === null ? "" : raw[field];
+      if (typeof value !== "string" || value.length > max) return fail(`"${field}" অবৈধ।`);
+      if (spec.required.includes(field) && value.trim() === "") return fail(`"${field}" ফাঁকা।`);
+      rec[field] = value;
+    }
+    rec.createdAt = Number.isFinite(raw.createdAt) ? raw.createdAt : 0;
+    rec.updatedAt = Number.isFinite(raw.updatedAt) ? raw.updatedAt : rec.createdAt;
+    return rec;
+  }
+
+  function buildBackup(data, completion, nowIso) {
+    const out = { app: APP_ID, schemaVersion: SCHEMA_VERSION, createdAt: nowIso };
+    for (const store of STORES) {
+      out[store] = sortRecords(data[store])
+        .reverse()
+        .map((r) => {
+          const rec = { id: r.id, date: r.date, amountMinor: r.amountMinor };
+          for (const field of [...Object.keys(SCHEMA[store].enums), ...Object.keys(SCHEMA[store].text)]) rec[field] = r[field] || "";
+          rec.createdAt = r.createdAt || 0;
+          rec.updatedAt = r.updatedAt || 0;
+          return rec;
+        });
+    }
+    out.completion = {};
+    for (const key of Object.keys(completion || {}).sort()) if (completion[key]) out.completion[key] = true;
+    return out;
+  }
+
+  function validateBackup(input) {
+    const errors = [];
+    if (!input || typeof input !== "object" || Array.isArray(input)) {
+      return { ok: false, errors: ["ফাইলটি সঠিক ব্যাকআপ ফরম্যাটে নয়।"], errorCount: 1 };
+    }
+    if (input.app !== APP_ID) errors.push("এটি এই অ্যাপের ব্যাকআপ ফাইল নয়।");
+    if (!Number.isInteger(input.schemaVersion) || input.schemaVersion < 1) errors.push("স্কিমা ভার্সন অনুপস্থিত বা অবৈধ।");
+    else if (input.schemaVersion > SCHEMA_VERSION) errors.push("এই ব্যাকআপ নতুন ভার্সনের, তাই এই অ্যাপে ইমপোর্ট করা যাবে না।");
+    if (typeof input.createdAt !== "string" || Number.isNaN(Date.parse(input.createdAt))) errors.push("ব্যাকআপ তৈরির সময় অবৈধ।");
+    const data = { income: [], expenses: [], support: [] };
+    for (const store of STORES) {
+      const list = input[store];
+      if (!Array.isArray(list)) {
+        errors.push(`${STORE_LABELS[store]} তালিকা পাওয়া যায়নি।`);
+        continue;
+      }
+      if (list.length > MAX_RECORDS) {
+        errors.push(`${STORE_LABELS[store]}-এ রেকর্ড সংখ্যা সীমার বেশি।`);
+        continue;
+      }
+      const seen = new Set();
+      list.forEach((raw, i) => {
+        const rec = normalizeRecord(store, raw, (msg) => {
+          errors.push(`${STORE_LABELS[store]} #${i + 1}: ${msg}`);
+          return null;
+        });
+        if (!rec) return;
+        if (seen.has(rec.id)) {
+          errors.push(`${STORE_LABELS[store]} #${i + 1}: একই আইডি একাধিকবার আছে।`);
+          return;
+        }
+        seen.add(rec.id);
+        data[store].push(rec);
+      });
+    }
+    const completion = {};
+    if (input.completion !== undefined) {
+      if (!input.completion || typeof input.completion !== "object" || Array.isArray(input.completion)) {
+        errors.push("মাস সম্পূর্ণ-চিহ্নের তথ্য অবৈধ।");
+      } else {
+        for (const [key, value] of Object.entries(input.completion)) {
+          if (!isValidMonthKey(key) || value !== true) errors.push(`মাস সম্পূর্ণ-চিহ্ন অবৈধ: ${String(key).slice(0, 20)}`);
+          else completion[key] = true;
+        }
+      }
+    }
+    if (errors.length) return { ok: false, errors: errors.slice(0, 12), errorCount: errors.length };
+    return { ok: true, errors: [], errorCount: 0, data, completion, createdAt: input.createdAt };
+  }
+
+  const contentKey = (store, r, withId) =>
+    JSON.stringify([...(withId ? [r.id] : []), ...SCHEMA[store].content.map((k) => (r[k] === undefined || r[k] === null ? "" : r[k]))]);
+
+  function planImport(existing, existingCompletion, backup, mode) {
+    const replace = mode === "replace";
+    const plan = {
+      mode: replace ? "replace" : "merge",
+      replace,
+      add: { income: [], expenses: [], support: [] },
+      identical: 0,
+      conflicts: 0,
+      possibleDuplicates: 0,
+      completionToSet: []
+    };
+    for (const store of STORES) {
+      const byId = new Map(existing[store].map((r) => [r.id, r]));
+      const signatures = new Set(existing[store].map((r) => contentKey(store, r, false)));
+      for (const rec of backup.data[store]) {
+        if (replace) {
+          plan.add[store].push(rec);
+          continue;
+        }
+        const found = byId.get(rec.id);
+        if (!found) {
+          if (signatures.has(contentKey(store, rec, false))) plan.possibleDuplicates++;
+          plan.add[store].push(rec);
+        } else if (contentKey(store, found, true) === contentKey(store, rec, true)) plan.identical++;
+        else plan.conflicts++;
+      }
+    }
+    for (const key of Object.keys(backup.completion)) {
+      if (replace || !(existingCompletion && existingCompletion[key])) plan.completionToSet.push(key);
+    }
+    return plan;
+  }
+
+  function applyImport(existing, existingCompletion, plan) {
+    const next = { income: [], expenses: [], support: [] };
+    const completion = plan.replace ? {} : { ...existingCompletion };
+    for (const store of STORES) {
+      const base = plan.replace ? [] : existing[store];
+      next[store] = [...base, ...plan.add[store]];
+    }
+    for (const key of plan.completionToSet) completion[key] = true;
+    return { data: next, completion };
+  }
+
+  const toDecimalOrEmpty = (minor) => minorToDecimal(minor);
+
+  function csvCell(value) {
+    let s = value === undefined || value === null ? "" : String(value);
+    if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
+    if (/[",\n\r]/.test(s)) s = `"${s.replace(/"/g, '""')}"`;
+    return s;
+  }
+
+  function toCSV(headers, rows) {
+    return `\uFEFF${[headers, ...rows].map((r) => r.map(csvCell).join(",")).join("\r\n")}\r\n`;
+  }
+
+  const asc = (list) => sortRecords(list).reverse();
+
+  const incomeCSV = (data) =>
+    toCSV(["date", "type", "amount_rm", "note", "reference", "id"], asc(data.income).map((r) => [r.date, r.type, toDecimalOrEmpty(r.amountMinor), r.note, r.reference, r.id]));
+
+  const expensesCSV = (data) =>
+    toCSV(["date", "category", "amount_rm", "description", "note", "id"], asc(data.expenses).map((r) => [r.date, r.category, toDecimalOrEmpty(r.amountMinor), r.description, r.note, r.id]));
+
+  const supportCSV = (data) =>
+    toCSV(["date", "recipient", "amount_bdt", "method", "reference", "id"], asc(data.support).map((r) => [r.date, r.recipient, toDecimalOrEmpty(r.amountMinor), r.method, r.reference, r.id]));
+
+  function monthsRange(data) {
+    let min = null;
+    let max = null;
+    for (const store of STORES) {
+      for (const r of data[store]) {
+        const k = monthKey(r.date);
+        if (min === null || k < min) min = k;
+        if (max === null || k > max) max = k;
+      }
+    }
+    const out = [];
+    if (min === null) return out;
+    for (let k = min; k <= max; k = shiftMonth(k, 1)) out.push(k);
+    return out;
+  }
+
+  function monthlyCSV(data, completion) {
+    const rows = monthsRange(data).map((key) => {
+      const s = monthSummary(data, key, completion);
+      return [
+        key,
+        toDecimalOrEmpty(s.incomeMinor),
+        toDecimalOrEmpty(s.expenseMinor),
+        toDecimalOrEmpty(s.balanceMinor),
+        toDecimalOrEmpty(s.supportMinor),
+        s.supportCount,
+        s.supportComplete ? "yes" : "no"
+      ];
+    });
+    return toCSV(["month", "income_rm", "expenses_rm", "balance_rm", "family_support_bdt", "family_support_transfers", "family_support_marked_complete"], rows);
+  }
+
+  return {
+    APP_ID,
+    SCHEMA_VERSION,
+    INCOME_TYPES,
+    EXPENSE_CATEGORIES,
+    TRANSFER_METHODS,
+    escapeHtml,
+    toLatinDigits,
+    isValidDate,
+    isValidMonthKey,
+    parseMinor,
+    minorToDecimal,
+    formatRM,
+    formatBDT,
+    formatSignedBDT,
+    formatSignedRM,
+    toDateString,
+    monthKey,
+    shiftMonth,
+    sum,
+    monthSummary,
+    lifetimeSummary,
+    compareAmounts,
+    yearSummary,
+    filterRecords,
+    sortRecords,
+    yearsPresent,
+    sumByKey,
+    validateIncome,
+    validateExpense,
+    validateSupport,
+    buildBackup,
+    validateBackup,
+    planImport,
+    applyImport,
+    csvCell,
+    incomeCSV,
+    expensesCSV,
+    supportCSV,
+    monthlyCSV
+  };
+})();
+</script>
+<script id="app">
+(() => {
+  const C = FinanceCore;
+  const esc = C.escapeHtml;
+  const rm = C.formatRM;
+  const bdt = C.formatBDT;
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const view = $("#view");
+  const dlg = $("#dlg");
+
+  const MONTH_NAMES = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+  const MONTH_SHORT = ["জানু", "ফেব্রু", "মার্চ", "এপ্রি", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টে", "অক্টো", "নভে", "ডিসে"];
+  const LABELS = {
+    income: { salary: "বেতন", bonus: "বোনাস", overtime: "ওভারটাইম", other: "অন্যান্য" },
+    expense: {
+      food: "খাবার",
+      transport: "যাতায়াত",
+      mobile: "মোবাইল ও ইন্টারনেট",
+      clothing: "পোশাক",
+      medical: "চিকিৎসা",
+      accommodation: "থাকা ও ভাড়া",
+      personal: "ব্যক্তিগত কেনাকাটা",
+      other: "অন্যান্য"
+    },
+    method: { bank: "ব্যাংক", remittance: "রেমিট্যান্স সার্ভিস", other: "অন্যান্য" }
+  };
+  const NOUN = { income: "আয়", expenses: "খরচ", support: "ট্রান্সফার" };
+  const SAVE_FAIL = "সংরক্ষণ করা যায়নি। ব্রাউজারের স্টোরেজ পূর্ণ বা বন্ধ থাকতে পারে।";
+
+  const NAV = [
+    { id: "dashboard", label: "Dashboard", icon: "layout" },
+    { id: "income", label: "Income", icon: "trend-up" },
+    { id: "expenses", label: "Expenses", icon: "receipt" },
+    { id: "support", label: "Family Support", icon: "users" },
+    { id: "monthly", label: "Monthly Reports", icon: "calendar" },
+    { id: "yearly", label: "Yearly Reports", icon: "bars" },
+    { id: "lifetime", label: "Lifetime Total", icon: "infinity" },
+    { id: "settings", label: "Settings & Backup", icon: "sliders" }
+  ];
+  const TABS = [
+    { id: "dashboard", label: "Dashboard", icon: "layout" },
+    { id: "income", label: "Income", icon: "trend-up" },
+    { id: "expenses", label: "Expenses", icon: "receipt" },
+    { id: "support", label: "Family", icon: "users" },
+    { id: "more", label: "More", icon: "more" }
+  ];
+  const MORE_IDS = ["monthly", "yearly", "lifetime", "settings", "more"];
+  const MORE_NOTES = {
+    monthly: "যেকোনো মাসের রিপোর্ট ও আগের মাসের সাথে তুলনা",
+    yearly: "জানুয়ারি–ডিসেম্বর সারসংক্ষেপ ও চার্ট",
+    lifetime: "শুরু থেকে এখন পর্যন্ত মোট হিসাব",
+    settings: "ব্যাকআপ, রিস্টোর, CSV ও গোপনীয়তা"
+  };
+
+  const DB_NAME = "personal-finance-tracker";
+  const DB_VERSION = 1;
+  const STORES = ["income", "expenses", "support"];
+
+  const requestResult = (r) =>
+    new Promise((resolve, reject) => {
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+    });
+
+  const txDone = (tx) =>
+    new Promise((resolve, reject) => {
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error || new Error("transaction aborted"));
+    });
+
+  const db = {
+    handle: null,
+    open() {
+      return new Promise((resolve, reject) => {
+        if (!("indexedDB" in window)) {
+          reject(new Error("IndexedDB is not available"));
+          return;
+        }
+        let req;
+        try {
+          req = indexedDB.open(DB_NAME, DB_VERSION);
+        } catch (err) {
+          reject(err);
+          return;
+        }
+        req.onupgradeneeded = () => {
+          const h = req.result;
+          for (const s of STORES) {
+            if (!h.objectStoreNames.contains(s)) h.createObjectStore(s, { keyPath: "id" }).createIndex("date", "date");
+          }
+          if (!h.objectStoreNames.contains("meta")) h.createObjectStore("meta", { keyPath: "key" });
+        };
+        req.onsuccess = () => {
+          this.handle = req.result;
+          this.handle.onversionchange = () => this.handle.close();
+          resolve();
+        };
+        req.onerror = () => reject(req.error);
+        req.onblocked = () => reject(new Error("IndexedDB is blocked"));
+      });
+    },
+    async loadAll() {
+      const tx = this.handle.transaction([...STORES, "meta"], "readonly");
+      const lists = STORES.map((s) => requestResult(tx.objectStore(s).getAll()));
+      const meta = requestResult(tx.objectStore("meta").getAll());
+      const out = {};
+      const resolved = await Promise.all(lists);
+      STORES.forEach((s, i) => {
+        out[s] = resolved[i];
+      });
+      out.meta = await meta;
+      return out;
+    },
+    async put(store, rec) {
+      const tx = this.handle.transaction(store, "readwrite");
+      tx.objectStore(store).put(rec);
+      await txDone(tx);
+    },
+    async remove(store, id) {
+      const tx = this.handle.transaction(store, "readwrite");
+      tx.objectStore(store).delete(id);
+      await txDone(tx);
+    },
+    async setMeta(key, value) {
+      const tx = this.handle.transaction("meta", "readwrite");
+      tx.objectStore("meta").put({ key, value });
+      await txDone(tx);
+    },
+    async setCompletion(month, on) {
+      const tx = this.handle.transaction("meta", "readwrite");
+      if (on) tx.objectStore("meta").put({ key: `completion:${month}`, value: true });
+      else tx.objectStore("meta").delete(`completion:${month}`);
+      await txDone(tx);
+    },
+    async applyImport(plan, existingMonths) {
+      const tx = this.handle.transaction([...STORES, "meta"], "readwrite");
+      try {
+        if (plan.replace) {
+          for (const s of STORES) tx.objectStore(s).clear();
+          for (const m of existingMonths) tx.objectStore("meta").delete(`completion:${m}`);
+        }
+        for (const s of STORES) for (const rec of plan.add[s]) tx.objectStore(s).put(rec);
+        for (const m of plan.completionToSet) tx.objectStore("meta").put({ key: `completion:${m}`, value: true });
+      } catch (err) {
+        try {
+          tx.abort();
+        } catch (ignored) {
+          return Promise.reject(err);
+        }
+        throw err;
+      }
+      await txDone(tx);
+    },
+    async clearAll() {
+      const tx = this.handle.transaction([...STORES, "meta"], "readwrite");
+      for (const s of STORES) tx.objectStore(s).clear();
+      tx.objectStore("meta").clear();
+      await txDone(tx);
+    }
+  };
+
+  const state = { income: [], expenses: [], support: [], completion: {}, lastBackupAt: null, ready: false, dbError: null };
+
+  const nowDate = new Date();
+  const ui = {
+    income: { year: "", month: "", type: "", query: "" },
+    expenses: { year: "", month: "", type: "", query: "" },
+    support: { year: "", month: "", query: "" },
+    monthly: { y: String(nowDate.getFullYear()), m: String(nowDate.getMonth() + 1) },
+    yearly: { year: String(nowDate.getFullYear()) },
+    restore: null
+  };
+
+  async function reloadState() {
+    const all = await db.loadAll();
+    state.income = all.income;
+    state.expenses = all.expenses;
+    state.support = all.support;
+    state.completion = {};
+    state.lastBackupAt = null;
+    for (const m of all.meta) {
+      if (m.key.startsWith("completion:") && m.value === true) state.completion[m.key.slice(11)] = true;
+      else if (m.key === "lastBackupAt") state.lastBackupAt = m.value;
+    }
+  }
+
+  const newId = () =>
+    typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+
+  const icon = (name, cls = "") => `<svg class="ic ${cls}" aria-hidden="true" focusable="false"><use href="#i-${name}"/></svg>`;
+  const today = () => C.toDateString(new Date());
+  const thisMonth = () => C.monthKey(today());
+  const fmtDate = (s) => {
+    const [y, m, d] = s.split("-").map(Number);
+    return `${d} ${MONTH_NAMES[m - 1]} ${y}`;
+  };
+  const monthLabel = (key) => {
+    const [y, m] = key.split("-").map(Number);
+    return `${MONTH_NAMES[m - 1]} ${y}`;
+  };
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const monthlyKey = () => `${ui.monthly.y}-${pad2(ui.monthly.m)}`;
+
+  function compact(minor) {
+    const units = minor / 100;
+    if (units >= 1000000) return `${(units / 1000000).toFixed(1).replace(/\.0$/, "")}M`;
+    if (units >= 1000) return `${(units / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+    return String(Math.round(units));
+  }
+
+  function formatBytes(n) {
+    if (n < 1024) return `${n} B`;
+    if (n < 1048576) return `${(n / 1024).toFixed(1)} KB`;
+    return `${(n / 1048576).toFixed(1)} MB`;
+  }
+
+  const tile = (k, v, o = {}) =>
+    `<div class="tile ${o.cls || ""}"><span class="k">${k}</span><span class="v${o.neg ? " neg" : ""}">${v}</span>${o.sub ? `<span class="s">${o.sub}</span>` : ""}</div>`;
+
+  const secHead = (title, cur) => `<div class="sec-head"><h2>${title}</h2><span class="chip ${cur.toLowerCase()}">${cur}</span></div>`;
+
+  const emptyBox = (iconName, title, text, act, actLabel) =>
+    `<div class="empty">${icon(iconName)}<b>${title}</b>${text ? `<p>${text}</p>` : ""}${act ? `<button type="button" class="btn primary" data-act="${act}">${icon("plus")} ${actLabel}</button>` : ""}</div>`;
+
+  function statusBadge(cmp) {
+    if (cmp.status === "up") return `<span class="badge up">${icon("arrow-up", "sm")} UP${cmp.percentAvailable ? ` — ${cmp.percent}% increase` : ""}</span>`;
+    if (cmp.status === "down") return `<span class="badge down">${icon("arrow-down", "sm")} DOWN${cmp.percentAvailable ? ` — ${cmp.percent}% decrease` : ""}</span>`;
+    return `<span class="badge same">${icon("minus", "sm")} NO CHANGE</span>`;
+  }
+
+  const SUPPORT_STATE = {
+    complete: { cls: "ok", text: "সম্পূর্ণ হিসেবে চিহ্নিত", ic: "check" },
+    incomplete: { cls: "warn", text: "অসম্পূর্ণ হতে পারে", ic: "alert" },
+    "confirmed-zero": { cls: "ok", text: "নিশ্চিত শূন্য", ic: "check" },
+    "no-records": { cls: "mute", text: "কোনো রেকর্ড নেই", ic: "minus" }
+  };
+  const supportBadge = (s) => `<span class="badge ${SUPPORT_STATE[s].cls}">${icon(SUPPORT_STATE[s].ic, "sm")} ${SUPPORT_STATE[s].text}</span>`;
+
+  function completionControl(key) {
+    const done = Boolean(state.completion[key]);
+    const s = C.monthSummary(state, key, state.completion);
+    return `<div class="comp-row"><span><b>${monthLabel(key)}</b> ${supportBadge(s.supportState)}</span><button type="button" class="btn sm ${done ? "ghost" : "primary"}" data-act="set-complete" data-month="${key}" data-value="${done ? "0" : "1"}">${done ? "সম্পূর্ণ চিহ্ন তুলুন" : "সম্পূর্ণ হিসেবে চিহ্নিত করুন"}</button></div>`;
+  }
+
+  function comparisonCard(key) {
+    const prevKey = C.shiftMonth(key, -1);
+    const cur = C.monthSummary(state, key, state.completion);
+    const prev = C.monthSummary(state, prevKey, state.completion);
+    const cmp = C.compareAmounts(prev.supportMinor, cur.supportMinor);
+    const incomplete = [prev, cur].filter((m) => !m.supportComplete).map((m) => monthLabel(m.month));
+    const notes = [];
+    if (cmp.zeroBaseline) notes.push(`আগের মাসের পরিমাণ ${bdt(0)}, তাই শতাংশ হিসাব করা যায় না। শুধু পরিমাণের পার্থক্য দেখানো হয়েছে।`);
+    notes.push("এটি রেকর্ড করা পরিমাণের তথ্যগত পরিবর্তন মাত্র; বাড়া বা কমা ভালো বা খারাপ বোঝায় না।");
+    return `<section class="card" aria-labelledby="cmp-title">
+      <h3 id="cmp-title">Family Support — মাসের তুলনা (শুধু BDT)</h3>
+      <div class="cmp-grid">
+        <div><span class="k">${monthLabel(prevKey)}</span><b>${bdt(prev.supportMinor)}</b></div>
+        <div><span class="k">${monthLabel(key)}</span><b>${bdt(cur.supportMinor)}</b></div>
+        <div><span class="k">পার্থক্য</span><b>${C.formatSignedBDT(cmp.diffMinor)}</b></div>
+      </div>
+      <div class="cmp-result">${statusBadge(cmp)}</div>
+      ${notes.map((n) => `<p class="cmp-note">${n}</p>`).join("")}
+      ${incomplete.length ? `<div class="banner warn">${icon("alert")}<span>${incomplete.join(" ও ")} মাসের পরিবার-সহায়তার রেকর্ড সম্পূর্ণ হিসেবে চিহ্নিত নয়। তাই এই তুলনা অসম্পূর্ণ তথ্যের ওপর ভিত্তি করে হতে পারে।</span></div>` : ""}
+      ${completionControl(prevKey)}
+      ${completionControl(key)}
+    </section>`;
+  }
+
+  function vchart({ labels, series, format, selected = -1, showValues = false, label }) {
+    const max = Math.max(1, ...series.flatMap((s) => s.values));
+    const summary = `${label}: ${labels.map((l, i) => `${l} ${series.map((s) => `${s.name} ${format(s.values[i])}`).join(", ")}`).join("; ")}`;
+    const cols = labels
+      .map((l, i) => {
+        const bars = series
+          .map((s) => {
+            const v = s.values[i];
+            const h = v > 0 ? Math.max(2, Math.round((v / max) * 100)) : 0;
+            return `<i class="bar ${s.cls}" style="height:${h}%" title="${esc(`${s.name}: ${format(v)}`)}"></i>`;
+          })
+          .join("");
+        const val = showValues ? `<span class="val">${series[0].values[i] > 0 ? compact(series[0].values[i]) : ""}</span>` : "";
+        return `<div class="vcol${i === selected ? " sel" : ""}">${val}<div class="bars">${bars}</div><span class="lab">${esc(l)}</span></div>`;
+      })
+      .join("");
+    const legend =
+      series.length > 1 ? `<div class="legend">${series.map((s) => `<span><i class="${s.cls}"></i>${esc(s.name)}</span>`).join("")}</div>` : "";
+    return `<div class="vchart" role="img" aria-label="${esc(summary)}">${cols}</div>${legend}`;
+  }
+
+  function recordRow(store, r, editable) {
+    let title;
+    let tags;
+    let amt;
+    let cls;
+    if (store === "income") {
+      title = r.note || LABELS.income[r.type];
+      tags = [`<span class="tag">${esc(LABELS.income[r.type])}</span>`, r.reference ? `রেফ: ${esc(r.reference)}` : ""];
+      amt = rm(r.amountMinor);
+      cls = "rm";
+    } else if (store === "expenses") {
+      title = r.description;
+      tags = [`<span class="tag">${esc(LABELS.expense[r.category])}</span>`, r.note ? esc(r.note) : ""];
+      amt = rm(r.amountMinor);
+      cls = "rm";
+    } else {
+      title = r.recipient;
+      tags = [r.method ? `<span class="tag">${esc(LABELS.method[r.method])}</span>` : "", r.reference ? esc(r.reference) : ""];
+      amt = bdt(r.amountMinor);
+      cls = "bdt";
+    }
+    const meta = [esc(fmtDate(r.date)), ...tags]
+      .filter(Boolean)
+      .map((x) => `<span>${x}</span>`)
+      .join("");
+    const acts = editable
+      ? `<div class="row-act"><button type="button" class="icon-btn" data-act="edit-${store}" data-id="${esc(r.id)}" aria-label="${NOUN[store]} সম্পাদনা: ${esc(title)}">${icon("pencil")}</button><button type="button" class="icon-btn del" data-act="del-${store}" data-id="${esc(r.id)}" aria-label="${NOUN[store]} মুছুন: ${esc(title)}">${icon("trash")}</button></div>`
+      : "";
+    return `<li class="row"><div class="row-main"><span class="row-title">${esc(title)}</span><span class="row-meta">${meta}</span></div><div class="row-amt ${cls}">${amt}</div>${acts}</li>`;
+  }
+
+  const rowsCard = (store, list, editable) => `<section class="card"><ul class="rows">${list.map((r) => recordRow(store, r, editable)).join("")}</ul></section>`;
+
+  const filterSelect = (label, key, options, value) =>
+    `<div class="fld"><label for="flt-${key.replace(".", "-")}">${label}</label><select id="flt-${key.replace(".", "-")}" data-filter="${key}">${options
+      .map(([v, l]) => `<option value="${esc(v)}"${String(v) === String(value) ? " selected" : ""}>${esc(l)}</option>`)
+      .join("")}</select></div>`;
+
+  function yearList(extra) {
+    const years = new Set(C.yearsPresent(state));
+    years.add(String(nowDate.getFullYear()));
+    for (const y of extra) if (y) years.add(String(y));
+    return [...years].sort().reverse();
+  }
+
+  function listFilters(page, typeConfig, searchLabel) {
+    const f = ui[page];
+    const years = yearList([f.year]);
+    return `<div class="filters" role="group" aria-label="ফিল্টার">
+      ${filterSelect("বছর", `${page}.year`, [["", "সব বছর"], ...years.map((y) => [y, y])], f.year)}
+      ${filterSelect("মাস", `${page}.month`, [["", "সব মাস"], ...MONTH_NAMES.map((n, i) => [String(i + 1), n])], f.month)}
+      ${typeConfig ? filterSelect(typeConfig.label, `${page}.type`, [["", "সব"], ...typeConfig.items], f.type) : ""}
+      <div class="fld"><label for="flt-${page}-q">${searchLabel}</label><div class="sbox">${icon("search")}<input id="flt-${page}-q" type="search" data-filter="${page}.query" value="${esc(f.query)}" placeholder="খুঁজুন" autocomplete="off"></div></div>
+    </div>`;
+  }
+
+  function renderDashboard() {
+    const key = thisMonth();
+    const prevKey = C.shiftMonth(key, -1);
+    const cur = C.monthSummary(state, key, state.completion);
+    const prev = C.monthSummary(state, prevKey, state.completion);
+    const life = C.lifetimeSummary(state);
+    const cmp = C.compareAmounts(prev.supportMinor, cur.supportMinor);
+    const pctValue = cmp.percentAvailable ? `${cmp.status === "up" ? "+" : cmp.status === "down" ? "-" : ""}${cmp.percent}%` : "—";
+    const pctSub = cmp.percentAvailable ? "আগের মাসের তুলনায়" : cmp.zeroBaseline ? "আগের মাস শূন্য, শতাংশ হিসাব হয় না" : "";
+    const incompleteMonths = [prev, cur].filter((m) => !m.supportComplete).map((m) => monthLabel(m.month));
+    const onboarding =
+      life.recordCount === 0
+        ? `<section class="card">${emptyBox("wallet", "এখনো কোনো রেকর্ড নেই", "প্রথম রেকর্ড যোগ করে শুরু করুন। অ্যাপে কোনো নমুনা ডেটা রাখা হয়নি।")}<div class="actions center"><button type="button" class="btn primary" data-act="add-income">${icon("plus")} প্রথম আয় যোগ করুন</button><button type="button" class="btn" data-act="add-expenses">${icon("plus")} খরচ</button><button type="button" class="btn" data-act="add-support">${icon("plus")} পরিবারকে পাঠানো</button></div></section>`
+        : "";
+    return `
+    <div class="page-head"><div><h1>Dashboard</h1><p>${monthLabel(key)} · সংরক্ষিত রেকর্ড থেকে হিসাব</p></div>
+      <div class="actions"><button type="button" class="btn primary" data-act="add-income">${icon("plus")} আয়</button><button type="button" class="btn" data-act="add-expenses">${icon("plus")} খরচ</button><button type="button" class="btn" data-act="add-support">${icon("plus")} পরিবারকে পাঠানো</button></div></div>
+    ${onboarding}
+    ${secHead("Malaysian Finance", "RM")}
+    <div class="tiles">
+      ${tile("এই মাসের আয়", rm(cur.incomeMinor), { cls: "rm", sub: `${cur.incomeCount}টি রেকর্ড` })}
+      ${tile("এই মাসের ব্যক্তিগত খরচ", rm(cur.expenseMinor), { cls: "rm", sub: `${cur.expenseCount}টি রেকর্ড` })}
+      ${tile("এই মাসের অবশিষ্ট", rm(cur.balanceMinor), { cls: "rm", neg: cur.balanceMinor < 0 })}
+      ${tile("মোট আয় (আজীবন)", rm(life.incomeMinor), { cls: "rm" })}
+      ${tile("মোট খরচ (আজীবন)", rm(life.expenseMinor), { cls: "rm" })}
+      ${tile("বর্তমান ব্যালান্স", rm(life.balanceMinor), { cls: "rm strong", neg: life.balanceMinor < 0, sub: "মোট আয় − মোট ব্যক্তিগত খরচ" })}
+    </div>
+    <p class="cmp-note">BDT পরিবার-সহায়তা এই RM ব্যালান্সে ধরা হয় না।</p>
+    ${secHead("Bangladesh Family Support", "BDT")}
+    <div class="tiles">
+      ${tile("এই মাসে পাঠানো", bdt(cur.supportMinor), { cls: "bdt", sub: monthLabel(key) })}
+      ${tile("গত মাসে পাঠানো", bdt(prev.supportMinor), { cls: "bdt", sub: monthLabel(prevKey) })}
+      ${tile("পার্থক্য", C.formatSignedBDT(cmp.diffMinor), { cls: "bdt", sub: statusBadge(cmp) })}
+      ${tile("শতাংশ পরিবর্তন", pctValue, { cls: "bdt", sub: pctSub })}
+      ${tile("আজীবন মোট পাঠানো", bdt(life.supportMinor), { cls: "bdt strong" })}
+      ${tile("মোট ট্রান্সফার", String(life.supportCount), { cls: "bdt", sub: "রেকর্ড করা সংখ্যা" })}
+    </div>
+    ${incompleteMonths.length ? `<div class="banner warn">${icon("alert")}<span>${incompleteMonths.join(" ও ")} মাসের পরিবার-সহায়তার রেকর্ড সম্পূর্ণ হিসেবে চিহ্নিত নয়। তুলনা অসম্পূর্ণ হতে পারে। <a href="#/monthly">Monthly Reports</a> থেকে চিহ্নিত করুন।</span></div>` : ""}`;
+  }
+
+  function incomeRegion() {
+    const f = ui.income;
+    const list = C.sortRecords(C.filterRecords(state.income, { year: f.year, month: f.month, field: "type", value: f.type, query: f.query, searchFields: ["note", "reference"] }));
+    const life = C.lifetimeSummary(state);
+    const body =
+      state.income.length === 0
+        ? `<section class="card">${emptyBox("trend-up", "No income recorded yet", "আয়ের প্রথম রেকর্ড যোগ করুন।", "add-income", "আয় যোগ করুন")}</section>`
+        : list.length === 0
+          ? `<section class="card">${emptyBox("search", "এই ফিল্টারে কোনো আয় নেই", "")}</section>`
+          : rowsCard("income", list, true);
+    return `<div class="tiles">
+      ${tile("ফিল্টার অনুযায়ী মোট আয়", rm(C.sum(list)), { cls: "rm", sub: `${list.length}টি রেকর্ড` })}
+      ${tile("আজীবন মোট আয়", rm(life.incomeMinor), { cls: "rm strong", sub: `${life.incomeCount}টি রেকর্ড` })}
+    </div>${body}`;
+  }
+
+  function renderIncome() {
+    return `<div class="page-head"><div><h1>Income</h1><p>শুধু মালয়েশিয়ান রিঙ্গিত (RM)</p></div><div class="actions"><button type="button" class="btn primary" data-act="add-income">${icon("plus")} আয় যোগ করুন</button></div></div>
+    ${listFilters("income", { label: "আয়ের ধরন", items: Object.entries(LABELS.income) }, "নোট / রেফারেন্স")}
+    <div id="region" class="region">${incomeRegion()}</div>`;
+  }
+
+  function expensesRegion() {
+    const f = ui.expenses;
+    const list = C.sortRecords(C.filterRecords(state.expenses, { year: f.year, month: f.month, field: "category", value: f.type, query: f.query, searchFields: ["description", "note"] }));
+    const life = C.lifetimeSummary(state);
+    const byCat = C.sumByKey(list, "category");
+    const entries = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+    const top = entries.length ? entries[0][1] : 1;
+    const chart = entries.length
+      ? `<section class="card"><h3>ক্যাটাগরি অনুযায়ী খরচ</h3><ul class="hbars">${entries
+          .map(([k, v]) => `<li><span class="name">${esc(LABELS.expense[k])}</span><span class="amt">${rm(v)}</span><span class="track"><i style="width:${Math.max(2, Math.round((v / top) * 100))}%"></i></span></li>`)
+          .join("")}</ul></section>`
+      : "";
+    const body =
+      state.expenses.length === 0
+        ? `<section class="card">${emptyBox("receipt", "No expenses recorded yet", "প্রথম খরচের রেকর্ড যোগ করুন।", "add-expenses", "খরচ যোগ করুন")}</section>`
+        : list.length === 0
+          ? `<section class="card">${emptyBox("search", "এই ফিল্টারে কোনো খরচ নেই", "")}</section>`
+          : rowsCard("expenses", list, true);
+    return `<div class="tiles">
+      ${tile("ফিল্টার অনুযায়ী মোট খরচ", rm(C.sum(list)), { cls: "rm", sub: `${list.length}টি রেকর্ড` })}
+      ${tile("আজীবন মোট খরচ", rm(life.expenseMinor), { cls: "rm strong", sub: `${life.expenseCount}টি রেকর্ড` })}
+    </div>${chart}${body}`;
+  }
+
+  function renderExpenses() {
+    return `<div class="page-head"><div><h1>Expenses</h1><p>ব্যক্তিগত খরচ · শুধু RM</p></div><div class="actions"><button type="button" class="btn primary" data-act="add-expenses">${icon("plus")} খরচ যোগ করুন</button></div></div>
+    ${listFilters("expenses", { label: "ক্যাটাগরি", items: Object.entries(LABELS.expense) }, "বিবরণ / নোট")}
+    <div id="region" class="region">${expensesRegion()}</div>`;
+  }
+
+  function supportRegion() {
+    const f = ui.support;
+    const list = C.sortRecords(C.filterRecords(state.support, { year: f.year, month: f.month, query: f.query, searchFields: ["recipient"] }));
+    const life = C.lifetimeSummary(state);
+    const key = f.year && f.month ? `${f.year}-${pad2(f.month)}` : null;
+    const extra = key
+      ? comparisonCard(key)
+      : `<p class="cmp-note">মাসের তুলনা ও "সম্পূর্ণ" চিহ্ন দেখতে বছর ও মাস দুটোই বাছুন, অথবা <a href="#/monthly">Monthly Reports</a>-এ যান।</p>`;
+    const body =
+      state.support.length === 0
+        ? `<section class="card">${emptyBox("users", "No family support recorded yet", "পরিবারকে পাঠানো প্রথম টাকার রেকর্ড যোগ করুন।", "add-support", "ট্রান্সফার যোগ করুন")}</section>`
+        : list.length === 0
+          ? `<section class="card">${emptyBox("search", "এই ফিল্টারে কোনো ট্রান্সফার নেই", "")}</section>`
+          : rowsCard("support", list, true);
+    return `<div class="tiles">
+      ${tile("ফিল্টার অনুযায়ী মোট পাঠানো", bdt(C.sum(list)), { cls: "bdt", sub: `${list.length}টি ট্রান্সফার` })}
+      ${tile("আজীবন মোট পাঠানো", bdt(life.supportMinor), { cls: "bdt strong", sub: `${life.supportCount}টি ট্রান্সফার` })}
+    </div>${extra}${body}`;
+  }
+
+  function renderSupport() {
+    const f = ui.support;
+    const years = yearList([f.year]);
+    return `<div class="page-head"><div><h1>Family Support</h1><p>বাংলাদেশে পরিবারকে পাঠানো · শুধু BDT · হাতে লেখা পরিমাণ</p></div><div class="actions"><button type="button" class="btn primary" data-act="add-support">${icon("plus")} ট্রান্সফার যোগ করুন</button></div></div>
+    <div class="filters" role="group" aria-label="ফিল্টার">
+      ${filterSelect("বছর", "support.year", [["", "সব বছর"], ...years.map((y) => [y, y])], f.year)}
+      ${filterSelect("মাস", "support.month", [["", "সব মাস"], ...MONTH_NAMES.map((n, i) => [String(i + 1), n])], f.month)}
+      <div class="fld"><label for="flt-support-q">প্রাপক</label><div class="sbox">${icon("search")}<input id="flt-support-q" type="search" data-filter="support.query" value="${esc(f.query)}" placeholder="খুঁজুন" autocomplete="off"></div></div>
+    </div>
+    <div id="region" class="region">${supportRegion()}</div>`;
+  }
+
+  function monthPicker() {
+    const years = yearList([ui.monthly.y]);
+    return `<div class="picker">
+      <button type="button" class="icon-btn" data-act="month-prev" aria-label="আগের মাস">${icon("chev-left")}</button>
+      ${filterSelect("মাস", "monthly.m", MONTH_NAMES.map((n, i) => [String(i + 1), n]), ui.monthly.m)}
+      ${filterSelect("বছর", "monthly.y", years.map((y) => [y, y]), ui.monthly.y)}
+      <button type="button" class="icon-btn" data-act="month-next" aria-label="পরের মাস">${icon("chev-right")}</button>
+    </div>`;
+  }
+
+  function monthListSection(title, store, list) {
+    if (!list.length) return `<section class="card"><h3>${title}</h3><p class="cmp-note">এই মাসে কোনো রেকর্ড নেই।</p></section>`;
+    return `<section class="card"><h3>${title}</h3><ul class="rows">${C.sortRecords(list)
+      .map((r) => recordRow(store, r, false))
+      .join("")}</ul></section>`;
+  }
+
+  function renderMonthly() {
+    const key = monthlyKey();
+    const s = C.monthSummary(state, key, state.completion);
+    const keys = [-5, -4, -3, -2, -1, 0].map((d) => C.shiftMonth(key, d));
+    const values = keys.map((k) => C.monthSummary(state, k, state.completion).supportMinor);
+    const labels = keys.map((k) => `${MONTH_SHORT[Number(k.slice(5)) - 1]} ${k.slice(2, 4)}`);
+    const inMonth = (list) => list.filter((r) => C.monthKey(r.date) === key);
+    return `<div class="page-head"><div><h1>Monthly Reports</h1><p>${monthLabel(key)}</p></div></div>
+    ${monthPicker()}
+    ${secHead("Malaysian Finance", "RM")}
+    <div class="tiles">
+      ${tile("মোট আয়", rm(s.incomeMinor), { cls: "rm", sub: `${s.incomeCount}টি রেকর্ড` })}
+      ${tile("মোট ব্যক্তিগত খরচ", rm(s.expenseMinor), { cls: "rm", sub: `${s.expenseCount}টি রেকর্ড` })}
+      ${tile("অবশিষ্ট", rm(s.balanceMinor), { cls: "rm strong", neg: s.balanceMinor < 0 })}
+    </div>
+    ${secHead("Bangladesh Family Support", "BDT")}
+    <div class="tiles">
+      ${tile("মোট পাঠানো", bdt(s.supportMinor), { cls: "bdt strong" })}
+      ${tile("ট্রান্সফার সংখ্যা", String(s.supportCount), { cls: "bdt" })}
+    </div>
+    ${comparisonCard(key)}
+    <section class="card"><h3>মাস-ভিত্তিক পরিবার-সহায়তা (BDT)</h3>${vchart({ labels, series: [{ name: "BDT", cls: "bdt", values }], format: bdt, selected: 5, showValues: true, label: "শেষ ৬ মাসে পাঠানো টাকা" })}</section>
+    ${monthListSection(`Family Support ট্রান্সফার — ${bdt(s.supportMinor)}`, "support", inMonth(state.support))}
+    ${monthListSection(`আয় — ${rm(s.incomeMinor)}`, "income", inMonth(state.income))}
+    ${monthListSection(`ব্যক্তিগত খরচ — ${rm(s.expenseMinor)}`, "expenses", inMonth(state.expenses))}`;
+  }
+
+  function renderYearly() {
+    const year = ui.yearly.year;
+    const y = C.yearSummary(state, year, state.completion);
+    const years = yearList([year]);
+    const labels = MONTH_SHORT;
+    const hasIncomplete = y.months.some((m) => m.supportState === "incomplete");
+    const extreme = (m) => (m ? { v: bdt(m.supportMinor), sub: monthLabel(m.month) } : { v: "—", sub: "কোনো রেকর্ড নেই" });
+    const hi = extreme(y.highest);
+    const lo = extreme(y.lowest);
+    const rows = y.months
+      .map(
+        (m, i) => `<li class="yrow"><div class="yrow-head"><b>${MONTH_NAMES[i]}</b>${supportBadge(m.supportState)}</div>
+        <div class="ygrid">
+          <div><span class="k">আয় (RM)</span><span class="v">${rm(m.incomeMinor)}</span></div>
+          <div><span class="k">খরচ (RM)</span><span class="v">${rm(m.expenseMinor)}</span></div>
+          <div><span class="k">অবশিষ্ট (RM)</span><span class="v${m.balanceMinor < 0 ? " neg" : ""}">${rm(m.balanceMinor)}</span></div>
+          <div><span class="k">পরিবারকে (BDT)</span><span class="v bdt">${bdt(m.supportMinor)}</span></div>
+        </div></li>`
+      )
+      .join("");
+    return `<div class="page-head"><div><h1>Yearly Reports</h1><p>জানুয়ারি–ডিসেম্বর ${year}</p></div></div>
+    <div class="picker">${filterSelect("বছর", "yearly.year", years.map((v) => [v, v]), year)}</div>
+    ${secHead(`Malaysian Finance — ${year} (YTD)`, "RM")}
+    <div class="tiles">
+      ${tile("মোট আয়", rm(y.totals.incomeMinor), { cls: "rm" })}
+      ${tile("মোট ব্যক্তিগত খরচ", rm(y.totals.expenseMinor), { cls: "rm" })}
+      ${tile("অবশিষ্ট", rm(y.totals.balanceMinor), { cls: "rm strong", neg: y.totals.balanceMinor < 0 })}
+    </div>
+    ${secHead(`Bangladesh Family Support — ${year} (YTD)`, "BDT")}
+    <div class="tiles">
+      ${tile("মোট পাঠানো", bdt(y.totals.supportMinor), { cls: "bdt strong", sub: `${y.totals.supportCount}টি ট্রান্সফার` })}
+      ${tile("সর্বোচ্চ রেকর্ড করা মাস", hi.v, { cls: "bdt", sub: hi.sub })}
+      ${tile("সর্বনিম্ন রেকর্ড করা মাস", lo.v, { cls: "bdt", sub: lo.sub })}
+    </div>
+    ${hasIncomplete ? `<div class="banner warn">${icon("alert")}<span>কিছু মাসের পরিবার-সহায়তা রেকর্ড সম্পূর্ণ হিসেবে চিহ্নিত নয়, তাই সর্বোচ্চ/সর্বনিম্ন হিসাব অসম্পূর্ণ হতে পারে।</span></div>` : ""}
+    <section class="card"><h3>মাস-ভিত্তিক RM আয় ও খরচ</h3>${vchart({
+      labels,
+      series: [
+        { name: "আয় (RM)", cls: "rm-in", values: y.months.map((m) => m.incomeMinor) },
+        { name: "খরচ (RM)", cls: "rm-out", values: y.months.map((m) => m.expenseMinor) }
+      ],
+      format: rm,
+      label: `${year} সালের RM আয় ও খরচ`
+    })}</section>
+    <section class="card"><h3>মাস-ভিত্তিক পরিবার-সহায়তা (BDT)</h3>${vchart({ labels, series: [{ name: "BDT", cls: "bdt", values: y.months.map((m) => m.supportMinor) }], format: bdt, label: `${year} সালে পরিবারকে পাঠানো টাকা` })}</section>
+    <ul class="yrows" aria-label="মাসভিত্তিক বিবরণ">${rows}</ul>`;
+  }
+
+  function renderLifetime() {
+    const l = C.lifetimeSummary(state);
+    return `<div class="page-head"><div><h1>Lifetime Total</h1><p>শুরু থেকে এখন পর্যন্ত · সব সংরক্ষিত রেকর্ড থেকে হিসাব</p></div></div>
+    ${secHead("Malaysian Finance", "RM")}
+    <div class="tiles">
+      ${tile("মোট আয়", rm(l.incomeMinor), { cls: "rm", sub: `${l.incomeCount}টি রেকর্ড` })}
+      ${tile("মোট ব্যক্তিগত খরচ", rm(l.expenseMinor), { cls: "rm", sub: `${l.expenseCount}টি রেকর্ড` })}
+      ${tile("অবশিষ্ট ব্যালান্স", rm(l.balanceMinor), { cls: "rm strong", neg: l.balanceMinor < 0, sub: "মোট আয় − মোট ব্যক্তিগত খরচ" })}
+    </div>
+    ${secHead("Bangladesh Family Support", "BDT")}
+    <div class="tiles">
+      ${tile("মোট পাঠানো", bdt(l.supportMinor), { cls: "bdt strong" })}
+      ${tile("ট্রান্সফার সংখ্যা", String(l.supportCount), { cls: "bdt" })}
+    </div>
+    <p class="cmp-note">দুই মুদ্রা কখনো যোগ বা তুলনা করা হয় না। রেকর্ড এডিট বা মুছলে এই মোট সাথে সাথে বদলে যায়।</p>`;
+  }
+
+  function renderMore() {
+    const items = NAV.filter((n) => MORE_NOTES[n.id]);
+    return `<div class="page-head"><div><h1>More</h1><p>রিপোর্ট ও সেটিংস</p></div></div>
+    <div class="more-list">${items.map((n) => `<a href="#/${n.id}"><span class="ico">${icon(n.icon)}</span><span>${n.label}<small>${MORE_NOTES[n.id]}</small></span></a>`).join("")}</div>`;
+  }
+
+  function restoreView() {
+    const r = ui.restore;
+    if (!r) return `<p class="cmp-note">ফাইল বাছাই করলে আগে প্রিভিউ দেখানো হবে। আপনি নিশ্চিত না করা পর্যন্ত কিছুই ইমপোর্ট হবে না।</p>`;
+    if (r.errors) {
+      return `<div class="banner err">${icon("alert")}<div><b>${esc(r.fileName || "ফাইল")} ইমপোর্ট করা যাবে না</b><ul class="notes">${r.errors.map((e) => `<li>${esc(e)}</li>`).join("")}</ul>${r.errorCount > r.errors.length ? `<p>আরও ${r.errorCount - r.errors.length}টি ত্রুটি আছে।</p>` : ""}<p>আপনার বর্তমান ডেটা অপরিবর্তিত আছে।</p></div></div><div class="actions" style="margin-top:12px"><button type="button" class="btn sm" data-act="cancel-restore">বন্ধ করুন</button></div>`;
+    }
+    const { plan, backup } = r;
+    const labels = { income: "আয় (RM)", expenses: "খরচ (RM)", support: "পরিবার (BDT)" };
+    const table = STORES.map((s) => `<tr><td>${labels[s]}</td><td>${backup.data[s].length}</td><td>${plan.add[s].length}</td></tr>`).join("");
+    const addTotal = STORES.reduce((t, s) => t + plan.add[s].length, 0);
+    const nothing = !plan.replace && addTotal === 0 && plan.completionToSet.length === 0;
+    return `<div class="banner info">${icon("info")}<span><b>${esc(r.fileName)}</b> · ব্যাকআপ তৈরি: ${esc(new Date(backup.createdAt).toLocaleString("bn-BD"))}</span></div>
+    <table class="preview-table"><thead><tr><th scope="col">ধরন</th><th scope="col">ফাইলে</th><th scope="col">যোগ হবে</th></tr></thead><tbody>${table}</tbody></table>
+    ${plan.replace ? "" : `<p class="cmp-note">ইতিমধ্যে আছে (হুবহু একই): ${plan.identical}টি · একই আইডি কিন্তু ভিন্ন তথ্য (বর্তমানটি রাখা হবে): ${plan.conflicts}টি${plan.possibleDuplicates ? ` · একই তথ্য ভিন্ন আইডিতে (সম্ভাব্য ডুপ্লিকেট, তবু যোগ হবে): ${plan.possibleDuplicates}টি` : ""}</p>`}
+    <p class="cmp-note">মাস সম্পূর্ণ-চিহ্ন যোগ হবে: ${plan.completionToSet.length}টি</p>
+    <label class="radio"><input type="radio" name="restore-mode" value="merge" data-restore-mode${plan.replace ? "" : " checked"}><span><b>মার্জ (প্রস্তাবিত)</b><small>বর্তমান ডেটা রেখে শুধু নতুন রেকর্ড যোগ হবে। একই আইডির রেকর্ড দ্বিতীয়বার যোগ হবে না।</small></span></label>
+    <label class="radio"><input type="radio" name="restore-mode" value="replace" data-restore-mode${plan.replace ? " checked" : ""}><span><b>সম্পূর্ণ প্রতিস্থাপন</b><small>বর্তমান সব ডেটা মুছে ফাইলের ডেটা বসবে।</small></span></label>
+    <div class="actions" style="margin-top:14px"><button type="button" class="btn ${plan.replace ? "danger" : "primary"}" data-act="do-import"${nothing ? " disabled" : ""}>${icon("upload")} ${nothing ? "নতুন কিছু নেই" : plan.replace ? "প্রতিস্থাপন করে ইমপোর্ট" : "মার্জ করে ইমপোর্ট"}</button><button type="button" class="btn ghost" data-act="cancel-restore">বাতিল</button></div>`;
+  }
+
+  let deferredPrompt = null;
+
+  function renderSettings() {
+    const last = state.lastBackupAt ? new Date(state.lastBackupAt).toLocaleString("bn-BD") : "এখনো নেওয়া হয়নি";
+    return `<div class="page-head"><div><h1>Settings & Backup</h1><p>ব্যাকআপ, রিস্টোর, এক্সপোর্ট ও গোপনীয়তা</p></div></div>
+    <section class="card"><h3>${icon("shield", "sm")} আপনার ডেটা কোথায় থাকে</h3>
+      <ul class="notes">
+        <li>সব আয়, খরচ ও পরিবার-সহায়তার রেকর্ড শুধু এই ডিভাইসের এই ব্রাউজারের IndexedDB-তে সংরক্ষিত। কোনো সার্ভার, ক্লাউড বা অ্যানালিটিক্সে কিছু পাঠানো হয় না।</li>
+        <li>অন্য ফোন বা অন্য ব্রাউজারে ডেটা নিজে থেকে সিঙ্ক হয় না। সরাতে চাইলে ব্যাকআপ নিয়ে সেখানে রিস্টোর করুন।</li>
+        <li>ব্রাউজারের "Clear site data", স্টোরেজ পরিষ্কার বা ডিভাইস রিসেট করলে ডেটা মুছে যেতে পারে। তাই নিয়মিত ব্যাকআপ নিন।</li>
+        <li>ব্রাউজার স্টোরেজ ও ব্যাকআপ ফাইল এনক্রিপ্টেড নয়। ডিভাইসে স্ক্রিন লক রাখুন এবং ব্যাকআপ ফাইল নিরাপদ জায়গায় রাখুন।</li>
+        <li>এই অ্যাপে কোনো PIN বা অ্যাপ লক নেই। ডিভাইস আনলক থাকলে যে কেউ অ্যাপটি খুলতে পারে।</li>
+        <li>প্রথমবার ইন্টারনেটে খোলার পর পেজটি ক্যাশ হলে অফলাইনেও চলে।</li>
+      </ul>
+    </section>
+    <section class="card"><h3>${icon("download", "sm")} ব্যাকআপ (JSON)</h3>
+      <p class="cmp-note">সব রেকর্ড, মাস সম্পূর্ণ-চিহ্ন, স্কিমা ভার্সন ও তৈরির সময়সহ ফাইলটি আপনার ডিভাইসেই তৈরি হয়। কোথাও আপলোড হয় না।</p>
+      <p class="cmp-note">সর্বশেষ ব্যাকআপ: ${esc(last)}</p>
+      <div class="actions" style="margin-top:12px"><button type="button" class="btn primary" data-act="export-json">${icon("download")} ব্যাকআপ ডাউনলোড করুন</button></div>
+    </section>
+    <section class="card"><h3>${icon("upload", "sm")} রিস্টোর</h3>
+      <div class="fld"><label for="restore-file">ব্যাকআপ ফাইল (.json) বাছুন</label><input id="restore-file" type="file" accept="application/json,.json"></div>
+      <div id="restore-region">${restoreView()}</div>
+    </section>
+    <section class="card"><h3>${icon("file", "sm")} CSV এক্সপোর্ট</h3>
+      <p class="cmp-note">প্রতিটি ফাইলে মুদ্রা আলাদা কলামে ও আলাদা নামে থাকে।</p>
+      <div class="btn-grid">
+        <button type="button" class="btn" data-act="export-csv" data-kind="income">${icon("download", "sm")} আয় (RM)</button>
+        <button type="button" class="btn" data-act="export-csv" data-kind="expenses">${icon("download", "sm")} খরচ (RM)</button>
+        <button type="button" class="btn" data-act="export-csv" data-kind="support">${icon("download", "sm")} পরিবার (BDT)</button>
+        <button type="button" class="btn" data-act="export-csv" data-kind="monthly">${icon("download", "sm")} মাসিক সারসংক্ষেপ</button>
+      </div>
+    </section>
+    <section class="card"><h3>${icon("database", "sm")} স্টোরেজ ও ইনস্টল</h3>
+      <p class="cmp-note" id="storage-info"></p>
+      <div class="btn-grid">
+        <button type="button" class="btn" data-act="persist">${icon("shield", "sm")} স্থায়ী স্টোরেজ চালু করুন</button>
+        ${deferredPrompt ? `<button type="button" class="btn primary" data-act="install">${icon("smartphone", "sm")} অ্যাপ ইনস্টল করুন</button>` : ""}
+      </div>
+      ${deferredPrompt ? "" : `<p class="cmp-note">ইনস্টল করতে Chrome মেনু থেকে "Install app" বা "Add to Home screen" বাছুন।</p>`}
+    </section>
+    <section class="card"><h3>${icon("trash", "sm")} সব ডেটা মুছুন</h3>
+      <p class="cmp-note">এই ডিভাইসের সব রেকর্ড স্থায়ীভাবে মুছে যাবে। আগে ব্যাকআপ নিয়ে রাখুন।</p>
+      <div class="actions" style="margin-top:12px"><button type="button" class="btn danger" data-act="erase">${icon("trash", "sm")} সব ডেটা মুছুন</button></div>
+    </section>`;
+  }
+
+  async function fillStorageInfo() {
+    const parts = [];
+    if (navigator.storage && navigator.storage.estimate) {
+      try {
+        const e = await navigator.storage.estimate();
+        parts.push(`ব্যবহৃত স্থান: ${formatBytes(e.usage || 0)}`);
+      } catch (ignored) {
+        parts.push("");
+      }
+    }
+    if (navigator.storage && navigator.storage.persisted) {
+      try {
+        const p = await navigator.storage.persisted();
+        parts.push(p ? "স্থায়ী স্টোরেজ: চালু" : "স্থায়ী স্টোরেজ: চালু নয় (ব্রাউজার প্রয়োজনে ডেটা মুছতে পারে)");
+      } catch (ignored) {
+        parts.push("");
+      }
+    }
+    const el = $("#storage-info");
+    if (el) el.textContent = parts.filter(Boolean).join(" · ");
+  }
+
+  const PAGES = {
+    dashboard: { title: "Dashboard", render: renderDashboard },
+    income: { title: "Income", render: renderIncome, region: incomeRegion },
+    expenses: { title: "Expenses", render: renderExpenses, region: expensesRegion },
+    support: { title: "Family Support", render: renderSupport, region: supportRegion },
+    monthly: { title: "Monthly Reports", render: renderMonthly },
+    yearly: { title: "Yearly Reports", render: renderYearly },
+    lifetime: { title: "Lifetime Total", render: renderLifetime },
+    settings: { title: "Settings & Backup", render: renderSettings, after: fillStorageInfo },
+    more: { title: "More", render: renderMore }
+  };
+
+  function dbErrorView() {
+    return `<div class="page-head"><div><h1>ডেটা স্টোরেজ চালু হয়নি</h1></div></div>
+    <div class="banner err">${icon("alert")}<span>এই ব্রাউজারে IndexedDB চালু নেই বা প্রাইভেট মোডে ব্লক করা। তাই কোনো ডেটা সংরক্ষণ করা যাবে না। সাধারণ ট্যাবে Chrome-এ খুলে আবার চেষ্টা করুন। ডেটা কখনো localStorage বা সার্ভারে সংরক্ষণ করা হয় না।</span></div>`;
+  }
+
+  function buildNav() {
+    $("#nav-side").innerHTML = NAV.map((n) => `<a href="#/${n.id}" data-nav="${n.id}">${icon(n.icon)}<span>${n.label}</span></a>`).join("");
+    $("#nav-tab").innerHTML = TABS.map((n) => `<a href="#/${n.id}" data-nav="${n.id}">${icon(n.icon)}<span>${n.label}</span></a>`).join("");
+  }
+
+  function updateNav(id) {
+    document.querySelectorAll("[data-nav]").forEach((a) => {
+      const target = a.dataset.nav;
+      const active = target === id || (target === "more" && MORE_IDS.includes(id) && !document.getElementById("nav-side").contains(a));
+      if (active) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
+    });
+  }
+
+  function updateNet() {
+    const on = navigator.onLine;
+    document.querySelectorAll(".js-net").forEach((el) => {
+      el.className = `pill js-net${on ? "" : " off"}`;
+      el.innerHTML = `${icon(on ? "wifi" : "wifi-off", "sm")} ${on ? "অনলাইন" : "অফলাইন · ডেটা সংরক্ষিত"}`;
+    });
+  }
+
+  let lastRoute = null;
+  const currentRoute = () => {
+    const id = location.hash.replace(/^#\/?/, "") || "dashboard";
+    return PAGES[id] ? id : "dashboard";
+  };
+
+  function render() {
+    const id = currentRoute();
+    const page = PAGES[id];
+    document.title = `${page.title} — Personal Finance Tracker`;
+    if (!state.ready) view.innerHTML = `<div class="empty"><p>লোড হচ্ছে…</p></div>`;
+    else if (state.dbError) view.innerHTML = dbErrorView();
+    else view.innerHTML = page.render();
+    updateNav(id);
+    if (id !== lastRoute) {
+      window.scrollTo(0, 0);
+      view.focus({ preventScroll: true });
+      lastRoute = id;
+    }
+    if (page.after && state.ready && !state.dbError) page.after();
+  }
+
+  function refreshRegion() {
+    const region = $("#region");
+    const page = PAGES[currentRoute()];
+    if (region && page.region) region.innerHTML = page.region();
+  }
+
+  function refreshRestore() {
+    const el = $("#restore-region");
+    if (el) el.innerHTML = restoreView();
+  }
+
+  let toastTimer = null;
+  function toast(message) {
+    const t = $("#toast");
+    t.textContent = message;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 3400);
+  }
+
+  function download(name, mime, content) {
+    const url = URL.createObjectURL(new Blob([content], { type: mime }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  const inputField = ({ name, label, type = "text", value = "", required = false, attrs = "", hint = "", list = "" }) =>
+    `<div class="fld"><label for="f-${name}">${label}${required ? ' <span class="req" aria-hidden="true">*</span>' : ""}</label><input id="f-${name}" name="${name}" type="${type}" value="${esc(value)}"${required ? " required" : ""}${list ? ` list="${list}"` : ""} ${attrs}>${hint ? `<small>${hint}</small>` : ""}</div>`;
+
+  const amountField = (currency, value) =>
+    `<div class="fld"><label for="f-amount">পরিমাণ (${currency}) <span class="req" aria-hidden="true">*</span></label><div class="amount-wrap"><span class="unit" aria-hidden="true">${currency === "RM" ? "RM" : "৳"}</span><input id="f-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${esc(value)}" required></div></div>`;
+
+  const selectField = ({ name, label, options, value, required = false, blank = "" }) =>
+    `<div class="fld"><label for="f-${name}">${label}${required ? ' <span class="req" aria-hidden="true">*</span>' : ""}</label><select id="f-${name}" name="${name}">${blank ? `<option value="">${blank}</option>` : ""}${options
+      .map(([v, l]) => `<option value="${esc(v)}"${v === value ? " selected" : ""}>${esc(l)}</option>`)
+      .join("")}</select></div>`;
+
+  function clearErrors(form) {
+    form.querySelectorAll(".err,.form-err").forEach((el) => el.remove());
+    form.querySelectorAll("[aria-invalid]").forEach((el) => {
+      el.removeAttribute("aria-invalid");
+      el.removeAttribute("aria-describedby");
+    });
+  }
+
+  function showErrors(form, errors) {
+    let first = null;
+    for (const [name, message] of Object.entries(errors)) {
+      const field = name === "_form" ? null : form.querySelector(`[name="${name}"]`);
+      if (!field) {
+        const p = document.createElement("p");
+        p.className = "form-err";
+        p.setAttribute("role", "alert");
+        p.textContent = message;
+        form.querySelector(".dlg-body").appendChild(p);
+        continue;
+      }
+      const span = document.createElement("span");
+      span.className = "err";
+      span.id = `err-${name}`;
+      span.setAttribute("role", "alert");
+      span.textContent = message;
+      field.closest(".fld").appendChild(span);
+      field.setAttribute("aria-invalid", "true");
+      field.setAttribute("aria-describedby", span.id);
+      if (!first) first = field;
+    }
+    if (first) first.focus();
+  }
+
+  function openForm({ title, body, submit, onSubmit }) {
+    dlg.innerHTML = `<form class="dlg-form" novalidate><div class="dlg-head"><h2 id="dlg-title">${title}</h2><button type="button" class="icon-btn" data-close aria-label="বন্ধ করুন">${icon("x")}</button></div><div class="dlg-body">${body}</div><div class="dlg-foot"><button type="button" class="btn ghost" data-close>বাতিল</button><button type="submit" class="btn primary">${submit || "সংরক্ষণ করুন"}</button></div></form>`;
+    const form = $("form", dlg);
+    let busy = false;
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (busy) return;
+      busy = true;
+      clearErrors(form);
+      try {
+        const result = await onSubmit(Object.fromEntries(new FormData(form)));
+        if (result && result.errors) showErrors(form, result.errors);
+        else dlg.close();
+      } finally {
+        busy = false;
+      }
+    });
+    dlg.showModal();
+    const first = form.querySelector('[name="amount"]') || form.querySelector("input,select");
+    if (first) first.focus();
+  }
+
+  function confirmDialog({ title, message, confirmLabel = "নিশ্চিত করুন", danger = false, extra = "", requireText = "" }) {
+    return new Promise((resolve) => {
+      dlg.innerHTML = `<div class="dlg-confirm"><div class="dlg-head"><h2 id="dlg-title">${title}</h2></div><div class="dlg-body"><p>${message}</p>${extra}${requireText ? `<div class="fld"><label for="f-confirm">নিশ্চিত করতে <b>${esc(requireText)}</b> লিখুন</label><input id="f-confirm" type="text" autocomplete="off" autocapitalize="off"></div>` : ""}</div><div class="dlg-foot"><button type="button" class="btn ghost" data-close>বাতিল</button><button type="button" class="btn ${danger ? "danger" : "primary"}" data-ok${requireText ? " disabled" : ""}>${confirmLabel}</button></div></div>`;
+      let result = false;
+      const ok = $("[data-ok]", dlg);
+      ok.addEventListener("click", () => {
+        result = true;
+        dlg.close();
+      });
+      const input = $("#f-confirm", dlg);
+      if (input) {
+        input.addEventListener("input", () => {
+          ok.disabled = input.value.trim() !== requireText;
+        });
+      }
+      dlg.addEventListener("close", () => resolve(result), { once: true });
+      dlg.showModal();
+      (input || $("[data-close]:not(.icon-btn)", dlg)).focus();
+    });
+  }
+
+  async function saveRecord(store, existing, value) {
+    const now = Date.now();
+    const rec = existing ? { ...existing, ...value, updatedAt: now } : { id: newId(), ...value, createdAt: now, updatedAt: now };
+    await db.put(store, rec);
+    const i = state[store].findIndex((x) => x.id === rec.id);
+    if (i >= 0) state[store][i] = rec;
+    else state[store].push(rec);
+    return rec;
+  }
+
+  function incomeForm(r) {
+    const v = r || { date: today(), type: "salary", note: "", reference: "" };
+    openForm({
+      title: r ? "আয় সম্পাদনা" : "আয় যোগ করুন",
+      body: `${amountField("RM", r ? C.minorToDecimal(r.amountMinor) : "")}
+        <div class="two">${inputField({ name: "date", label: "তারিখ", type: "date", value: v.date, required: true })}${selectField({ name: "type", label: "আয়ের ধরন", options: Object.entries(LABELS.income), value: v.type, required: true })}</div>
+        ${inputField({ name: "note", label: "বিবরণ / নোট", value: v.note, attrs: 'maxlength="200"' })}
+        ${inputField({ name: "reference", label: "রেফারেন্স (ঐচ্ছিক)", value: v.reference, attrs: 'maxlength="80"' })}`,
+      onSubmit: async (raw) => {
+        const res = C.validateIncome(raw);
+        if (!res.ok) return { errors: res.errors };
+        try {
+          await saveRecord("income", r, res.value);
+        } catch (err) {
+          return { errors: { _form: SAVE_FAIL } };
+        }
+        render();
+        toast(r ? "আয় আপডেট হয়েছে" : "আয় সংরক্ষিত হয়েছে");
+        return null;
+      }
+    });
+  }
+
+  function expenseForm(r) {
+    const v = r || { date: today(), category: "food", description: "", note: "" };
+    openForm({
+      title: r ? "খরচ সম্পাদনা" : "খরচ যোগ করুন",
+      body: `${amountField("RM", r ? C.minorToDecimal(r.amountMinor) : "")}
+        <div class="two">${inputField({ name: "date", label: "তারিখ", type: "date", value: v.date, required: true })}${selectField({ name: "category", label: "ক্যাটাগরি", options: Object.entries(LABELS.expense), value: v.category, required: true })}</div>
+        ${inputField({ name: "description", label: "বিবরণ", value: v.description, required: true, attrs: 'maxlength="120"' })}
+        ${inputField({ name: "note", label: "নোট (ঐচ্ছিক)", value: v.note, attrs: 'maxlength="200"' })}`,
+      onSubmit: async (raw) => {
+        const res = C.validateExpense(raw);
+        if (!res.ok) return { errors: res.errors };
+        try {
+          await saveRecord("expenses", r, res.value);
+        } catch (err) {
+          return { errors: { _form: SAVE_FAIL } };
+        }
+        render();
+        toast(r ? "খরচ আপডেট হয়েছে" : "খরচ সংরক্ষিত হয়েছে");
+        return null;
+      }
+    });
+  }
+
+  function supportForm(r) {
+    const v = r || { date: today(), recipient: "", method: "", reference: "" };
+    const names = new Set(["বাবা", "মা", "পরিবার"]);
+    for (const x of state.support) names.add(x.recipient);
+    openForm({
+      title: r ? "ট্রান্সফার সম্পাদনা" : "পরিবারকে পাঠানো টাকা",
+      body: `${amountField("BDT", r ? C.minorToDecimal(r.amountMinor) : "")}
+        <div class="two">${inputField({ name: "date", label: "ট্রান্সফারের তারিখ", type: "date", value: v.date, required: true })}${inputField({ name: "recipient", label: "প্রাপক", value: v.recipient, required: true, list: "recipient-list", attrs: 'maxlength="60" autocomplete="off"' })}</div>
+        <datalist id="recipient-list">${[...names].map((n) => `<option value="${esc(n)}"></option>`).join("")}</datalist>
+        ${selectField({ name: "method", label: "পদ্ধতি (ঐচ্ছিক)", options: Object.entries(LABELS.method), value: v.method, blank: "— বাছাই নেই —" })}
+        ${inputField({ name: "reference", label: "রেফারেন্স / নোট (ঐচ্ছিক)", value: v.reference, attrs: 'maxlength="200"' })}
+        <small class="cmp-note">BDT পরিমাণ আপনি নিজে লেখেন। RM থেকে স্বয়ংক্রিয় রূপান্তর বা রেট লাগে না।</small>`,
+      onSubmit: async (raw) => {
+        const res = C.validateSupport(raw);
+        if (!res.ok) return { errors: res.errors };
+        try {
+          await saveRecord("support", r, res.value);
+        } catch (err) {
+          return { errors: { _form: SAVE_FAIL } };
+        }
+        render();
+        toast(r ? "ট্রান্সফার আপডেট হয়েছে" : "ট্রান্সফার সংরক্ষিত হয়েছে");
+        return null;
+      }
+    });
+  }
+
+  async function removeRecord(store, id) {
+    const r = state[store].find((x) => x.id === id);
+    if (!r) return;
+    const money = store === "support" ? bdt(r.amountMinor) : rm(r.amountMinor);
+    const label = store === "support" ? r.recipient : store === "expenses" ? r.description : r.note || LABELS.income[r.type];
+    const ok = await confirmDialog({
+      title: `এই ${NOUN[store]} মুছবেন?`,
+      message: `${esc(fmtDate(r.date))} · ${esc(label)} · <b>${money}</b><br>এটি ফেরানো যাবে না। অন্য কোনো রেকর্ড মুছবে না।`,
+      confirmLabel: "মুছে ফেলুন",
+      danger: true
+    });
+    if (!ok) return;
+    try {
+      await db.remove(store, id);
+    } catch (err) {
+      toast("মুছে ফেলা যায়নি।");
+      return;
+    }
+    state[store] = state[store].filter((x) => x.id !== id);
+    render();
+    toast(`${NOUN[store]} মুছে ফেলা হয়েছে`);
+  }
+
+  async function setCompletion(month, on) {
+    try {
+      await db.setCompletion(month, on);
+    } catch (err) {
+      toast("সংরক্ষণ করা যায়নি।");
+      return;
+    }
+    if (on) state.completion[month] = true;
+    else delete state.completion[month];
+    render();
+    toast(on ? `${monthLabel(month)} সম্পূর্ণ হিসেবে চিহ্নিত` : `${monthLabel(month)} থেকে সম্পূর্ণ চিহ্ন তোলা হয়েছে`);
+  }
+
+  async function exportJson() {
+    const now = new Date();
+    const backup = C.buildBackup(state, state.completion, now.toISOString());
+    download(`finance-backup-${C.toDateString(now)}.json`, "application/json", JSON.stringify(backup, null, 2));
+    try {
+      await db.setMeta("lastBackupAt", now.toISOString());
+      state.lastBackupAt = now.toISOString();
+    } catch (ignored) {
+      toast("ব্যাকআপ ফাইল তৈরি হয়েছে, কিন্তু সময় সংরক্ষণ করা যায়নি।");
+      return;
+    }
+    toast("ব্যাকআপ ফাইল তৈরি হয়েছে");
+    if (currentRoute() === "settings" && !dlg.open) render();
+  }
+
+  function exportCsv(kind) {
+    const stamp = today();
+    const files = {
+      income: [`finance-income-rm-${stamp}.csv`, C.incomeCSV(state)],
+      expenses: [`finance-expenses-rm-${stamp}.csv`, C.expensesCSV(state)],
+      support: [`finance-family-support-bdt-${stamp}.csv`, C.supportCSV(state)],
+      monthly: [`finance-monthly-summary-${stamp}.csv`, C.monthlyCSV(state, state.completion)]
+    };
+    const f = files[kind];
+    if (!f) return;
+    download(f[0], "text/csv;charset=utf-8", f[1]);
+    toast("CSV ফাইল তৈরি হয়েছে");
+  }
+
+  async function handleRestoreFile(file) {
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) {
+      ui.restore = { fileName: file.name, errors: ["ফাইলটি অতিরিক্ত বড় (৫০ MB-এর বেশি)।"], errorCount: 1 };
+      refreshRestore();
+      return;
+    }
+    let parsed;
+    try {
+      parsed = JSON.parse(await file.text());
+    } catch (err) {
+      ui.restore = { fileName: file.name, errors: ["ফাইলটি পড়া যায়নি। এটি বৈধ JSON নয়।"], errorCount: 1 };
+      refreshRestore();
+      return;
+    }
+    const v = C.validateBackup(parsed);
+    if (!v.ok) ui.restore = { fileName: file.name, errors: v.errors, errorCount: v.errorCount };
+    else ui.restore = { fileName: file.name, backup: v, mode: "merge", plan: C.planImport(state, state.completion, v, "merge") };
+    refreshRestore();
+  }
+
+  async function runImport() {
+    const r = ui.restore;
+    if (!r || !r.plan) return;
+    if (r.plan.replace) {
+      const ok = await confirmDialog({
+        title: "সব ডেটা প্রতিস্থাপন করবেন?",
+        message: "বর্তমান সব আয়, খরচ ও পরিবার-সহায়তার রেকর্ড মুছে ব্যাকআপ ফাইলের ডেটা বসানো হবে। এটি ফেরানো যাবে না।",
+        extra: `<button type="button" class="btn sm" data-act="export-json">${icon("download", "sm")} আগে বর্তমান ডেটার ব্যাকআপ নিন</button>`,
+        confirmLabel: "প্রতিস্থাপন করুন",
+        danger: true
+      });
+      if (!ok) return;
+    }
+    try {
+      await db.applyImport(r.plan, Object.keys(state.completion));
+      await reloadState();
+    } catch (err) {
+      toast("ইমপোর্ট ব্যর্থ হয়েছে। আপনার আগের ডেটা অপরিবর্তিত আছে।");
+      try {
+        await reloadState();
+      } catch (ignored) {
+        return;
+      }
+      render();
+      return;
+    }
+    const added = STORES.reduce((t, s) => t + r.plan.add[s].length, 0);
+    ui.restore = null;
+    render();
+    toast(`ইমপোর্ট সম্পন্ন: ${added}টি রেকর্ড যোগ হয়েছে`);
+  }
+
+  async function eraseAll() {
+    const ok = await confirmDialog({
+      title: "সব ডেটা মুছবেন?",
+      message: "এই ডিভাইসের সব আয়, খরচ, পরিবার-সহায়তা ও সেটিংস স্থায়ীভাবে মুছে যাবে। এটি ফেরানো যাবে না।",
+      extra: `<button type="button" class="btn sm" data-act="export-json">${icon("download", "sm")} আগে ব্যাকআপ নিন</button>`,
+      confirmLabel: "সব মুছুন",
+      danger: true,
+      requireText: "DELETE"
+    });
+    if (!ok) return;
+    try {
+      await db.clearAll();
+      await reloadState();
+    } catch (err) {
+      toast("মুছে ফেলা যায়নি।");
+      return;
+    }
+    ui.restore = null;
+    render();
+    toast("সব ডেটা মুছে ফেলা হয়েছে");
+  }
+
+  async function handleAct(el) {
+    const act = el.dataset.act;
+    const recordAct = /^(add|edit|del)-(income|expenses|support)$/.exec(act);
+    if (recordAct) {
+      const [, verb, store] = recordAct;
+      const existing = verb === "add" ? null : state[store].find((x) => x.id === el.dataset.id);
+      if (verb !== "add" && !existing) return;
+      if (verb === "del") await removeRecord(store, el.dataset.id);
+      else if (store === "income") incomeForm(existing);
+      else if (store === "expenses") expenseForm(existing);
+      else supportForm(existing);
+      return;
+    }
+    switch (act) {
+      case "month-prev":
+      case "month-next": {
+        const nk = C.shiftMonth(monthlyKey(), act === "month-prev" ? -1 : 1);
+        ui.monthly.y = nk.slice(0, 4);
+        ui.monthly.m = String(Number(nk.slice(5)));
+        render();
+        break;
+      }
+      case "set-complete":
+        await setCompletion(el.dataset.month, el.dataset.value === "1");
+        break;
+      case "export-json":
+        await exportJson();
+        break;
+      case "export-csv":
+        exportCsv(el.dataset.kind);
+        break;
+      case "cancel-restore":
+        ui.restore = null;
+        refreshRestore();
+        break;
+      case "do-import":
+        await runImport();
+        break;
+      case "erase":
+        await eraseAll();
+        break;
+      case "persist": {
+        let granted = false;
+        try {
+          granted = Boolean(navigator.storage && navigator.storage.persist && (await navigator.storage.persist()));
+        } catch (err) {
+          granted = false;
+        }
+        toast(granted ? "স্থায়ী স্টোরেজ চালু হয়েছে" : "ব্রাউজার স্থায়ী স্টোরেজ অনুমোদন করেনি");
+        fillStorageInfo();
+        break;
+      }
+      case "install":
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt = null;
+          render();
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  function applyFilter(el) {
+    const [page, field] = el.dataset.filter.split(".");
+    ui[page][field] = el.value;
+    if (page === "monthly" || page === "yearly") {
+      render();
+      const again = document.querySelector(`[data-filter="${el.dataset.filter}"]`);
+      if (again) again.focus();
+      return;
+    }
+    refreshRegion();
+  }
+
+  view.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-act]");
+    if (el) handleAct(el);
+  });
+  view.addEventListener("input", (e) => {
+    const el = e.target.closest("[data-filter]");
+    if (el) applyFilter(el);
+  });
+  view.addEventListener("change", (e) => {
+    if (e.target.id === "restore-file") {
+      handleRestoreFile(e.target.files && e.target.files[0]);
+      return;
+    }
+    if (e.target.matches("[data-restore-mode]") && ui.restore && ui.restore.backup) {
+      ui.restore.mode = e.target.value;
+      ui.restore.plan = C.planImport(state, state.completion, ui.restore.backup, e.target.value);
+      refreshRestore();
+      return;
+    }
+    const el = e.target.closest("[data-filter]");
+    if (el && el.tagName === "SELECT") applyFilter(el);
+  });
+  dlg.addEventListener("click", (e) => {
+    if (e.target.closest("[data-close]")) {
+      dlg.close();
+      return;
+    }
+    const el = e.target.closest("[data-act]");
+    if (el) handleAct(el);
+  });
+  $("#skip").addEventListener("click", (e) => {
+    e.preventDefault();
+    view.focus();
+  });
+
+  window.addEventListener("hashchange", render);
+  window.addEventListener("online", updateNet);
+  window.addEventListener("offline", updateNet);
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (currentRoute() === "settings" && !dlg.open) render();
+  });
+  window.addEventListener("appinstalled", () => {
+    deferredPrompt = null;
+  });
+  document.addEventListener("visibilitychange", async () => {
+    if (document.visibilityState !== "visible" || !state.ready || state.dbError || dlg.open) return;
+    try {
+      await reloadState();
+      render();
+    } catch (ignored) {
+      return;
+    }
+  });
+
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/service-worker.js", { updateViaCache: "none" }).catch(() => {});
+    });
+  }
+
+  async function start() {
+    buildNav();
+    updateNet();
+    render();
+    try {
+      await db.open();
+      await reloadState();
+    } catch (err) {
+      state.dbError = err;
+    }
+    state.ready = true;
+    render();
+  }
+
+  start();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+APPWRITE সেটআপ (Personal Finance Tracker)
+
+১) Finance.html-এর ভেতরে এই ব্লকটা আছে (const APPWRITE খুঁজুন):
+   endpoint   = https://nyc.cloud.appwrite.io/v1
+   projectId  = 6acc23d6003ccd10471a
+   databaseId = finance            (আপনার Database ID অন্য হলে এখানে বদলান)
+   tables     = income, expenses, support, completion   (Table ID অন্য হলে এখানে বদলান)
+
+২) Appwrite কনসোল
+   - Overview > Add a platform > Web app: Hostname = masumcpex.com
+     (www বা অন্য ডোমেইনেও চালালে সেগুলোও আলাদা Platform হিসেবে যোগ করুন; টেস্টের জন্য localhost)
+   - Auth > Settings: Email/Password চালু
+   - Databases > Create database: ID = finance
+   - প্রতিটি টেবিল (Table ID হুবহু নিচের নাম):
+       income      : date string(10) required | amountMinor integer required (min 1) | type string(20) required | note string(200) | reference string(80)
+       expenses    : date string(10) required | amountMinor integer required (min 1) | category string(20) required | description string(120) required | note string(200)
+       support     : date string(10) required | amountMinor integer required (min 1) | recipient string(60) required | method string(20) | reference string(200)
+       completion  : month string(7) required
+   - প্রতিটি টেবিলের Settings:
+       Row security = ON
+       Permissions = শুধু Create > Users। Read/Update/Delete টেবিল লেভেলে কিছু দেবেন না।
+       কখনো Any রোলকে কোনো পারমিশন দেবেন না।
+
+৩) আপলোড: Finance.html, finance.webmanifest, আইকন ৩টা, data.js, script.js, style.css গিটহাবের রুটে।
+
+৪) নিরাপত্তা: ফ্রন্টএন্ডে কোনো API Key দেবেন না। Project ID ও Endpoint গোপন নয়।

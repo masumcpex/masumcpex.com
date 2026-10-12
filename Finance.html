@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://nyc.cloud.appwrite.io; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Personal Finance Tracker</title>
 <meta name="description" content="ব্যক্তিগত আয়-ব্যয়, মাসিক হিসাব ও পরিবারকে পাঠানো টাকার হিসাব। ডেটা শুধু আপনার ডিভাইসে থাকে।">
 <meta name="robots" content="noindex, nofollow">
@@ -225,6 +225,15 @@ dialog::backdrop{background:rgba(15,27,45,.55)}
 .dlg-foot{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;padding:12px 18px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#FAFBFC}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
+body.auth .side,body.auth .tabbar,body.auth .top{display:none}
+body.auth .main{margin-left:0}
+body.auth .content{max-width:none;padding:0}
+.auth-wrap{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:20px 16px}
+.auth-card{width:min(430px,100%);display:flex;flex-direction:column;gap:14px;padding:24px 20px}
+.auth-card h1{font-size:1.4rem;line-height:1.3}
+.auth-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#128A74,#0A5347);color:#fff;display:grid;place-items:center}
+.auth-switch{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:.92rem;color:var(--muted)}
+.link-btn{background:none;border:0;padding:6px 4px;min-height:44px;color:var(--teal-dark);font-weight:700;cursor:pointer;text-decoration:underline}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--navy);color:#fff;padding:11px 16px;border-radius:12px;font-weight:600;font-size:.92rem;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
@@ -286,6 +295,8 @@ dialog::backdrop{background:rgba(15,27,45,.55)}
     <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
     <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></symbol>
     <symbol id="i-smartphone" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol>
+    <symbol id="i-log-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
   </defs>
 </svg>
@@ -590,7 +601,7 @@ const FinanceCore = (() => {
   function normalizeRecord(store, raw, fail) {
     const spec = SCHEMA[store];
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) return fail("অবৈধ রেকর্ড।");
-    if (typeof raw.id !== "string" || raw.id.length < 1 || raw.id.length > 64) return fail("আইডি অবৈধ।");
+    if (typeof raw.id !== "string" || !/^[A-Za-z0-9][A-Za-z0-9._-]{0,35}$/.test(raw.id)) return fail("আইডি অবৈধ।");
     if (!isValidDate(raw.date)) return fail("তারিখ অবৈধ।");
     if (!Number.isSafeInteger(raw.amountMinor) || raw.amountMinor <= 0 || raw.amountMinor > MAX_MINOR) return fail("পরিমাণ অবৈধ।");
     const rec = { id: raw.id, date: raw.date, amountMinor: raw.amountMinor };
@@ -855,7 +866,6 @@ const FinanceCore = (() => {
     method: { bank: "ব্যাংক", remittance: "রেমিট্যান্স সার্ভিস", other: "অন্যান্য" }
   };
   const NOUN = { income: "আয়", expenses: "খরচ", support: "ট্রান্সফার" };
-  const SAVE_FAIL = "সংরক্ষণ করা যায়নি। ব্রাউজারের স্টোরেজ পূর্ণ বা বন্ধ থাকতে পারে।";
 
   const NAV = [
     { id: "dashboard", label: "Dashboard", icon: "layout" },
@@ -882,9 +892,146 @@ const FinanceCore = (() => {
     settings: "ব্যাকআপ, রিস্টোর, CSV ও গোপনীয়তা"
   };
 
-  const DB_NAME = "personal-finance-tracker";
-  const DB_VERSION = 1;
+  const APPWRITE = {
+    endpoint: "https://nyc.cloud.appwrite.io/v1",
+    projectId: "6acc23d6003ccd10471a",
+    databaseId: "finance",
+    tables: { income: "income", expenses: "expenses", support: "support", completion: "completion" }
+  };
   const STORES = ["income", "expenses", "support"];
+  const FIELDS = {
+    income: ["date", "amountMinor", "type", "note", "reference"],
+    expenses: ["date", "amountMinor", "category", "description", "note"],
+    support: ["date", "amountMinor", "recipient", "method", "reference"]
+  };
+  const OPTIONAL_FIELDS = new Set(["note", "reference", "method"]);
+  const FALLBACK_KEY = "cookieFallback";
+  const PAGE_SIZE = 100;
+  const LEGACY_DB = "personal-finance-tracker";
+
+  class ApiError extends Error {
+    constructor(message, status, type) {
+      super(message);
+      this.status = status;
+      this.type = type || "";
+    }
+  }
+
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  function readStorage(key) {
+    try {
+      return localStorage.getItem(key) || "";
+    } catch (err) {
+      return "";
+    }
+  }
+
+  function writeStorage(key, value) {
+    try {
+      if (value) localStorage.setItem(key, value);
+      else localStorage.removeItem(key);
+    } catch (err) {
+      return;
+    }
+  }
+
+  async function api(method, path, body) {
+    const headers = { "X-Appwrite-Project": APPWRITE.projectId, "Content-Type": "application/json" };
+    const fallback = readStorage(FALLBACK_KEY);
+    if (fallback) headers["X-Fallback-Cookies"] = fallback;
+    const retryable = path.startsWith("/tablesdb/");
+    for (let attempt = 0; ; attempt++) {
+      let res;
+      try {
+        res = await fetch(APPWRITE.endpoint + path, {
+          method,
+          headers,
+          credentials: "include",
+          body: body === undefined ? undefined : JSON.stringify(body)
+        });
+      } catch (err) {
+        throw new ApiError("network", 0, "network");
+      }
+      const issued = res.headers.get("x-fallback-cookies");
+      if (issued) writeStorage(FALLBACK_KEY, issued);
+      if (res.status === 429 && retryable && attempt < 4) {
+        await sleep(1500 * (attempt + 1));
+        continue;
+      }
+      const text = await res.text();
+      let data = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch (err) {
+        data = null;
+      }
+      if (!res.ok) throw new ApiError((data && data.message) || `HTTP ${res.status}`, res.status, data && data.type);
+      return data;
+    }
+  }
+
+  const rowsPath = (table) => `/tablesdb/${APPWRITE.databaseId}/tables/${APPWRITE.tables[table]}/rows`;
+  const queryString = (list) => list.map((q) => `queries[]=${encodeURIComponent(JSON.stringify(q))}`).join("&");
+  const userPermissions = (uid) => [`read("user:${uid}")`, `update("user:${uid}")`, `delete("user:${uid}")`];
+
+  const cloud = {
+    account: () => api("GET", "/account"),
+    async signUp(name, email, password) {
+      const body = { userId: "unique()", email, password };
+      if (name) body.name = name;
+      await api("POST", "/account", body);
+    },
+    async login(email, password) {
+      try {
+        await api("POST", "/account/sessions/email", { email, password });
+      } catch (err) {
+        if (err.type !== "user_session_already_active") throw err;
+      }
+      return api("GET", "/account");
+    },
+    async logout() {
+      try {
+        await api("DELETE", "/account/sessions/current");
+      } finally {
+        writeStorage(FALLBACK_KEY, "");
+      }
+    },
+    async listAll(table) {
+      const out = [];
+      let cursor = null;
+      for (;;) {
+        const queries = [{ method: "limit", values: [PAGE_SIZE] }];
+        if (cursor) queries.push({ method: "cursorAfter", values: [cursor] });
+        const page = await api("GET", `${rowsPath(table)}?${queryString(queries)}`);
+        const rows = (page && page.rows) || [];
+        out.push(...rows);
+        if (rows.length < PAGE_SIZE) break;
+        cursor = rows[rows.length - 1].$id;
+      }
+      return out;
+    },
+    createRow: (table, id, data, uid) => api("POST", rowsPath(table), { rowId: id, data, permissions: userPermissions(uid) }),
+    updateRow: (table, id, data) => api("PATCH", `${rowsPath(table)}/${encodeURIComponent(id)}`, { data }),
+    deleteRow: (table, id) => api("DELETE", `${rowsPath(table)}/${encodeURIComponent(id)}`)
+  };
+
+  function toRowData(store, rec) {
+    const out = {};
+    for (const f of FIELDS[store]) {
+      const v = rec[f];
+      out[f] = OPTIONAL_FIELDS.has(f) && (v === "" || v === undefined || v === null) ? null : v;
+    }
+    return out;
+  }
+
+  function fromRow(store, row) {
+    const rec = { id: row.$id };
+    for (const f of FIELDS[store]) rec[f] = row[f] === undefined || row[f] === null ? "" : row[f];
+    rec.createdAt = Date.parse(row.$createdAt) || 0;
+    rec.updatedAt = Date.parse(row.$updatedAt) || rec.createdAt;
+    return rec;
+  }
 
   const requestResult = (r) =>
     new Promise((resolve, reject) => {
@@ -892,105 +1039,37 @@ const FinanceCore = (() => {
       r.onerror = () => reject(r.error);
     });
 
-  const txDone = (tx) =>
-    new Promise((resolve, reject) => {
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error);
-      tx.onabort = () => reject(tx.error || new Error("transaction aborted"));
-    });
-
-  const db = {
-    handle: null,
-    open() {
-      return new Promise((resolve, reject) => {
-        if (!("indexedDB" in window)) {
-          reject(new Error("IndexedDB is not available"));
-          return;
-        }
-        let req;
-        try {
-          req = indexedDB.open(DB_NAME, DB_VERSION);
-        } catch (err) {
-          reject(err);
-          return;
-        }
-        req.onupgradeneeded = () => {
-          const h = req.result;
-          for (const s of STORES) {
-            if (!h.objectStoreNames.contains(s)) h.createObjectStore(s, { keyPath: "id" }).createIndex("date", "date");
-          }
-          if (!h.objectStoreNames.contains("meta")) h.createObjectStore("meta", { keyPath: "key" });
-        };
-        req.onsuccess = () => {
-          this.handle = req.result;
-          this.handle.onversionchange = () => this.handle.close();
-          resolve();
-        };
+  async function readLegacyLocal() {
+    if (!window.indexedDB || !indexedDB.databases) return null;
+    try {
+      const all = await indexedDB.databases();
+      if (!all.some((d) => d.name === LEGACY_DB)) return null;
+      const handle = await new Promise((resolve, reject) => {
+        const req = indexedDB.open(LEGACY_DB);
+        req.onsuccess = () => resolve(req.result);
         req.onerror = () => reject(req.error);
-        req.onblocked = () => reject(new Error("IndexedDB is blocked"));
       });
-    },
-    async loadAll() {
-      const tx = this.handle.transaction([...STORES, "meta"], "readonly");
-      const lists = STORES.map((s) => requestResult(tx.objectStore(s).getAll()));
-      const meta = requestResult(tx.objectStore("meta").getAll());
-      const out = {};
-      const resolved = await Promise.all(lists);
-      STORES.forEach((s, i) => {
-        out[s] = resolved[i];
-      });
-      out.meta = await meta;
-      return out;
-    },
-    async put(store, rec) {
-      const tx = this.handle.transaction(store, "readwrite");
-      tx.objectStore(store).put(rec);
-      await txDone(tx);
-    },
-    async remove(store, id) {
-      const tx = this.handle.transaction(store, "readwrite");
-      tx.objectStore(store).delete(id);
-      await txDone(tx);
-    },
-    async setMeta(key, value) {
-      const tx = this.handle.transaction("meta", "readwrite");
-      tx.objectStore("meta").put({ key, value });
-      await txDone(tx);
-    },
-    async setCompletion(month, on) {
-      const tx = this.handle.transaction("meta", "readwrite");
-      if (on) tx.objectStore("meta").put({ key: `completion:${month}`, value: true });
-      else tx.objectStore("meta").delete(`completion:${month}`);
-      await txDone(tx);
-    },
-    async applyImport(plan, existingMonths) {
-      const tx = this.handle.transaction([...STORES, "meta"], "readwrite");
       try {
-        if (plan.replace) {
-          for (const s of STORES) tx.objectStore(s).clear();
-          for (const m of existingMonths) tx.objectStore("meta").delete(`completion:${m}`);
-        }
-        for (const s of STORES) for (const rec of plan.add[s]) tx.objectStore(s).put(rec);
-        for (const m of plan.completionToSet) tx.objectStore("meta").put({ key: `completion:${m}`, value: true });
-      } catch (err) {
-        try {
-          tx.abort();
-        } catch (ignored) {
-          return Promise.reject(err);
-        }
-        throw err;
+        const names = [...STORES, "meta"].filter((s) => handle.objectStoreNames.contains(s));
+        if (!names.length) return null;
+        const tx = handle.transaction(names, "readonly");
+        const read = (s) => (names.includes(s) ? requestResult(tx.objectStore(s).getAll()) : Promise.resolve([]));
+        const [income, expenses, support, meta] = await Promise.all([read("income"), read("expenses"), read("support"), read("meta")]);
+        const completion = {};
+        for (const m of meta) if (m.key.startsWith("completion:") && m.value === true) completion[m.key.slice(11)] = true;
+        const count = income.length + expenses.length + support.length;
+        return count || Object.keys(completion).length ? { income, expenses, support, completion, count } : null;
+      } finally {
+        handle.close();
       }
-      await txDone(tx);
-    },
-    async clearAll() {
-      const tx = this.handle.transaction([...STORES, "meta"], "readwrite");
-      for (const s of STORES) tx.objectStore(s).clear();
-      tx.objectStore("meta").clear();
-      await txDone(tx);
+    } catch (err) {
+      return null;
     }
-  };
+  }
 
-  const state = { income: [], expenses: [], support: [], completion: {}, lastBackupAt: null, ready: false, dbError: null };
+  const lastBackupKey = () => `finance-last-backup:${state.user ? state.user.id : ""}`;
+
+  const state = { user: null, income: [], expenses: [], support: [], completion: {}, completionIds: {}, lastBackupAt: null, legacy: null, ready: false, bootError: null, loadError: null };
 
   const nowDate = new Date();
   const ui = {
@@ -999,20 +1078,55 @@ const FinanceCore = (() => {
     support: { year: "", month: "", query: "" },
     monthly: { y: String(nowDate.getFullYear()), m: String(nowDate.getMonth() + 1) },
     yearly: { year: String(nowDate.getFullYear()) },
-    restore: null
+    restore: null,
+    auth: { mode: "login" },
+    authBusy: false,
+    importing: false
   };
 
   async function reloadState() {
-    const all = await db.loadAll();
-    state.income = all.income;
-    state.expenses = all.expenses;
-    state.support = all.support;
+    const lists = await Promise.all([...STORES, "completion"].map((s) => cloud.listAll(s)));
+    STORES.forEach((s, i) => {
+      state[s] = lists[i].map((row) => fromRow(s, row));
+    });
     state.completion = {};
-    state.lastBackupAt = null;
-    for (const m of all.meta) {
-      if (m.key.startsWith("completion:") && m.value === true) state.completion[m.key.slice(11)] = true;
-      else if (m.key === "lastBackupAt") state.lastBackupAt = m.value;
+    state.completionIds = {};
+    for (const row of lists[3]) {
+      if (C.isValidMonthKey(row.month)) {
+        state.completion[row.month] = true;
+        state.completionIds[row.month] = row.$id;
+      }
     }
+    state.lastBackupAt = readStorage(lastBackupKey()) || null;
+  }
+
+  function errorMessage(err) {
+    if (!err) return "অজানা সমস্যা হয়েছে।";
+    if (err.status === 0) return "Appwrite-এ পৌঁছানো যায়নি। ইন্টারনেট দেখুন এবং Appwrite-এর Platform-এ এই সাইটের হোস্টনেম যোগ করা আছে কিনা যাচাই করুন।";
+    if (err.status === 401) return "লগইন সেশন শেষ হয়েছে। আবার লগইন করুন।";
+    if (err.status === 404) return "ডাটাবেস বা টেবিল পাওয়া যায়নি। Database ID ও Table ID যাচাই করুন।";
+    if (err.status === 409) return "এই রেকর্ড বা ইমেইল আগে থেকেই আছে।";
+    if (err.status === 429) return "অনেকবার অনুরোধ হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।";
+    return err.message || "অজানা সমস্যা হয়েছে।";
+  }
+
+  function failMessage(err) {
+    if (err && err.status === 401 && state.user) {
+      state.user = null;
+      render();
+    }
+    return errorMessage(err);
+  }
+
+  async function enter(user) {
+    state.user = { id: user.$id, email: user.email, name: user.name || "" };
+    state.loadError = null;
+    try {
+      await reloadState();
+    } catch (err) {
+      state.loadError = err;
+    }
+    state.legacy = await readLegacyLocal();
   }
 
   const newId = () =>
@@ -1037,12 +1151,6 @@ const FinanceCore = (() => {
     if (units >= 1000000) return `${(units / 1000000).toFixed(1).replace(/\.0$/, "")}M`;
     if (units >= 1000) return `${(units / 1000).toFixed(1).replace(/\.0$/, "")}k`;
     return String(Math.round(units));
-  }
-
-  function formatBytes(n) {
-    if (n < 1024) return `${n} B`;
-    if (n < 1048576) return `${(n / 1024).toFixed(1)} KB`;
-    return `${(n / 1048576).toFixed(1)} MB`;
   }
 
   const tile = (k, v, o = {}) =>
@@ -1184,6 +1292,9 @@ const FinanceCore = (() => {
     const pctValue = cmp.percentAvailable ? `${cmp.status === "up" ? "+" : cmp.status === "down" ? "-" : ""}${cmp.percent}%` : "—";
     const pctSub = cmp.percentAvailable ? "আগের মাসের তুলনায়" : cmp.zeroBaseline ? "আগের মাস শূন্য, শতাংশ হিসাব হয় না" : "";
     const incompleteMonths = [prev, cur].filter((m) => !m.supportComplete).map((m) => monthLabel(m.month));
+    const legacyBanner = state.legacy
+      ? `<div class="banner warn">${icon("alert")}<span>এই ব্রাউজারে আগের ভার্সনের ${state.legacy.count}টি লোকাল রেকর্ড আছে। <a href="#/settings">Settings</a> থেকে ক্লাউডে তুলুন।</span></div>`
+      : "";
     const onboarding =
       life.recordCount === 0
         ? `<section class="card">${emptyBox("wallet", "এখনো কোনো রেকর্ড নেই", "প্রথম রেকর্ড যোগ করে শুরু করুন। অ্যাপে কোনো নমুনা ডেটা রাখা হয়নি।")}<div class="actions center"><button type="button" class="btn primary" data-act="add-income">${icon("plus")} প্রথম আয় যোগ করুন</button><button type="button" class="btn" data-act="add-expenses">${icon("plus")} খরচ</button><button type="button" class="btn" data-act="add-support">${icon("plus")} পরিবারকে পাঠানো</button></div></section>`
@@ -1191,6 +1302,7 @@ const FinanceCore = (() => {
     return `
     <div class="page-head"><div><h1>Dashboard</h1><p>${monthLabel(key)} · সংরক্ষিত রেকর্ড থেকে হিসাব</p></div>
       <div class="actions"><button type="button" class="btn primary" data-act="add-income">${icon("plus")} আয়</button><button type="button" class="btn" data-act="add-expenses">${icon("plus")} খরচ</button><button type="button" class="btn" data-act="add-support">${icon("plus")} পরিবারকে পাঠানো</button></div></div>
+    ${legacyBanner}
     ${onboarding}
     ${secHead("Malaysian Finance", "RM")}
     <div class="tiles">
@@ -1422,35 +1534,47 @@ const FinanceCore = (() => {
     const { plan, backup } = r;
     const labels = { income: "আয় (RM)", expenses: "খরচ (RM)", support: "পরিবার (BDT)" };
     const table = STORES.map((s) => `<tr><td>${labels[s]}</td><td>${backup.data[s].length}</td><td>${plan.add[s].length}</td></tr>`).join("");
-    const addTotal = STORES.reduce((t, s) => t + plan.add[s].length, 0);
-    const nothing = !plan.replace && addTotal === 0 && plan.completionToSet.length === 0;
-    return `<div class="banner info">${icon("info")}<span><b>${esc(r.fileName)}</b> · ব্যাকআপ তৈরি: ${esc(new Date(backup.createdAt).toLocaleString("bn-BD"))}</span></div>
+    const addTotal = STORES.reduce((t, s) => t + plan.add[s].length, 0) + plan.completionToSet.length;
+    const nothing = addTotal === 0;
+    return `<div class="banner info">${icon("info")}<span><b>${esc(r.fileName)}</b> · তৈরি: ${esc(new Date(backup.createdAt).toLocaleString("bn-BD"))}</span></div>
     <table class="preview-table"><thead><tr><th scope="col">ধরন</th><th scope="col">ফাইলে</th><th scope="col">যোগ হবে</th></tr></thead><tbody>${table}</tbody></table>
-    ${plan.replace ? "" : `<p class="cmp-note">ইতিমধ্যে আছে (হুবহু একই): ${plan.identical}টি · একই আইডি কিন্তু ভিন্ন তথ্য (বর্তমানটি রাখা হবে): ${plan.conflicts}টি${plan.possibleDuplicates ? ` · একই তথ্য ভিন্ন আইডিতে (সম্ভাব্য ডুপ্লিকেট, তবু যোগ হবে): ${plan.possibleDuplicates}টি` : ""}</p>`}
-    <p class="cmp-note">মাস সম্পূর্ণ-চিহ্ন যোগ হবে: ${plan.completionToSet.length}টি</p>
-    <label class="radio"><input type="radio" name="restore-mode" value="merge" data-restore-mode${plan.replace ? "" : " checked"}><span><b>মার্জ (প্রস্তাবিত)</b><small>বর্তমান ডেটা রেখে শুধু নতুন রেকর্ড যোগ হবে। একই আইডির রেকর্ড দ্বিতীয়বার যোগ হবে না।</small></span></label>
-    <label class="radio"><input type="radio" name="restore-mode" value="replace" data-restore-mode${plan.replace ? " checked" : ""}><span><b>সম্পূর্ণ প্রতিস্থাপন</b><small>বর্তমান সব ডেটা মুছে ফাইলের ডেটা বসবে।</small></span></label>
-    <div class="actions" style="margin-top:14px"><button type="button" class="btn ${plan.replace ? "danger" : "primary"}" data-act="do-import"${nothing ? " disabled" : ""}>${icon("upload")} ${nothing ? "নতুন কিছু নেই" : plan.replace ? "প্রতিস্থাপন করে ইমপোর্ট" : "মার্জ করে ইমপোর্ট"}</button><button type="button" class="btn ghost" data-act="cancel-restore">বাতিল</button></div>`;
+    <p class="cmp-note">ইতিমধ্যে আছে (হুবহু একই): ${plan.identical}টি · একই আইডি কিন্তু ভিন্ন তথ্য (বর্তমানটি রাখা হবে): ${plan.conflicts}টি${plan.possibleDuplicates ? ` · একই তথ্য ভিন্ন আইডিতে (সম্ভাব্য ডুপ্লিকেট, তবু যোগ হবে): ${plan.possibleDuplicates}টি` : ""}</p>
+    <p class="cmp-note">মাস সম্পূর্ণ-চিহ্ন যোগ হবে: ${plan.completionToSet.length}টি। ইমপোর্ট মার্জ পদ্ধতিতে হয়: আপনার বর্তমান ডেটা মুছবে না, শুধু নতুন রেকর্ড ক্লাউডে যোগ হবে।</p>
+    <div class="actions" style="margin-top:14px"><button type="button" class="btn primary" data-act="do-import"${nothing ? " disabled" : ""}>${icon("upload")} ${nothing ? "নতুন কিছু নেই" : "ক্লাউডে ইমপোর্ট করুন"}</button><button type="button" class="btn ghost" data-act="cancel-restore">বাতিল</button></div>`;
+  }
+
+  function legacyView() {
+    const l = state.legacy;
+    if (!l) return "";
+    return `<section class="card"><h3>${icon("database", "sm")} এই ব্রাউজারের পুরনো লোকাল ডেটা</h3>
+      <p class="cmp-note">আগের ভার্সনে এই ডিভাইসে সংরক্ষিত ${l.count}টি রেকর্ড পাওয়া গেছে। ক্লাউডে তোলার আগে প্রিভিউ দেখানো হবে। ক্লাউডে তোলা হয়ে গেলে লোকাল কপি মুছে ফেলতে পারেন।</p>
+      <div class="actions" style="margin-top:12px"><button type="button" class="btn primary" data-act="legacy-preview">প্রিভিউ দেখুন</button><button type="button" class="btn danger" data-act="legacy-delete">${icon("trash", "sm")} লোকাল কপি মুছুন</button></div>
+    </section>`;
   }
 
   let deferredPrompt = null;
 
   function renderSettings() {
     const last = state.lastBackupAt ? new Date(state.lastBackupAt).toLocaleString("bn-BD") : "এখনো নেওয়া হয়নি";
-    return `<div class="page-head"><div><h1>Settings & Backup</h1><p>ব্যাকআপ, রিস্টোর, এক্সপোর্ট ও গোপনীয়তা</p></div></div>
+    return `<div class="page-head"><div><h1>Settings & Backup</h1><p>একাউন্ট, ব্যাকআপ, রিস্টোর, এক্সপোর্ট ও গোপনীয়তা</p></div></div>
+    <section class="card"><h3>${icon("user", "sm")} একাউন্ট</h3>
+      <p class="cmp-note">লগইন করা আছে: <b>${esc(state.user.email)}</b></p>
+      <div class="actions" style="margin-top:12px"><button type="button" class="btn" data-act="logout">${icon("log-out", "sm")} সাইন আউট</button></div>
+    </section>
+    <div id="legacy-region" class="region">${legacyView()}</div>
     <section class="card"><h3>${icon("shield", "sm")} আপনার ডেটা কোথায় থাকে</h3>
       <ul class="notes">
-        <li>সব আয়, খরচ ও পরিবার-সহায়তার রেকর্ড শুধু এই ডিভাইসের এই ব্রাউজারের IndexedDB-তে সংরক্ষিত। কোনো সার্ভার, ক্লাউড বা অ্যানালিটিক্সে কিছু পাঠানো হয় না।</li>
-        <li>অন্য ফোন বা অন্য ব্রাউজারে ডেটা নিজে থেকে সিঙ্ক হয় না। সরাতে চাইলে ব্যাকআপ নিয়ে সেখানে রিস্টোর করুন।</li>
-        <li>ব্রাউজারের "Clear site data", স্টোরেজ পরিষ্কার বা ডিভাইস রিসেট করলে ডেটা মুছে যেতে পারে। তাই নিয়মিত ব্যাকআপ নিন।</li>
-        <li>ব্রাউজার স্টোরেজ ও ব্যাকআপ ফাইল এনক্রিপ্টেড নয়। ডিভাইসে স্ক্রিন লক রাখুন এবং ব্যাকআপ ফাইল নিরাপদ জায়গায় রাখুন।</li>
-        <li>এই অ্যাপে কোনো PIN বা অ্যাপ লক নেই। ডিভাইস আনলক থাকলে যে কেউ অ্যাপটি খুলতে পারে।</li>
-        <li>প্রথমবার ইন্টারনেটে খোলার পর পেজটি ক্যাশ হলে অফলাইনেও চলে।</li>
+        <li>আপনার সব রেকর্ড Appwrite ক্লাউডে (নিউ ইয়র্ক সার্ভার) আপনার একাউন্টের নামে সংরক্ষিত হয়। যেকোনো ডিভাইসে লগইন করলে একই ডেটা পাবেন।</li>
+        <li>প্রতিটি রেকর্ডের অ্যাক্সেস শুধু আপনার একাউন্টের। অন্য ব্যবহারকারী আপনার ডেটা দেখতে বা বদলাতে পারে না।</li>
+        <li>ডেটা এন্ড-টু-এন্ড এনক্রিপ্টেড নয়। সাইটের অ্যাডমিন Appwrite কনসোল থেকে ডেটাবেস দেখতে পারেন। তাই অ্যাপে এমন তথ্য রাখবেন না যা অ্যাডমিনের দেখা চলবে না।</li>
+        <li>লগইন টোকেন এই ব্রাউজারের localStorage-এ থাকে। শেয়ার করা ডিভাইসে কাজ শেষে সাইন আউট করুন।</li>
+        <li>ডেটা লোড ও সেভ করতে ইন্টারনেট লাগে। অফলাইনে শুধু অ্যাপের পেজ খোলে।</li>
+        <li>নিয়মিত JSON ব্যাকআপ নিয়ে নিরাপদ জায়গায় রাখুন। ব্যাকআপ ফাইল এনক্রিপ্টেড নয়।</li>
       </ul>
     </section>
     <section class="card"><h3>${icon("download", "sm")} ব্যাকআপ (JSON)</h3>
-      <p class="cmp-note">সব রেকর্ড, মাস সম্পূর্ণ-চিহ্ন, স্কিমা ভার্সন ও তৈরির সময়সহ ফাইলটি আপনার ডিভাইসেই তৈরি হয়। কোথাও আপলোড হয় না।</p>
-      <p class="cmp-note">সর্বশেষ ব্যাকআপ: ${esc(last)}</p>
+      <p class="cmp-note">সব রেকর্ড, মাস সম্পূর্ণ-চিহ্ন, স্কিমা ভার্সন ও তৈরির সময়সহ ফাইলটি আপনার ডিভাইসে নামে। কোথাও আপলোড হয় না।</p>
+      <p class="cmp-note">এই ডিভাইসে সর্বশেষ ব্যাকআপ: ${esc(last)}</p>
       <div class="actions" style="margin-top:12px"><button type="button" class="btn primary" data-act="export-json">${icon("download")} ব্যাকআপ ডাউনলোড করুন</button></div>
     </section>
     <section class="card"><h3>${icon("upload", "sm")} রিস্টোর</h3>
@@ -1466,40 +1590,19 @@ const FinanceCore = (() => {
         <button type="button" class="btn" data-act="export-csv" data-kind="monthly">${icon("download", "sm")} মাসিক সারসংক্ষেপ</button>
       </div>
     </section>
-    <section class="card"><h3>${icon("database", "sm")} স্টোরেজ ও ইনস্টল</h3>
-      <p class="cmp-note" id="storage-info"></p>
-      <div class="btn-grid">
-        <button type="button" class="btn" data-act="persist">${icon("shield", "sm")} স্থায়ী স্টোরেজ চালু করুন</button>
-        ${deferredPrompt ? `<button type="button" class="btn primary" data-act="install">${icon("smartphone", "sm")} অ্যাপ ইনস্টল করুন</button>` : ""}
-      </div>
-      ${deferredPrompt ? "" : `<p class="cmp-note">ইনস্টল করতে Chrome মেনু থেকে "Install app" বা "Add to Home screen" বাছুন।</p>`}
+    <section class="card"><h3>${icon("smartphone", "sm")} অ্যাপ ইনস্টল</h3>
+      ${deferredPrompt ? `<div class="actions" style="margin-top:4px"><button type="button" class="btn primary" data-act="install">${icon("smartphone", "sm")} অ্যাপ ইনস্টল করুন</button></div>` : `<p class="cmp-note">ইনস্টল করতে Chrome মেনু থেকে "Install app" বা "Add to Home screen" বাছুন।</p>`}
     </section>
     <section class="card"><h3>${icon("trash", "sm")} সব ডেটা মুছুন</h3>
-      <p class="cmp-note">এই ডিভাইসের সব রেকর্ড স্থায়ীভাবে মুছে যাবে। আগে ব্যাকআপ নিয়ে রাখুন।</p>
+      <p class="cmp-note">আপনার একাউন্টের সব আয়, খরচ, পরিবার-সহায়তা ও সম্পূর্ণ-চিহ্ন ক্লাউড থেকে স্থায়ীভাবে মুছে যাবে। একাউন্ট নিজে থাকবে। আগে ব্যাকআপ নিয়ে রাখুন।</p>
       <div class="actions" style="margin-top:12px"><button type="button" class="btn danger" data-act="erase">${icon("trash", "sm")} সব ডেটা মুছুন</button></div>
     </section>`;
   }
 
-  async function fillStorageInfo() {
-    const parts = [];
-    if (navigator.storage && navigator.storage.estimate) {
-      try {
-        const e = await navigator.storage.estimate();
-        parts.push(`ব্যবহৃত স্থান: ${formatBytes(e.usage || 0)}`);
-      } catch (ignored) {
-        parts.push("");
-      }
-    }
-    if (navigator.storage && navigator.storage.persisted) {
-      try {
-        const p = await navigator.storage.persisted();
-        parts.push(p ? "স্থায়ী স্টোরেজ: চালু" : "স্থায়ী স্টোরেজ: চালু নয় (ব্রাউজার প্রয়োজনে ডেটা মুছতে পারে)");
-      } catch (ignored) {
-        parts.push("");
-      }
-    }
-    const el = $("#storage-info");
-    if (el) el.textContent = parts.filter(Boolean).join(" · ");
+  async function refreshLegacy() {
+    state.legacy = await readLegacyLocal();
+    const el = $("#legacy-region");
+    if (el) el.innerHTML = legacyView();
   }
 
   const PAGES = {
@@ -1510,13 +1613,34 @@ const FinanceCore = (() => {
     monthly: { title: "Monthly Reports", render: renderMonthly },
     yearly: { title: "Yearly Reports", render: renderYearly },
     lifetime: { title: "Lifetime Total", render: renderLifetime },
-    settings: { title: "Settings & Backup", render: renderSettings, after: fillStorageInfo },
+    settings: { title: "Settings & Backup", render: renderSettings, after: refreshLegacy },
     more: { title: "More", render: renderMore }
   };
 
-  function dbErrorView() {
-    return `<div class="page-head"><div><h1>ডেটা স্টোরেজ চালু হয়নি</h1></div></div>
-    <div class="banner err">${icon("alert")}<span>এই ব্রাউজারে IndexedDB চালু নেই বা প্রাইভেট মোডে ব্লক করা। তাই কোনো ডেটা সংরক্ষণ করা যাবে না। সাধারণ ট্যাবে Chrome-এ খুলে আবার চেষ্টা করুন। ডেটা কখনো localStorage বা সার্ভারে সংরক্ষণ করা হয় না।</span></div>`;
+  function authView() {
+    const signup = ui.auth.mode === "signup";
+    return `<div class="auth-wrap"><section class="card auth-card" aria-labelledby="auth-title">
+      <div class="auth-logo">${icon("wallet", "lg")}</div>
+      <div><h1 id="auth-title">Personal Finance Tracker</h1><p class="cmp-note">${signup ? "নতুন একাউন্ট খুলুন" : "আপনার একাউন্টে লগইন করুন"}</p></div>
+      <form id="auth-form" class="stack" novalidate>
+        ${signup ? inputField({ name: "name", label: "নাম (ঐচ্ছিক)", attrs: 'autocomplete="name" maxlength="128"' }) : ""}
+        ${inputField({ name: "email", label: "ইমেইল", type: "email", required: true, attrs: 'autocomplete="email" inputmode="email" autocapitalize="off"' })}
+        ${inputField({ name: "password", label: "পাসওয়ার্ড (কমপক্ষে ৮ অক্ষর)", type: "password", required: true, attrs: `autocomplete="${signup ? "new-password" : "current-password"}" maxlength="256"` })}
+        <button type="submit" class="btn primary">${signup ? "একাউন্ট খুলুন" : "লগইন"}</button>
+      </form>
+      <div class="auth-switch">${signup ? "আগে থেকেই একাউন্ট আছে?" : "নতুন ব্যবহারকারী?"}<button type="button" class="link-btn" data-act="auth-mode" data-value="${signup ? "login" : "signup"}">${signup ? "লগইন করুন" : "একাউন্ট খুলুন"}</button></div>
+      <div class="banner info">${icon("info")}<span>আপনার ডেটা Appwrite ক্লাউডে আপনার একাউন্টের নামে থাকে। অন্য ব্যবহারকারী তা দেখতে পায় না, কিন্তু সাইটের অ্যাডমিন ডাটাবেস কনসোল থেকে দেখতে পারেন।</span></div>
+    </section></div>`;
+  }
+
+  function connectionView() {
+    return `<div class="auth-wrap"><section class="card auth-card"><div class="auth-logo">${icon("wifi-off", "lg")}</div><h1>সংযোগ হয়নি</h1><div class="banner err">${icon("alert")}<span>${esc(errorMessage(state.bootError))}</span></div><div class="actions"><button type="button" class="btn primary" data-act="retry-start">${icon("refresh", "sm")} আবার চেষ্টা করুন</button></div></section></div>`;
+  }
+
+  function loadErrorView() {
+    return `<div class="page-head"><div><h1>ডেটা লোড হয়নি</h1></div></div>
+    <div class="banner err">${icon("alert")}<span>${esc(errorMessage(state.loadError))}</span></div>
+    <div class="actions"><button type="button" class="btn primary" data-act="retry-load">${icon("refresh", "sm")} আবার চেষ্টা করুন</button><button type="button" class="btn" data-act="logout">${icon("log-out", "sm")} সাইন আউট</button></div>`;
   }
 
   function buildNav() {
@@ -1537,7 +1661,7 @@ const FinanceCore = (() => {
     const on = navigator.onLine;
     document.querySelectorAll(".js-net").forEach((el) => {
       el.className = `pill js-net${on ? "" : " off"}`;
-      el.innerHTML = `${icon(on ? "wifi" : "wifi-off", "sm")} ${on ? "অনলাইন" : "অফলাইন · ডেটা সংরক্ষিত"}`;
+      el.innerHTML = `${icon(on ? "wifi" : "wifi-off", "sm")} ${on ? "অনলাইন" : "অফলাইন · ডেটা লোড/সেভ হবে না"}`;
     });
   }
 
@@ -1551,16 +1675,21 @@ const FinanceCore = (() => {
     const id = currentRoute();
     const page = PAGES[id];
     document.title = `${page.title} — Personal Finance Tracker`;
-    if (!state.ready) view.innerHTML = `<div class="empty"><p>লোড হচ্ছে…</p></div>`;
-    else if (state.dbError) view.innerHTML = dbErrorView();
-    else view.innerHTML = page.render();
+    document.body.classList.toggle("auth", !state.user);
+    let html;
+    if (!state.ready) html = `<div class="empty"><p>লোড হচ্ছে…</p></div>`;
+    else if (state.bootError) html = connectionView();
+    else if (!state.user) html = authView();
+    else if (state.loadError) html = loadErrorView();
+    else html = page.render();
+    view.innerHTML = html;
     updateNav(id);
     if (id !== lastRoute) {
       window.scrollTo(0, 0);
       view.focus({ preventScroll: true });
       lastRoute = id;
     }
-    if (page.after && state.ready && !state.dbError) page.after();
+    if (page.after && state.ready && state.user && !state.loadError) page.after();
   }
 
   function refreshRegion() {
@@ -1622,7 +1751,7 @@ const FinanceCore = (() => {
         p.className = "form-err";
         p.setAttribute("role", "alert");
         p.textContent = message;
-        form.querySelector(".dlg-body").appendChild(p);
+        (form.querySelector(".dlg-body") || form).appendChild(p);
         continue;
       }
       const span = document.createElement("span");
@@ -1682,12 +1811,17 @@ const FinanceCore = (() => {
   }
 
   async function saveRecord(store, existing, value) {
-    const now = Date.now();
-    const rec = existing ? { ...existing, ...value, updatedAt: now } : { id: newId(), ...value, createdAt: now, updatedAt: now };
-    await db.put(store, rec);
-    const i = state[store].findIndex((x) => x.id === rec.id);
-    if (i >= 0) state[store][i] = rec;
-    else state[store].push(rec);
+    if (existing) {
+      const row = await cloud.updateRow(store, existing.id, toRowData(store, { ...existing, ...value }));
+      const rec = fromRow(store, row);
+      const i = state[store].findIndex((x) => x.id === rec.id);
+      if (i >= 0) state[store][i] = rec;
+      else state[store].push(rec);
+      return rec;
+    }
+    const row = await cloud.createRow(store, newId(), toRowData(store, value), state.user.id);
+    const rec = fromRow(store, row);
+    state[store].push(rec);
     return rec;
   }
 
@@ -1705,7 +1839,7 @@ const FinanceCore = (() => {
         try {
           await saveRecord("income", r, res.value);
         } catch (err) {
-          return { errors: { _form: SAVE_FAIL } };
+          return { errors: { _form: failMessage(err) } };
         }
         render();
         toast(r ? "আয় আপডেট হয়েছে" : "আয় সংরক্ষিত হয়েছে");
@@ -1728,7 +1862,7 @@ const FinanceCore = (() => {
         try {
           await saveRecord("expenses", r, res.value);
         } catch (err) {
-          return { errors: { _form: SAVE_FAIL } };
+          return { errors: { _form: failMessage(err) } };
         }
         render();
         toast(r ? "খরচ আপডেট হয়েছে" : "খরচ সংরক্ষিত হয়েছে");
@@ -1755,7 +1889,7 @@ const FinanceCore = (() => {
         try {
           await saveRecord("support", r, res.value);
         } catch (err) {
-          return { errors: { _form: SAVE_FAIL } };
+          return { errors: { _form: failMessage(err) } };
         }
         render();
         toast(r ? "ট্রান্সফার আপডেট হয়েছে" : "ট্রান্সফার সংরক্ষিত হয়েছে");
@@ -1777,9 +1911,9 @@ const FinanceCore = (() => {
     });
     if (!ok) return;
     try {
-      await db.remove(store, id);
+      await cloud.deleteRow(store, id);
     } catch (err) {
-      toast("মুছে ফেলা যায়নি।");
+      toast(failMessage(err));
       return;
     }
     state[store] = state[store].filter((x) => x.id !== id);
@@ -1788,14 +1922,22 @@ const FinanceCore = (() => {
   }
 
   async function setCompletion(month, on) {
+    if (on === Boolean(state.completion[month])) return;
     try {
-      await db.setCompletion(month, on);
+      if (on) {
+        const row = await cloud.createRow("completion", newId(), { month }, state.user.id);
+        state.completion[month] = true;
+        state.completionIds[month] = row.$id;
+      } else {
+        const rowId = state.completionIds[month];
+        if (rowId) await cloud.deleteRow("completion", rowId);
+        delete state.completion[month];
+        delete state.completionIds[month];
+      }
     } catch (err) {
-      toast("সংরক্ষণ করা যায়নি।");
+      toast(failMessage(err));
       return;
     }
-    if (on) state.completion[month] = true;
-    else delete state.completion[month];
     render();
     toast(on ? `${monthLabel(month)} সম্পূর্ণ হিসেবে চিহ্নিত` : `${monthLabel(month)} থেকে সম্পূর্ণ চিহ্ন তোলা হয়েছে`);
   }
@@ -1804,13 +1946,8 @@ const FinanceCore = (() => {
     const now = new Date();
     const backup = C.buildBackup(state, state.completion, now.toISOString());
     download(`finance-backup-${C.toDateString(now)}.json`, "application/json", JSON.stringify(backup, null, 2));
-    try {
-      await db.setMeta("lastBackupAt", now.toISOString());
-      state.lastBackupAt = now.toISOString();
-    } catch (ignored) {
-      toast("ব্যাকআপ ফাইল তৈরি হয়েছে, কিন্তু সময় সংরক্ষণ করা যায়নি।");
-      return;
-    }
+    writeStorage(lastBackupKey(), now.toISOString());
+    state.lastBackupAt = now.toISOString();
     toast("ব্যাকআপ ফাইল তৈরি হয়েছে");
     if (currentRoute() === "settings" && !dlg.open) render();
   }
@@ -1846,37 +1983,56 @@ const FinanceCore = (() => {
     }
     const v = C.validateBackup(parsed);
     if (!v.ok) ui.restore = { fileName: file.name, errors: v.errors, errorCount: v.errorCount };
-    else ui.restore = { fileName: file.name, backup: v, mode: "merge", plan: C.planImport(state, state.completion, v, "merge") };
+    else ui.restore = { fileName: file.name, backup: v, plan: C.planImport(state, state.completion, v, "merge") };
     refreshRestore();
+  }
+
+  async function createImported(task) {
+    if (task.table === "completion") return cloud.createRow("completion", newId(), { month: task.month }, state.user.id);
+    const data = toRowData(task.table, task.rec);
+    try {
+      return await cloud.createRow(task.table, task.rec.id, data, state.user.id);
+    } catch (err) {
+      if (err.status !== 409) throw err;
+      return cloud.createRow(task.table, newId(), data, state.user.id);
+    }
   }
 
   async function runImport() {
     const r = ui.restore;
-    if (!r || !r.plan) return;
-    if (r.plan.replace) {
-      const ok = await confirmDialog({
-        title: "সব ডেটা প্রতিস্থাপন করবেন?",
-        message: "বর্তমান সব আয়, খরচ ও পরিবার-সহায়তার রেকর্ড মুছে ব্যাকআপ ফাইলের ডেটা বসানো হবে। এটি ফেরানো যাবে না।",
-        extra: `<button type="button" class="btn sm" data-act="export-json">${icon("download", "sm")} আগে বর্তমান ডেটার ব্যাকআপ নিন</button>`,
-        confirmLabel: "প্রতিস্থাপন করুন",
-        danger: true
-      });
-      if (!ok) return;
+    if (!r || !r.plan || ui.importing) return;
+    const tasks = [];
+    for (const s of STORES) for (const rec of r.plan.add[s]) tasks.push({ table: s, rec });
+    for (const month of r.plan.completionToSet) tasks.push({ table: "completion", month });
+    if (!tasks.length) return;
+    ui.importing = true;
+    let added = 0;
+    let failed = 0;
+    let lastError = null;
+    for (const task of tasks) {
+      try {
+        await createImported(task);
+        added++;
+      } catch (err) {
+        failed++;
+        lastError = err;
+        if (err.status === 401 || err.status === 0) break;
+      }
+      if ((added + failed) % 5 === 0) toast(`ইমপোর্ট চলছে… ${added + failed}/${tasks.length}`);
     }
+    ui.importing = false;
     try {
-      await db.applyImport(r.plan, Object.keys(state.completion));
       await reloadState();
     } catch (err) {
-      toast("ইমপোর্ট ব্যর্থ হয়েছে। আপনার আগের ডেটা অপরিবর্তিত আছে।");
-      try {
-        await reloadState();
-      } catch (ignored) {
-        return;
-      }
+      state.loadError = err;
+    }
+    const skipped = tasks.length - added - failed;
+    if (failed || skipped) {
+      ui.restore = null;
       render();
+      toast(`আংশিক ইমপোর্ট: ${added}টি যোগ হয়েছে, ${failed + skipped}টি হয়নি (${errorMessage(lastError)})। একই ফাইল আবার ইমপোর্ট করলে শুধু বাকিগুলো যোগ হবে।`);
       return;
     }
-    const added = STORES.reduce((t, s) => t + r.plan.add[s].length, 0);
     ui.restore = null;
     render();
     toast(`ইমপোর্ট সম্পন্ন: ${added}টি রেকর্ড যোগ হয়েছে`);
@@ -1885,7 +2041,7 @@ const FinanceCore = (() => {
   async function eraseAll() {
     const ok = await confirmDialog({
       title: "সব ডেটা মুছবেন?",
-      message: "এই ডিভাইসের সব আয়, খরচ, পরিবার-সহায়তা ও সেটিংস স্থায়ীভাবে মুছে যাবে। এটি ফেরানো যাবে না।",
+      message: "আপনার একাউন্টের সব আয়, খরচ, পরিবার-সহায়তা ও সম্পূর্ণ-চিহ্ন ক্লাউড থেকে স্থায়ীভাবে মুছে যাবে। এটি ফেরানো যাবে না।",
       extra: `<button type="button" class="btn sm" data-act="export-json">${icon("download", "sm")} আগে ব্যাকআপ নিন</button>`,
       confirmLabel: "সব মুছুন",
       danger: true,
@@ -1893,15 +2049,79 @@ const FinanceCore = (() => {
     });
     if (!ok) return;
     try {
-      await db.clearAll();
+      let n = 0;
+      for (const table of [...STORES, "completion"]) {
+        const rows = await cloud.listAll(table);
+        for (const row of rows) {
+          await cloud.deleteRow(table, row.$id);
+          n++;
+          if (n % 5 === 0) toast(`মোছা হচ্ছে… ${n}টি`);
+        }
+      }
       await reloadState();
     } catch (err) {
-      toast("মুছে ফেলা যায়নি।");
+      toast(failMessage(err));
+      try {
+        await reloadState();
+        render();
+      } catch (ignored) {
+        return;
+      }
       return;
     }
     ui.restore = null;
     render();
     toast("সব ডেটা মুছে ফেলা হয়েছে");
+  }
+
+  async function logout() {
+    try {
+      await cloud.logout();
+    } catch (err) {
+      writeStorage(FALLBACK_KEY, "");
+    }
+    state.user = null;
+    state.income = [];
+    state.expenses = [];
+    state.support = [];
+    state.completion = {};
+    state.completionIds = {};
+    state.legacy = null;
+    state.loadError = null;
+    ui.restore = null;
+    ui.auth.mode = "login";
+    render();
+    toast("সাইন আউট হয়েছে");
+  }
+
+  async function previewLegacy() {
+    const l = state.legacy;
+    if (!l) return;
+    const v = C.validateBackup(C.buildBackup(l, l.completion, new Date().toISOString()));
+    if (!v.ok) ui.restore = { fileName: "এই ডিভাইসের লোকাল ডেটা", errors: v.errors, errorCount: v.errorCount };
+    else ui.restore = { fileName: "এই ডিভাইসের লোকাল ডেটা", backup: v, plan: C.planImport(state, state.completion, v, "merge") };
+    refreshRestore();
+    const el = $("#restore-region");
+    if (el) el.scrollIntoView({ block: "center" });
+  }
+
+  async function deleteLegacy() {
+    const ok = await confirmDialog({
+      title: "লোকাল কপি মুছবেন?",
+      message: "এই ব্রাউজারের পুরনো লোকাল ডেটা মুছে যাবে। ক্লাউডে তোলা না থাকলে এই ডেটা আর ফিরবে না।",
+      confirmLabel: "মুছুন",
+      danger: true
+    });
+    if (!ok) return;
+    await new Promise((resolve) => {
+      const req = indexedDB.deleteDatabase(LEGACY_DB);
+      req.onsuccess = () => resolve();
+      req.onerror = () => resolve();
+      req.onblocked = () => resolve();
+    });
+    state.legacy = null;
+    render();
+    toast("লোকাল কপি মুছে ফেলা হয়েছে");
   }
 
   async function handleAct(el) {
@@ -1945,17 +2165,31 @@ const FinanceCore = (() => {
       case "erase":
         await eraseAll();
         break;
-      case "persist": {
-        let granted = false;
-        try {
-          granted = Boolean(navigator.storage && navigator.storage.persist && (await navigator.storage.persist()));
-        } catch (err) {
-          granted = false;
-        }
-        toast(granted ? "স্থায়ী স্টোরেজ চালু হয়েছে" : "ব্রাউজার স্থায়ী স্টোরেজ অনুমোদন করেনি");
-        fillStorageInfo();
+      case "logout":
+        await logout();
         break;
-      }
+      case "auth-mode":
+        ui.auth.mode = el.dataset.value === "signup" ? "signup" : "login";
+        render();
+        break;
+      case "retry-start":
+        await boot();
+        break;
+      case "retry-load":
+        try {
+          await reloadState();
+          state.loadError = null;
+        } catch (err) {
+          state.loadError = err;
+        }
+        render();
+        break;
+      case "legacy-preview":
+        await previewLegacy();
+        break;
+      case "legacy-delete":
+        await deleteLegacy();
+        break;
       case "install":
         if (deferredPrompt) {
           deferredPrompt.prompt();
@@ -1980,6 +2214,43 @@ const FinanceCore = (() => {
     refreshRegion();
   }
 
+  view.addEventListener("submit", async (e) => {
+    if (e.target.id !== "auth-form") return;
+    e.preventDefault();
+    if (ui.authBusy) return;
+    const form = e.target;
+    clearErrors(form);
+    const raw = Object.fromEntries(new FormData(form));
+    const signup = ui.auth.mode === "signup";
+    const email = String(raw.email || "").trim();
+    const password = String(raw.password || "");
+    const errors = {};
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "সঠিক ইমেইল দিন।";
+    if (password.length < 8) errors.password = "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।";
+    if (Object.keys(errors).length) {
+      showErrors(form, errors);
+      return;
+    }
+    ui.authBusy = true;
+    const button = form.querySelector('button[type="submit"]');
+    const label = button.textContent;
+    button.disabled = true;
+    button.textContent = "অপেক্ষা করুন…";
+    try {
+      if (signup) await cloud.signUp(String(raw.name || "").trim(), email, password);
+      const user = await cloud.login(email, password);
+      await enter(user);
+      render();
+    } catch (err) {
+      const message =
+        err.status === 401 ? "ইমেইল বা পাসওয়ার্ড ভুল।" : err.status === 409 && signup ? "এই ইমেইলে আগে থেকেই একাউন্ট আছে। লগইন করুন।" : errorMessage(err);
+      showErrors(form, { _form: message });
+      button.disabled = false;
+      button.textContent = label;
+    } finally {
+      ui.authBusy = false;
+    }
+  });
   view.addEventListener("click", (e) => {
     const el = e.target.closest("[data-act]");
     if (el) handleAct(el);
@@ -1991,12 +2262,6 @@ const FinanceCore = (() => {
   view.addEventListener("change", (e) => {
     if (e.target.id === "restore-file") {
       handleRestoreFile(e.target.files && e.target.files[0]);
-      return;
-    }
-    if (e.target.matches("[data-restore-mode]") && ui.restore && ui.restore.backup) {
-      ui.restore.mode = e.target.value;
-      ui.restore.plan = C.planImport(state, state.completion, ui.restore.backup, e.target.value);
-      refreshRestore();
       return;
     }
     const el = e.target.closest("[data-filter]");
@@ -2016,7 +2281,10 @@ const FinanceCore = (() => {
   });
 
   window.addEventListener("hashchange", render);
-  window.addEventListener("online", updateNet);
+  window.addEventListener("online", () => {
+    updateNet();
+    if (state.bootError) boot();
+  });
   window.addEventListener("offline", updateNet);
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
@@ -2027,7 +2295,7 @@ const FinanceCore = (() => {
     deferredPrompt = null;
   });
   document.addEventListener("visibilitychange", async () => {
-    if (document.visibilityState !== "visible" || !state.ready || state.dbError || dlg.open) return;
+    if (document.visibilityState !== "visible" || !state.ready || !state.user || state.loadError || dlg.open || ui.importing) return;
     try {
       await reloadState();
       render();
@@ -2042,18 +2310,25 @@ const FinanceCore = (() => {
     });
   }
 
-  async function start() {
-    buildNav();
-    updateNet();
+  async function boot() {
+    state.ready = false;
+    state.bootError = null;
     render();
     try {
-      await db.open();
-      await reloadState();
+      const user = await cloud.account();
+      await enter(user);
     } catch (err) {
-      state.dbError = err;
+      state.user = null;
+      if (err.status !== 401 && err.status !== 400) state.bootError = err;
     }
     state.ready = true;
     render();
+  }
+
+  function start() {
+    buildNav();
+    updateNet();
+    boot();
   }
 
   start();

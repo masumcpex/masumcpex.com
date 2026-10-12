@@ -896,7 +896,8 @@ const FinanceCore = (() => {
     endpoint: "https://nyc.cloud.appwrite.io/v1",
     projectId: "6acc23d6003ccd10471a",
     databaseId: "finance",
-    tables: { income: "income", expenses: "expenses", support: "support", completion: "completion" }
+    tables: { income: "income", expenses: "expenses", support: "support", completion: "completion" },
+    columns: { expenses: { category: "type", description: "note", note: "reference" } }
   };
   const STORES = ["income", "expenses", "support"];
   const FIELDS = {
@@ -904,7 +905,7 @@ const FinanceCore = (() => {
     expenses: ["date", "amountMinor", "category", "description", "note"],
     support: ["date", "amountMinor", "recipient", "method", "reference"]
   };
-  const OPTIONAL_FIELDS = new Set(["note", "reference", "method"]);
+  const column = (store, field) => (APPWRITE.columns[store] && APPWRITE.columns[store][field]) || field;
   const FALLBACK_KEY = "cookieFallback";
   const PAGE_SIZE = 100;
   const LEGACY_DB = "personal-finance-tracker";
@@ -966,7 +967,14 @@ const FinanceCore = (() => {
       } catch (err) {
         data = null;
       }
-      if (!res.ok) throw new ApiError((data && data.message) || `HTTP ${res.status}`, res.status, data && data.type);
+      if (!res.ok) {
+        let message = (data && data.message) || `HTTP ${res.status}`;
+        const missing = path.match(/\/tables\/([^/]+)/);
+        if (res.status === 404 && missing && data && /table_not_found|database_not_found/.test(data.type || "")) {
+          message = `টেবিল "${decodeURIComponent(missing[1])}" পাওয়া যায়নি। Appwrite-এ এই ID-তে টেবিল বানান।`;
+        }
+        throw new ApiError(message, res.status, data && data.type);
+      }
       return data;
     }
   }
@@ -1018,16 +1026,16 @@ const FinanceCore = (() => {
 
   function toRowData(store, rec) {
     const out = {};
-    for (const f of FIELDS[store]) {
-      const v = rec[f];
-      out[f] = OPTIONAL_FIELDS.has(f) && (v === "" || v === undefined || v === null) ? null : v;
-    }
+    for (const f of FIELDS[store]) out[column(store, f)] = rec[f] === undefined || rec[f] === null ? "" : rec[f];
     return out;
   }
 
   function fromRow(store, row) {
     const rec = { id: row.$id };
-    for (const f of FIELDS[store]) rec[f] = row[f] === undefined || row[f] === null ? "" : row[f];
+    for (const f of FIELDS[store]) {
+      const v = row[column(store, f)];
+      rec[f] = v === undefined || v === null ? "" : v;
+    }
     rec.createdAt = Date.parse(row.$createdAt) || 0;
     rec.updatedAt = Date.parse(row.$updatedAt) || rec.createdAt;
     return rec;
@@ -1104,7 +1112,7 @@ const FinanceCore = (() => {
     if (!err) return "অজানা সমস্যা হয়েছে।";
     if (err.status === 0) return "Appwrite-এ পৌঁছানো যায়নি। ইন্টারনেট দেখুন এবং Appwrite-এর Platform-এ এই সাইটের হোস্টনেম যোগ করা আছে কিনা যাচাই করুন।";
     if (err.status === 401) return "লগইন সেশন শেষ হয়েছে। আবার লগইন করুন।";
-    if (err.status === 404) return "ডাটাবেস বা টেবিল পাওয়া যায়নি। Database ID ও Table ID যাচাই করুন।";
+    if (err.status === 404) return /^টেবিল/.test(err.message) ? err.message : "ডাটাবেস বা টেবিল পাওয়া যায়নি। Database ID ও Table ID যাচাই করুন।";
     if (err.status === 409) return "এই রেকর্ড বা ইমেইল আগে থেকেই আছে।";
     if (err.status === 429) return "অনেকবার অনুরোধ হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।";
     return err.message || "অজানা সমস্যা হয়েছে।";

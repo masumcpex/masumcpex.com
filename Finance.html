@@ -5,16 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com; connect-src 'self' https://nyc.cloud.appwrite.io https://www.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Finance Tracker — ব্যক্তিগত আয়-ব্যয় ও পারিবারিক হিসাব</title>
-<meta name="description" content="আপনার আয়, খরচ ও পরিবারকে পাঠানো টাকার হিসাব এক জায়গায়। মাসিক ও বার্ষিক রিপোর্ট, PDF ডাউনলোড, যেকোনো ডিভাইস থেকে নিরাপদ লগইন।">
-<meta name="robots" content="index, follow, max-snippet:160">
+<meta name="description" content="প্রবাসীদের জন্য Finance Tracker: মাসিক আয় (RM), খরচ ও দেশে পরিবারকে পাঠানো টাকার (BDT) হিসাব। মাসিক-বার্ষিক রিপোর্ট, PDF ও নিরাপদ ব্যাকআপ।">
+<meta name="robots" content="index, follow, max-snippet:160, max-image-preview:large">
+<meta name="author" content="Masum Cpex">
 <link rel="canonical" href="https://masumcpex.com/Finance.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Finance Tracker">
 <meta property="og:title" content="Finance Tracker — ব্যক্তিগত আয়-ব্যয় ও পারিবারিক হিসাব">
-<meta property="og:description" content="আয়, খরচ ও পরিবারকে পাঠানো টাকার হিসাব এক জায়গায়। মাসিক ও বার্ষিক রিপোর্ট, PDF ডাউনলোড।">
+<meta property="og:description" content="প্রবাসীদের আয় (RM), খরচ ও পরিবারকে পাঠানো টাকার (BDT) হিসাব এক জায়গায়। মাসিক-বার্ষিক রিপোর্ট ও PDF।">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:image:alt" content="Finance Tracker আইকন">
 <meta property="og:url" content="https://masumcpex.com/Finance.html">
 <meta property="og:image" content="https://masumcpex.com/finance-icon-512.png">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://masumcpex.com/finance-icon-512.png">
 <meta name="twitter:title" content="Finance Tracker — ব্যক্তিগত আয়-ব্যয় ও পারিবারিক হিসাব">
 <meta name="twitter:description" content="আয়, খরচ ও পরিবারকে পাঠানো টাকার হিসাব এক জায়গায়।">
 <link rel="preconnect" href="https://nyc.cloud.appwrite.io" crossorigin>
@@ -22,6 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Finance Tracker","alternateName":"ব্যক্তিগত আয়-ব্যয় ও পারিবারিক হিসাব","url":"https://masumcpex.com/Finance.html","inLanguage":"bn","applicationCategory":"FinanceApplication","operatingSystem":"Any","description":"আয় (RM), খরচ ও পরিবারকে পাঠানো টাকার (BDT) হিসাব, মাসিক-বার্ষিক রিপোর্ট ও PDF।","image":"https://masumcpex.com/finance-icon-512.png","author":{"@type":"Person","name":"Masum Cpex","url":"https://masumcpex.com"}}</script>
 <link rel="manifest" href="finance.webmanifest">
 <link rel="icon" type="image/png" href="finance-icon-192.png">
 <link rel="apple-touch-icon" href="finance-icon-192.png">
@@ -275,6 +280,21 @@ body.auth .content{max-width:none;padding:0}
   .content::before{content:attr(data-print-title);display:block;font-weight:700;font-size:15px;color:#0F1B2D;border-bottom:2px solid #0E6E5C;padding-bottom:6px;margin-bottom:14px}
   .card,.tile,.tiles>*,li,tr{break-inside:avoid;box-shadow:none!important}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+#print-report{display:none}
+.pr-title{font-size:18px;font-weight:700;color:#0F1B2D;border-bottom:2px solid #0E6E5C;padding-bottom:6px;margin:0 0 4px}
+.pr-sub{font-size:12px;color:#5B6470;margin:0 0 12px}
+.pr-table{width:100%;border-collapse:collapse;font-size:12px}
+.pr-table th{background:#0F1B2D;color:#fff;text-align:left;padding:7px 8px;font-weight:600}
+.pr-table td{padding:6px 8px;border-bottom:1px solid #DDE2E9;vertical-align:top;overflow-wrap:anywhere}
+.pr-table tr:nth-child(even) td{background:#F6F8FB}
+.pr-table td.num,.pr-table th.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pr-table tfoot td{font-weight:700;background:#E8F3F0!important;border-top:2px solid #0E6E5C}
+@media print{
+  body.print-report>*:not(#print-report){display:none!important}
+  body.print-report #print-report{display:block!important;padding:0}
+  .pr-table thead{display:table-header-group}
+  .pr-table tr{break-inside:avoid}
 }
 /* ---- login / register (reference design) ---- */
 .lg-wrap{--blue:#1A7BFF;min-height:100vh;min-height:100dvh;display:flex;justify-content:center;font-family:"Poppins",var(--font);background:linear-gradient(180deg,#D5E4FA 0%,#E9F0FB 28%,#F6F8FB 62%,#F8F9FB 100%);padding:calc(56px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom))}
@@ -840,13 +860,13 @@ const FinanceCore = (() => {
   const asc = (list) => sortRecords(list).reverse();
 
   const incomeCSV = (data) =>
-    toCSV(["date", "type", "amount_rm", "note", "reference", "id"], asc(data.income).map((r) => [r.date, r.type, toDecimalOrEmpty(r.amountMinor), r.note, r.reference, r.id]));
+    toCSV(["date", "type", "amount_rm", "note", "reference"], asc(data.income).map((r) => [r.date, r.type, toDecimalOrEmpty(r.amountMinor), r.note, r.reference]));
 
   const expensesCSV = (data) =>
-    toCSV(["date", "category", "amount_rm", "description", "note", "id"], asc(data.expenses).map((r) => [r.date, r.category, toDecimalOrEmpty(r.amountMinor), r.description, r.note, r.id]));
+    toCSV(["date", "category", "amount_rm", "description", "note"], asc(data.expenses).map((r) => [r.date, r.category, toDecimalOrEmpty(r.amountMinor), r.description, r.note]));
 
   const supportCSV = (data) =>
-    toCSV(["date", "recipient", "amount_bdt", "method", "reference", "id"], asc(data.support).map((r) => [r.date, r.recipient, toDecimalOrEmpty(r.amountMinor), r.method, r.reference, r.id]));
+    toCSV(["date", "recipient", "amount_bdt", "method", "reference"], asc(data.support).map((r) => [r.date, r.recipient, toDecimalOrEmpty(r.amountMinor), r.method, r.reference]));
 
   function monthsRange(data) {
     let min = null;
@@ -993,7 +1013,7 @@ const FinanceCore = (() => {
     support: ["date", "amountMinor", "recipient", "method", "reference"]
   };
   const column = (store, field) => (APPWRITE.columns[store] && APPWRITE.columns[store][field]) || field;
-  const BUILD = "v8-profiles";
+  const BUILD = "v10-pdfexport";
   const techInfo = (e) => (e ? `<div style="margin-top:8px;font-size:12px;opacity:.75;word-break:break-all">[${BUILD}] status=${esc(String(e.status))} type=${esc(String(e.type || "-"))} msg=${esc(String(e.message || ""))}</div>` : "");
   const FALLBACK_KEY = "cookieFallback";
   const PAGE_SIZE = 500;
@@ -1173,11 +1193,22 @@ const FinanceCore = (() => {
   async function writeRow(store, id, rec, isUpdate) {
     const call = (mode) =>
       isUpdate ? cloud.updateRow(store, id, toRowData(store, rec, mode === "pad" ? "pad" : "update")) : cloud.createRow(store, id, toRowData(store, rec, mode), state.user.id);
+    const friendly = (err) => {
+      const m = err && /Unknown attribute: "?([A-Za-z0-9_]+)"?/i.exec(String(err.message || ""));
+      if (!m) return err;
+      return new ApiError(`Appwrite-এর "${store}" টেবিলে "${m[1]}" নামের কলাম নেই। Columns ট্যাবে এই নামে কলাম যোগ করুন।`, 400, "unknown_column");
+    };
     try {
       return await call("normal");
     } catch (err) {
-      if (err && err.status === 400) return await call("pad");
-      throw err;
+      if (err && err.status === 400 && !/Unknown attribute/i.test(String(err.message || ""))) {
+        try {
+          return await call("pad");
+        } catch (err2) {
+          throw friendly(err2);
+        }
+      }
+      throw friendly(err);
     }
   }
 
@@ -1247,6 +1278,7 @@ const FinanceCore = (() => {
 
   /* Each signed-in user keeps one small profile row (name, email, last seen) so the admin can see who uses the app. */
   async function touchProfile() {
+    state.profileErr = "";
     if (!APPWRITE.tables.profiles || !state.user) return;
     const u = state.user;
     const data = { name: u.name || String(u.email || "").split("@")[0], email: u.email || "", lastSeen: new Date().toISOString() };
@@ -1257,8 +1289,10 @@ const FinanceCore = (() => {
         try {
           await cloud.createRow("profiles", u.id, data, u.id);
         } catch (e) {
-          return;
+          state.profileErr = errorMessage(e);
         }
+      } else {
+        state.profileErr = errorMessage(err);
       }
     }
   }
@@ -1287,8 +1321,10 @@ const FinanceCore = (() => {
     }
     el.innerHTML = `<p class="cmp-note">লোড হচ্ছে…</p>`;
     try {
+      await touchProfile();
       const rows = await cloud.listAll("profiles");
-      el.innerHTML = adminListHtml(rows);
+      const warn = state.profileErr ? `<p class="cmp-note" style="color:var(--red)">আপনার প্রোফাইল সেভ হয়নি: ${esc(state.profileErr)}</p>` : "";
+      el.innerHTML = warn + adminListHtml(rows);
     } catch (err) {
       el.innerHTML = `<p class="cmp-note" style="color:var(--red)">তালিকা আনা যায়নি: ${esc(errorMessage(err))}</p>`;
     }
@@ -1807,20 +1843,30 @@ const FinanceCore = (() => {
         <li>ডেটা এন্ড-টু-এন্ড এনক্রিপ্টেড নয়। সাইটের অ্যাডমিন Appwrite কনসোল থেকে ডেটাবেস দেখতে পারেন। তাই অ্যাপে এমন তথ্য রাখবেন না যা অ্যাডমিনের দেখা চলবে না।</li>
         <li>লগইন টোকেন এই ব্রাউজারের localStorage-এ থাকে। শেয়ার করা ডিভাইসে কাজ শেষে সাইন আউট করুন।</li>
         <li>ডেটা লোড ও সেভ করতে ইন্টারনেট লাগে। অফলাইনে শুধু অ্যাপের পেজ খোলে।</li>
-        <li>নিয়মিত JSON ব্যাকআপ নিয়ে নিরাপদ জায়গায় রাখুন। ব্যাকআপ ফাইল এনক্রিপ্টেড নয়।</li>
+        <li>নিয়মিত JSON ব্যাকআপ নিয়ে নিরাপদ জায়গায় রাখুন। পাসওয়ার্ড ছাড়া নিলে ব্যাকআপ ফাইল এনক্রিপ্টেড থাকে না।</li>
       </ul>
     </section>
     <section class="card"><h3>${icon("download", "sm")} ব্যাকআপ (JSON)</h3>
       <p class="cmp-note">সব রেকর্ড, মাস সম্পূর্ণ-চিহ্ন, স্কিমা ভার্সন ও তৈরির সময়সহ ফাইলটি আপনার ডিভাইসে নামে। কোথাও আপলোড হয় না।</p>
+      <p class="cmp-note">এই ফাইল শুধু রিস্টোরের জন্য। ডাউনলোডের সময় পাসওয়ার্ড দিলে ফাইল এনক্রিপ্ট হবে এবং ভেতরের ডেটা কেউ পড়তে পারবে না। পড়ার উপযোগী রিপোর্ট চাইলে নিচের PDF রিপোর্ট ব্যবহার করুন।</p>
       <p class="cmp-note">এই ডিভাইসে সর্বশেষ ব্যাকআপ: ${esc(last)}</p>
       <div class="actions" style="margin-top:12px"><button type="button" class="btn primary" data-act="export-json">${icon("download")} ব্যাকআপ ডাউনলোড করুন</button></div>
     </section>
     <section class="card"><h3>${icon("upload", "sm")} রিস্টোর</h3>
-      <div class="fld"><label for="restore-file">ব্যাকআপ ফাইল (.json) বাছুন</label><input id="restore-file" type="file" accept="application/json,.json"></div>
+      <div class="fld"><label for="restore-file">ব্যাকআপ ফাইল (.json) বাছুন</label><input id="restore-file" type="file" accept="application/json,.json,.enc.json"></div>
       <div id="restore-region">${restoreView()}</div>
     </section>
+    <section class="card"><h3>${icon("file", "sm")} PDF রিপোর্ট</h3>
+      <p class="cmp-note">পড়ার উপযোগী টেবিল আকারে। প্রিন্ট ডায়ালগে <b>Save as PDF</b> বাছুন।</p>
+      <div class="btn-grid">
+        <button type="button" class="btn" data-act="export-pdf" data-kind="income">${icon("download", "sm")} আয় (RM)</button>
+        <button type="button" class="btn" data-act="export-pdf" data-kind="expenses">${icon("download", "sm")} খরচ (RM)</button>
+        <button type="button" class="btn" data-act="export-pdf" data-kind="support">${icon("download", "sm")} পরিবার (BDT)</button>
+        <button type="button" class="btn" data-act="export-pdf" data-kind="monthly">${icon("download", "sm")} মাসিক সারসংক্ষেপ</button>
+      </div>
+    </section>
     <section class="card"><h3>${icon("file", "sm")} CSV এক্সপোর্ট</h3>
-      <p class="cmp-note">প্রতিটি ফাইলে মুদ্রা আলাদা কলামে ও আলাদা নামে থাকে।</p>
+      <p class="cmp-note">এক্সেল বা গুগল শিটে খোলার জন্য। প্রতিটি ফাইলে মুদ্রা আলাদা কলামে ও আলাদা নামে থাকে।</p>
       <div class="btn-grid">
         <button type="button" class="btn" data-act="export-csv" data-kind="income">${icon("download", "sm")} আয় (RM)</button>
         <button type="button" class="btn" data-act="export-csv" data-kind="expenses">${icon("download", "sm")} খরচ (RM)</button>
@@ -1979,6 +2025,26 @@ const FinanceCore = (() => {
     t.classList.add("show");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove("show"), 3400);
+  }
+
+  const b64enc = (buf) => { let s = ""; const u = new Uint8Array(buf); for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
+  const b64dec = (str) => Uint8Array.from(atob(str), (c) => c.charCodeAt(0));
+  async function deriveKey(pass, salt, iter) {
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: iter, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+  }
+  async function encryptBackup(text, pass) {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const iter = 250000;
+    const key = await deriveKey(pass, salt, iter);
+    const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(text));
+    return JSON.stringify({ app: "personal-finance-tracker", encrypted: true, cipher: "AES-GCM-256", kdf: "PBKDF2-SHA256", iterations: iter, salt: b64enc(salt), iv: b64enc(iv), data: b64enc(ct) });
+  }
+  async function decryptBackup(obj, pass) {
+    const key = await deriveKey(pass, b64dec(obj.salt), obj.iterations);
+    const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64dec(obj.iv) }, key, b64dec(obj.data));
+    return JSON.parse(new TextDecoder().decode(pt));
   }
 
   function download(name, mime, content) {
@@ -2214,11 +2280,91 @@ const FinanceCore = (() => {
   async function exportJson() {
     const now = new Date();
     const backup = C.buildBackup(state, state.completion, now.toISOString());
-    download(`finance-backup-${C.toDateString(now)}.json`, "application/json", JSON.stringify(backup, null, 2));
+    let text = JSON.stringify(backup, null, 2);
+    let name = `finance-backup-${C.toDateString(now)}.json`;
+    const pass = window.prompt("ব্যাকআপ পাসওয়ার্ড দিন (কমপক্ষে ৬ অক্ষর)। ফাইলের ভেতরের ডেটা তখন কেউ পড়তে পারবে না। পাসওয়ার্ড ভুলে গেলে রিস্টোর হবে না।\n\nএনক্রিপ্ট ছাড়া নিতে চাইলে খালি রেখে OK দিন। বাতিল করতে Cancel দিন।");
+    if (pass === null) return;
+    if (pass) {
+      if (pass.length < 6) { toast("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।"); return; }
+      try { text = await encryptBackup(text, pass); name = `finance-backup-${C.toDateString(now)}.enc.json`; }
+      catch (err) { toast("এনক্রিপ্ট করা যায়নি।"); return; }
+    }
+    download(name, "application/octet-stream", text);
     writeStorage(lastBackupKey(), now.toISOString());
     state.lastBackupAt = now.toISOString();
     toast("ব্যাকআপ ফাইল তৈরি হয়েছে");
     if (currentRoute() === "settings" && !dlg.open) render();
+  }
+
+  function exportPdf(kind) {
+    const byDate = (a, b) => String(a.date).localeCompare(String(b.date));
+    const td = (v, cls = "") => `<td${cls ? ` class="${cls}"` : ""}>${esc(String(v === undefined || v === null || v === "" ? "—" : v))}</td>`;
+    const th = (v, cls = "") => `<th${cls ? ` class="${cls}"` : ""}>${esc(v)}</th>`;
+    let title = "";
+    let head = "";
+    let body = "";
+    let foot = "";
+    let n = 0;
+    if (kind === "income") {
+      const list = state.income.slice().sort(byDate);
+      n = list.length;
+      title = "আয়ের তালিকা (RM)";
+      head = th("তারিখ") + th("ধরন") + th("পরিমাণ", "num") + th("বিবরণ") + th("রেফারেন্স");
+      body = list.map((r) => `<tr>${td(fmtDate(r.date))}${td(LABELS.income[r.type] || r.type)}${td(rm(r.amountMinor), "num")}${td(r.note)}${td(r.reference)}</tr>`).join("");
+      foot = `<tr>${td("মোট")}${td("")}${td(rm(C.sum(list.map((r) => r.amountMinor))), "num")}${td("")}${td("")}</tr>`;
+    } else if (kind === "expenses") {
+      const list = state.expenses.slice().sort(byDate);
+      n = list.length;
+      title = "খরচের তালিকা (RM)";
+      head = th("তারিখ") + th("ধরন") + th("পরিমাণ", "num") + th("বিবরণ") + th("নোট");
+      body = list.map((r) => `<tr>${td(fmtDate(r.date))}${td(LABELS.expense[r.category] || r.category)}${td(rm(r.amountMinor), "num")}${td(r.description)}${td(r.note)}</tr>`).join("");
+      foot = `<tr>${td("মোট")}${td("")}${td(rm(C.sum(list.map((r) => r.amountMinor))), "num")}${td("")}${td("")}</tr>`;
+    } else if (kind === "support") {
+      const list = state.support.slice().sort(byDate);
+      n = list.length;
+      title = "পরিবারকে পাঠানো (BDT)";
+      head = th("তারিখ") + th("প্রাপক") + th("পরিমাণ", "num") + th("মাধ্যম") + th("রেফারেন্স");
+      body = list.map((r) => `<tr>${td(fmtDate(r.date))}${td(r.recipient)}${td(bdt(r.amountMinor), "num")}${td(LABELS.method[r.method] || r.method)}${td(r.reference)}</tr>`).join("");
+      foot = `<tr>${td("মোট")}${td("")}${td(bdt(C.sum(list.map((r) => r.amountMinor))), "num")}${td("")}${td("")}</tr>`;
+    } else if (kind === "monthly") {
+      const keys = new Set();
+      for (const st of STORES) for (const r of state[st]) keys.add(C.monthKey(r.date));
+      const months = [...keys].sort();
+      n = months.length;
+      title = "মাসিক সারসংক্ষেপ";
+      head = th("মাস") + th("আয় (RM)", "num") + th("খরচ (RM)", "num") + th("ব্যালেন্স (RM)", "num") + th("পাঠানো (BDT)", "num") + th("ট্রান্সফার", "num");
+      body = months
+        .map((k) => {
+          const m = C.monthSummary(state, k, state.completion);
+          return `<tr>${td(monthLabel(k))}${td(rm(m.incomeMinor), "num")}${td(rm(m.expenseMinor), "num")}${td(rm(m.balanceMinor), "num")}${td(bdt(m.supportMinor), "num")}${td(m.supportCount, "num")}</tr>`;
+        })
+        .join("");
+    } else {
+      return;
+    }
+    if (!n) {
+      toast("এখনো কোনো রেকর্ড নেই।");
+      return;
+    }
+    let host = $("#print-report");
+    if (!host) {
+      host = document.createElement("div");
+      host.id = "print-report";
+      document.body.appendChild(host);
+    }
+    const stamp = new Date();
+    host.innerHTML = `<h1 class="pr-title">Finance Tracker — ${esc(title)}</h1><p class="pr-sub">${esc(state.user ? state.user.email : "")} · তৈরি: ${esc(stamp.toLocaleDateString("en-GB"))} · মোট ${n}টি</p><table class="pr-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody>${foot ? `<tfoot>${foot}</tfoot>` : ""}</table>`;
+    const oldTitle = document.title;
+    document.title = `Finance-${kind}-${today()}`;
+    document.body.classList.add("print-report");
+    const done = () => {
+      document.body.classList.remove("print-report");
+      document.title = oldTitle;
+      host.innerHTML = "";
+      window.removeEventListener("afterprint", done);
+    };
+    window.addEventListener("afterprint", done);
+    window.print();
   }
 
   function exportCsv(kind) {
@@ -2249,6 +2395,12 @@ const FinanceCore = (() => {
       ui.restore = { fileName: file.name, errors: ["ফাইলটি পড়া যায়নি। এটি বৈধ JSON নয়।"], errorCount: 1 };
       refreshRestore();
       return;
+    }
+    if (parsed && parsed.encrypted === true) {
+      const pass = window.prompt("এই ব্যাকআপ এনক্রিপ্টেড। পাসওয়ার্ড দিন:");
+      if (!pass) { ui.restore = { fileName: file.name, errors: ["পাসওয়ার্ড দেওয়া হয়নি।"], errorCount: 1 }; refreshRestore(); return; }
+      try { parsed = await decryptBackup(parsed, pass); }
+      catch (err) { ui.restore = { fileName: file.name, errors: ["পাসওয়ার্ড ভুল অথবা ফাইল নষ্ট।"], errorCount: 1 }; refreshRestore(); return; }
     }
     const v = C.validateBackup(parsed);
     if (!v.ok) ui.restore = { fileName: file.name, errors: v.errors, errorCount: v.errorCount };
@@ -2419,6 +2571,9 @@ const FinanceCore = (() => {
         break;
       case "export-json":
         await exportJson();
+        break;
+      case "export-pdf":
+        exportPdf(el.dataset.kind);
         break;
       case "export-csv":
         exportCsv(el.dataset.kind);

@@ -8,6 +8,9 @@
 <meta name="description" content="ব্যক্তিগত আয়-ব্যয়, মাসিক হিসাব ও পরিবারকে পাঠানো টাকার হিসাব। ডেটা শুধু আপনার ডিভাইসে থাকে।">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0F1B2D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="manifest" href="finance.webmanifest">
 <link rel="icon" type="image/png" href="finance-icon-192.png">
 <link rel="apple-touch-icon" href="finance-icon-192.png">
@@ -233,6 +236,41 @@ body.auth .content{max-width:none;padding:0}
 .auth-card h1{font-size:1.4rem;line-height:1.3}
 .auth-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#128A74,#0A5347);color:#fff;display:grid;place-items:center}
 .auth-switch{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:.92rem;color:var(--muted)}
+/* ---- login / register (reference design) ---- */
+.lg-wrap{--blue:#1A7BFF;min-height:100vh;min-height:100dvh;display:flex;justify-content:center;font-family:"Poppins",var(--font);background:linear-gradient(180deg,#D5E4FA 0%,#E9F0FB 28%,#F6F8FB 62%,#F8F9FB 100%);padding:calc(56px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom))}
+.lg-col{width:min(400px,100%);display:flex;flex-direction:column;min-height:calc(100dvh - 90px)}
+.lg-title{text-align:center;font-size:1.7rem;line-height:1.3;font-weight:500;color:#0E1116;margin:0 0 10px}
+.lg-sub{text-align:center;color:#5B6470;font-size:.95rem;font-weight:400}
+.lg-sub .lg-link{font-size:.95rem}
+.lg-link{background:none;border:0;padding:0;color:var(--blue);font:inherit;font-weight:500;cursor:pointer;text-decoration:none}
+.lg-tabs{display:grid;grid-template-columns:1fr 1fr;margin:30px 0 26px;padding:0;border-radius:999px;background:rgba(255,255,255,.92);height:58px;position:relative}
+.lg-tabs button{border:0;border-radius:999px;background:transparent;color:#14181F;font:inherit;font-size:.95rem;font-weight:500;cursor:pointer;height:100%;transition:background .2s,color .2s}
+.lg-tabs button[aria-pressed="true"]{background:var(--blue);color:#fff;box-shadow:0 6px 16px rgba(26,123,255,.28)}
+.lg-form{display:flex;flex-direction:column;gap:18px}
+.lg-form .fld{gap:8px}
+.lg-form .fld>label{font-size:.9rem;font-weight:400;color:#5B6470;padding-left:4px}
+.lg-in{position:relative}
+.lg-form input{width:100%;height:56px;padding:0 20px;border:1.5px solid #DCE1E8;border-radius:999px;background:rgba(255,255,255,.75);font:inherit;font-size:.95rem;color:#0E1116;outline:none;transition:border-color .15s,background .15s,box-shadow .15s}
+.lg-form input::placeholder{color:#9AA3AF}
+.lg-form input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px rgba(26,123,255,.14)}
+.lg-form input[aria-invalid="true"]{border-color:var(--red);background:#FFF8F7}
+.lg-form input.has-eye{padding-right:54px}
+.lg-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:#2B3340;display:grid;place-items:center;cursor:pointer}
+.lg-eye .ic{width:21px;height:21px}
+.lg-forgot{align-self:flex-end;margin-top:-6px;font-size:.9rem}
+.lg-btn{height:58px;border:0;border-radius:999px;background:var(--blue);color:#fff;font:inherit;font-size:1rem;font-weight:600;cursor:pointer;box-shadow:0 10px 24px rgba(26,123,255,.32);transition:filter .15s,transform .1s;margin-top:10px}
+.lg-btn:hover{filter:brightness(1.05)}
+.lg-btn:active{transform:scale(.99)}
+.lg-btn:disabled{opacity:.7;cursor:progress}
+.lg-or{display:flex;align-items:center;gap:14px;margin:30px 0 22px;color:#8A93A0;font-size:.82rem}
+.lg-or::before,.lg-or::after{content:"";height:1px;background:#DDE2E9;flex:1}
+.lg-social{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lg-social button{height:56px;border:1.5px solid #DCE1E8;border-radius:999px;background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;gap:10px;font:inherit;font-size:.92rem;font-weight:500;color:#0E1116;cursor:pointer}
+.lg-social svg{width:22px;height:22px}
+.lg-foot{margin-top:auto;padding-top:34px;text-align:center;color:#3A424D;font-size:.92rem}
+.lg-foot .lg-link{font-weight:600}
+@media (min-width:700px){.lg-wrap{align-items:center;padding-top:40px}.lg-col{min-height:0}}
+.auth-note .ic{width:16px;height:16px;margin-top:2px;color:var(--teal)}
 .link-btn{background:none;border:0;padding:6px 4px;min-height:44px;color:var(--teal-dark);font-weight:700;cursor:pointer;text-decoration:underline}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--navy);color:#fff;padding:11px 16px;border-radius:12px;font-weight:600;font-size:.92rem;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
@@ -297,6 +335,10 @@ body.auth .content{max-width:none;padding:0}
     <symbol id="i-smartphone" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol>
     <symbol id="i-log-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
     <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M10.7 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.6A16.6 16.6 0 0 0 2 12s3.6 7 10 7a10 10 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
   </defs>
 </svg>
@@ -906,7 +948,7 @@ const FinanceCore = (() => {
     support: ["date", "amountMinor", "recipient", "method", "reference"]
   };
   const column = (store, field) => (APPWRITE.columns[store] && APPWRITE.columns[store][field]) || field;
-  const BUILD = "v3-dbid";
+  const BUILD = "v5-login-ref";
   const techInfo = (e) => (e ? `<div style="margin-top:8px;font-size:12px;opacity:.75;word-break:break-all">[${BUILD}] status=${esc(String(e.status))} type=${esc(String(e.type || "-"))} msg=${esc(String(e.message || ""))}</div>` : "");
   const FALLBACK_KEY = "cookieFallback";
   const PAGE_SIZE = 100;
@@ -1657,18 +1699,27 @@ const FinanceCore = (() => {
 
   function authView() {
     const signup = ui.auth.mode === "signup";
-    return `<div class="auth-wrap"><section class="card auth-card" aria-labelledby="auth-title">
-      <div class="auth-logo">${icon("wallet", "lg")}</div>
-      <div><h1 id="auth-title">Personal Finance Tracker</h1><p class="cmp-note">${signup ? "নতুন একাউন্ট খুলুন" : "আপনার একাউন্টে লগইন করুন"}</p></div>
-      <form id="auth-form" class="stack" novalidate>
-        ${signup ? inputField({ name: "name", label: "নাম (ঐচ্ছিক)", attrs: 'autocomplete="name" maxlength="128"' }) : ""}
-        ${inputField({ name: "email", label: "ইমেইল", type: "email", required: true, attrs: 'autocomplete="email" inputmode="email" autocapitalize="off"' })}
-        ${inputField({ name: "password", label: "পাসওয়ার্ড (কমপক্ষে ৮ অক্ষর)", type: "password", required: true, attrs: `autocomplete="${signup ? "new-password" : "current-password"}" maxlength="256"` })}
-        <button type="submit" class="btn primary">${signup ? "একাউন্ট খুলুন" : "লগইন"}</button>
+    const eye = (label) => `<button type="button" class="lg-eye" data-act="toggle-pass" aria-label="${label}">${icon("eye-off")}</button>`;
+    const google = `<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.2 5.5-4.7 7.2l7.6 5.9c4.4-4.1 6.9-10.1 6.9-17.6z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 0 1 0-9.4l-7.9-6.1a24 24 0 0 0 0 21.6l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>`;
+    const apple = `<svg viewBox="0 0 384 512" aria-hidden="true"><path fill="#000" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zM259.1 87.8c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>`;
+    return `<div class="lg-wrap"><div class="lg-col">
+      <h1 class="lg-title" id="auth-title">${signup ? "Create an account" : "Get Started With your<br>Finance Journey"}</h1>
+      <p class="lg-sub">${signup ? `Already have an account? <button type="button" class="lg-link" data-act="auth-mode" data-value="login">Log in</button>` : "Sign in to your Account"}</p>
+      <div class="lg-tabs" role="group" aria-label="Login or Register">
+        <button type="button" data-act="auth-mode" data-value="login" aria-pressed="${!signup}">Login</button>
+        <button type="button" data-act="auth-mode" data-value="signup" aria-pressed="${signup}">Register</button>
+      </div>
+      <form id="auth-form" class="lg-form" novalidate aria-labelledby="auth-title">
+        ${signup ? `<div class="fld"><label for="f-name">Full Name</label><div class="lg-in"><input id="f-name" name="name" type="text" autocomplete="name" maxlength="128" placeholder="Your full name"></div></div>` : ""}
+        <div class="fld"><label for="f-email">Email</label><div class="lg-in"><input id="f-email" name="email" type="email" required autocomplete="email" inputmode="email" autocapitalize="off" placeholder="name@example.com"></div></div>
+        <div class="fld"><label for="f-password">Password</label><div class="lg-in"><input id="f-password" class="has-eye" name="password" type="password" required autocomplete="${signup ? "new-password" : "current-password"}" maxlength="256" placeholder="At least 8 characters">${eye("Show password")}</div></div>
+        ${signup ? `<div class="fld"><label for="f-confirm">Confirm Password</label><div class="lg-in"><input id="f-confirm" class="has-eye" name="confirm" type="password" required autocomplete="new-password" maxlength="256" placeholder="Re-enter password">${eye("Show password")}</div></div>` : `<button type="button" class="lg-link lg-forgot" data-act="soon">Forgot Password?</button>`}
+        <button type="submit" class="lg-btn">${signup ? "Create account" : "Login"}</button>
       </form>
-      <div class="auth-switch">${signup ? "আগে থেকেই একাউন্ট আছে?" : "নতুন ব্যবহারকারী?"}<button type="button" class="link-btn" data-act="auth-mode" data-value="${signup ? "login" : "signup"}">${signup ? "লগইন করুন" : "একাউন্ট খুলুন"}</button></div>
-      <div class="banner info">${icon("info")}<span>আপনার ডেটা Appwrite ক্লাউডে আপনার একাউন্টের নামে থাকে। অন্য ব্যবহারকারী তা দেখতে পায় না, কিন্তু সাইটের অ্যাডমিন ডাটাবেস কনসোল থেকে দেখতে পারেন।</span></div>
-    </section></div>`;
+      <div class="lg-or">or continue with</div>
+      <div class="lg-social"><button type="button" data-act="soon">${google}Google</button><button type="button" data-act="soon">${apple}Apple</button></div>
+      ${signup ? "" : `<div class="lg-foot">Don't have an account? <button type="button" class="lg-link" data-act="auth-mode" data-value="signup">Sign Up</button></div>`}
+    </div></div>`;
   }
 
   function connectionView() {
@@ -2206,6 +2257,19 @@ const FinanceCore = (() => {
       case "logout":
         await logout();
         break;
+      case "soon":
+        toast("এই সুবিধা এখনো চালু হয়নি।");
+        break;
+      case "toggle-pass": {
+        const input = el.parentElement.querySelector("input");
+        if (input) {
+          const show = input.type === "password";
+          input.type = show ? "text" : "password";
+          el.innerHTML = icon(show ? "eye" : "eye-off");
+          el.setAttribute("aria-label", show ? "Hide password" : "Show password");
+        }
+        break;
+      }
       case "auth-mode":
         ui.auth.mode = el.dataset.value === "signup" ? "signup" : "login";
         render();
@@ -2265,6 +2329,7 @@ const FinanceCore = (() => {
     const errors = {};
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "সঠিক ইমেইল দিন।";
     if (password.length < 8) errors.password = "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।";
+    if (signup && String(raw.confirm || "") !== password) errors.confirm = "পাসওয়ার্ড দুটো মেলেনি।";
     if (Object.keys(errors).length) {
       showErrors(form, errors);
       return;

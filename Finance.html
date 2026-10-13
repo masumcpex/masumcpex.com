@@ -4,13 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com; connect-src 'self' https://nyc.cloud.appwrite.io https://www.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>Personal Finance Tracker</title>
-<meta name="description" content="ব্যক্তিগত আয়-ব্যয়, মাসিক হিসাব ও পরিবারকে পাঠানো টাকার হিসাব। ডেটা Appwrite ক্লাউডে আপনার একাউন্টে নিরাপদে সংরক্ষিত।">
-<meta name="robots" content="noindex, nofollow">
+<title>Finance Tracker — ব্যক্তিগত আয়-ব্যয় ও পারিবারিক হিসাব</title>
+<meta name="description" content="আপনার আয়, খরচ ও পরিবারকে পাঠানো টাকার হিসাব এক জায়গায়। মাসিক ও বার্ষিক রিপোর্ট, PDF ডাউনলোড, যেকোনো ডিভাইস থেকে নিরাপদ লগইন।">
+<meta name="robots" content="index, follow, max-snippet:160">
+<link rel="canonical" href="https://masumcpex.com/Finance.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Finance Tracker">
+<meta property="og:title" content="Finance Tracker — ব্যক্তিগত আয়-ব্যয় ও পারিবারিক হিসাব">
+<meta property="og:description" content="আয়, খরচ ও পরিবারকে পাঠানো টাকার হিসাব এক জায়গায়। মাসিক ও বার্ষিক রিপোর্ট, PDF ডাউনলোড।">
+<meta property="og:url" content="https://masumcpex.com/Finance.html">
+<meta property="og:image" content="https://masumcpex.com/finance-icon-512.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Finance Tracker — ব্যক্তিগত আয়-ব্যয় ও পারিবারিক হিসাব">
+<meta name="twitter:description" content="আয়, খরচ ও পরিবারকে পাঠানো টাকার হিসাব এক জায়গায়।">
+<link rel="preconnect" href="https://nyc.cloud.appwrite.io" crossorigin>
 <meta name="theme-color" content="#0F1B2D">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <link rel="manifest" href="finance.webmanifest">
 <link rel="icon" type="image/png" href="finance-icon-192.png">
 <link rel="apple-touch-icon" href="finance-icon-192.png">
@@ -246,6 +257,25 @@ body.auth .content{max-width:none;padding:0}
 .side-user small{font-size:.75rem;color:#8FA3BF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .me-card{display:flex;align-items:center;gap:12px;margin:6px 0 4px}
 .me-card .avatar{border-color:var(--line)}
+.adm-list{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.adm-list li{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:#fff;min-width:0}
+.adm-list .avatar{border-color:var(--line)}
+.adm-list div{min-width:0;display:flex;flex-direction:column;line-height:1.3;flex:1}
+.adm-list b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adm-list small{color:var(--muted);font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adm-list .when{flex:none;font-size:.74rem;color:var(--muted);text-align:right}
+.side-pdf{margin:8px 4px 0;justify-content:center}
+@media print{
+  @page{margin:12mm}
+  body{background:#fff!important}
+  .side,.top,.tabbar,.toast,.skip,#dlg,.pill,.actions,button,select,.picker,.filters,.region .toolbar{display:none!important}
+  .app{display:block}
+  .main{margin:0!important}
+  .content{max-width:none!important;padding:0!important}
+  .content::before{content:attr(data-print-title);display:block;font-weight:700;font-size:15px;color:#0F1B2D;border-bottom:2px solid #0E6E5C;padding-bottom:6px;margin-bottom:14px}
+  .card,.tile,.tiles>*,li,tr{break-inside:avoid;box-shadow:none!important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 /* ---- login / register (reference design) ---- */
 .lg-wrap{--blue:#1A7BFF;min-height:100vh;min-height:100dvh;display:flex;justify-content:center;font-family:"Poppins",var(--font);background:linear-gradient(180deg,#D5E4FA 0%,#E9F0FB 28%,#F6F8FB 62%,#F8F9FB 100%);padding:calc(56px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom))}
 .lg-col{width:min(400px,100%);display:flex;flex-direction:column;min-height:calc(100dvh - 90px)}
@@ -360,6 +390,7 @@ body.auth .content{max-width:none;padding:0}
       <span><b>Finance Tracker</b><small>ব্যক্তিগত হিসাব</small></span>
     </a>
     <nav class="nav" id="nav-side" aria-label="Main navigation"></nav>
+    <button type="button" class="btn side-pdf" data-pdf><svg class="ic sm" aria-hidden="true" focusable="false"><use href="#i-download"/></svg> PDF ডাউনলোড</button>
     <div class="side-user js-user" hidden></div>
     <div class="side-foot"><svg class="ic sm" aria-hidden="true" focusable="false"><use href="#i-shield"/></svg><span>আপনার ডেটা নিরাপদ HTTPS সংযোগে ক্লাউডে সংরক্ষিত হয় এবং শুধু আপনার একাউন্টে দেখা যায়। যেকোনো ডিভাইসে লগইন করলেই পাবেন।</span></div>
     <span class="pill js-net" role="status"></span>
@@ -370,7 +401,7 @@ body.auth .content{max-width:none;padding:0}
         <span class="brand-mark"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wallet"/></svg></span>
         <span><b>Finance Tracker</b></span>
       </a>
-      <span class="top-r"><span class="pill js-net" role="status"></span><span class="js-avatar"></span></span>
+      <span class="top-r"><button type="button" class="icon-btn" data-pdf aria-label="PDF ডাউনলোড" style="color:#fff;width:38px;height:38px"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-download"/></svg></button><span class="pill js-net" role="status"></span><span class="js-avatar"></span></span>
     </header>
     <main class="content" id="view" tabindex="-1"></main>
   </div>
@@ -949,20 +980,23 @@ const FinanceCore = (() => {
     endpoint: "https://nyc.cloud.appwrite.io/v1",
     projectId: "6acc23d6003ccd10471a",
     databaseId: "6acca53e00040685b131",
-    tables: { income: "6acd07620019ee3376e1", expenses: "6acd09540027fea0889d", support: "6accc844001141aa61f9", completion: "6acccdeb0018b7a39fe9" },
+    tables: { income: "6acd07620019ee3376e1", expenses: "6acd09540027fea0889d", support: "6accc844001141aa61f9", completion: "6acccdeb0018b7a39fe9", profiles: "6acdcb70001e9ce929c8" },
     columns: { expenses: { category: "type", description: "note", note: "reference" } }
   };
   const STORES = ["income", "expenses", "support"];
+  /* Admin: only this account sees the "ব্যবহারকারী" card. The real protection is the Appwrite table
+     permission on the profiles table (give this user Read there), not this constant. */
+  const ADMIN_ID = "6acc7731a8f0a9eaca71";
   const FIELDS = {
     income: ["date", "amountMinor", "type", "note", "reference"],
     expenses: ["date", "amountMinor", "category", "description", "note"],
     support: ["date", "amountMinor", "recipient", "method", "reference"]
   };
   const column = (store, field) => (APPWRITE.columns[store] && APPWRITE.columns[store][field]) || field;
-  const BUILD = "v6-google";
+  const BUILD = "v8-profiles";
   const techInfo = (e) => (e ? `<div style="margin-top:8px;font-size:12px;opacity:.75;word-break:break-all">[${BUILD}] status=${esc(String(e.status))} type=${esc(String(e.type || "-"))} msg=${esc(String(e.message || ""))}</div>` : "");
   const FALLBACK_KEY = "cookieFallback";
-  const PAGE_SIZE = 100;
+  const PAGE_SIZE = 500;
   const LEGACY_DB = "personal-finance-tracker";
 
   class ApiError extends Error {
@@ -1117,17 +1151,41 @@ const FinanceCore = (() => {
     deleteRow: (table, id) => api("DELETE", `${rowsPath(table)}/${encodeURIComponent(id)}`)
   };
 
-  function toRowData(store, rec) {
+  const OPTIONAL = { income: ["note", "reference"], expenses: ["note"], support: ["method", "reference"] };
+
+  /* mode: "create" skips empty optional fields, "update" clears them with null, "pad" sends a single space
+     (only used as a fallback when the Appwrite column is marked Required). */
+  function toRowData(store, rec, mode = "create") {
     const out = {};
-    for (const f of FIELDS[store]) out[column(store, f)] = rec[f] === undefined || rec[f] === null ? "" : rec[f];
+    const opt = OPTIONAL[store] || [];
+    for (const f of FIELDS[store]) {
+      let v = rec[f] === undefined || rec[f] === null ? "" : rec[f];
+      if (opt.includes(f) && v === "") {
+        if (mode === "pad") v = " ";
+        else if (mode === "update") v = null;
+        else continue;
+      }
+      out[column(store, f)] = v;
+    }
     return out;
+  }
+
+  async function writeRow(store, id, rec, isUpdate) {
+    const call = (mode) =>
+      isUpdate ? cloud.updateRow(store, id, toRowData(store, rec, mode === "pad" ? "pad" : "update")) : cloud.createRow(store, id, toRowData(store, rec, mode), state.user.id);
+    try {
+      return await call("normal");
+    } catch (err) {
+      if (err && err.status === 400) return await call("pad");
+      throw err;
+    }
   }
 
   function fromRow(store, row) {
     const rec = { id: row.$id };
     for (const f of FIELDS[store]) {
       const v = row[column(store, f)];
-      rec[f] = v === undefined || v === null ? "" : v;
+      rec[f] = v === undefined || v === null ? "" : typeof v === "string" ? v.trim() : v;
     }
     rec.createdAt = Date.parse(row.$createdAt) || 0;
     rec.updatedAt = Date.parse(row.$updatedAt) || rec.createdAt;
@@ -1185,16 +1243,71 @@ const FinanceCore = (() => {
     importing: false
   };
 
-  async function reloadState() {
-    const tables = [...STORES, "completion"];
-    const settled = [];
-    for (const t of tables) {
-      try {
-        settled.push({ status: "fulfilled", value: await cloud.listAll(t) });
-      } catch (err) {
-        settled.push({ status: "rejected", reason: err });
+  const isAdmin = () => !!(state.user && state.user.id === ADMIN_ID);
+
+  /* Each signed-in user keeps one small profile row (name, email, last seen) so the admin can see who uses the app. */
+  async function touchProfile() {
+    if (!APPWRITE.tables.profiles || !state.user) return;
+    const u = state.user;
+    const data = { name: u.name || String(u.email || "").split("@")[0], email: u.email || "", lastSeen: new Date().toISOString() };
+    try {
+      await api("PATCH", `${rowsPath("profiles")}/${encodeURIComponent(u.id)}`, { data });
+    } catch (err) {
+      if (err && err.status === 404) {
+        try {
+          await cloud.createRow("profiles", u.id, data, u.id);
+        } catch (e) {
+          return;
+        }
       }
     }
+  }
+
+  function adminListHtml(rows) {
+    if (!rows.length) return `<p class="cmp-note">এখনো কোনো ব্যবহারকারী পাওয়া যায়নি।</p>`;
+    const items = rows
+      .slice()
+      .sort((a, b) => String(b.lastSeen || "").localeCompare(String(a.lastSeen || "")))
+      .map((r) => {
+        const label = r.name || r.email || "?";
+        const when = r.lastSeen ? new Date(r.lastSeen).toLocaleString("bn-BD", { dateStyle: "medium", timeStyle: "short" }) : "—";
+        const me = r.$id === ADMIN_ID ? " (আপনি)" : "";
+        return `<li><span class="avatar" aria-hidden="true">${esc(label.trim()[0].toUpperCase())}</span><div><b>${esc(label)}${me}</b><small>${esc(r.email || "")}</small></div><span class="when">শেষ ব্যবহার<br>${esc(when)}</span></li>`;
+      })
+      .join("");
+    return `<p class="cmp-note">মোট ${rows.length} জন ব্যবহারকারী। এখানে শুধু নাম, ইমেইল ও শেষ ব্যবহারের সময় দেখা যায়, কারও আয়-ব্যয়ের রেকর্ড নয়।</p><ul class="adm-list">${items}</ul>`;
+  }
+
+  async function loadAdminUsers() {
+    const el = $("#admin-region");
+    if (!el || !isAdmin()) return;
+    if (!APPWRITE.tables.profiles) {
+      el.innerHTML = `<p class="cmp-note">এই কার্ড চালু করতে Appwrite-এ <b>profiles</b> নামে একটা টেবিল বানিয়ে তার Table ID ফাইলের <b>tables.profiles</b>-এ বসান।</p>`;
+      return;
+    }
+    el.innerHTML = `<p class="cmp-note">লোড হচ্ছে…</p>`;
+    try {
+      const rows = await cloud.listAll("profiles");
+      el.innerHTML = adminListHtml(rows);
+    } catch (err) {
+      el.innerHTML = `<p class="cmp-note" style="color:var(--red)">তালিকা আনা যায়নি: ${esc(errorMessage(err))}</p>`;
+    }
+  }
+
+  function fetchAllTables() {
+    return Promise.all(
+      [...STORES, "completion"].map((t) =>
+        cloud.listAll(t).then(
+          (value) => ({ status: "fulfilled", value }),
+          (reason) => ({ status: "rejected", reason })
+        )
+      )
+    );
+  }
+
+  async function reloadState(pre) {
+    const tables = [...STORES, "completion"];
+    const settled = await (pre || fetchAllTables());
     const failed = settled.map((r, i) => ({ r, table: tables[i] })).filter((x) => x.r.status === "rejected");
     if (failed.length) {
       const notFound = failed.filter((x) => x.r.reason && x.r.reason.status === 404 && /not_found/.test(x.r.reason.type));
@@ -1241,11 +1354,12 @@ const FinanceCore = (() => {
     return errorMessage(err);
   }
 
-  async function enter(user) {
+  async function enter(user, pre) {
     state.user = { id: user.$id, email: user.email, name: user.name || "", picture: (user.prefs && user.prefs.picture) || "" };
     state.loadError = null;
+    touchProfile();
     try {
-      await reloadState();
+      await reloadState(pre);
     } catch (err) {
       state.loadError = err;
     }
@@ -1684,6 +1798,7 @@ const FinanceCore = (() => {
       <div class="me-card">${avatarHtml("lg2")}<p class="cmp-note">লগইন করা আছে: <b>${esc(state.user.email)}</b></p></div>
       <div class="actions" style="margin-top:12px"><button type="button" class="btn" data-act="logout">${icon("log-out", "sm")} সাইন আউট</button></div>
     </section>
+    ${isAdmin() ? `<section class="card"><h3>${icon("users", "sm")} ব্যবহারকারী (অ্যাডমিন)</h3><div id="admin-region" class="region"></div></section>` : ""}
     <div id="legacy-region" class="region">${legacyView()}</div>
     <section class="card"><h3>${icon("shield", "sm")} আপনার ডেটা কোথায় থাকে</h3>
       <ul class="notes">
@@ -1736,7 +1851,7 @@ const FinanceCore = (() => {
     monthly: { title: "Monthly Reports", render: renderMonthly },
     yearly: { title: "Yearly Reports", render: renderYearly },
     lifetime: { title: "Lifetime Total", render: renderLifetime },
-    settings: { title: "Settings & Backup", render: renderSettings, after: refreshLegacy },
+    settings: { title: "Settings & Backup", render: renderSettings, after: () => { refreshLegacy(); loadAdminUsers(); } },
     more: { title: "More", render: renderMore }
   };
 
@@ -1966,14 +2081,14 @@ const FinanceCore = (() => {
 
   async function saveRecord(store, existing, value) {
     if (existing) {
-      const row = await cloud.updateRow(store, existing.id, toRowData(store, { ...existing, ...value }));
+      const row = await writeRow(store, existing.id, { ...existing, ...value }, true);
       const rec = fromRow(store, row);
       const i = state[store].findIndex((x) => x.id === rec.id);
       if (i >= 0) state[store][i] = rec;
       else state[store].push(rec);
       return rec;
     }
-    const row = await cloud.createRow(store, newId(), toRowData(store, value), state.user.id);
+    const row = await writeRow(store, newId(), value, false);
     const rec = fromRow(store, row);
     state[store].push(rec);
     return rec;
@@ -1985,7 +2100,7 @@ const FinanceCore = (() => {
       title: r ? "আয় সম্পাদনা" : "আয় যোগ করুন",
       body: `${amountField("RM", r ? C.minorToDecimal(r.amountMinor) : "")}
         <div class="two">${inputField({ name: "date", label: "তারিখ", type: "date", value: v.date, required: true })}${selectField({ name: "type", label: "আয়ের ধরন", options: Object.entries(LABELS.income), value: v.type, required: true })}</div>
-        ${inputField({ name: "note", label: "বিবরণ / নোট", value: v.note, attrs: 'maxlength="200"' })}
+        ${inputField({ name: "note", label: "বিবরণ / নোট (ঐচ্ছিক)", value: v.note, attrs: 'maxlength="200"' })}
         ${inputField({ name: "reference", label: "রেফারেন্স (ঐচ্ছিক)", value: v.reference, attrs: 'maxlength="80"' })}`,
       onSubmit: async (raw) => {
         const res = C.validateIncome(raw);
@@ -2143,12 +2258,11 @@ const FinanceCore = (() => {
 
   async function createImported(task) {
     if (task.table === "completion") return cloud.createRow("completion", newId(), { month: task.month }, state.user.id);
-    const data = toRowData(task.table, task.rec);
     try {
-      return await cloud.createRow(task.table, task.rec.id, data, state.user.id);
+      return await writeRow(task.table, task.rec.id, task.rec, false);
     } catch (err) {
       if (err.status !== 409) throw err;
-      return cloud.createRow(task.table, newId(), data, state.user.id);
+      return writeRow(task.table, newId(), task.rec, false);
     }
   }
 
@@ -2422,6 +2536,24 @@ const FinanceCore = (() => {
       ui.authBusy = false;
     }
   });
+  function printPage() {
+    const id = currentRoute();
+    const page = PAGES[id] || { title: "Report" };
+    const d = new Date();
+    const stamp = d.toISOString().slice(0, 10);
+    view.dataset.printTitle = `Finance Tracker — ${page.title} — ${d.toLocaleDateString("en-GB")}`;
+    const oldTitle = document.title;
+    document.title = `Finance-${page.title.replace(/[^A-Za-z0-9]+/g, "-")}-${stamp}`;
+    const restore = () => {
+      document.title = oldTitle;
+      window.removeEventListener("afterprint", restore);
+    };
+    window.addEventListener("afterprint", restore);
+    window.print();
+  }
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("[data-pdf]")) printPage();
+  });
   view.addEventListener("click", (e) => {
     const el = e.target.closest("[data-act]");
     if (el) handleAct(el);
@@ -2502,8 +2634,9 @@ const FinanceCore = (() => {
       }
     }
     try {
+      const pre = readStorage(FALLBACK_KEY) ? fetchAllTables() : null;
       const user = await cloud.account();
-      await enter(user);
+      await enter(user, pre);
     } catch (err) {
       state.user = null;
       if (err.status !== 401 && err.status !== 400) state.bootError = err;

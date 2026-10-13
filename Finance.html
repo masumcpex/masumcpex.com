@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://nyc.cloud.appwrite.io; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com; connect-src 'self' https://nyc.cloud.appwrite.io https://www.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Personal Finance Tracker</title>
-<meta name="description" content="ব্যক্তিগত আয়-ব্যয়, মাসিক হিসাব ও পরিবারকে পাঠানো টাকার হিসাব। ডেটা শুধু আপনার ডিভাইসে থাকে।">
+<meta name="description" content="ব্যক্তিগত আয়-ব্যয়, মাসিক হিসাব ও পরিবারকে পাঠানো টাকার হিসাব। ডেটা Appwrite ক্লাউডে আপনার একাউন্টে নিরাপদে সংরক্ষিত।">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0F1B2D">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -236,6 +236,16 @@ body.auth .content{max-width:none;padding:0}
 .auth-card h1{font-size:1.4rem;line-height:1.3}
 .auth-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#128A74,#0A5347);color:#fff;display:grid;place-items:center}
 .auth-switch{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:.92rem;color:var(--muted)}
+.avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:linear-gradient(135deg,#128A74,#0A5347);color:#fff;display:inline-grid;place-items:center;font-weight:700;font-size:.9rem;flex:none;border:2px solid rgba(255,255,255,.25)}
+.avatar.lg2{width:44px;height:44px;font-size:1.05rem}
+.top-r{display:flex;align-items:center;gap:10px}
+.side-user{display:flex;align-items:center;gap:10px;padding:10px;margin:8px 4px 0;border-radius:14px;background:var(--navy-2);color:#fff;min-width:0}
+.side-user[hidden]{display:none}
+.side-user div{min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.side-user b{font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-user small{font-size:.75rem;color:#8FA3BF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.me-card{display:flex;align-items:center;gap:12px;margin:6px 0 4px}
+.me-card .avatar{border-color:var(--line)}
 /* ---- login / register (reference design) ---- */
 .lg-wrap{--blue:#1A7BFF;min-height:100vh;min-height:100dvh;display:flex;justify-content:center;font-family:"Poppins",var(--font);background:linear-gradient(180deg,#D5E4FA 0%,#E9F0FB 28%,#F6F8FB 62%,#F8F9FB 100%);padding:calc(56px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom))}
 .lg-col{width:min(400px,100%);display:flex;flex-direction:column;min-height:calc(100dvh - 90px)}
@@ -350,7 +360,8 @@ body.auth .content{max-width:none;padding:0}
       <span><b>Finance Tracker</b><small>ব্যক্তিগত হিসাব</small></span>
     </a>
     <nav class="nav" id="nav-side" aria-label="Main navigation"></nav>
-    <div class="side-foot"><svg class="ic sm" aria-hidden="true" focusable="false"><use href="#i-shield"/></svg><span>ডেটা শুধু এই ডিভাইসের ব্রাউজারে সংরক্ষিত। কোনো সার্ভারে যায় না।</span></div>
+    <div class="side-user js-user" hidden></div>
+    <div class="side-foot"><svg class="ic sm" aria-hidden="true" focusable="false"><use href="#i-shield"/></svg><span>আপনার ডেটা নিরাপদ HTTPS সংযোগে ক্লাউডে সংরক্ষিত হয় এবং শুধু আপনার একাউন্টে দেখা যায়। যেকোনো ডিভাইসে লগইন করলেই পাবেন।</span></div>
     <span class="pill js-net" role="status"></span>
   </aside>
   <div class="main">
@@ -359,7 +370,7 @@ body.auth .content{max-width:none;padding:0}
         <span class="brand-mark"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wallet"/></svg></span>
         <span><b>Finance Tracker</b></span>
       </a>
-      <span class="pill js-net" role="status"></span>
+      <span class="top-r"><span class="pill js-net" role="status"></span><span class="js-avatar"></span></span>
     </header>
     <main class="content" id="view" tabindex="-1"></main>
   </div>
@@ -948,7 +959,7 @@ const FinanceCore = (() => {
     support: ["date", "amountMinor", "recipient", "method", "reference"]
   };
   const column = (store, field) => (APPWRITE.columns[store] && APPWRITE.columns[store][field]) || field;
-  const BUILD = "v5-login-ref";
+  const BUILD = "v6-google";
   const techInfo = (e) => (e ? `<div style="margin-top:8px;font-size:12px;opacity:.75;word-break:break-all">[${BUILD}] status=${esc(String(e.status))} type=${esc(String(e.type || "-"))} msg=${esc(String(e.message || ""))}</div>` : "");
   const FALLBACK_KEY = "cookieFallback";
   const PAGE_SIZE = 100;
@@ -1035,6 +1046,38 @@ const FinanceCore = (() => {
 
   const cloud = {
     account: () => api("GET", "/account"),
+    googleLogin() {
+      const base = location.origin + location.pathname;
+      const url = `${APPWRITE.endpoint}/account/tokens/oauth2/google?project=${encodeURIComponent(APPWRITE.projectId)}` +
+        `&success=${encodeURIComponent(base + "?oauth=1")}&failure=${encodeURIComponent(base + "?oauth=fail")}`;
+      location.href = url;
+    },
+    async finishOAuth(userId, secret) {
+      await api("POST", "/account/sessions/token", { userId, secret });
+      try {
+        let token = "";
+        try {
+          const ids = await api("GET", "/account/identities");
+          const g = ((ids && ids.identities) || []).find((i) => i.provider === "google");
+          token = (g && g.providerAccessToken) || "";
+        } catch (e) {
+          token = "";
+        }
+        if (!token) {
+          const sess = await api("GET", "/account/sessions/current");
+          token = (sess && sess.providerAccessToken) || "";
+        }
+        if (!token) return;
+        const r = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { Authorization: "Bearer " + token } });
+        if (!r.ok) return;
+        const info = await r.json();
+        if (!info.picture) return;
+        const prefs = (await api("GET", "/account/prefs")) || {};
+        await api("PATCH", "/account/prefs", { prefs: { ...prefs, picture: info.picture } });
+      } catch (e) {
+        return;
+      }
+    },
     async signUp(name, email, password) {
       const body = { userId: "unique()", email, password };
       if (name) body.name = name;
@@ -1199,7 +1242,7 @@ const FinanceCore = (() => {
   }
 
   async function enter(user) {
-    state.user = { id: user.$id, email: user.email, name: user.name || "" };
+    state.user = { id: user.$id, email: user.email, name: user.name || "", picture: (user.prefs && user.prefs.picture) || "" };
     state.loadError = null;
     try {
       await reloadState();
@@ -1638,7 +1681,7 @@ const FinanceCore = (() => {
     const last = state.lastBackupAt ? new Date(state.lastBackupAt).toLocaleString("bn-BD") : "এখনো নেওয়া হয়নি";
     return `<div class="page-head"><div><h1>Settings & Backup</h1><p>একাউন্ট, ব্যাকআপ, রিস্টোর, এক্সপোর্ট ও গোপনীয়তা</p></div></div>
     <section class="card"><h3>${icon("user", "sm")} একাউন্ট</h3>
-      <p class="cmp-note">লগইন করা আছে: <b>${esc(state.user.email)}</b></p>
+      <div class="me-card">${avatarHtml("lg2")}<p class="cmp-note">লগইন করা আছে: <b>${esc(state.user.email)}</b></p></div>
       <div class="actions" style="margin-top:12px"><button type="button" class="btn" data-act="logout">${icon("log-out", "sm")} সাইন আউট</button></div>
     </section>
     <div id="legacy-region" class="region">${legacyView()}</div>
@@ -1697,6 +1740,27 @@ const FinanceCore = (() => {
     more: { title: "More", render: renderMore }
   };
 
+  function avatarHtml(cls = "") {
+    const u = state.user;
+    if (!u) return "";
+    const initial = esc(((u.name || u.email || "?").trim()[0] || "?").toUpperCase());
+    if (u.picture && /^https:\/\//.test(u.picture)) {
+      return `<img class="avatar ${cls}" src="${esc(u.picture)}" alt="" referrerpolicy="no-referrer" data-i="${initial}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'avatar ${cls}',textContent:this.dataset.i}))">`;
+    }
+    return `<span class="avatar ${cls}" aria-hidden="true">${initial}</span>`;
+  }
+
+  function updateUserUI() {
+    const u = state.user;
+    document.querySelectorAll(".js-avatar").forEach((el) => {
+      el.innerHTML = u ? avatarHtml() : "";
+    });
+    document.querySelectorAll(".js-user").forEach((el) => {
+      el.hidden = !u;
+      el.innerHTML = u ? `${avatarHtml()}<div><b>${esc(u.name || u.email)}</b>${u.name ? `<small>${esc(u.email)}</small>` : ""}</div>` : "";
+    });
+  }
+
   function authView() {
     const signup = ui.auth.mode === "signup";
     const eye = (label) => `<button type="button" class="lg-eye" data-act="toggle-pass" aria-label="${label}">${icon("eye-off")}</button>`;
@@ -1717,7 +1781,7 @@ const FinanceCore = (() => {
         <button type="submit" class="lg-btn">${signup ? "Create account" : "Login"}</button>
       </form>
       <div class="lg-or">or continue with</div>
-      <div class="lg-social"><button type="button" data-act="soon">${google}Google</button><button type="button" data-act="soon">${apple}Apple</button></div>
+      <div class="lg-social"><button type="button" data-act="google">${google}Google</button><button type="button" data-act="soon">${apple}Apple</button></div>
       ${signup ? "" : `<div class="lg-foot">Don't have an account? <button type="button" class="lg-link" data-act="auth-mode" data-value="signup">Sign Up</button></div>`}
     </div></div>`;
   }
@@ -1772,6 +1836,7 @@ const FinanceCore = (() => {
     else if (state.loadError) html = loadErrorView();
     else html = page.render();
     view.innerHTML = html;
+    updateUserUI();
     updateNav(id);
     if (id !== lastRoute) {
       window.scrollTo(0, 0);
@@ -2257,6 +2322,9 @@ const FinanceCore = (() => {
       case "logout":
         await logout();
         break;
+      case "google":
+        cloud.googleLogin();
+        break;
       case "soon":
         toast("এই সুবিধা এখনো চালু হয়নি।");
         break;
@@ -2417,6 +2485,22 @@ const FinanceCore = (() => {
     state.ready = false;
     state.bootError = null;
     render();
+    let oauthMsg = "";
+    const q = new URLSearchParams(location.search);
+    if (q.has("oauth") || q.has("userId")) {
+      const userId = q.get("userId");
+      const secret = q.get("secret");
+      history.replaceState(null, "", location.pathname + location.hash);
+      if (userId && secret) {
+        try {
+          await cloud.finishOAuth(userId, secret);
+        } catch (err) {
+          oauthMsg = errorMessage(err);
+        }
+      } else if (q.get("oauth") === "fail") {
+        oauthMsg = "Google দিয়ে লগইন হয়নি। Appwrite-এ Google প্রোভাইডার চালু আছে কিনা দেখুন, তারপর আবার চেষ্টা করুন।";
+      }
+    }
     try {
       const user = await cloud.account();
       await enter(user);
@@ -2426,6 +2510,7 @@ const FinanceCore = (() => {
     }
     state.ready = true;
     render();
+    if (oauthMsg) toast(oauthMsg);
   }
 
   function start() {

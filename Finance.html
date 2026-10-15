@@ -292,6 +292,14 @@ body.auth .content{max-width:none;padding:0}
 .ct-list small{display:block;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;opacity:.65}
 .ct-list b{font-weight:600;overflow-wrap:anywhere}
 .ct-form{display:grid;gap:12px}
+.ct-list li{display:flex;gap:8px;align-items:stretch}
+.ct-list li>a,.ct-list li>div{flex:1;min-width:0}
+.ct-copy{flex:none;border:1px solid var(--line,#DDE2E9);background:#fff;border-radius:12px;padding:0 12px;font:inherit;font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer}
+.ct-form input[type=text],.ct-form input[type=email]{width:100%;min-height:46px;padding:0 12px;border:1px solid var(--line-strong);border-radius:12px;background:#fff;font-size:16px;box-sizing:border-box}
+.ct-form textarea[aria-invalid="true"]{border-color:var(--red);background:#FFF8F7}
+.form-status{font-size:.88rem;font-weight:600;min-height:1.2em;margin:0}
+.form-status.ok{color:var(--teal)}.form-status.err{color:var(--red)}
+.btn.loading{opacity:.65;pointer-events:none}
 .ct-form textarea{width:100%;min-height:110px;font:inherit;padding:10px 12px;border:1px solid var(--line,#DDE2E9);border-radius:10px;resize:vertical;box-sizing:border-box}
 #print-report{display:none}
 .pr-title{font-size:18px;font-weight:700;color:#0F1B2D;border-bottom:2px solid #0E6E5C;padding-bottom:6px;margin:0 0 4px}
@@ -1011,6 +1019,7 @@ const FinanceCore = (() => {
     contact: "যোগাযোগ করুন, ইমেইল, ওয়েবসাইট ও টেলিগ্রাম"
   };
   const LOGO_URL = "masum.png";
+  const BACKUP_GATE = { salt: "jZ0+Bhu94nOHBIFE4lpNgQ==", iter: 250000, hash: "ce398a9528863a372eb28e0391788f4147f615aa5fb38fcf16e2e339207ffa64" };
   const CONTACT = { primary: "admin@masumcpex.com", alt: "contact@masumcpex.com", site: "masumcpex.com", location: "Malaysia", telegram: "masumcpex" };
 
   const APPWRITE = {
@@ -1827,23 +1836,26 @@ const FinanceCore = (() => {
   }
 
   function renderContact() {
-    const row = (href, label, value) => `<li><a href="${href}"${href.startsWith("http") ? ' target="_blank" rel="noopener noreferrer"' : ""}><span class="ico">${icon("mail")}</span><span><small>${label}</small><b>${value}</b></span></a></li>`;
+    const copyBtn = (v) => `<button type="button" class="ct-copy" data-act="copy" data-copy="${esc(v)}" aria-label="কপি করুন">কপি</button>`;
+    const row = (href, label, value, raw) => `<li class="contact-item"><a href="${href}"${href.startsWith("http") ? ' target="_blank" rel="noopener noreferrer"' : ""}><span class="ico">${icon("mail")}</span><span><small>${label}</small><b>${value}</b></span></a>${copyBtn(raw)}</li>`;
     return `<div class="page-head"><div><h1>Contact</h1><p>কোনো প্রশ্ন, পরামর্শ বা সমস্যা হলে যোগাযোগ করুন</p></div></div>
     <section class="card"><div class="ct-hero"><img src="${LOGO_URL}" alt="Masum" onerror="this.style.display='none'"><div><h2>Masum Cpex</h2><p class="cmp-note" style="margin:0">Writer &amp; Web Publisher · ${CONTACT.location}</p></div></div>
       <ul class="ct-list">
-        ${row("mailto:" + CONTACT.primary, "Primary Email", CONTACT.primary)}
-        ${row("mailto:" + CONTACT.alt, "Alternative Email", CONTACT.alt)}
-        ${row("https://" + CONTACT.site, "Website", CONTACT.site)}
-        ${row("https://t.me/" + CONTACT.telegram, "Telegram", "@" + CONTACT.telegram)}
-        <li><div><span class="ico">${icon("mail")}</span><span><small>Location</small><b>${CONTACT.location}</b></span></div></li>
+        ${row("mailto:" + CONTACT.primary, "Primary Email", CONTACT.primary, CONTACT.primary)}
+        ${row("mailto:" + CONTACT.alt, "Alternative Email", CONTACT.alt, CONTACT.alt)}
+        ${row("https://" + CONTACT.site, "Website", CONTACT.site, CONTACT.site)}
+        ${row("https://t.me/" + CONTACT.telegram, "Telegram", "@" + CONTACT.telegram, "@" + CONTACT.telegram)}
+        <li class="contact-item"><div><span class="ico">${icon("mail")}</span><span><small>Location</small><b>${CONTACT.location}</b></span></div>${copyBtn(CONTACT.location)}</li>
       </ul></section>
     <section class="card" style="margin-top:14px"><h3>Send a Message</h3>
-      <p class="cmp-note">নিচে লিখে পাঠান চাপলে আপনার ইমেইল অ্যাপ খুলবে, সেখান থেকে সেন্ড করুন।</p>
-      <div class="ct-form">
-        <div class="fld"><label for="ct-name">Name</label><input id="ct-name" type="text" autocomplete="name" value="${esc(state.user ? state.user.name || "" : "")}"></div>
-        <div class="fld"><label for="ct-subject">Subject</label><input id="ct-subject" type="text" value="Finance Tracker"></div>
-        <div class="fld"><label for="ct-msg">Message</label><textarea id="ct-msg"></textarea></div>
-        <div class="actions"><button type="button" class="btn primary" data-act="contact-send">${icon("mail", "sm")} Send Message</button></div>
+      <p class="cmp-note">নিচে লিখে পাঠালে আপনার ইমেইল অ্যাপ খুলবে, সেখান থেকে সেন্ড করুন।</p>
+      <div class="ct-form" id="contactForm">
+        <div class="fld"><label for="cf-name">Name</label><input id="cf-name" name="name" type="text" autocomplete="name" value="${esc(state.user ? state.user.name || "" : "")}"></div>
+        <div class="fld"><label for="cf-email">Email</label><input id="cf-email" name="email" type="email" autocomplete="email" value="${esc(state.user ? state.user.email || "" : "")}"></div>
+        <div class="fld"><label for="cf-subject">Subject</label><input id="cf-subject" name="subject" type="text" value="Finance Tracker"></div>
+        <div class="fld"><label for="cf-message">Message</label><textarea id="cf-message" name="message"></textarea></div>
+        <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+        <div class="actions"><button type="button" class="btn primary" id="cfSubmit" data-act="contact-send">${icon("mail", "sm")} Send Message</button></div>
       </div></section>`;
   }
 
@@ -1898,12 +1910,12 @@ const FinanceCore = (() => {
         <li>ডেটা এন্ড-টু-এন্ড এনক্রিপ্টেড নয়। সাইটের অ্যাডমিন Appwrite কনসোল থেকে ডেটাবেস দেখতে পারেন। তাই অ্যাপে এমন তথ্য রাখবেন না যা অ্যাডমিনের দেখা চলবে না।</li>
         <li>লগইন টোকেন এই ব্রাউজারের localStorage-এ থাকে। শেয়ার করা ডিভাইসে কাজ শেষে সাইন আউট করুন।</li>
         <li>ডেটা লোড ও সেভ করতে ইন্টারনেট লাগে। অফলাইনে শুধু অ্যাপের পেজ খোলে।</li>
-        <li>নিয়মিত JSON ব্যাকআপ নিয়ে নিরাপদ জায়গায় রাখুন। পাসওয়ার্ড ছাড়া নিলে ব্যাকআপ ফাইল এনক্রিপ্টেড থাকে না।</li>
+        <li>নিয়মিত JSON ব্যাকআপ নিয়ে নিরাপদ জায়গায় রাখুন। ব্যাকআপ ফাইল পাসওয়ার্ড দিয়ে এনক্রিপ্টেড থাকে।</li>
       </ul>
     </section>
     <section class="card"><h3>${icon("download", "sm")} ব্যাকআপ (JSON)</h3>
       <p class="cmp-note">সব রেকর্ড, মাস সম্পূর্ণ-চিহ্ন, স্কিমা ভার্সন ও তৈরির সময়সহ ফাইলটি আপনার ডিভাইসে নামে। কোথাও আপলোড হয় না।</p>
-      <p class="cmp-note">এই ফাইল শুধু রিস্টোরের জন্য। ডাউনলোডের সময় পাসওয়ার্ড দিলে ফাইল এনক্রিপ্ট হবে এবং ভেতরের ডেটা কেউ পড়তে পারবে না। পড়ার উপযোগী রিপোর্ট চাইলে নিচের PDF রিপোর্ট ব্যবহার করুন।</p>
+      <p class="cmp-note">এই ফাইল শুধু রিস্টোরের জন্য। ডাউনলোডে পাসওয়ার্ড লাগে এবং ফাইলটি সেই পাসওয়ার্ড দিয়েই এনক্রিপ্ট হয়, তাই ভেতরের ডেটা কেউ পড়তে পারবে না। রিস্টোরের সময়ও একই পাসওয়ার্ড লাগবে। পড়ার উপযোগী রিপোর্ট চাইলে নিচের PDF রিপোর্ট ব্যবহার করুন।</p>
       <p class="cmp-note">এই ডিভাইসে সর্বশেষ ব্যাকআপ: ${esc(last)}</p>
       <div class="actions" style="margin-top:12px"><button type="button" class="btn primary" data-act="export-json">${icon("download")} ব্যাকআপ ডাউনলোড করুন</button></div>
     </section>
@@ -2333,18 +2345,49 @@ const FinanceCore = (() => {
     toast(on ? `${monthLabel(month)} সম্পূর্ণ হিসেবে চিহ্নিত` : `${monthLabel(month)} থেকে সম্পূর্ণ চিহ্ন তোলা হয়েছে`);
   }
 
+  const toHex = (buf) => Array.from(new Uint8Array(buf), (x) => x.toString(16).padStart(2, "0")).join("");
+  async function verifyBackupPass(pass) {
+    try {
+      const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveBits"]);
+      const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: b64dec(BACKUP_GATE.salt), iterations: BACKUP_GATE.iter, hash: "SHA-256" }, base, 256);
+      return toHex(bits) === BACKUP_GATE.hash;
+    } catch (err) { return false; }
+  }
+  function askBackupPassword() {
+    if (dlg.open) {
+      return (async () => {
+        const v = window.prompt("ব্যাকআপ পাসওয়ার্ড দিন:");
+        if (!v) return null;
+        if (await verifyBackupPass(v)) return v;
+        toast("পাসওয়ার্ড ভুল।");
+        return null;
+      })();
+    }
+    return new Promise((resolve) => {
+      let okPass = null;
+      openForm({
+        title: "ব্যাকআপ পাসওয়ার্ড",
+        submit: "ডাউনলোড",
+        body: '<div class="fld"><label for="f-bkpass">ব্যাকআপ ডাউনলোড করতে পাসওয়ার্ড দিন</label><input id="f-bkpass" name="bkpass" type="password" autocomplete="off" autocapitalize="off" required></div>',
+        onSubmit: async (v) => {
+          if (!(await verifyBackupPass(String(v.bkpass || "")))) return { errors: { bkpass: "পাসওয়ার্ড ভুল।" } };
+          okPass = String(v.bkpass);
+          return null;
+        }
+      });
+      dlg.addEventListener("close", () => resolve(okPass), { once: true });
+    });
+  }
+
   async function exportJson() {
     const now = new Date();
     const backup = C.buildBackup(state, state.completion, now.toISOString());
     let text = JSON.stringify(backup, null, 2);
     let name = `finance-backup-${C.toDateString(now)}.json`;
-    const pass = window.prompt("ব্যাকআপ পাসওয়ার্ড দিন (কমপক্ষে ৬ অক্ষর)। ফাইলের ভেতরের ডেটা তখন কেউ পড়তে পারবে না। পাসওয়ার্ড ভুলে গেলে রিস্টোর হবে না।\n\nএনক্রিপ্ট ছাড়া নিতে চাইলে খালি রেখে OK দিন। বাতিল করতে Cancel দিন।");
-    if (pass === null) return;
-    if (pass) {
-      if (pass.length < 6) { toast("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।"); return; }
-      try { text = await encryptBackup(text, pass); name = `finance-backup-${C.toDateString(now)}.enc.json`; }
-      catch (err) { toast("এনক্রিপ্ট করা যায়নি।"); return; }
-    }
+    const pass = await askBackupPassword();
+    if (!pass) return;
+    try { text = await encryptBackup(text, pass); name = `finance-backup-${C.toDateString(now)}.enc.json`; }
+    catch (err) { toast("এনক্রিপ্ট করা যায়নি।"); return; }
     download(name, "application/octet-stream", text);
     writeStorage(lastBackupKey(), now.toISOString());
     state.lastBackupAt = now.toISOString();
@@ -2651,16 +2694,57 @@ const FinanceCore = (() => {
       case "erase":
         await eraseAll();
         break;
+      case "copy": {
+        const v = el.getAttribute("data-copy") || "";
+        if (navigator.clipboard && v) {
+          navigator.clipboard.writeText(v).then(() => toast("কপি হয়েছে"), () => toast("কপি করা যায়নি"));
+        }
+        break;
+      }
       case "contact-send": {
-        const nm = ($("#ct-name").value || "").trim();
-        const sb = ($("#ct-subject").value || "").trim() || "Finance Tracker";
-        const ms = ($("#ct-msg").value || "").trim();
-        if (!ms) {
-          toast("আগে মেসেজ লিখুন।");
+        const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const form = $("#contactForm");
+        const status = $("#formStatus");
+        const btn = $("#cfSubmit");
+        const val = (id) => (($(id, form) || {}).value || "").trim();
+        const setErr = (id, msg) => {
+          const input = $(id, form);
+          const fld = input.closest(".fld");
+          const old = $(".err", fld);
+          if (old) old.remove();
+          if (msg) {
+            const sp = document.createElement("span");
+            sp.className = "err";
+            sp.setAttribute("role", "alert");
+            sp.textContent = msg;
+            fld.appendChild(sp);
+            input.setAttribute("aria-invalid", "true");
+          } else input.removeAttribute("aria-invalid");
+        };
+        const nm = val("#cf-name"), em = val("#cf-email"), sb = val("#cf-subject"), ms = val("#cf-message");
+        let valid = true;
+        const chk = (id, ok, msg) => { setErr(id, ok ? "" : msg); if (!ok) valid = false; };
+        chk("#cf-name", !!nm, "নাম দিন।");
+        if (!em) chk("#cf-email", false, "ইমেইল দিন।");
+        else chk("#cf-email", EMAIL_RE.test(em), "সঠিক ইমেইল ঠিকানা দিন।");
+        chk("#cf-subject", !!sb, "বিষয় লিখুন।");
+        chk("#cf-message", !!ms, "বার্তা লিখুন।");
+        if (!valid) {
+          status.textContent = "অনুগ্রহ করে চিহ্নিত ঘরগুলো ঠিক করুন।";
+          status.className = "form-status err";
           break;
         }
-        const em = state.user && state.user.email ? `\n\nইমেইল: ${state.user.email}` : "";
-        location.href = `mailto:${CONTACT.primary}?subject=${encodeURIComponent(sb)}&body=${encodeURIComponent(ms + "\n\n— " + nm + em)}`;
+        btn.classList.add("loading");
+        btn.disabled = true;
+        status.textContent = "";
+        status.className = "form-status";
+        setTimeout(() => {
+          location.href = `mailto:${CONTACT.primary}?subject=${encodeURIComponent(sb)}&body=${encodeURIComponent(ms + "\n\n— " + nm + "\nইমেইল: " + em)}`;
+          btn.classList.remove("loading");
+          btn.disabled = false;
+          status.textContent = "ধন্যবাদ! আপনার ইমেইল অ্যাপ খুলেছে, সেখান থেকে সেন্ড করুন।";
+          status.className = "form-status ok";
+        }, 600);
         break;
       }
       case "logout":
@@ -2789,6 +2873,13 @@ const FinanceCore = (() => {
     if (el) handleAct(el);
   });
   view.addEventListener("input", (e) => {
+    const ct = e.target.closest("#contactForm");
+    if (ct && e.target.name) {
+      const fld = e.target.closest(".fld");
+      const er = fld && fld.querySelector(".err");
+      if (er) er.remove();
+      e.target.removeAttribute("aria-invalid");
+    }
     const el = e.target.closest("[data-filter]");
     if (el) applyFilter(el);
   });

@@ -1055,7 +1055,7 @@ const FinanceCore = (() => {
     endpoint: "https://nyc.cloud.appwrite.io/v1",
     projectId: "6acc23d6003ccd10471a",
     databaseId: "6acca53e00040685b131",
-    tables: { income: "6acd07620019ee3376e1", expenses: "6acd09540027fea0889d", support: "6accc844001141aa61f9", completion: "6acccdeb0018b7a39fe9", profiles: "6ace33c30029b223ef77", loans: "loans" },
+    tables: { income: "6acd07620019ee3376e1", expenses: "6acd09540027fea0889d", support: "6accc844001141aa61f9", completion: "6acccdeb0018b7a39fe9", profiles: "6ace33c30029b223ef77", loans: "6ad2b2f6000de35e4c1c" },
     columns: { expenses: { category: "type", description: "note", note: "reference" } }
   };
   const STORES = ["income", "expenses", "support"];
@@ -1664,7 +1664,7 @@ const FinanceCore = (() => {
   /* ---------- Loans & Debt (self-contained; uses the "loans" Appwrite table) ---------- */
   const LOAN_COLS = ["direction", "person", "currency", "amountMinor", "date", "dueDate", "note", "repayments"];
   const ui_loans = { tab: "lent", query: "", status: "", from: "", to: "" };
-  const loanMoney = (cur, minor) => (cur === "BDT" ? bdt(minor) : rm(minor));
+  const loanMoney = (cur, minor) => (minor / 100).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   function parseMinor(str) {
     const t = String(str || "").replace(/[,\s]/g, "");
     if (!/^\d{1,12}(\.\d{1,2})?$/.test(t)) return null;
@@ -1692,8 +1692,8 @@ const FinanceCore = (() => {
   const loanRemain = (l) => Math.max(0, l.amountMinor - loanPaid(l));
   const loanOverdue = (l) => loanRemain(l) > 0 && !!l.dueDate && l.dueDate < today();
   const loanStatus = (l) => (loanRemain(l) === 0 ? "done" : loanOverdue(l) ? "late" : "open");
-  function loanTotals(cur, dir) {
-    return state.loans.filter((l) => l.currency === cur && l.direction === dir).reduce((t, l) => t + loanRemain(l), 0);
+  function loanTotals(dir) {
+    return state.loans.filter((l) => l.direction === dir).reduce((t, l) => t + loanRemain(l), 0);
   }
   async function loadLoans() {
     try {
@@ -1706,9 +1706,13 @@ const FinanceCore = (() => {
     }
   }
   const loanWrite = (l, isUpdate) => {
-    const data = { direction: l.direction, person: l.person, currency: l.currency, amountMinor: l.amountMinor, date: l.date, repayments: JSON.stringify(l.repayments) };
+    const data = { direction: l.direction, person: l.person, currency: "-", amountMinor: l.amountMinor, date: l.date, repayments: JSON.stringify(l.repayments) };
     for (const f of ["dueDate", "note"]) { if (l[f]) data[f] = l[f]; else if (isUpdate) data[f] = ""; }
-    return isUpdate ? cloud.updateRow("loans", l.id, data) : cloud.createRow("loans", l.id, data, state.user.id);
+    const send = (d) => (isUpdate ? cloud.updateRow("loans", l.id, d) : cloud.createRow("loans", l.id, d, state.user.id));
+    return send(data).catch((err) => {
+      if (err && /Unknown attribute: "?currency/i.test(String(err.message || ""))) { const d = { ...data }; delete d.currency; return send(d); }
+      throw err;
+    });
   };
   async function saveLoan(l, isUpdate) {
     try {
@@ -1730,8 +1734,7 @@ const FinanceCore = (() => {
       body: `${selectField({ name: "direction", label: "ধরন", options: [["lent", "আমি ধার দিয়েছি (আমাকে দেবে)"], ["borrowed", "আমি ধার নিয়েছি (আমি দেব)"]], value: v.direction, required: true })}
         ${inputField({ name: "person", label: "ব্যক্তির নাম", value: v.person, required: true, list: "loan-names", attrs: 'maxlength="60" autocomplete="off"' })}
         <datalist id="loan-names">${[...names].map((n) => `<option value="${esc(n)}"></option>`).join("")}</datalist>
-        <div class="two">${selectField({ name: "currency", label: "কারেন্সি", options: [["RM", "RM"], ["BDT", "BDT (৳)"]], value: v.currency, required: true })}
-        <div class="fld"><label for="f-amount">পরিমাণ <span class="req" aria-hidden="true">*</span></label><input id="f-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${esc(existing ? C.minorToDecimal(v.amountMinor) : "")}" required></div></div>
+        <div class="fld"><label for="f-amount">টাকার অংক <span class="req" aria-hidden="true">*</span></label><input id="f-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0" value="${esc(existing ? C.minorToDecimal(v.amountMinor) : "")}" required></div>
         <div class="two">${inputField({ name: "date", label: "তারিখ", type: "date", value: v.date, required: true })}${inputField({ name: "dueDate", label: "ফেরতের তারিখ (ঐচ্ছিক)", type: "date", value: v.dueDate })}</div>
         ${inputField({ name: "note", label: "নোট (ঐচ্ছিক)", value: v.note, attrs: 'maxlength="200"' })}`,
       onSubmit: async (raw) => {
@@ -1744,7 +1747,7 @@ const FinanceCore = (() => {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(raw.date || "")) errors.date = "তারিখ দিন।";
         if (raw.dueDate && !/^\d{4}-\d{2}-\d{2}$/.test(raw.dueDate)) errors.dueDate = "তারিখ অবৈধ।";
         if (Object.keys(errors).length) return { errors };
-        const l = { id: existing ? existing.id : newId(), direction: raw.direction === "borrowed" ? "borrowed" : "lent", person, currency: raw.currency === "BDT" ? "BDT" : "RM", amountMinor, date: raw.date, dueDate: raw.dueDate || "", note: String(raw.note || "").trim(), repayments: existing ? existing.repayments : [] };
+        const l = { id: existing ? existing.id : newId(), direction: raw.direction === "borrowed" ? "borrowed" : "lent", person, currency: "", amountMinor, date: raw.date, dueDate: raw.dueDate || "", note: String(raw.note || "").trim(), repayments: existing ? existing.repayments : [] };
         try { await saveLoan(l, !!existing); } catch (err) { return { errors: { _form: failMessage(err) } }; }
         ui_loans.tab = l.direction;
         render();
@@ -1760,7 +1763,7 @@ const FinanceCore = (() => {
       title: l.direction === "lent" ? "পরিশোধ পেয়েছি" : "পরিশোধ করেছি",
       submit: "পরিশোধ যোগ করুন",
       body: `<p class="cmp-note">${esc(l.person)} · বাকি <b>${loanMoney(l.currency, rem)}</b></p>
-        ${amountField(l.currency, "")}
+        <div class="fld"><label for="f-amount">টাকার অংক <span class="req" aria-hidden="true">*</span></label><input id="f-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0" required></div>
         ${inputField({ name: "date", label: "তারিখ", type: "date", value: today(), required: true })}
         ${inputField({ name: "note", label: "নোট (ঐচ্ছিক)", attrs: 'maxlength="120"' })}`,
       onSubmit: async (raw) => {
@@ -1854,10 +1857,10 @@ const FinanceCore = (() => {
   function renderLoans() {
     const f = ui_loans;
     const setup = state.loansStatus === "missing"
-      ? `<div class="banner warn">${icon("alert")}<div><b>Loans টেবিল এখনো তৈরি হয়নি।</b><p>Appwrite-এ Table ID <code>loans</code> দিয়ে টেবিল বানান। কলাম: direction, person, currency (string), amountMinor (integer), date (string), dueDate, note (string, ঐচ্ছিক), repayments (string, size 10000, ঐচ্ছিক)। Permissions-এ Create → All users, আর Row security চালু।</p></div></div>`
+      ? `<div class="banner warn">${icon("alert")}<div><b>Loans টেবিল এখনো তৈরি হয়নি।</b><p>Appwrite-এ Table ID <code>loans</code> দিয়ে টেবিল বানান। কলামগুলো ঠিক আছে কি না মিলিয়ে দেখুন। Permissions-এ Create → All users, আর Row security চালু।</p></div></div>`
       : state.loansStatus === "error" ? `<div class="banner err">${icon("alert")}<span>Loans ডেটা আনা যায়নি। পেজ রিফ্রেশ করে দেখুন।</span></div>` : "";
-    const sums = ["RM", "BDT"].map((c) => `<div class="tile loan-in"><span class="k">আমাকে দেবে (${c})</span><span class="v">${loanMoney(c, loanTotals(c, "lent"))}</span></div><div class="tile loan-out"><span class="k">আমি দেব (${c})</span><span class="v">${loanMoney(c, loanTotals(c, "borrowed"))}</span></div>`).join("");
-    return `<div class="page-head"><div><h1>Loans &amp; Debt</h1><p>ধার দেওয়া-নেওয়া · RM ও BDT আলাদা হিসাব</p></div><div class="actions"><button type="button" class="btn primary" data-act="loan-add">${icon("plus")} যোগ করুন</button></div></div>
+    const sums = `<div class="tile loan-in"><span class="k">আমাকে দেবে</span><span class="v">${loanMoney("", loanTotals("lent"))}</span></div><div class="tile loan-out"><span class="k">আমি দেব</span><span class="v">${loanMoney("", loanTotals("borrowed"))}</span></div>`;
+    return `<div class="page-head"><div><h1>Loans &amp; Debt</h1><p>ধার দেওয়া-নেওয়ার হিসাব</p></div><div class="actions"><button type="button" class="btn primary" data-act="loan-add">${icon("plus")} যোগ করুন</button></div></div>
     ${setup}
     <div class="tiles two" style="margin-top:12px">${sums}</div>
     <div class="seg" role="tablist"><button type="button" class="in${f.tab === "lent" ? " on" : ""}" data-act="loan-tab" data-id="lent" role="tab">Owed to Me</button><button type="button" class="out${f.tab === "borrowed" ? " on" : ""}" data-act="loan-tab" data-id="borrowed" role="tab">I Owe</button></div>
@@ -1871,8 +1874,7 @@ const FinanceCore = (() => {
   }
 
   function loanDashboardSection() {
-    const cell = (c) => `${tile(`আমাকে দেবে (${c})`, loanMoney(c, loanTotals(c, "lent")), { cls: "loan-in", sub: "Money Owed to Me" })}${tile(`আমি দেব (${c})`, loanMoney(c, loanTotals(c, "borrowed")), { cls: "loan-out", sub: "Money I Owe" })}`;
-    return `<div class="sec-head"><h2>ঋণ ও পাওনা</h2><a class="chip rm" href="#/loans">বিস্তারিত</a></div><div class="tiles two">${cell("RM")}${cell("BDT")}</div>`;
+    return `<div class="sec-head"><h2>ঋণ ও পাওনা</h2><a class="chip rm" href="#/loans">বিস্তারিত</a></div><div class="tiles two">${tile("আমাকে দেবে", loanMoney("", loanTotals("lent")), { cls: "loan-in" })}${tile("আমি দেব", loanMoney("", loanTotals("borrowed")), { cls: "loan-out" })}</div>`;
   }
 
   function renderDashboard() {

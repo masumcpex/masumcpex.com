@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
+<script>try{var _t=localStorage.getItem("fin-theme"),_d=_t==="dark"||(_t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=_d?"dark":"light";if(localStorage.getItem("fin-lang")==="en")document.documentElement.lang="en"}catch(e){}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com; connect-src 'self' https://nyc.cloud.appwrite.io https://www.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
@@ -300,6 +301,61 @@ body.auth .content{max-width:none;padding:0}
 .form-status{font-size:.88rem;font-weight:600;min-height:1.2em;margin:0}
 .form-status.ok{color:var(--teal)}.form-status.err{color:var(--red)}
 .btn.loading{opacity:.65;pointer-events:none}
+.legal-list{list-style:none;margin:6px 0 0;padding:0}
+.legal-list li+li{border-top:1px solid var(--line)}
+.legal-list a{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:60px;padding:10px 2px;text-decoration:none}
+.legal-list b{color:#1D5FD1;font-weight:600}
+.legal-list a:hover b,.legal-list a:focus-visible b{text-decoration:underline}
+.legal-list small{display:block;color:var(--muted);font-size:.85rem;margin-top:2px}
+.legal-list .ic{color:var(--muted)}
+.legal-note{margin-top:10px;font-size:.8rem;color:var(--muted)}
+html[data-theme=dark] .legal-list b{color:#7FB0FF}
+/* ---- dark theme ---- */
+html[data-theme=dark]{color-scheme:dark;--bg:#0A1220;--card:#111C2E;--soft:#1A2840;--ink:#E7ECF4;--muted:#9FADC2;--line:#22324A;--line-strong:#2F4465;--teal-soft:#0E2E2A;--red:#F87171;--red-soft:#3B1C1B;--green:#34D399;--green-soft:#0E3226;--amber:#FBBF24;--amber-soft:#3A2B0A;--bdt:#8DB8F2;--bdt-soft:#14253F;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35)}
+html[data-theme=dark] a{color:#5EEAD4}
+html[data-theme=dark] input,html[data-theme=dark] select,html[data-theme=dark] textarea{background:var(--card);color:var(--ink);border-color:var(--line-strong)}
+html[data-theme=dark] input::placeholder,html[data-theme=dark] textarea::placeholder{color:#74839B}
+html[data-theme=dark] dialog{background:var(--card);color:var(--ink)}
+html[data-theme=dark] .menu-pop button:hover,html[data-theme=dark] .menu-pop button:focus-visible{background:var(--soft)}
+html[data-theme=dark] .tile.loan-in .v,html[data-theme=dark] .seg button.in.on{color:#5EEAD4}
+html[data-theme=dark] .tile.loan-out .v,html[data-theme=dark] .seg button.out.on,html[data-theme=dark] .menu-pop button.del{color:#F28B82}
+html[data-theme=dark] .st{background:var(--soft);color:var(--muted)}html[data-theme=dark] .st.open{background:var(--amber-soft);color:var(--amber)}html[data-theme=dark] .st.late{background:var(--red-soft);color:var(--red)}html[data-theme=dark] .st.done{background:var(--teal-soft);color:#5EEAD4}
+html[data-theme=dark] .seg{background:#0C1627}html[data-theme=dark] .seg button.on{background:var(--soft)}
+html[data-theme=dark] .bar{background:var(--line)}
+html[data-theme=dark] .skip{background:var(--card)}
+html[data-theme=dark] .pill.off{background:var(--soft)}
+html[data-theme=dark] .btn{background:var(--card)}
+html[data-theme=dark] .btn:hover{background:var(--card)}
+html[data-theme=dark] .icon-btn:hover{background:var(--soft)}
+html[data-theme=dark] .badge.same{background:var(--soft)}
+html[data-theme=dark] .badge.mute{background:var(--soft)}
+html[data-theme=dark] .fld input,html[data-theme=dark] .fld select{background:var(--card)}
+html[data-theme=dark] .fld [aria-invalid="true"]{background:var(--card)}
+html[data-theme=dark] .amount-wrap .unit{background:var(--soft)}
+html[data-theme=dark] .tag{background:var(--soft);color:var(--muted)}
+html[data-theme=dark] .cmp-grid>div{background:var(--card)}
+html[data-theme=dark] .picker .icon-btn{background:var(--card)}
+html[data-theme=dark] .hbars .track{background:var(--soft)}
+html[data-theme=dark] .more-list a{background:var(--card)}
+html[data-theme=dark] .notes{color:var(--muted)}
+html[data-theme=dark] dialog{background:var(--card)}
+html[data-theme=dark] .dlg-foot{background:var(--card)}
+html[data-theme=dark] .adm-list li{background:var(--card)}
+html[data-theme=dark] .ct-hero img{border-color:var(--line)}
+html[data-theme=dark] .ct-list a,html[data-theme=dark] .ct-list div{border-color:var(--line)}
+html[data-theme=dark] .ct-copy{background:var(--card);border-color:var(--line)}
+html[data-theme=dark] .ct-form input[type=text],html[data-theme=dark] .ct-form input[type=email]{background:var(--card)}
+html[data-theme=dark] .ct-form textarea[aria-invalid="true"]{background:var(--card)}
+html[data-theme=dark] .menu-pop{background:var(--card)}
+html[data-theme=dark] .menu-pop button:hover,html[data-theme=dark] .menu-pop button:focus-visible{background:var(--soft)}
+html[data-theme=dark] .seg{background:var(--soft)}
+html[data-theme=dark] .seg button.on{background:var(--card)}
+html[data-theme=dark] .bar{background:var(--soft)}
+html[data-theme=dark] .st{background:var(--soft);color:var(--muted)}
+html[data-theme=dark] .st.open{background:var(--soft)}
+html[data-theme=dark] .st.late{background:var(--soft)}
+html[data-theme=dark] .ct-form textarea{border-color:var(--line)}
+
 .row{grid-template-columns:1fr auto auto;grid-template-areas:"main amt act";align-items:start}
 .row-act{align-self:start}
 .menu{position:relative;display:inline-block}
@@ -1635,6 +1691,63 @@ const FinanceCore = (() => {
   }
 
 
+  /* ---------- language (bn / en) & theme ---------- */
+  const lsGet = (k) => { try { return localStorage.getItem(k); } catch (err) { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (err) { /* ignore */ } };
+  const LANG = lsGet("fin-lang") === "en" ? "en" : "bn";
+  const I18N = {"আমাকে দেবে":"Owed to Me","আমি দেব":"I Owe","ঋণ ও পাওনা":"Loans & Debts","বিস্তারিত":"Details","যোগ করুন":"Add","মুছুন":"Delete","সম্পাদনা":"Edit","কপি":"Copy","বাতিল":"Cancel","বন্ধ করুন":"Close","নিশ্চিত করুন":"Confirm","সংরক্ষণ করুন":"Save","সব":"All","সব বছর":"All years","সব মাস":"All months","খুঁজুন":"Search","ফিল্টার":"Filter","ডাউনলোড":"Download","সাইন আউট":"Sign out","একাউন্ট":"Account","তারিখ":"Date","ধরন":"Type","নোট":"Note","নোট (ঐচ্ছিক)":"Note (optional)","বিবরণ":"Description","বিবরণ / নোট":"Description / note","বিবরণ / নোট (ঐচ্ছিক)":"Description / note (optional)","রেফারেন্স":"Reference","রেফারেন্স (ঐচ্ছিক)":"Reference (optional)","রেফারেন্স / নোট (ঐচ্ছিক)":"Reference / note (optional)","পরিমাণ":"Amount","টাকার অংক":"Amount","ক্যাটাগরি":"Category","মাধ্যম":"Method","পদ্ধতি (ঐচ্ছিক)":"Method (optional)","প্রাপক":"Recipient","স্ট্যাটাস":"Status","মোট":"Total","বাকি":"Remaining","পরিশোধিত":"Paid","বাকি আছে":"Outstanding","মেয়াদোত্তীর্ণ":"Overdue","পরিশোধ যোগ করুন":"Add repayment","পরিশোধের ইতিহাস":"Repayment history","ইতিহাস দেখুন":"View history","পরিশোধ পেয়েছি":"Repayment received","পরিশোধ করেছি":"Repayment made","এখনো কোনো পরিশোধ নেই।":"No repayments yet.","এখনো কোনো রেকর্ড নেই":"No records yet","এখনো কোনো রেকর্ড নেই।":"No records yet.","কোনো রেকর্ড নেই":"No records","এই ফিল্টারে কিছু নেই":"Nothing matches this filter","এই ফিল্টারে কোনো আয় নেই":"No income matches this filter","এই ফিল্টারে কোনো খরচ নেই":"No expenses match this filter","এই ফিল্টারে কোনো ট্রান্সফার নেই":"No transfers match this filter","আয়":"Income","খরচ":"Expenses","ট্রান্সফার":"Transfers","আয় (RM)":"Income (RM)","খরচ (RM)":"Expenses (RM)","ব্যালেন্স (RM)":"Balance (RM)","অবশিষ্ট (RM)":"Remaining (RM)","পরিবার (BDT)":"Family (BDT)","পরিবারকে (BDT)":"To family (BDT)","পাঠানো (BDT)":"Sent (BDT)","পরিবারকে পাঠানো (BDT)":"Sent to family (BDT)","আয় যোগ করুন":"Add income","খরচ যোগ করুন":"Add expense","ট্রান্সফার যোগ করুন":"Add transfer","আয় সম্পাদনা":"Edit income","খরচ সম্পাদনা":"Edit expense","ট্রান্সফার সম্পাদনা":"Edit transfer","আয় সংরক্ষিত হয়েছে":"Income saved","খরচ সংরক্ষিত হয়েছে":"Expense saved","ট্রান্সফার সংরক্ষিত হয়েছে":"Transfer saved","আয় আপডেট হয়েছে":"Income updated","খরচ আপডেট হয়েছে":"Expense updated","ট্রান্সফার আপডেট হয়েছে":"Transfer updated","আয়ের তালিকা (RM)":"Income list (RM)","খরচের তালিকা (RM)":"Expense list (RM)","আয়ের ধরন":"Income type","আয়ের প্রথম রেকর্ড যোগ করুন।":"Add your first income record.","প্রথম খরচের রেকর্ড যোগ করুন।":"Add your first expense record.","পরিবারকে পাঠানো প্রথম টাকার রেকর্ড যোগ করুন।":"Add your first record of money sent to family.","ট্রান্সফারের তারিখ":"Transfer date","ট্রান্সফার সংখ্যা":"Number of transfers","মোট ট্রান্সফার":"Total transfers","মোট পাঠানো":"Total sent","মোট আয়":"Total income","মোট ব্যক্তিগত খরচ":"Total personal expenses","সাম্প্রতিক আয়":"Recent income","সাম্প্রতিক খরচ":"Recent expenses","সাম্প্রতিক পরিবার-সহায়তা":"Recent family support","এই মাসের আয়":"This month's income","এই মাসের ব্যক্তিগত খরচ":"This month's personal expenses","এই মাসের অবশিষ্ট":"This month's remaining","এই মাসে পাঠানো":"Sent this month","গত মাসে পাঠানো":"Sent last month","আজীবন মোট আয়":"Lifetime income","আজীবন মোট খরচ":"Lifetime expenses","আজীবন মোট পাঠানো":"Lifetime total sent","বর্তমান ব্যালান্স":"Current balance","অবশিষ্ট ব্যালান্স":"Remaining balance","মোট আয় (আজীবন)":"Total income (lifetime)","মোট খরচ (আজীবন)":"Total expenses (lifetime)","মোট আয় − মোট ব্যক্তিগত খরচ":"Total income − total personal expenses","পার্থক্য":"Difference","শতাংশ পরিবর্তন":"Percentage change","আগের মাস":"Previous month","পরের মাস":"Next month","মাস":"Month","বছর":"Year","মাসিক সারসংক্ষেপ":"Monthly summary","মাসভিত্তিক বিবরণ":"Monthly breakdown","আগের মাসের তুলনায়":"vs previous month","অসম্পূর্ণ হতে পারে":"may be incomplete","সম্পূর্ণ হিসেবে চিহ্নিত":"Marked complete","সম্পূর্ণ হিসেবে চিহ্নিত করুন":"Mark as complete","সম্পূর্ণ চিহ্ন তুলুন":"Remove complete mark","সর্বোচ্চ রেকর্ড করা মাস":"Highest recorded month","সর্বনিম্ন রেকর্ড করা মাস":"Lowest recorded month","রেকর্ড করা সংখ্যা":"Records count","ফিল্টার অনুযায়ী মোট আয়":"Total income (filtered)","ফিল্টার অনুযায়ী মোট খরচ":"Total expenses (filtered)","ফিল্টার অনুযায়ী মোট পাঠানো":"Total sent (filtered)","শুরু থেকে এখন পর্যন্ত মোট হিসাব":"Total since the beginning","শেষ ৬ মাসে পাঠানো টাকা":"Money sent in the last 6 months","পরিবারকে পাঠানো টাকা":"Money sent to family","জানুয়ারি–ডিসেম্বর সারসংক্ষেপ ও চার্ট":"January–December summary & chart","যেকোনো মাসের রিপোর্ট ও আগের মাসের সাথে তুলনা":"Report for any month and comparison with the previous month","BDT পরিবার-সহায়তা এই RM ব্যালান্সে ধরা হয় না।":"BDT family support is not counted in this RM balance.","ধার দেওয়া-নেওয়ার হিসাব":"Lending and borrowing records","ধার দেওয়া-নেওয়া, পরিশোধ ও বাকি হিসাব":"Lending, borrowing, repayments and balances","আমি ধার দিয়েছি":"I lent","আমি ধার নিয়েছি":"I borrowed","আমি ধার দিয়েছি (আমাকে দেবে)":"I lent (owed to me)","আমি ধার নিয়েছি (আমি দেব)":"I borrowed (I owe)","ঋণ / পাওনা যোগ করুন":"Add loan / receivable","ঋণ সম্পাদনা":"Edit loan","ব্যক্তির নাম":"Person's name","ফেরতের তারিখ (ঐচ্ছিক)":"Due date (optional)","তারিখ থেকে":"From date","তারিখ পর্যন্ত":"To date","নাম খুঁজুন":"Search name","এই পরিশোধ মুছুন":"Delete this repayment","এই রেকর্ড মুছবেন?":"Delete this record?","পরিশোধ যোগ হয়েছে":"Repayment added","পরিশোধ মুছে ফেলা হয়েছে":"Repayment deleted","ঋণ ও পাওনা ডাউনলোডে আসে না":"Loans & debts are not included in downloads","Loans টেবিল এখনো তৈরি হয়নি।":"The Loans table has not been created yet.","Loans ডেটা আনা যায়নি। পেজ রিফ্রেশ করে দেখুন।":"Could not load loans data. Refresh the page.","সংরক্ষিত হয়েছে":"Saved","আপডেট হয়েছে":"Updated","মুছে ফেলা হয়েছে":"Deleted","মুছে ফেলুন":"Delete","সব মুছুন":"Delete all","কপি হয়েছে":"Copied","কপি করা যায়নি":"Could not copy","কপি করুন":"Copy","অজানা সমস্যা হয়েছে।":"Something went wrong.","অনলাইন":"Online","অফলাইন · ডেটা লোড/সেভ হবে না":"Offline · data will not load or save","লোড হচ্ছে…":"Loading…","অপেক্ষা করুন…":"Please wait…","নাম দিন।":"Enter a name.","নাম লিখুন।":"Enter a name.","তারিখ দিন।":"Enter a date.","তারিখ অবৈধ।":"Invalid date.","ইমেইল দিন।":"Enter your email.","সঠিক ইমেইল ঠিকানা দিন।":"Enter a valid email address.","সঠিক ইমেইল দিন।":"Enter a valid email.","বিষয় লিখুন।":"Enter a subject.","বার্তা লিখুন।":"Enter a message.","সঠিক পরিমাণ লিখুন।":"Enter a valid amount.","সঠিক পরিমাণ লিখুন (যেমন 500 বা 500.50)।":"Enter a valid amount (e.g. 500 or 500.50).","অনুগ্রহ করে চিহ্নিত ঘরগুলো ঠিক করুন।":"Please fix the highlighted fields.","পাসওয়ার্ড ভুল।":"Wrong password.","ইমেইল বা পাসওয়ার্ড ভুল।":"Incorrect email or password.","পাসওয়ার্ড দুটো মেলেনি।":"Passwords do not match.","পাসওয়ার্ড দেওয়া হয়নি।":"No password provided.","পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।":"Password must be at least 8 characters.","ব্যাকআপ পাসওয়ার্ড":"Backup password","ব্যাকআপ ডাউনলোড করতে পাসওয়ার্ড দিন":"Enter the password to download the backup","ব্যাকআপ ফাইল তৈরি হয়েছে":"Backup file created","CSV ফাইল তৈরি হয়েছে":"CSV file created","এনক্রিপ্ট করা যায়নি।":"Could not encrypt.","সাইন আউট করবেন?":"Sign out?","সাইন আউট হয়েছে":"Signed out","সব ডেটা মুছবেন?":"Delete all data?","সব ডেটা মুছে ফেলা হয়েছে":"All data deleted","লোকাল কপি মুছবেন?":"Delete local copy?","লোকাল কপি মুছে ফেলা হয়েছে":"Local copy deleted","নিশ্চিত শূন্য":"Confirmed zero","এখনো নেওয়া হয়নি":"Not taken yet","ফাইল":"File","প্রিভিউ দেখুন":"Preview","ক্লাউডে ইমপোর্ট করুন":"Import to cloud","এই ডিভাইসের লোকাল ডেটা":"Local data on this device","ব্যাকআপ, রিস্টোর, CSV ও গোপনীয়তা":"Backup, restore, CSV & privacy","একাউন্ট, ব্যাকআপ, রিস্টোর, এক্সপোর্ট ও গোপনীয়তা":"Account, backup, restore, export & privacy","রিপোর্ট ও সেটিংস":"Reports & settings","লগইন করা আছে:":"Signed in as:","ব্যবহারকারী":"User","শেষ ব্যবহার":"Last used","এই ফিল্টারে":"in this filter","আপনার বর্তমান ডেটা অপরিবর্তিত আছে।":"Your current data is unchanged.","ডেটা লোড হয়নি":"Data did not load","সংযোগ হয়নি":"Not connected","কোনো প্রশ্ন, পরামর্শ বা সমস্যা হলে যোগাযোগ করুন":"Questions, suggestions or issues? Get in touch","নিচে লিখে পাঠালে আপনার ইমেইল অ্যাপ খুলবে, সেখান থেকে সেন্ড করুন।":"Write below and your email app will open; send the message from there.","ধন্যবাদ! আপনার ইমেইল অ্যাপ খুলেছে, সেখান থেকে সেন্ড করুন।":"Thank you! Your email app has opened; send the message from there.","যোগাযোগ করুন, ইমেইল, ওয়েবসাইট ও টেলিগ্রাম":"Contact, email, website & Telegram","ভাষা ও থিম":"Language & Theme","ভাষা":"Language","থিম":"Theme","লাইট":"Light","ডার্ক":"Dark","সিস্টেম":"System","ব্যক্তিগত খরচ":"Personal expenses","ব্যক্তিগত খরচ · শুধু RM":"Personal expenses · RM only","বাংলাদেশে পরিবারকে পাঠানো · শুধু BDT · হাতে লেখা পরিমাণ":"Sent to family in Bangladesh · BDT only · amount entered manually","শুধু মালয়েশিয়ান রিঙ্গিত (RM)":"Malaysian ringgit (RM) only","মাস-ভিত্তিক RM আয় ও খরচ":"Monthly RM income & expenses","মাস-ভিত্তিক পরিবার-সহায়তা (BDT)":"Monthly family support (BDT)","ক্যাটাগরি অনুযায়ী খরচ":"Expenses by category","বেতন":"Salary","বোনাস":"Bonus","ওভারটাইম":"Overtime","অন্যান্য":"Other","খাবার":"Food","চিকিৎসা":"Medical","থাকা ও ভাড়া":"Housing & rent","পোশাক":"Clothing","মোবাইল ও ইন্টারনেট":"Mobile & internet","যাতায়াত":"Transport","ব্যক্তিগত কেনাকাটা":"Personal shopping","ব্যাংক":"Bank","রেমিট্যান্স সার্ভিস":"Remittance service","মা":"Mother","বাবা":"Father","পরিবার":"Family","অক্টো":"Oct","—  বাছাই নেই —":"— none selected —","— বাছাই নেই —":"— none selected —"};
+  Object.assign(I18N, { "আপনার তথ্য কীভাবে সংগ্রহ, ব্যবহার ও সুরক্ষিত হয়": "How your information is collected, used and protected", "এই অ্যাপ ব্যবহারের শর্তাবলী": "The terms for using this app", "কুকি ও লোকাল স্টোরেজ কীভাবে ব্যবহার হয়": "How cookies and local storage are used" });
+  const MON = { "জানুয়ারি": "January", "ফেব্রুয়ারি": "February", "মার্চ": "March", "এপ্রিল": "April", "মে": "May", "জুন": "June", "জুলাই": "July", "আগস্ট": "August", "সেপ্টেম্বর": "September", "অক্টোবর": "October", "নভেম্বর": "November", "ডিসেম্বর": "December", "জানু": "Jan", "ফেব্রু": "Feb", "এপ্রি": "Apr", "সেপ্টে": "Sep", "অক্টো": "Oct", "নভে": "Nov", "ডিসে": "Dec" };
+  const MON_RE = new RegExp("(^|[\\s\\-–(])(" + Object.keys(MON).sort((a, b) => b.length - a.length).join("|") + ")(?=$|[\\s,.\\-–)])", "g");
+  const PATS = [[/(\d[\d,]*)টি রেকর্ড/g, "$1 records"], [/(\d+)টি ট্রান্সফার/g, "$1 transfers"], [/সংরক্ষিত রেকর্ড থেকে হিসাব/g, "calculated from saved records"], [/আমি ধার দিয়েছি/g, "I lent"], [/আমি ধার নিয়েছি/g, "I borrowed"], [/ফেরত: /g, "Due: "], [/ফেরত /g, "Due "], [/রেফ: /g, "Ref: "], [/শুধু /g, "only "]];
+  const trText = (str) => {
+    const t = str.trim();
+    if (!t) return str;
+    let out = I18N[t];
+    if (out === undefined) {
+      out = t;
+      for (const [re, r] of PATS) out = out.replace(re, r);
+      out = out.replace(MON_RE, (m, a, b) => a + MON[b]).replace(/[০-৯]/g, (d) => "০১২৩৪৫৬৭৮৯".indexOf(d));
+    }
+    return out === t ? str : str.replace(t, () => out);
+  };
+  const BN_RE = /[\u0980-\u09FF]/;
+  function applyLang(root) {
+    if (LANG !== "en" || !root) return;
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: (n) => (BN_RE.test(n.nodeValue) && n.parentElement && !n.parentElement.closest("script,style,[data-nolang]") ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP) });
+    const nodes = [];
+    while (w.nextNode()) nodes.push(w.currentNode);
+    for (const n of nodes) { const v = trText(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; }
+    root.querySelectorAll("[placeholder],[aria-label],[title],[alt]").forEach((el) => {
+      for (const a of ["placeholder", "aria-label", "title", "alt"]) {
+        const cur = el.getAttribute(a);
+        if (cur && BN_RE.test(cur)) { const v = trText(cur); if (v !== cur) el.setAttribute(a, v); }
+      }
+    });
+  }
+  if (LANG === "en") {
+    let pend = false;
+    const kick = () => { if (pend) return; pend = true; requestAnimationFrame(() => { pend = false; applyLang(document.body); }); };
+    new MutationObserver(kick).observe(document.body, { childList: true, subtree: true, characterData: true });
+    kick();
+  }
+  const THEME = () => lsGet("fin-theme") || "light";
+  function applyTheme() {
+    const m = THEME();
+    const dark = m === "dark" || (m === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", dark ? "#0A1220" : "#0F1B2D");
+  }
+  try { window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (THEME() === "system") applyTheme(); }); } catch (err) { /* ignore */ }
+  const prefsCard = () => {
+    const opt = (act, id, label, on) => `<button type="button" class="${on ? "on" : ""}" data-act="${act}" data-id="${id}" aria-pressed="${on ? "true" : "false"}">${label}</button>`;
+    return `<section class="card"><h3>${icon("info", "sm")} ভাষা ও থিম</h3>
+      <div class="fld"><label>ভাষা / Language</label><div class="seg" role="group" aria-label="Language">${opt("set-lang", "bn", "বাংলা", LANG === "bn")}${opt("set-lang", "en", "English", LANG === "en")}</div></div>
+      <div class="fld"><label>থিম / Theme</label><div class="seg" role="group" aria-label="Theme">${opt("set-theme", "light", "লাইট", THEME() === "light")}${opt("set-theme", "dark", "ডার্ক", THEME() === "dark")}${opt("set-theme", "system", "সিস্টেম", THEME() === "system")}</div></div>
+    </section>`;
+  };
+
   /* ---------- three-dot menu (shared) ---------- */
   function menuHtml(label, items) {
     return `<div class="menu"><button type="button" class="icon-btn" data-menu aria-haspopup="menu" aria-expanded="false" aria-label="অ্যাকশন: ${label}">${icon("more")}</button><div class="menu-pop" role="menu" hidden>${items
@@ -2124,7 +2237,7 @@ const FinanceCore = (() => {
     const copyBtn = (v) => `<button type="button" class="ct-copy" data-act="copy" data-copy="${esc(v)}" aria-label="কপি করুন">কপি</button>`;
     const row = (href, label, value, raw, ic = "mail") => `<li class="contact-item"><a href="${href}"${href.startsWith("http") ? ' target="_blank" rel="noopener noreferrer"' : ""}><span class="ico">${icon(ic)}</span><span><small>${label}</small><b>${value}</b></span></a>${copyBtn(raw)}</li>`;
     return `<div class="page-head"><div><h1>Contact</h1><p>কোনো প্রশ্ন, পরামর্শ বা সমস্যা হলে যোগাযোগ করুন</p></div></div>
-    <section class="card"><div class="ct-hero"><img src="${PHOTO_URL}" alt="Masum" onerror="this.onerror=null;this.src='${LOGO_URL}'"><div><h2>Masum Cpex</h2><p class="cmp-note" style="margin:0">Writer &amp; Web Publisher · ${CONTACT.location}</p></div></div>
+    <section class="card"><div class="ct-hero"><img src="${PHOTO_URL}" alt="Masum" onerror="this.onerror=null;this.src='${LOGO_URL}'"><div><h2>Masum Cpex</h2><p class="cmp-note" style="margin:0">Personal Finance Tracker · ${CONTACT.location}</p></div></div>
       <ul class="ct-list">
         ${row("mailto:" + CONTACT.primary, "Primary Email", CONTACT.primary, CONTACT.primary)}
         ${row("mailto:" + CONTACT.alt, "Alternative Email", CONTACT.alt, CONTACT.alt)}
@@ -2136,7 +2249,7 @@ const FinanceCore = (() => {
       <p class="cmp-note">নিচে লিখে পাঠালে আপনার ইমেইল অ্যাপ খুলবে, সেখান থেকে সেন্ড করুন।</p>
       <div class="ct-form" id="contactForm">
         <div class="fld"><label for="cf-name">Name</label><input id="cf-name" name="name" type="text" autocomplete="name" value="Masum Billah"></div>
-        <div class="fld"><label for="cf-email">Email</label><input id="cf-email" name="email" type="email" autocomplete="email" value="${esc(state.user ? state.user.email || "" : "")}"></div>
+        <div class="fld"><label for="cf-email">Email</label><input id="cf-email" name="email" type="email" autocomplete="email" value="info@masumcpex.com"></div>
         <div class="fld"><label for="cf-subject">Subject</label><input id="cf-subject" name="subject" type="text" value="Finance Tracker"></div>
         <div class="fld"><label for="cf-message">Message</label><textarea id="cf-message" name="message"></textarea></div>
         <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
@@ -2182,6 +2295,7 @@ const FinanceCore = (() => {
   function renderSettings() {
     const last = state.lastBackupAt ? new Date(state.lastBackupAt).toLocaleString("bn-BD") : "এখনো নেওয়া হয়নি";
     return `<div class="page-head"><div><h1>Settings & Backup</h1><p>একাউন্ট, ব্যাকআপ, রিস্টোর, এক্সপোর্ট ও গোপনীয়তা</p></div></div>
+    ${prefsCard()}
     <section class="card"><h3>${icon("user", "sm")} একাউন্ট</h3>
       <div class="me-card">${avatarHtml("lg2")}<p class="cmp-note">লগইন করা আছে: <b>${esc(state.user.email)}</b></p></div>
       <div class="actions" style="margin-top:12px"><button type="button" class="btn" data-act="logout">${icon("log-out", "sm")} সাইন আউট</button></div>
@@ -2232,6 +2346,14 @@ const FinanceCore = (() => {
     <section class="card"><h3>${icon("trash", "sm")} সব ডেটা মুছুন</h3>
       <p class="cmp-note">আপনার একাউন্টের সব আয়, খরচ, পরিবার-সহায়তা ও সম্পূর্ণ-চিহ্ন ক্লাউড থেকে স্থায়ীভাবে মুছে যাবে। একাউন্ট নিজে থাকবে। আগে ব্যাকআপ নিয়ে রাখুন।</p>
       <div class="actions" style="margin-top:12px"><button type="button" class="btn danger" data-act="erase">${icon("trash", "sm")} সব ডেটা মুছুন</button></div>
+    </section>
+    <section class="card"><h3>${icon("file", "sm")} Legal &amp; Policies</h3>
+      <ul class="legal-list">
+        <li><a href="https://masumcpex.bro.bd/legal#privacy-policy" target="_blank" rel="noopener noreferrer"><span><b>Privacy Policy</b><small>আপনার তথ্য কীভাবে সংগ্রহ, ব্যবহার ও সুরক্ষিত হয়</small></span>${icon("chev-right", "sm")}</a></li>
+        <li><a href="https://masumcpex.bro.bd/legal#terms-of-service" target="_blank" rel="noopener noreferrer"><span><b>Terms of Service</b><small>এই অ্যাপ ব্যবহারের শর্তাবলী</small></span>${icon("chev-right", "sm")}</a></li>
+        <li><a href="https://masumcpex.bro.bd/legal#cookie-policy" target="_blank" rel="noopener noreferrer"><span><b>Cookie Policy</b><small>কুকি ও লোকাল স্টোরেজ কীভাবে ব্যবহার হয়</small></span>${icon("chev-right", "sm")}</a></li>
+      </ul>
+      <p class="legal-note">© 2026 Masum Cpex · masumcpex.bro.bd</p>
     </section>`;
   }
 
@@ -2949,6 +3071,8 @@ const FinanceCore = (() => {
       else supportForm(existing);
       return;
     }
+    if (act === "set-lang") { if (el.dataset.id !== LANG) { lsSet("fin-lang", el.dataset.id === "en" ? "en" : "bn"); location.reload(); } return; }
+    if (act === "set-theme") { lsSet("fin-theme", ["dark", "system"].includes(el.dataset.id) ? el.dataset.id : "light"); applyTheme(); render(); return; }
     if (act === "loan-add") { loanForm(null); return; }
     if (act === "loan-tab") { ui_loans.tab = el.dataset.id === "borrowed" ? "borrowed" : "lent"; render(); return; }
     if (/^loan-(pay|view|edit|del)$/.test(act)) { loanActs(act, el.dataset.id); return; }

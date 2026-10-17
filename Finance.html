@@ -300,6 +300,33 @@ body.auth .content{max-width:none;padding:0}
 .form-status{font-size:.88rem;font-weight:600;min-height:1.2em;margin:0}
 .form-status.ok{color:var(--teal)}.form-status.err{color:var(--red)}
 .btn.loading{opacity:.65;pointer-events:none}
+.row{grid-template-columns:1fr auto auto;grid-template-areas:"main amt act";align-items:start}
+.row-act{align-self:start}
+.menu{position:relative;display:inline-block}
+.menu-pop{position:fixed;z-index:60;min-width:190px;background:#fff;border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 12px 32px rgba(11,27,51,.18);padding:6px}
+.menu-pop[hidden]{display:none}
+.menu-pop button{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:0 12px;border:0;background:transparent;border-radius:10px;font:inherit;font-size:.95rem;color:var(--ink,#0B1B33);cursor:pointer;text-align:left}
+.menu-pop button:hover,.menu-pop button:focus-visible{background:#F1F5F9}
+.menu-pop button.del{color:#B4534A}
+.tiles.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.tile.loan-in{border-top:3px solid var(--teal)}.tile.loan-in .v{color:var(--teal-dark)}
+.tile.loan-out{border-top:3px solid #C9776E}.tile.loan-out .v{color:#B4534A}
+.seg{display:flex;gap:6px;background:#EDF1F6;border-radius:14px;padding:4px;margin:12px 0}
+.seg button{flex:1;min-height:42px;border:0;border-radius:11px;background:transparent;font:inherit;font-weight:700;color:var(--muted);cursor:pointer}
+.seg button.on{background:#fff;color:var(--ink,#0B1B33);box-shadow:var(--shadow)}
+.seg button.in.on{color:var(--teal-dark)}.seg button.out.on{color:#B4534A}
+.loan{padding:14px 0;border-bottom:1px solid var(--line);display:grid;gap:8px}
+.loan:last-child{border-bottom:0}
+.loan-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.loan-name{font-weight:700}
+.loan-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:.82rem;color:var(--muted)}
+.loan-nums b{display:block;color:var(--ink,#0B1B33);font-size:.95rem;font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:999px;background:#E6EBF1;overflow:hidden}.bar i{display:block;height:100%;background:var(--teal)}
+.loan.out .bar i{background:#C9776E}
+.st{font-size:.74rem;font-weight:700;border-radius:999px;padding:2px 9px;background:#EDF1F6;color:#35465E}
+.st.open{background:#FFF4DC;color:#8A5B00}.st.done{background:var(--teal-soft);color:var(--teal-dark)}.st.late{background:#FBE4E1;color:#B4534A}
+.loan-act{display:flex;gap:8px;align-items:center}
+.hist{list-style:none;margin:0;padding:0}.hist li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
 .ct-form textarea{width:100%;min-height:110px;font:inherit;padding:10px 12px;border:1px solid var(--line,#DDE2E9);border-radius:10px;resize:vertical;box-sizing:border-box}
 #print-report{display:none}
 .pr-title{font-size:18px;font-weight:700;color:#0F1B2D;border-bottom:2px solid #0E6E5C;padding-bottom:6px;margin:0 0 4px}
@@ -997,6 +1024,7 @@ const FinanceCore = (() => {
     { id: "income", label: "Income", icon: "trend-up" },
     { id: "expenses", label: "Expenses", icon: "receipt" },
     { id: "support", label: "Family Support", icon: "users" },
+    { id: "loans", label: "Loans & Debt", icon: "wallet" },
     { id: "monthly", label: "Monthly Reports", icon: "calendar" },
     { id: "yearly", label: "Yearly Reports", icon: "bars" },
     { id: "lifetime", label: "Lifetime Total", icon: "infinity" },
@@ -1012,6 +1040,7 @@ const FinanceCore = (() => {
   ];
   const MORE_IDS = ["monthly", "yearly", "lifetime", "settings", "contact", "more"];
   const MORE_NOTES = {
+    loans: "ধার দেওয়া-নেওয়া, পরিশোধ ও বাকি হিসাব",
     monthly: "যেকোনো মাসের রিপোর্ট ও আগের মাসের সাথে তুলনা",
     yearly: "জানুয়ারি–ডিসেম্বর সারসংক্ষেপ ও চার্ট",
     lifetime: "শুরু থেকে এখন পর্যন্ত মোট হিসাব",
@@ -1026,7 +1055,7 @@ const FinanceCore = (() => {
     endpoint: "https://nyc.cloud.appwrite.io/v1",
     projectId: "6acc23d6003ccd10471a",
     databaseId: "6acca53e00040685b131",
-    tables: { income: "6acd07620019ee3376e1", expenses: "6acd09540027fea0889d", support: "6accc844001141aa61f9", completion: "6acccdeb0018b7a39fe9", profiles: "6ace33c30029b223ef77" },
+    tables: { income: "6acd07620019ee3376e1", expenses: "6acd09540027fea0889d", support: "6accc844001141aa61f9", completion: "6acccdeb0018b7a39fe9", profiles: "6ace33c30029b223ef77", loans: "loans" },
     columns: { expenses: { category: "type", description: "note", note: "reference" } }
   };
   const STORES = ["income", "expenses", "support"];
@@ -1285,7 +1314,7 @@ const FinanceCore = (() => {
 
   const lastBackupKey = () => `finance-last-backup:${state.user ? state.user.id : ""}`;
 
-  const state = { user: null, income: [], expenses: [], support: [], completion: {}, completionIds: {}, lastBackupAt: null, legacy: null, ready: false, bootError: null, loadError: null };
+  const state = { loans: [], loansStatus: "idle", user: null, income: [], expenses: [], support: [], completion: {}, completionIds: {}, lastBackupAt: null, legacy: null, ready: false, bootError: null, loadError: null };
 
   const nowDate = new Date();
   const ui = {
@@ -1396,6 +1425,7 @@ const FinanceCore = (() => {
       }
     }
     state.lastBackupAt = readStorage(lastBackupKey()) || null;
+    await loadLoans();
   }
 
   function errorMessage(err) {
@@ -1551,7 +1581,10 @@ const FinanceCore = (() => {
       .map((x) => `<span>${x}</span>`)
       .join("");
     const acts = editable
-      ? `<div class="row-act"><button type="button" class="icon-btn" data-act="edit-${store}" data-id="${esc(r.id)}" aria-label="${NOUN[store]} সম্পাদনা: ${esc(title)}">${icon("pencil")}</button><button type="button" class="icon-btn del" data-act="del-${store}" data-id="${esc(r.id)}" aria-label="${NOUN[store]} মুছুন: ${esc(title)}">${icon("trash")}</button></div>`
+      ? `<div class="row-act">${menuHtml(`${NOUN[store]}: ${esc(title)}`, [
+          { act: `edit-${store}`, id: r.id, label: "সম্পাদনা", ic: "pencil" },
+          { act: `del-${store}`, id: r.id, label: "মুছুন", ic: "trash", del: true }
+        ])}</div>`
       : "";
     return `<li class="row"><div class="row-main"><span class="row-title">${esc(title)}</span><span class="row-meta">${meta}</span></div><div class="row-amt ${cls}">${amt}</div>${acts}</li>`;
   }
@@ -1597,6 +1630,251 @@ const FinanceCore = (() => {
     return html ? `<p class="cmp-note">ভুল হলে পেন্সিল আইকনে চেপে ঠিক করুন, ডাস্টবিন আইকনে চেপে মুছুন।</p>${html}` : "";
   }
 
+
+  /* ---------- three-dot menu (shared) ---------- */
+  function menuHtml(label, items) {
+    return `<div class="menu"><button type="button" class="icon-btn" data-menu aria-haspopup="menu" aria-expanded="false" aria-label="অ্যাকশন: ${label}">${icon("more")}</button><div class="menu-pop" role="menu" hidden>${items
+      .map((i) => `<button type="button" role="menuitem"${i.del ? ' class="del"' : ""} data-act="${i.act}" data-id="${esc(i.id)}">${icon(i.ic)}<span>${i.label}</span></button>`)
+      .join("")}</div></div>`;
+  }
+  function closeMenus() {
+    document.querySelectorAll(".menu-pop:not([hidden])").forEach((m) => {
+      m.hidden = true;
+      const b = m.previousElementSibling;
+      if (b) b.setAttribute("aria-expanded", "false");
+    });
+  }
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-menu]");
+    const wasOpen = btn && !btn.nextElementSibling.hidden;
+    closeMenus();
+    if (!btn || wasOpen) return;
+    const pop = btn.nextElementSibling;
+    pop.hidden = false;
+    btn.setAttribute("aria-expanded", "true");
+    const r = btn.getBoundingClientRect();
+    const h = pop.offsetHeight;
+    pop.style.right = Math.max(8, window.innerWidth - r.right) + "px";
+    pop.style.top = (r.bottom + h + 8 > window.innerHeight ? Math.max(8, r.top - h - 4) : r.bottom + 4) + "px";
+  });
+  window.addEventListener("scroll", closeMenus, true);
+  window.addEventListener("resize", closeMenus);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenus(); });
+
+  /* ---------- Loans & Debt (self-contained; uses the "loans" Appwrite table) ---------- */
+  const LOAN_COLS = ["direction", "person", "currency", "amountMinor", "date", "dueDate", "note", "repayments"];
+  const ui_loans = { tab: "lent", query: "", status: "", from: "", to: "" };
+  const loanMoney = (cur, minor) => (cur === "BDT" ? bdt(minor) : rm(minor));
+  function parseMinor(str) {
+    const t = String(str || "").replace(/[,\s]/g, "");
+    if (!/^\d{1,12}(\.\d{1,2})?$/.test(t)) return null;
+    const [a, b = ""] = t.split(".");
+    const n = Number(a) * 100 + Number((b + "00").slice(0, 2));
+    return n > 0 ? n : null;
+  }
+  function loanFromRow(row) {
+    let reps = [];
+    try { const x = JSON.parse(row.repayments || "[]"); if (Array.isArray(x)) reps = x.filter((q) => q && Number.isInteger(q.amountMinor) && q.amountMinor > 0); } catch (err) { reps = []; }
+    return {
+      id: row.$id,
+      direction: row.direction === "borrowed" ? "borrowed" : "lent",
+      person: String(row.person || "").trim(),
+      currency: row.currency === "BDT" ? "BDT" : "RM",
+      amountMinor: Number(row.amountMinor) || 0,
+      date: String(row.date || "").trim(),
+      dueDate: String(row.dueDate || "").trim(),
+      note: String(row.note || "").trim(),
+      repayments: reps,
+      createdAt: Date.parse(row.$createdAt) || 0
+    };
+  }
+  const loanPaid = (l) => l.repayments.reduce((t, q) => t + q.amountMinor, 0);
+  const loanRemain = (l) => Math.max(0, l.amountMinor - loanPaid(l));
+  const loanOverdue = (l) => loanRemain(l) > 0 && !!l.dueDate && l.dueDate < today();
+  const loanStatus = (l) => (loanRemain(l) === 0 ? "done" : loanOverdue(l) ? "late" : "open");
+  function loanTotals(cur, dir) {
+    return state.loans.filter((l) => l.currency === cur && l.direction === dir).reduce((t, l) => t + loanRemain(l), 0);
+  }
+  async function loadLoans() {
+    try {
+      const rows = await cloud.listAll("loans");
+      state.loans = rows.map(loanFromRow);
+      state.loansStatus = "ok";
+    } catch (err) {
+      state.loans = [];
+      state.loansStatus = err && err.status === 404 ? "missing" : "error";
+    }
+  }
+  const loanWrite = (l, isUpdate) => {
+    const data = { direction: l.direction, person: l.person, currency: l.currency, amountMinor: l.amountMinor, date: l.date, repayments: JSON.stringify(l.repayments) };
+    for (const f of ["dueDate", "note"]) { if (l[f]) data[f] = l[f]; else if (isUpdate) data[f] = ""; }
+    return isUpdate ? cloud.updateRow("loans", l.id, data) : cloud.createRow("loans", l.id, data, state.user.id);
+  };
+  async function saveLoan(l, isUpdate) {
+    try {
+      await loanWrite(l, isUpdate);
+    } catch (err) {
+      if (err && /Unknown attribute/i.test(String(err.message || ""))) throw new ApiError("Appwrite-এর loans টেবিলে প্রয়োজনীয় কলাম নেই। Columns ট্যাবে সব কলাম যোগ করুন।", 400, "unknown_column");
+      throw err;
+    }
+    const i = state.loans.findIndex((x) => x.id === l.id);
+    if (i >= 0) state.loans[i] = l; else state.loans.push(l);
+  }
+
+  function loanForm(existing) {
+    const v = existing || { direction: ui_loans.tab, person: "", currency: "RM", amountMinor: 0, date: today(), dueDate: "", note: "", repayments: [] };
+    const names = new Set();
+    for (const x of state.loans) names.add(x.person);
+    openForm({
+      title: existing ? "ঋণ সম্পাদনা" : "ঋণ / পাওনা যোগ করুন",
+      body: `${selectField({ name: "direction", label: "ধরন", options: [["lent", "আমি ধার দিয়েছি (আমাকে দেবে)"], ["borrowed", "আমি ধার নিয়েছি (আমি দেব)"]], value: v.direction, required: true })}
+        ${inputField({ name: "person", label: "ব্যক্তির নাম", value: v.person, required: true, list: "loan-names", attrs: 'maxlength="60" autocomplete="off"' })}
+        <datalist id="loan-names">${[...names].map((n) => `<option value="${esc(n)}"></option>`).join("")}</datalist>
+        <div class="two">${selectField({ name: "currency", label: "কারেন্সি", options: [["RM", "RM"], ["BDT", "BDT (৳)"]], value: v.currency, required: true })}
+        <div class="fld"><label for="f-amount">পরিমাণ <span class="req" aria-hidden="true">*</span></label><input id="f-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${esc(existing ? C.minorToDecimal(v.amountMinor) : "")}" required></div></div>
+        <div class="two">${inputField({ name: "date", label: "তারিখ", type: "date", value: v.date, required: true })}${inputField({ name: "dueDate", label: "ফেরতের তারিখ (ঐচ্ছিক)", type: "date", value: v.dueDate })}</div>
+        ${inputField({ name: "note", label: "নোট (ঐচ্ছিক)", value: v.note, attrs: 'maxlength="200"' })}`,
+      onSubmit: async (raw) => {
+        const errors = {};
+        const person = String(raw.person || "").trim();
+        if (!person) errors.person = "নাম লিখুন।";
+        const amountMinor = parseMinor(raw.amount);
+        if (!amountMinor) errors.amount = "সঠিক পরিমাণ লিখুন (যেমন 500 বা 500.50)।";
+        else if (existing && amountMinor < loanPaid(existing)) errors.amount = "এতে ইতিমধ্যে পরিশোধিত পরিমাণের চেয়ে কম হতে পারে না।";
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(raw.date || "")) errors.date = "তারিখ দিন।";
+        if (raw.dueDate && !/^\d{4}-\d{2}-\d{2}$/.test(raw.dueDate)) errors.dueDate = "তারিখ অবৈধ।";
+        if (Object.keys(errors).length) return { errors };
+        const l = { id: existing ? existing.id : newId(), direction: raw.direction === "borrowed" ? "borrowed" : "lent", person, currency: raw.currency === "BDT" ? "BDT" : "RM", amountMinor, date: raw.date, dueDate: raw.dueDate || "", note: String(raw.note || "").trim(), repayments: existing ? existing.repayments : [] };
+        try { await saveLoan(l, !!existing); } catch (err) { return { errors: { _form: failMessage(err) } }; }
+        ui_loans.tab = l.direction;
+        render();
+        toast(existing ? "আপডেট হয়েছে" : "সংরক্ষিত হয়েছে");
+        return null;
+      }
+    });
+  }
+
+  function repayForm(l) {
+    const rem = loanRemain(l);
+    openForm({
+      title: l.direction === "lent" ? "পরিশোধ পেয়েছি" : "পরিশোধ করেছি",
+      submit: "পরিশোধ যোগ করুন",
+      body: `<p class="cmp-note">${esc(l.person)} · বাকি <b>${loanMoney(l.currency, rem)}</b></p>
+        ${amountField(l.currency, "")}
+        ${inputField({ name: "date", label: "তারিখ", type: "date", value: today(), required: true })}
+        ${inputField({ name: "note", label: "নোট (ঐচ্ছিক)", attrs: 'maxlength="120"' })}`,
+      onSubmit: async (raw) => {
+        const errors = {};
+        const amountMinor = parseMinor(raw.amount);
+        if (!amountMinor) errors.amount = "সঠিক পরিমাণ লিখুন।";
+        else if (amountMinor > rem) errors.amount = `বাকি ${loanMoney(l.currency, rem)}-এর বেশি হতে পারে না।`;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(raw.date || "")) errors.date = "তারিখ দিন।";
+        if (Object.keys(errors).length) return { errors };
+        const next = { ...l, repayments: [...l.repayments, { id: newId(), date: raw.date, amountMinor, note: String(raw.note || "").trim() }] };
+        try { await saveLoan(next, true); } catch (err) { return { errors: { _form: failMessage(err) } }; }
+        render();
+        toast("পরিশোধ যোগ হয়েছে");
+        return null;
+      }
+    });
+  }
+
+  function loanView(l) {
+    const reps = [...l.repayments].sort((a, b) => (a.date < b.date ? 1 : -1));
+    dlg.innerHTML = `<div class="dlg-form"><div class="dlg-head"><h2 id="dlg-title">${esc(l.person)}</h2><button type="button" class="icon-btn" data-close aria-label="বন্ধ করুন">${icon("x")}</button></div>
+      <div class="dlg-body"><p class="cmp-note">${l.direction === "lent" ? "আমি ধার দিয়েছি" : "আমি ধার নিয়েছি"} · ${esc(fmtDate(l.date))}${l.dueDate ? ` · ফেরত ${esc(fmtDate(l.dueDate))}` : ""}${l.note ? `<br>${esc(l.note)}` : ""}</p>
+      <div class="loan-nums"><span>মোট<b>${loanMoney(l.currency, l.amountMinor)}</b></span><span>পরিশোধিত<b>${loanMoney(l.currency, loanPaid(l))}</b></span><span>বাকি<b>${loanMoney(l.currency, loanRemain(l))}</b></span></div>
+      <h3 style="margin:14px 0 4px">পরিশোধের ইতিহাস</h3>
+      ${reps.length ? `<ul class="hist">${reps.map((q) => `<li><span>${esc(fmtDate(q.date))}${q.note ? ` · ${esc(q.note)}` : ""}</span><span><b>${loanMoney(l.currency, q.amountMinor)}</b> <button type="button" class="icon-btn del" data-rp="${esc(q.id)}" aria-label="এই পরিশোধ মুছুন">${icon("trash")}</button></span></li>`).join("")}</ul>` : '<p class="cmp-note">এখনো কোনো পরিশোধ নেই।</p>'}</div>
+      <div class="dlg-foot"><button type="button" class="btn ghost" data-close>বন্ধ করুন</button></div></div>`;
+    dlg.querySelectorAll("[data-rp]").forEach((b) =>
+      b.addEventListener("click", async () => {
+        const q = l.repayments.find((x) => x.id === b.dataset.rp);
+        if (!q) return;
+        if (!window.confirm(`${fmtDate(q.date)} · ${loanMoney(l.currency, q.amountMinor)} পরিশোধটি মুছবেন?`)) return;
+        const next = { ...l, repayments: l.repayments.filter((x) => x.id !== q.id) };
+        try { await saveLoan(next, true); } catch (err) { toast(failMessage(err)); return; }
+        render();
+        loanView(next);
+        toast("পরিশোধ মুছে ফেলা হয়েছে");
+      })
+    );
+    if (!dlg.open) dlg.showModal();
+  }
+
+  async function removeLoan(id) {
+    const l = state.loans.find((x) => x.id === id);
+    if (!l) return;
+    const ok = await confirmDialog({ title: "এই রেকর্ড মুছবেন?", message: `${esc(l.person)} · <b>${loanMoney(l.currency, l.amountMinor)}</b><br>পরিশোধের ইতিহাসসহ মুছে যাবে, ফেরানো যাবে না।`, confirmLabel: "মুছে ফেলুন", danger: true });
+    if (!ok) return;
+    try { await cloud.deleteRow("loans", id); } catch (err) { toast(failMessage(err)); return; }
+    state.loans = state.loans.filter((x) => x.id !== id);
+    render();
+    toast("মুছে ফেলা হয়েছে");
+  }
+
+  function loanActs(act, id) {
+    const l = state.loans.find((x) => x.id === id);
+    if (!l) return;
+    if (act === "loan-pay") repayForm(l);
+    else if (act === "loan-view") loanView(l);
+    else if (act === "loan-edit") loanForm(l);
+    else if (act === "loan-del") removeLoan(id);
+  }
+
+  function loansRegion() {
+    const f = ui_loans;
+    const q = f.query.trim().toLowerCase();
+    const list = state.loans
+      .filter((l) => l.direction === f.tab)
+      .filter((l) => !q || l.person.toLowerCase().includes(q) || l.note.toLowerCase().includes(q))
+      .filter((l) => !f.status || loanStatus(l) === f.status)
+      .filter((l) => (!f.from || l.date >= f.from) && (!f.to || l.date <= f.to))
+      .sort((a, b) => (a.date < b.date ? 1 : -1));
+    if (!list.length) return `<section class="card">${emptyBox("wallet", state.loans.some((l) => l.direction === f.tab) ? "এই ফিল্টারে কিছু নেই" : "এখনো কোনো রেকর্ড নেই", "")}</section>`;
+    return `<section class="card">${list.map((l) => {
+      const st = loanStatus(l);
+      const pct = l.amountMinor ? Math.min(100, Math.round((loanPaid(l) / l.amountMinor) * 100)) : 0;
+      const stLabel = st === "done" ? "পরিশোধিত" : st === "late" ? "মেয়াদোত্তীর্ণ" : "বাকি আছে";
+      return `<div class="loan ${l.direction === "lent" ? "in" : "out"}">
+        <div class="loan-top"><div><div class="loan-name">${esc(l.person)}</div><div class="row-meta"><span>${esc(fmtDate(l.date))}</span>${l.dueDate ? `<span>ফেরত: ${esc(fmtDate(l.dueDate))}</span>` : ""}${l.note ? `<span>${esc(l.note)}</span>` : ""}<span class="st ${st}">${stLabel}</span></div></div>
+        ${menuHtml(esc(l.person), [
+          { act: "loan-pay", id: l.id, label: "পরিশোধ যোগ করুন", ic: "check" },
+          { act: "loan-view", id: l.id, label: "ইতিহাস দেখুন", ic: "eye" },
+          { act: "loan-edit", id: l.id, label: "সম্পাদনা", ic: "pencil" },
+          { act: "loan-del", id: l.id, label: "মুছুন", ic: "trash", del: true }
+        ])}</div>
+        <div class="loan-nums"><span>মোট<b>${loanMoney(l.currency, l.amountMinor)}</b></span><span>পরিশোধিত<b>${loanMoney(l.currency, loanPaid(l))}</b></span><span>বাকি<b>${loanMoney(l.currency, loanRemain(l))}</b></span></div>
+        <div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div>
+        ${loanRemain(l) > 0 ? `<div class="loan-act"><button type="button" class="btn sm primary" data-act="loan-pay" data-id="${esc(l.id)}">${icon("check", "sm")} Mark Repayment</button></div>` : ""}
+      </div>`;
+    }).join("")}</section>`;
+  }
+
+  function renderLoans() {
+    const f = ui_loans;
+    const setup = state.loansStatus === "missing"
+      ? `<div class="banner warn">${icon("alert")}<div><b>Loans টেবিল এখনো তৈরি হয়নি।</b><p>Appwrite-এ Table ID <code>loans</code> দিয়ে টেবিল বানান। কলাম: direction, person, currency (string), amountMinor (integer), date (string), dueDate, note (string, ঐচ্ছিক), repayments (string, size 10000, ঐচ্ছিক)। Permissions-এ Create → All users, আর Row security চালু।</p></div></div>`
+      : state.loansStatus === "error" ? `<div class="banner err">${icon("alert")}<span>Loans ডেটা আনা যায়নি। পেজ রিফ্রেশ করে দেখুন।</span></div>` : "";
+    const sums = ["RM", "BDT"].map((c) => `<div class="tile loan-in"><span class="k">আমাকে দেবে (${c})</span><span class="v">${loanMoney(c, loanTotals(c, "lent"))}</span></div><div class="tile loan-out"><span class="k">আমি দেব (${c})</span><span class="v">${loanMoney(c, loanTotals(c, "borrowed"))}</span></div>`).join("");
+    return `<div class="page-head"><div><h1>Loans &amp; Debt</h1><p>ধার দেওয়া-নেওয়া · RM ও BDT আলাদা হিসাব</p></div><div class="actions"><button type="button" class="btn primary" data-act="loan-add">${icon("plus")} যোগ করুন</button></div></div>
+    ${setup}
+    <div class="tiles two" style="margin-top:12px">${sums}</div>
+    <div class="seg" role="tablist"><button type="button" class="in${f.tab === "lent" ? " on" : ""}" data-act="loan-tab" data-id="lent" role="tab">Owed to Me</button><button type="button" class="out${f.tab === "borrowed" ? " on" : ""}" data-act="loan-tab" data-id="borrowed" role="tab">I Owe</button></div>
+    <div class="filters" role="group" aria-label="ফিল্টার">
+      <div class="fld"><label for="lf-q">নাম খুঁজুন</label><div class="sbox">${icon("search")}<input id="lf-q" type="search" data-lf="query" value="${esc(f.query)}" placeholder="খুঁজুন" autocomplete="off"></div></div>
+      <div class="fld"><label for="lf-s">স্ট্যাটাস</label><select id="lf-s" data-lf="status">${[["", "সব"], ["open", "বাকি আছে"], ["late", "মেয়াদোত্তীর্ণ"], ["done", "পরিশোধিত"]].map(([v, t]) => `<option value="${v}"${f.status === v ? " selected" : ""}>${t}</option>`).join("")}</select></div>
+      <div class="fld"><label for="lf-f">তারিখ থেকে</label><input id="lf-f" type="date" data-lf="from" value="${esc(f.from)}"></div>
+      <div class="fld"><label for="lf-t">তারিখ পর্যন্ত</label><input id="lf-t" type="date" data-lf="to" value="${esc(f.to)}"></div>
+    </div>
+    <div id="loan-region" class="region" style="margin-top:12px">${loansRegion()}</div>`;
+  }
+
+  function loanDashboardSection() {
+    const cell = (c) => `${tile(`আমাকে দেবে (${c})`, loanMoney(c, loanTotals(c, "lent")), { cls: "loan-in", sub: "Money Owed to Me" })}${tile(`আমি দেব (${c})`, loanMoney(c, loanTotals(c, "borrowed")), { cls: "loan-out", sub: "Money I Owe" })}`;
+    return `<div class="sec-head"><h2>ঋণ ও পাওনা</h2><a class="chip rm" href="#/loans">বিস্তারিত</a></div><div class="tiles two">${cell("RM")}${cell("BDT")}</div>`;
+  }
+
   function renderDashboard() {
     const key = thisMonth();
     const prevKey = C.shiftMonth(key, -1);
@@ -1629,6 +1907,7 @@ const FinanceCore = (() => {
       ${tile("বর্তমান ব্যালান্স", rm(life.balanceMinor), { cls: "rm strong", neg: life.balanceMinor < 0, sub: "মোট আয় − মোট ব্যক্তিগত খরচ" })}
     </div>
     <p class="cmp-note">BDT পরিবার-সহায়তা এই RM ব্যালান্সে ধরা হয় না।</p>
+    ${loanDashboardSection()}
     ${secHead("Bangladesh Family Support", "BDT")}
     <div class="tiles">
       ${tile("এই মাসে পাঠানো", bdt(cur.supportMinor), { cls: "bdt", sub: monthLabel(key) })}
@@ -1961,6 +2240,7 @@ const FinanceCore = (() => {
     income: { title: "Income", render: renderIncome, region: incomeRegion },
     expenses: { title: "Expenses", render: renderExpenses, region: expensesRegion },
     support: { title: "Family Support", render: renderSupport, region: supportRegion },
+    loans: { title: "Loans & Debt", render: renderLoans },
     monthly: { title: "Monthly Reports", render: renderMonthly },
     yearly: { title: "Yearly Reports", render: renderYearly },
     lifetime: { title: "Lifetime Total", render: renderLifetime },
@@ -2663,6 +2943,9 @@ const FinanceCore = (() => {
       else supportForm(existing);
       return;
     }
+    if (act === "loan-add") { loanForm(null); return; }
+    if (act === "loan-tab") { ui_loans.tab = el.dataset.id === "borrowed" ? "borrowed" : "lent"; render(); return; }
+    if (/^loan-(pay|view|edit|del)$/.test(act)) { loanActs(act, el.dataset.id); return; }
     switch (act) {
       case "month-prev":
       case "month-next": {
@@ -2879,6 +3162,13 @@ const FinanceCore = (() => {
       const er = fld && fld.querySelector(".err");
       if (er) er.remove();
       e.target.removeAttribute("aria-invalid");
+    }
+    const lf = e.target.closest("[data-lf]");
+    if (lf) {
+      ui_loans[lf.dataset.lf] = lf.value;
+      const reg = $("#loan-region");
+      if (reg) reg.innerHTML = loansRegion();
+      return;
     }
     const el = e.target.closest("[data-filter]");
     if (el) applyFilter(el);

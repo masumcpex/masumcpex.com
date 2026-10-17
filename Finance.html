@@ -418,6 +418,9 @@ body.auth .content{max-width:none;padding:0}
     <symbol id="i-bars" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></symbol>
     <symbol id="i-infinity" viewBox="0 0 24 24"><path d="M6 16c5 0 7-8 12-8a4 4 0 0 1 0 8c-5 0-7-8-12-8a4 4 0 1 0 0 8"/></symbol>
     <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+    <symbol id="i-telegram" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
     <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
     <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></symbol>
@@ -1048,8 +1051,9 @@ const FinanceCore = (() => {
     contact: "যোগাযোগ করুন, ইমেইল, ওয়েবসাইট ও টেলিগ্রাম"
   };
   const LOGO_URL = "masum.png";
+  const PHOTO_URL = "masum.webp";
   const BACKUP_GATE = { salt: "jZ0+Bhu94nOHBIFE4lpNgQ==", iter: 250000, hash: "ce398a9528863a372eb28e0391788f4147f615aa5fb38fcf16e2e339207ffa64" };
-  const CONTACT = { primary: "admin@masumcpex.com", alt: "contact@masumcpex.com", site: "masumcpex.com", location: "Malaysia", telegram: "masumcpex" };
+  const CONTACT = { primary: "admin@masumcpex.com", alt: "contact@masumcpex.com", site: "masumcpex.bro.bd", location: "Malaysia", telegram: "masumcpex" };
 
   const APPWRITE = {
     endpoint: "https://nyc.cloud.appwrite.io/v1",
@@ -2118,15 +2122,15 @@ const FinanceCore = (() => {
 
   function renderContact() {
     const copyBtn = (v) => `<button type="button" class="ct-copy" data-act="copy" data-copy="${esc(v)}" aria-label="কপি করুন">কপি</button>`;
-    const row = (href, label, value, raw) => `<li class="contact-item"><a href="${href}"${href.startsWith("http") ? ' target="_blank" rel="noopener noreferrer"' : ""}><span class="ico">${icon("mail")}</span><span><small>${label}</small><b>${value}</b></span></a>${copyBtn(raw)}</li>`;
+    const row = (href, label, value, raw, ic = "mail") => `<li class="contact-item"><a href="${href}"${href.startsWith("http") ? ' target="_blank" rel="noopener noreferrer"' : ""}><span class="ico">${icon(ic)}</span><span><small>${label}</small><b>${value}</b></span></a>${copyBtn(raw)}</li>`;
     return `<div class="page-head"><div><h1>Contact</h1><p>কোনো প্রশ্ন, পরামর্শ বা সমস্যা হলে যোগাযোগ করুন</p></div></div>
-    <section class="card"><div class="ct-hero"><img src="${LOGO_URL}" alt="Masum" onerror="this.style.display='none'"><div><h2>Masum Cpex</h2><p class="cmp-note" style="margin:0">Writer &amp; Web Publisher · ${CONTACT.location}</p></div></div>
+    <section class="card"><div class="ct-hero"><img src="${PHOTO_URL}" alt="Masum" onerror="this.onerror=null;this.src='${LOGO_URL}'"><div><h2>Masum Cpex</h2><p class="cmp-note" style="margin:0">Writer &amp; Web Publisher · ${CONTACT.location}</p></div></div>
       <ul class="ct-list">
         ${row("mailto:" + CONTACT.primary, "Primary Email", CONTACT.primary, CONTACT.primary)}
         ${row("mailto:" + CONTACT.alt, "Alternative Email", CONTACT.alt, CONTACT.alt)}
-        ${row("https://" + CONTACT.site, "Website", CONTACT.site, CONTACT.site)}
-        ${row("https://t.me/" + CONTACT.telegram, "Telegram", "@" + CONTACT.telegram, "@" + CONTACT.telegram)}
-        <li class="contact-item"><div><span class="ico">${icon("mail")}</span><span><small>Location</small><b>${CONTACT.location}</b></span></div>${copyBtn(CONTACT.location)}</li>
+        ${row("https://" + CONTACT.site, "Website", CONTACT.site, CONTACT.site, "globe")}
+        ${row("https://t.me/" + CONTACT.telegram, "Telegram", "@" + CONTACT.telegram, "@" + CONTACT.telegram, "telegram")}
+        <li class="contact-item"><div><span class="ico">${icon("pin")}</span><span><small>Location</small><b>${CONTACT.location}</b></span></div>${copyBtn(CONTACT.location)}</li>
       </ul></section>
     <section class="card" style="margin-top:14px"><h3>Send a Message</h3>
       <p class="cmp-note">নিচে লিখে পাঠালে আপনার ইমেইল অ্যাপ খুলবে, সেখান থেকে সেন্ড করুন।</p>

@@ -301,6 +301,27 @@ body.auth .content{max-width:none;padding:0}
 .form-status{font-size:.88rem;font-weight:600;min-height:1.2em;margin:0}
 .form-status.ok{color:var(--teal)}.form-status.err{color:var(--red)}
 .btn.loading{opacity:.65;pointer-events:none}
+.seg button{display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.pref{display:grid;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.pref:first-of-type{border-top:0;padding-top:4px}
+.pref-h{display:flex;align-items:center;gap:12px}
+.pref-h .ico{width:42px;height:42px;border-radius:12px;background:var(--teal-soft);color:var(--teal-dark);display:grid;place-items:center;flex:none}
+.pref-h b{display:block}.pref-h small{display:block;color:var(--muted);font-size:.84rem;margin-top:1px}
+.pref .seg{margin:0}
+.priv-intro{color:var(--muted);font-size:.92rem;margin:4px 0 8px}
+.priv{border-top:1px solid var(--line)}
+.priv summary{display:flex;align-items:center;gap:12px;min-height:52px;cursor:pointer;font-weight:600;list-style:none}
+.priv summary::-webkit-details-marker{display:none}
+.priv summary::after{content:"+";margin-left:auto;color:var(--muted);font-size:1.3rem;font-weight:400}
+.priv[open] summary::after{content:"–"}
+.priv .n{width:28px;height:28px;border-radius:9px;background:var(--teal-soft);color:var(--teal-dark);display:grid;place-items:center;font-size:.85rem;flex:none}
+.priv p{margin:0 0 14px 40px;color:var(--muted);font-size:.92rem;line-height:1.65}
+.off-tips{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.off-tips li{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--soft,#F1F5F9);font-size:.92rem}
+.off-det{font-size:.85rem;color:var(--muted)}
+.off-det summary{cursor:pointer;padding:6px 0}
+.lg-legal{text-align:center;margin-top:14px;font-size:.75rem}
+.lg-legal a{color:#6B7684;text-decoration:none}.lg-legal a:hover{text-decoration:underline;color:var(--blue)}
 .legal-list{list-style:none;margin:6px 0 0;padding:0}
 .legal-list li+li{border-top:1px solid var(--line)}
 .legal-list a{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:60px;padding:10px 2px;text-decoration:none}
@@ -477,6 +498,9 @@ html[data-theme=dark] .ct-form textarea{border-color:var(--line)}
     <symbol id="i-telegram" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></symbol>
     <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
     <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
     <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
     <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></symbol>
@@ -1490,7 +1514,7 @@ const FinanceCore = (() => {
 
   function errorMessage(err) {
     if (!err) return "অজানা সমস্যা হয়েছে।";
-    if (err.status === 0) return "Appwrite-এ পৌঁছানো যায়নি। ইন্টারনেট দেখুন এবং Appwrite-এর Platform-এ এই সাইটের হোস্টনেম যোগ করা আছে কিনা যাচাই করুন।";
+    if (err.status === 0) return "ইন্টারনেট সংযোগ পাওয়া যায়নি। নেট চালু আছে কিনা দেখে আবার চেষ্টা করুন।";
     if (err.status === 401) return "লগইন সেশন শেষ হয়েছে। আবার লগইন করুন।";
     if (err.status === 404) return /^(টেবিল|ডাটাবেস|এই টেবিলগুলো)/.test(err.message) ? err.message : "ডাটাবেস বা টেবিল পাওয়া যায়নি। Database ID ও Table ID যাচাই করুন।";
     if (err.status === 409) return "এই রেকর্ড বা ইমেইল আগে থেকেই আছে।";
@@ -1697,9 +1721,11 @@ const FinanceCore = (() => {
   const LANG = lsGet("fin-lang") === "en" ? "en" : "bn";
   const I18N = {"আমাকে দেবে":"Owed to Me","আমি দেব":"I Owe","ঋণ ও পাওনা":"Loans & Debts","বিস্তারিত":"Details","যোগ করুন":"Add","মুছুন":"Delete","সম্পাদনা":"Edit","কপি":"Copy","বাতিল":"Cancel","বন্ধ করুন":"Close","নিশ্চিত করুন":"Confirm","সংরক্ষণ করুন":"Save","সব":"All","সব বছর":"All years","সব মাস":"All months","খুঁজুন":"Search","ফিল্টার":"Filter","ডাউনলোড":"Download","সাইন আউট":"Sign out","একাউন্ট":"Account","তারিখ":"Date","ধরন":"Type","নোট":"Note","নোট (ঐচ্ছিক)":"Note (optional)","বিবরণ":"Description","বিবরণ / নোট":"Description / note","বিবরণ / নোট (ঐচ্ছিক)":"Description / note (optional)","রেফারেন্স":"Reference","রেফারেন্স (ঐচ্ছিক)":"Reference (optional)","রেফারেন্স / নোট (ঐচ্ছিক)":"Reference / note (optional)","পরিমাণ":"Amount","টাকার অংক":"Amount","ক্যাটাগরি":"Category","মাধ্যম":"Method","পদ্ধতি (ঐচ্ছিক)":"Method (optional)","প্রাপক":"Recipient","স্ট্যাটাস":"Status","মোট":"Total","বাকি":"Remaining","পরিশোধিত":"Paid","বাকি আছে":"Outstanding","মেয়াদোত্তীর্ণ":"Overdue","পরিশোধ যোগ করুন":"Add repayment","পরিশোধের ইতিহাস":"Repayment history","ইতিহাস দেখুন":"View history","পরিশোধ পেয়েছি":"Repayment received","পরিশোধ করেছি":"Repayment made","এখনো কোনো পরিশোধ নেই।":"No repayments yet.","এখনো কোনো রেকর্ড নেই":"No records yet","এখনো কোনো রেকর্ড নেই।":"No records yet.","কোনো রেকর্ড নেই":"No records","এই ফিল্টারে কিছু নেই":"Nothing matches this filter","এই ফিল্টারে কোনো আয় নেই":"No income matches this filter","এই ফিল্টারে কোনো খরচ নেই":"No expenses match this filter","এই ফিল্টারে কোনো ট্রান্সফার নেই":"No transfers match this filter","আয়":"Income","খরচ":"Expenses","ট্রান্সফার":"Transfers","আয় (RM)":"Income (RM)","খরচ (RM)":"Expenses (RM)","ব্যালেন্স (RM)":"Balance (RM)","অবশিষ্ট (RM)":"Remaining (RM)","পরিবার (BDT)":"Family (BDT)","পরিবারকে (BDT)":"To family (BDT)","পাঠানো (BDT)":"Sent (BDT)","পরিবারকে পাঠানো (BDT)":"Sent to family (BDT)","আয় যোগ করুন":"Add income","খরচ যোগ করুন":"Add expense","ট্রান্সফার যোগ করুন":"Add transfer","আয় সম্পাদনা":"Edit income","খরচ সম্পাদনা":"Edit expense","ট্রান্সফার সম্পাদনা":"Edit transfer","আয় সংরক্ষিত হয়েছে":"Income saved","খরচ সংরক্ষিত হয়েছে":"Expense saved","ট্রান্সফার সংরক্ষিত হয়েছে":"Transfer saved","আয় আপডেট হয়েছে":"Income updated","খরচ আপডেট হয়েছে":"Expense updated","ট্রান্সফার আপডেট হয়েছে":"Transfer updated","আয়ের তালিকা (RM)":"Income list (RM)","খরচের তালিকা (RM)":"Expense list (RM)","আয়ের ধরন":"Income type","আয়ের প্রথম রেকর্ড যোগ করুন।":"Add your first income record.","প্রথম খরচের রেকর্ড যোগ করুন।":"Add your first expense record.","পরিবারকে পাঠানো প্রথম টাকার রেকর্ড যোগ করুন।":"Add your first record of money sent to family.","ট্রান্সফারের তারিখ":"Transfer date","ট্রান্সফার সংখ্যা":"Number of transfers","মোট ট্রান্সফার":"Total transfers","মোট পাঠানো":"Total sent","মোট আয়":"Total income","মোট ব্যক্তিগত খরচ":"Total personal expenses","সাম্প্রতিক আয়":"Recent income","সাম্প্রতিক খরচ":"Recent expenses","সাম্প্রতিক পরিবার-সহায়তা":"Recent family support","এই মাসের আয়":"This month's income","এই মাসের ব্যক্তিগত খরচ":"This month's personal expenses","এই মাসের অবশিষ্ট":"This month's remaining","এই মাসে পাঠানো":"Sent this month","গত মাসে পাঠানো":"Sent last month","আজীবন মোট আয়":"Lifetime income","আজীবন মোট খরচ":"Lifetime expenses","আজীবন মোট পাঠানো":"Lifetime total sent","বর্তমান ব্যালান্স":"Current balance","অবশিষ্ট ব্যালান্স":"Remaining balance","মোট আয় (আজীবন)":"Total income (lifetime)","মোট খরচ (আজীবন)":"Total expenses (lifetime)","মোট আয় − মোট ব্যক্তিগত খরচ":"Total income − total personal expenses","পার্থক্য":"Difference","শতাংশ পরিবর্তন":"Percentage change","আগের মাস":"Previous month","পরের মাস":"Next month","মাস":"Month","বছর":"Year","মাসিক সারসংক্ষেপ":"Monthly summary","মাসভিত্তিক বিবরণ":"Monthly breakdown","আগের মাসের তুলনায়":"vs previous month","অসম্পূর্ণ হতে পারে":"may be incomplete","সম্পূর্ণ হিসেবে চিহ্নিত":"Marked complete","সম্পূর্ণ হিসেবে চিহ্নিত করুন":"Mark as complete","সম্পূর্ণ চিহ্ন তুলুন":"Remove complete mark","সর্বোচ্চ রেকর্ড করা মাস":"Highest recorded month","সর্বনিম্ন রেকর্ড করা মাস":"Lowest recorded month","রেকর্ড করা সংখ্যা":"Records count","ফিল্টার অনুযায়ী মোট আয়":"Total income (filtered)","ফিল্টার অনুযায়ী মোট খরচ":"Total expenses (filtered)","ফিল্টার অনুযায়ী মোট পাঠানো":"Total sent (filtered)","শুরু থেকে এখন পর্যন্ত মোট হিসাব":"Total since the beginning","শেষ ৬ মাসে পাঠানো টাকা":"Money sent in the last 6 months","পরিবারকে পাঠানো টাকা":"Money sent to family","জানুয়ারি–ডিসেম্বর সারসংক্ষেপ ও চার্ট":"January–December summary & chart","যেকোনো মাসের রিপোর্ট ও আগের মাসের সাথে তুলনা":"Report for any month and comparison with the previous month","BDT পরিবার-সহায়তা এই RM ব্যালান্সে ধরা হয় না।":"BDT family support is not counted in this RM balance.","ধার দেওয়া-নেওয়ার হিসাব":"Lending and borrowing records","ধার দেওয়া-নেওয়া, পরিশোধ ও বাকি হিসাব":"Lending, borrowing, repayments and balances","আমি ধার দিয়েছি":"I lent","আমি ধার নিয়েছি":"I borrowed","আমি ধার দিয়েছি (আমাকে দেবে)":"I lent (owed to me)","আমি ধার নিয়েছি (আমি দেব)":"I borrowed (I owe)","ঋণ / পাওনা যোগ করুন":"Add loan / receivable","ঋণ সম্পাদনা":"Edit loan","ব্যক্তির নাম":"Person's name","ফেরতের তারিখ (ঐচ্ছিক)":"Due date (optional)","তারিখ থেকে":"From date","তারিখ পর্যন্ত":"To date","নাম খুঁজুন":"Search name","এই পরিশোধ মুছুন":"Delete this repayment","এই রেকর্ড মুছবেন?":"Delete this record?","পরিশোধ যোগ হয়েছে":"Repayment added","পরিশোধ মুছে ফেলা হয়েছে":"Repayment deleted","ঋণ ও পাওনা ডাউনলোডে আসে না":"Loans & debts are not included in downloads","Loans টেবিল এখনো তৈরি হয়নি।":"The Loans table has not been created yet.","Loans ডেটা আনা যায়নি। পেজ রিফ্রেশ করে দেখুন।":"Could not load loans data. Refresh the page.","সংরক্ষিত হয়েছে":"Saved","আপডেট হয়েছে":"Updated","মুছে ফেলা হয়েছে":"Deleted","মুছে ফেলুন":"Delete","সব মুছুন":"Delete all","কপি হয়েছে":"Copied","কপি করা যায়নি":"Could not copy","কপি করুন":"Copy","অজানা সমস্যা হয়েছে।":"Something went wrong.","অনলাইন":"Online","অফলাইন · ডেটা লোড/সেভ হবে না":"Offline · data will not load or save","লোড হচ্ছে…":"Loading…","অপেক্ষা করুন…":"Please wait…","নাম দিন।":"Enter a name.","নাম লিখুন।":"Enter a name.","তারিখ দিন।":"Enter a date.","তারিখ অবৈধ।":"Invalid date.","ইমেইল দিন।":"Enter your email.","সঠিক ইমেইল ঠিকানা দিন।":"Enter a valid email address.","সঠিক ইমেইল দিন।":"Enter a valid email.","বিষয় লিখুন।":"Enter a subject.","বার্তা লিখুন।":"Enter a message.","সঠিক পরিমাণ লিখুন।":"Enter a valid amount.","সঠিক পরিমাণ লিখুন (যেমন 500 বা 500.50)।":"Enter a valid amount (e.g. 500 or 500.50).","অনুগ্রহ করে চিহ্নিত ঘরগুলো ঠিক করুন।":"Please fix the highlighted fields.","পাসওয়ার্ড ভুল।":"Wrong password.","ইমেইল বা পাসওয়ার্ড ভুল।":"Incorrect email or password.","পাসওয়ার্ড দুটো মেলেনি।":"Passwords do not match.","পাসওয়ার্ড দেওয়া হয়নি।":"No password provided.","পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।":"Password must be at least 8 characters.","ব্যাকআপ পাসওয়ার্ড":"Backup password","ব্যাকআপ ডাউনলোড করতে পাসওয়ার্ড দিন":"Enter the password to download the backup","ব্যাকআপ ফাইল তৈরি হয়েছে":"Backup file created","CSV ফাইল তৈরি হয়েছে":"CSV file created","এনক্রিপ্ট করা যায়নি।":"Could not encrypt.","সাইন আউট করবেন?":"Sign out?","সাইন আউট হয়েছে":"Signed out","সব ডেটা মুছবেন?":"Delete all data?","সব ডেটা মুছে ফেলা হয়েছে":"All data deleted","লোকাল কপি মুছবেন?":"Delete local copy?","লোকাল কপি মুছে ফেলা হয়েছে":"Local copy deleted","নিশ্চিত শূন্য":"Confirmed zero","এখনো নেওয়া হয়নি":"Not taken yet","ফাইল":"File","প্রিভিউ দেখুন":"Preview","ক্লাউডে ইমপোর্ট করুন":"Import to cloud","এই ডিভাইসের লোকাল ডেটা":"Local data on this device","ব্যাকআপ, রিস্টোর, CSV ও গোপনীয়তা":"Backup, restore, CSV & privacy","একাউন্ট, ব্যাকআপ, রিস্টোর, এক্সপোর্ট ও গোপনীয়তা":"Account, backup, restore, export & privacy","রিপোর্ট ও সেটিংস":"Reports & settings","লগইন করা আছে:":"Signed in as:","ব্যবহারকারী":"User","শেষ ব্যবহার":"Last used","এই ফিল্টারে":"in this filter","আপনার বর্তমান ডেটা অপরিবর্তিত আছে।":"Your current data is unchanged.","ডেটা লোড হয়নি":"Data did not load","সংযোগ হয়নি":"Not connected","কোনো প্রশ্ন, পরামর্শ বা সমস্যা হলে যোগাযোগ করুন":"Questions, suggestions or issues? Get in touch","নিচে লিখে পাঠালে আপনার ইমেইল অ্যাপ খুলবে, সেখান থেকে সেন্ড করুন।":"Write below and your email app will open; send the message from there.","ধন্যবাদ! আপনার ইমেইল অ্যাপ খুলেছে, সেখান থেকে সেন্ড করুন।":"Thank you! Your email app has opened; send the message from there.","যোগাযোগ করুন, ইমেইল, ওয়েবসাইট ও টেলিগ্রাম":"Contact, email, website & Telegram","ভাষা ও থিম":"Language & Theme","ভাষা":"Language","থিম":"Theme","লাইট":"Light","ডার্ক":"Dark","সিস্টেম":"System","ব্যক্তিগত খরচ":"Personal expenses","ব্যক্তিগত খরচ · শুধু RM":"Personal expenses · RM only","বাংলাদেশে পরিবারকে পাঠানো · শুধু BDT · হাতে লেখা পরিমাণ":"Sent to family in Bangladesh · BDT only · amount entered manually","শুধু মালয়েশিয়ান রিঙ্গিত (RM)":"Malaysian ringgit (RM) only","মাস-ভিত্তিক RM আয় ও খরচ":"Monthly RM income & expenses","মাস-ভিত্তিক পরিবার-সহায়তা (BDT)":"Monthly family support (BDT)","ক্যাটাগরি অনুযায়ী খরচ":"Expenses by category","বেতন":"Salary","বোনাস":"Bonus","ওভারটাইম":"Overtime","অন্যান্য":"Other","খাবার":"Food","চিকিৎসা":"Medical","থাকা ও ভাড়া":"Housing & rent","পোশাক":"Clothing","মোবাইল ও ইন্টারনেট":"Mobile & internet","যাতায়াত":"Transport","ব্যক্তিগত কেনাকাটা":"Personal shopping","ব্যাংক":"Bank","রেমিট্যান্স সার্ভিস":"Remittance service","মা":"Mother","বাবা":"Father","পরিবার":"Family","অক্টো":"Oct","—  বাছাই নেই —":"— none selected —","— বাছাই নেই —":"— none selected —"};
   Object.assign(I18N, { "আপনার তথ্য কীভাবে সংগ্রহ, ব্যবহার ও সুরক্ষিত হয়": "How your information is collected, used and protected", "এই অ্যাপ ব্যবহারের শর্তাবলী": "The terms for using this app", "কুকি ও লোকাল স্টোরেজ কীভাবে ব্যবহার হয়": "How cookies and local storage are used" });
+  Object.assign(I18N, { "ইন্টারনেট সংযোগ নেই": "No internet connection", "আপনার ডেটা ক্লাউডে নিরাপদ আছে। সংযোগ ফিরলে অ্যাপ নিজে থেকেই আবার চেষ্টা করবে।": "Your data is safe in the cloud. The app will retry automatically when you are back online.", "Wi-Fi বা মোবাইল ডেটা চালু করুন": "Turn on Wi-Fi or mobile data", "Flight mode বন্ধ আছে কিনা দেখুন": "Check that Flight mode is off", "ঠিক হলে নিচের বাটনে চাপুন": "Then tap the button below", "আবার চেষ্টা করুন": "Try again", "টেকনিক্যাল তথ্য": "Technical details", "ইন্টারনেট সংযোগ পাওয়া যায়নি। নেট চালু আছে কিনা দেখে আবার চেষ্টা করুন।": "No internet connection found. Check your connection and try again.", "আপনার ডেটা ও গোপনীয়তা": "Your Data & Privacy", "অ্যাপ কোন ভাষায় দেখবেন": "Choose the app language", "আলো, অন্ধকার, অথবা ফোনের সেটিং অনুযায়ী": "Light, dark, or follow your phone" });
+  window.addEventListener("online", () => { if (state.bootError && typeof boot === "function") boot(); });
   const MON = { "জানুয়ারি": "January", "ফেব্রুয়ারি": "February", "মার্চ": "March", "এপ্রিল": "April", "মে": "May", "জুন": "June", "জুলাই": "July", "আগস্ট": "August", "সেপ্টেম্বর": "September", "অক্টোবর": "October", "নভেম্বর": "November", "ডিসেম্বর": "December", "জানু": "Jan", "ফেব্রু": "Feb", "এপ্রি": "Apr", "সেপ্টে": "Sep", "অক্টো": "Oct", "নভে": "Nov", "ডিসে": "Dec" };
   const MON_RE = new RegExp("(^|[\\s\\-–(])(" + Object.keys(MON).sort((a, b) => b.length - a.length).join("|") + ")(?=$|[\\s,.\\-–)])", "g");
-  const PATS = [[/(\d[\d,]*)টি রেকর্ড/g, "$1 records"], [/(\d+)টি ট্রান্সফার/g, "$1 transfers"], [/সংরক্ষিত রেকর্ড থেকে হিসাব/g, "calculated from saved records"], [/আমি ধার দিয়েছি/g, "I lent"], [/আমি ধার নিয়েছি/g, "I borrowed"], [/ফেরত: /g, "Due: "], [/ফেরত /g, "Due "], [/রেফ: /g, "Ref: "], [/শুধু /g, "only "]];
+  const PATS = [[/(\d[\d,]*)টি রেকর্ড/g, "$1 records"], [/(\d+)টি ট্রান্সফার/g, "$1 transfers"], [/সংরক্ষিত রেকর্ড থেকে হিসাব/g, "calculated from saved records"], [/আমি ধার দিয়েছি/g, "I lent"], [/আমি ধার নিয়েছি/g, "I borrowed"], [/ফেরত: /g, "Due: "], [/ফেরত /g, "Due "], [/রেফ: /g, "Ref: "]];
   const trText = (str) => {
     const t = str.trim();
     if (!t) return str;
@@ -1741,10 +1767,12 @@ const FinanceCore = (() => {
   }
   try { window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (THEME() === "system") applyTheme(); }); } catch (err) { /* ignore */ }
   const prefsCard = () => {
-    const opt = (act, id, label, on) => `<button type="button" class="${on ? "on" : ""}" data-act="${act}" data-id="${id}" aria-pressed="${on ? "true" : "false"}">${label}</button>`;
-    return `<section class="card"><h3>${icon("info", "sm")} ভাষা ও থিম</h3>
-      <div class="fld"><label>ভাষা / Language</label><div class="seg" role="group" aria-label="Language">${opt("set-lang", "bn", "বাংলা", LANG === "bn")}${opt("set-lang", "en", "English", LANG === "en")}</div></div>
-      <div class="fld"><label>থিম / Theme</label><div class="seg" role="group" aria-label="Theme">${opt("set-theme", "light", "লাইট", THEME() === "light")}${opt("set-theme", "dark", "ডার্ক", THEME() === "dark")}${opt("set-theme", "system", "সিস্টেম", THEME() === "system")}</div></div>
+    const opt = (act, id, ic, label, on) => `<button type="button" class="${on ? "on" : ""}" data-act="${act}" data-id="${id}" aria-pressed="${on ? "true" : "false"}">${ic ? icon(ic, "sm") : ""}<span>${label}</span></button>`;
+    return `<section class="card"><h3>${icon("sliders", "sm")} ভাষা ও থিম</h3>
+      <div class="pref"><div class="pref-h"><span class="ico">${icon("globe")}</span><div><b>ভাষা / Language</b><small>অ্যাপ কোন ভাষায় দেখবেন</small></div></div>
+        <div class="seg" role="group" aria-label="Language">${opt("set-lang", "bn", "", "বাংলা", LANG === "bn")}${opt("set-lang", "en", "", "English", LANG === "en")}</div></div>
+      <div class="pref"><div class="pref-h"><span class="ico">${icon(document.documentElement.dataset.theme === "dark" ? "moon" : "sun")}</span><div><b>থিম / Theme</b><small>আলো, অন্ধকার, অথবা ফোনের সেটিং অনুযায়ী</small></div></div>
+        <div class="seg" role="group" aria-label="Theme">${opt("set-theme", "light", "sun", "লাইট", THEME() === "light")}${opt("set-theme", "dark", "moon", "ডার্ক", THEME() === "dark")}${opt("set-theme", "system", "monitor", "সিস্টেম", THEME() === "system")}</div></div>
     </section>`;
   };
 
@@ -2302,15 +2330,15 @@ const FinanceCore = (() => {
     </section>
     ${isAdmin() ? `<section class="card"><h3>${icon("users", "sm")} ব্যবহারকারী (অ্যাডমিন)</h3><div id="admin-region" class="region"></div></section>` : ""}
     <div id="legacy-region" class="region">${legacyView()}</div>
-    <section class="card"><h3>${icon("shield", "sm")} আপনার ডেটা কোথায় থাকে</h3>
-      <ul class="notes">
-        <li>আপনার সব রেকর্ড Appwrite ক্লাউডে (নিউ ইয়র্ক সার্ভার) আপনার একাউন্টের নামে সংরক্ষিত হয়। যেকোনো ডিভাইসে লগইন করলে একই ডেটা পাবেন।</li>
-        <li>প্রতিটি রেকর্ডের অ্যাক্সেস শুধু আপনার একাউন্টের। অন্য ব্যবহারকারী আপনার ডেটা দেখতে বা বদলাতে পারে না।</li>
-        <li>ডেটা এন্ড-টু-এন্ড এনক্রিপ্টেড নয়। সাইটের অ্যাডমিন Appwrite কনসোল থেকে ডেটাবেস দেখতে পারেন। তাই অ্যাপে এমন তথ্য রাখবেন না যা অ্যাডমিনের দেখা চলবে না।</li>
-        <li>লগইন টোকেন এই ব্রাউজারের localStorage-এ থাকে। শেয়ার করা ডিভাইসে কাজ শেষে সাইন আউট করুন।</li>
-        <li>ডেটা লোড ও সেভ করতে ইন্টারনেট লাগে। অফলাইনে শুধু অ্যাপের পেজ খোলে।</li>
-        <li>নিয়মিত JSON ব্যাকআপ নিয়ে নিরাপদ জায়গায় রাখুন। ব্যাকআপ ফাইল পাসওয়ার্ড দিয়ে এনক্রিপ্টেড থাকে।</li>
-      </ul>
+    <section class="card"><h3>${icon("shield", "sm")} আপনার ডেটা ও গোপনীয়তা</h3>
+      <p class="priv-intro">আপনার আর্থিক তথ্যের গোপনীয়তা ও নিরাপত্তা আমাদের কাছে গুরুত্বপূর্ণ। Finance Tracker-এ আপনার তথ্য কীভাবে সংরক্ষিত ও পরিচালিত হয়, তা নিচে তুলে ধরা হলো।</p>
+      <details class="priv"><summary><span class="n">১</span>ক্লাউডে নিরাপদ সংরক্ষণ</summary><p>আপনার আয়, ব্যয় এবং অন্যান্য আর্থিক রেকর্ড আপনার অ্যাকাউন্টের সঙ্গে যুক্ত Appwrite Cloud Database-এ সংরক্ষিত থাকে। ইন্টারনেট সংযোগসহ সমর্থিত ডিভাইস থেকে আপনার অ্যাকাউন্টে প্রবেশ করে ডেটা ব্যবহার করতে পারবেন।</p></details>
+      <details class="priv"><summary><span class="n">২</span>ব্যক্তিগত ডেটা অ্যাক্সেস</summary><p>আপনার আর্থিক রেকর্ডে অননুমোদিত প্রবেশ ঠেকাতে উপযুক্ত অ্যাকাউন্ট ও ডেটাবেস পারমিশন কনফিগার করা থাকা জরুরি। Family ফিচারের মাধ্যমে অন্য কারও সঙ্গে তথ্য শেয়ার করা হলে, সেটি নির্ধারিত অ্যাক্সেস নিয়ম অনুযায়ী পরিচালিত হবে।</p></details>
+      <details class="priv"><summary><span class="n">৩</span>নিরাপত্তা ও সীমাবদ্ধতা</summary><p>ডেটা সুরক্ষায় অ্যাপের লগইন ব্যবস্থা, সার্ভার-সাইড পারমিশন এবং নিরাপদ সংযোগ গুরুত্বপূর্ণ ভূমিকা রাখে। তবে কোনো অনলাইন সিস্টেমকেই শতভাগ ঝুঁকিমুক্ত বলা যায় না। তাই আপনার পাসওয়ার্ড ও অ্যাকাউন্টের তথ্য গোপন রাখুন।</p></details>
+      <details class="priv"><summary><span class="n">৪</span>লগইন ও ডিভাইস</summary><p>এই ব্রাউজারে সংরক্ষিত লগইন সেশন বা টোকেনের মাধ্যমে আপনাকে পুনরায় লগইন করতে নাও হতে পারে। অন্যের ডিভাইস ব্যবহার করলে কাজ শেষে সাইন আউট করুন। শেয়ার করা ডিভাইসে আপনার অ্যাকাউন্ট খোলা রাখবেন না।</p></details>
+      <details class="priv"><summary><span class="n">৫</span>ইন্টারনেট ও ডেটা সিঙ্ক</summary><p>ক্লাউডে সংরক্ষিত তথ্য লোড ও আপডেট করতে ইন্টারনেট সংযোগ প্রয়োজন হতে পারে। সংযোগ না থাকলে অ্যাপের কিছু ফিচার সীমিতভাবে কাজ করতে পারে।</p></details>
+      <details class="priv"><summary><span class="n">৬</span>ব্যাকআপ ও ডেটা পুনরুদ্ধার</summary><p>গুরুত্বপূর্ণ আর্থিক রেকর্ড নিয়মিত JSON ব্যাকআপ হিসেবে এক্সপোর্ট করে নিরাপদ স্থানে রাখুন। ব্যাকআপে সংবেদনশীল তথ্য থাকতে পারে, তাই ফাইলটি পাসওয়ার্ড-সুরক্ষিত বা এনক্রিপ্টেড স্টোরেজে রাখুন। ব্যাকআপ তৈরি ও পুনরুদ্ধারের সুবিধা অ্যাপের বাস্তব ফিচার অনুযায়ী কাজ করবে।</p></details>
+      <p class="priv-intro" style="margin:12px 0 0">আপনার আর্থিক তথ্যের দায়িত্বশীল ব্যবহারই আমাদের অগ্রাধিকার।</p>
     </section>
     <section class="card"><h3>${icon("download", "sm")} ব্যাকআপ (JSON)</h3>
       <p class="cmp-note">সব রেকর্ড, মাস সম্পূর্ণ-চিহ্ন, স্কিমা ভার্সন ও তৈরির সময়সহ ফাইলটি আপনার ডিভাইসে নামে। কোথাও আপলোড হয় না।</p>
@@ -2420,11 +2448,21 @@ const FinanceCore = (() => {
       <div class="lg-or">or continue with</div>
       <div class="lg-social"><button type="button" data-act="google">${google}Google</button><button type="button" data-act="soon">${apple}Apple</button></div>
       ${signup ? "" : `<div class="lg-foot">Don't have an account? <button type="button" class="lg-link" data-act="auth-mode" data-value="signup">Sign Up</button></div>`}
+      <div class="lg-legal"><a href="https://masumcpex.bro.bd/legal#privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a></div>
     </div></div>`;
   }
 
   function connectionView() {
-    return `<div class="auth-wrap"><section class="card auth-card"><div class="auth-logo">${icon("wifi-off", "lg")}</div><h1>সংযোগ হয়নি</h1><div class="banner err">${icon("alert")}<span>${esc(errorMessage(state.bootError))}${techInfo(state.bootError)}</span></div><div class="actions"><button type="button" class="btn primary" data-act="retry-start">${icon("refresh", "sm")} আবার চেষ্টা করুন</button></div></section></div>`;
+    const net = !state.bootError || state.bootError.status === 0;
+    if (!net) {
+      return `<div class="auth-wrap"><section class="card auth-card"><div class="auth-logo">${icon("wifi-off", "lg")}</div><h1>সংযোগ হয়নি</h1><div class="banner err">${icon("alert")}<span>${esc(errorMessage(state.bootError))}${techInfo(state.bootError)}</span></div><div class="actions"><button type="button" class="btn primary" data-act="retry-start">${icon("refresh", "sm")} আবার চেষ্টা করুন</button></div></section></div>`;
+    }
+    return `<div class="auth-wrap"><section class="card auth-card"><div class="auth-logo">${icon("wifi-off", "lg")}</div><h1>ইন্টারনেট সংযোগ নেই</h1>
+      <p class="cmp-note" style="margin:0">আপনার ডেটা ক্লাউডে নিরাপদ আছে। সংযোগ ফিরলে অ্যাপ নিজে থেকেই আবার চেষ্টা করবে।</p>
+      <ul class="off-tips"><li>${icon("wifi", "sm")} Wi-Fi বা মোবাইল ডেটা চালু করুন</li><li>${icon("smartphone", "sm")} Flight mode বন্ধ আছে কিনা দেখুন</li><li>${icon("refresh", "sm")} ঠিক হলে নিচের বাটনে চাপুন</li></ul>
+      <div class="actions"><button type="button" class="btn primary" data-act="retry-start">${icon("refresh", "sm")} আবার চেষ্টা করুন</button></div>
+      <details class="off-det"><summary>টেকনিক্যাল তথ্য</summary><p style="margin:6px 0 0">ইন্টারনেট ঠিক থাকলেও এটি দেখালে Appwrite Platform-এ এই সাইটের হোস্টনেম যোগ করা আছে কিনা দেখুন।</p>${techInfo(state.bootError)}</details>
+    </section></div>`;
   }
 
   function loadErrorView() {

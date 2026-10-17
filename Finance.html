@@ -273,7 +273,7 @@ body.auth .content{max-width:none;padding:0}
 @media print{
   @page{margin:12mm}
   body{background:#fff!important}
-  .side,.top,.tabbar,.toast,.skip,#dlg,.pill,.actions,button,select,.picker,.filters,.region .toolbar{display:none!important}
+  .side,.top,.tabbar,.toast,.skip,#dlg,.pill,.actions,button,select,.picker,.filters,.region .toolbar,.no-print{display:none!important}
   .app{display:block}
   .main{margin:0!important}
   .content{max-width:none!important;padding:0!important}
@@ -1878,7 +1878,7 @@ const FinanceCore = (() => {
   }
 
   function loanDashboardSection() {
-    return `<div class="sec-head"><h2>ঋণ ও পাওনা</h2><a class="chip rm" href="#/loans">বিস্তারিত</a></div><div class="tiles two">${tile("আমাকে দেবে", loanMoney("", loanTotals("lent")), { cls: "loan-in" })}${tile("আমি দেব", loanMoney("", loanTotals("borrowed")), { cls: "loan-out" })}</div>`;
+    return `<div class="no-print"><div class="sec-head"><h2>ঋণ ও পাওনা</h2><a class="chip rm" href="#/loans">বিস্তারিত</a></div><div class="tiles two">${tile("আমাকে দেবে", loanMoney("", loanTotals("lent")), { cls: "loan-in" })}${tile("আমি দেব", loanMoney("", loanTotals("borrowed")), { cls: "loan-out" })}</div></div>`;
   }
 
   function renderDashboard() {
@@ -2135,7 +2135,7 @@ const FinanceCore = (() => {
     <section class="card" style="margin-top:14px"><h3>Send a Message</h3>
       <p class="cmp-note">নিচে লিখে পাঠালে আপনার ইমেইল অ্যাপ খুলবে, সেখান থেকে সেন্ড করুন।</p>
       <div class="ct-form" id="contactForm">
-        <div class="fld"><label for="cf-name">Name</label><input id="cf-name" name="name" type="text" autocomplete="name" value="${esc(state.user ? state.user.name || "" : "")}"></div>
+        <div class="fld"><label for="cf-name">Name</label><input id="cf-name" name="name" type="text" autocomplete="name" value="Masum Billah"></div>
         <div class="fld"><label for="cf-email">Email</label><input id="cf-email" name="email" type="email" autocomplete="email" value="${esc(state.user ? state.user.email || "" : "")}"></div>
         <div class="fld"><label for="cf-subject">Subject</label><input id="cf-subject" name="subject" type="text" value="Finance Tracker"></div>
         <div class="fld"><label for="cf-message">Message</label><textarea id="cf-message" name="message"></textarea></div>
@@ -3141,6 +3141,7 @@ const FinanceCore = (() => {
   });
   function printPage() {
     const id = currentRoute();
+    if (id === "loans") { toast("ঋণ ও পাওনা ডাউনলোডে আসে না"); return; }
     const page = PAGES[id] || { title: "Report" };
     const d = new Date();
     const stamp = d.toISOString().slice(0, 10);

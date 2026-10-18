@@ -198,6 +198,7 @@
 <div id="khUserBar" class="kh-user-bar" style="display:none;">
   <button type="button" class="wt-menu-btn wt-menu-btn--bar" data-wt-menu aria-label="Open menu" aria-controls="wtSidebar" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
   <a class="kh-bar-logo" href="https://masumcpex.com/" aria-label="Masum Cpex — open the main website" title="Masum Cpex"></a>
+  <button type="button" class="wt-hd-dl" id="wtHeaderDownload" aria-label="Download monthly report as PDF" title="Download monthly report (PDF)"><span class="wt-hd-dl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg></span><span class="wt-hd-dl-txt"><span>Download</span><span>Monthly Report</span></span></button>
   <div class="kh-account-wrap">
     <button type="button" class="kh-account-trigger" id="khAccountTrigger" aria-haspopup="true" aria-label="Account menu">
       <span class="kh-account-avatar" id="khAccountAvatar">
@@ -240,11 +241,12 @@
   <nav class="kh-sidebar-nav">
     <div class="wt-side-label">Menu</div>
     <a href="#sectionDashboard" class="kh-sidebar-link" data-wt-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></a>
-    <a href="#sectionAttendance" class="kh-sidebar-link wt-side-sub" data-wt-view="dashboard" data-wt-target="sectionAttendance" data-wt-shortcut><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14l2.5 2.5L16 11"/></svg><span>Record Attendance</span></a>
+    <a href="#sectionAttendance" class="kh-sidebar-link" data-wt-view="dashboard" data-wt-target="sectionAttendance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14l2.5 2.5L16 11"/></svg><span>Record Attendance</span></a>
     <a href="#attendanceRegisterSection" class="kh-sidebar-link" data-wt-view="register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg><span>Attendance Register</span></a>
-    <a href="#sectionTeam" class="kh-sidebar-link" data-wt-view="team"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 20v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Team Members</span></a>
+    <a href="#sectionSummary" class="kh-sidebar-link" data-wt-view="dashboard" data-wt-target="sectionSummary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="4" width="4" height="16" rx="1"/><rect x="16" y="9" width="4" height="11" rx="1"/></svg><span>Monthly Summary</span></a>
 
-    <div class="wt-side-label">Settings</div>
+    <div class="wt-side-label">More</div>
+    <a href="#sectionTeam" class="kh-sidebar-link" data-wt-view="team"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 20v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Team Members</span></a>
     <div class="wt-side-theme">
       <span class="wt-side-theme-h">Theme</span>
       <div class="wt-side-seg" role="group" aria-label="Theme">
@@ -273,9 +275,8 @@
 
   <div class="wt-view is-active" id="wtView-dashboard" data-wt-view="dashboard">
   <div class="kh-intro" id="sectionDashboard">
-    <div class="eyebrow">WorkTrack</div>
-    <h1 class="section-title">Team Attendance Dashboard</h1>
-    <p class="section-sub">Manage attendance, work hours and advances for your team. Data is synced live via Firebase across all your devices.</p>
+    <h1 class="section-title wt-greeting" id="wtGreeting" aria-live="polite">সুপ্রভাত</h1>
+    <p class="section-sub">আজকের উপস্থিতি, কাজের ঘন্টা এবং টিমের সারাংশ এখানে দেখুন।</p>
     <div class="kh-current-month-pill" id="dashboardMonthPill"></div>
   </div>
 
@@ -339,7 +340,7 @@
     <p class="kh-empty-note" id="noMemberWarn" style="display:none;">Add at least one member before recording attendance.</p>
   </section>
 
-  <section class="kh-card kh-card--amber">
+  <section class="kh-card kh-card--amber" id="sectionSummary">
     <h2 class="kh-card-title">Monthly Summary</h2>
 
     <div class="filter-row kh-summary-month-row">
@@ -349,7 +350,7 @@
 
     <div class="table-wrap">
       <table class="kh-table" id="summaryTable">
-        <thead><tr><th>Name</th><th>Total Work Days</th><th>Total Leave Days</th><th>Total Work Hours</th><th>Advance (RM)</th></tr></thead>
+        <thead><tr><th>Name</th><th>Work Days</th><th>Leave Days</th><th>Total Work Hours</th><th>Advance (RM)</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -438,6 +439,14 @@
     </section>
   </div>
 
+
+<nav class="wt-bottom-nav" id="wtBottomNav" aria-label="Primary">
+  <a href="#sectionDashboard" class="wt-bn-item" data-wt-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></a>
+  <a href="#sectionAttendance" class="wt-bn-item" data-wt-view="dashboard" data-wt-target="sectionAttendance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14l2.5 2.5L16 11"/></svg><span>Record Attendance</span></a>
+  <a href="#attendanceRegisterSection" class="wt-bn-item" data-wt-view="register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg><span>Attendance Register</span></a>
+  <a href="#sectionSummary" class="wt-bn-item" data-wt-view="dashboard" data-wt-target="sectionSummary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="4" width="4" height="16" rx="1"/><rect x="16" y="9" width="4" height="11" rx="1"/></svg><span>Monthly Summary</span></a>
+  <button type="button" class="wt-bn-item" data-wt-menu data-wt-more aria-controls="wtSidebar" aria-expanded="false" aria-label="More"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg><span>More</span></button>
+</nav>
 </main>
 </div>
 
@@ -464,13 +473,13 @@
   var HASH={dashboard:"sectionDashboard",register:"attendanceRegisterSection",team:"sectionTeam",data:"wtData",contact:"wtContact"};
   var main=document.getElementById("khMain"), gate=document.getElementById("khAuthGate");
   var side=document.getElementById("wtSidebar"), scrim=document.getElementById("wtScrim");
-  var cur="dashboard", lastOpener=null;
+  var cur="dashboard", curTarget=null, lastOpener=null, MORE=["team","data","contact"];
   var desktop=window.matchMedia?matchMedia("(min-width: 1024px)"):{matches:true};
 
   function $(id){return document.getElementById(id)}
   function setActive(){
-    document.querySelectorAll(".kh-sidebar-link[data-wt-view]").forEach(function(a){
-      var on=a.dataset.wtView===cur && !a.hasAttribute("data-wt-shortcut");
+    document.querySelectorAll(".kh-sidebar-link[data-wt-view], .wt-bn-item").forEach(function(a){
+      var on = a.hasAttribute("data-wt-more") ? MORE.indexOf(cur)>=0 : (a.dataset.wtView===cur && (a.dataset.wtTarget||null)===curTarget);
       a.classList.toggle("is-active",on);
       if(on)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");
     });
@@ -479,7 +488,7 @@
     o=o||{};
     if(VIEWS.indexOf(n)<0)n="dashboard";
     VIEWS.forEach(function(v){var el=$("wtView-"+v);if(el)el.classList.toggle("is-active",v===n)});
-    cur=n; setActive();
+    cur=n; curTarget=o.target||null; setActive();
     if(o.hash!==false){try{history.replaceState(null,"","#"+HASH[n])}catch(e){}}
     if(n==="contact")prefill();
     if(!o.keepScroll)window.scrollTo({top:0,behavior:"auto"});
@@ -497,7 +506,7 @@
   function route(){
     var id=(location.hash||"").slice(1), el=id?$(id):null, v=el&&el.closest?el.closest(".wt-view"):null;
     if(!v){showView("dashboard",{hash:false,keepScroll:true});return}
-    showView(v.dataset.wtView,{hash:false,keepScroll:true});
+    showView(v.dataset.wtView,{hash:false,keepScroll:true,target:(el.id==="sectionAttendance"||el.id==="sectionSummary")?el.id:null});
     if(el.id!==HASH[v.dataset.wtView])setTimeout(function(){el.scrollIntoView({behavior:"smooth",block:"start"})},60);
   }
   window.addEventListener("hashchange",route);
@@ -534,16 +543,26 @@
     if(mb){side&&side.classList.contains("is-open")?closeMenu():openMenu(mb);return}
     if(t.closest("[data-wt-menu-close]")){closeMenu();return}
 
-    var a=t.closest(".kh-sidebar-link[data-wt-view]");
+    var a=t.closest(".kh-sidebar-link[data-wt-view], .wt-bn-item[data-wt-view]");
     if(a){
       e.preventDefault();
-      var target=a.dataset.wtTarget;
-      showView(a.dataset.wtView,{keepScroll:!!target,hash:!target});
+      var target=a.dataset.wtTarget||null;
+      showView(a.dataset.wtView,{keepScroll:!!target,hash:!target,target:target});
       if(target){
         try{history.replaceState(null,"","#"+target)}catch(x){}
         setTimeout(function(){var el=$(target);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},40);
       }
       if(!desktop.matches)closeMenu();
+      return;
+    }
+    var hd=t.closest("#wtHeaderDownload");
+    if(hd){
+      if(hd.disabled)return;
+      if(typeof window.wtDownloadSelectedMonthPdf==="function"){
+        hd.disabled=true;hd.classList.add("is-busy");
+        var fin=function(){hd.disabled=false;hd.classList.remove("is-busy")};
+        try{Promise.resolve(window.wtDownloadSelectedMonthPdf()).then(fin,fin)}catch(x){fin()}
+      }else{var dl=$("downloadPdfBtn");if(dl)dl.click()}
       return;
     }
     var g=t.closest("[data-wt-goto]");
@@ -608,6 +627,51 @@
     }
   }
   setActive();
+})();
+</script>
+<script>
+/* WorkTrack greeting: time-of-day text + inline SVG icon + the signed-in user's name.
+   setGreeting(elementOrId, name, date?) can be called from anywhere to update any element. */
+(function(){
+  var A='<svg class="wt-gr-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">';
+  var ICONS={
+    morning:A+'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+    afternoon:A+'<path d="M12 2v2M4.9 4.9l1.4 1.4M19.1 4.9l-1.4 1.4M20 12h2"/><path d="M15.9 12.7a4 4 0 0 0-5.9-4.2"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6z"/></svg>',
+    evening:A+'<path d="M12 10V2M4.9 10.9l1.4 1.4M2 18h2M20 18h2M19.1 10.9l-1.4 1.4M22 22H2M16 6l-4 4-4-4M16 18a4 4 0 0 0-8 0"/></svg>',
+    night:A+'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>'
+  };
+  var TEXT={morning:"সুপ্রভাত",afternoon:"শুভ অপরাহ্ন",evening:"শুভ সন্ধ্যা",night:"শুভ রাত্রি"};
+  /* Morning 5-12, Afternoon 12-17, Evening 17-20, Night 20-5 */
+  function period(h){return h>=5&&h<12?"morning":h>=12&&h<17?"afternoon":h>=17&&h<20?"evening":"night"}
+  function setGreeting(el,name,date){
+    if(typeof el==="string")el=document.getElementById(el);
+    if(!el)return;
+    var p=period((date||new Date()).getHours());
+    var t=document.createElement("span");t.textContent=TEXT[p]+(name?", "+name:"");
+    var i=document.createElement("span");i.className="wt-gr-ico-wrap";i.setAttribute("data-p",p);i.innerHTML=ICONS[p];
+    el.textContent="";el.appendChild(t);el.appendChild(i);
+  }
+  window.setGreeting=setGreeting;
+
+  function txt(id){var e=document.getElementById(id);return e?(e.textContent||"").trim():""}
+  function firstName(){
+    var src=txt("khUserEmail")||txt("khUserEmailFull");
+    if(!src)return "";
+    if(src.indexOf("@")>-1)src=src.split("@")[0];
+    var w=src.split(/[\s._\-+\d]+/).filter(Boolean)[0]||"";
+    if(w.length>1&&w===w.toUpperCase())w=w.toLowerCase();
+    return w.charAt(0).toUpperCase()+w.slice(1);
+  }
+  function refresh(){setGreeting("wtGreeting",firstName())}
+  refresh();
+  setInterval(refresh,60000);
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)refresh()});
+  if(window.MutationObserver){
+    ["khUserEmail","khUserEmailFull"].forEach(function(id){
+      var e=document.getElementById(id);
+      if(e)new MutationObserver(refresh).observe(e,{childList:true,characterData:true,subtree:true});
+    });
+  }
 })();
 </script>
 <div id="khToastContainer" class="kh-toast-container" aria-live="polite"></div>

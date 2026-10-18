@@ -2080,8 +2080,8 @@ export function initKhApp(uid, isAdmin){
     renderMembers();
   });
 
-  function getMonthRecordsForExport(ym){
-    const filter = filterMember.value;
+  function getMonthRecordsForExport(ym, filterOverride){
+    const filter = filterOverride || filterMember.value;
     return records
       .filter(r => r.date.startsWith(ym))
       .filter(r => filter === "All" || r.member === filter)
@@ -2159,15 +2159,15 @@ export function initKhApp(uid, isAdmin){
     URL.revokeObjectURL(url);
   }
 
-  async function exportMonthPdf(ym, btn){
+  async function exportMonthPdf(ym, btn, allMembers){
     if(!(await ensurePdfLibs())){
       alert("PDF generation library failed to load. Please check your internet connection and try again.");
       return;
     }
 
     khBounce(btn);
-    const filter = filterMember.value;
-    const monthRecords = getMonthRecordsForExport(ym);
+    const filter = allMembers ? "All" : filterMember.value;
+    const monthRecords = getMonthRecordsForExport(ym, allMembers ? "All" : undefined);
 
     if(!monthRecords.length){
       alert(`No records for ${monthLabel(ym)} yet.`);
@@ -2192,6 +2192,8 @@ export function initKhApp(uid, isAdmin){
   // Top buttons: current month. Each month in the register has its own PDF/CSV buttons.
   downloadCsvBtn.addEventListener("click", () => exportMonthCsv(currentYearMonth(), downloadCsvBtn));
   downloadPdfBtn.addEventListener("click", () => exportMonthPdf(currentYearMonth(), downloadPdfBtn));
+  // Header "Download Monthly Report" button: the month chosen in Monthly Summary (or the current month), all members.
+  window.wtDownloadSelectedMonthPdf = () => exportMonthPdf((summaryMonthSelect && summaryMonthSelect.value) || currentYearMonth(), downloadPdfBtn, true);
 
   async function generatePdfReport(ym, monthRecords, filter){
     const byMember = {};
@@ -2951,6 +2953,7 @@ export function initKhApp(uid, isAdmin){
   // ---- Attendance Overview ----
   let overviewCard = null;
   function ensureOverviewCard(){
+    return null;   // Attendance Overview cards removed (Monthly Summary is a table only); renderOverview() returns early on null
     if(overviewCard) return overviewCard;
     const anchorEl = document.getElementById("sectionAttendance");
     if(!anchorEl) return null;

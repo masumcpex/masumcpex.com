@@ -12,6 +12,7 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="worktrack.css">
+<script>try{var _t=localStorage.getItem("wt-theme"),_d=_t==="dark"||(_t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=_d?"dark":"light"}catch(e){}</script>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" crossorigin>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" crossorigin>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js" crossorigin>
@@ -107,7 +108,7 @@
     </form>
 
     <p id="khTermsText" class="kh-terms-text" style="display:none;">
-      By signing up, you agree to WorkTrack's <a href="#" class="kh-terms-link">Terms of Use</a> and <a href="#" class="kh-terms-link">Privacy Policy</a>.
+      By signing up, you agree to WorkTrack's <a href="https://masumcpex.bro.bd/legal#terms-of-service" class="kh-terms-link" target="_blank" rel="noopener noreferrer">Terms of Use</a> and <a href="https://masumcpex.bro.bd/legal#privacy-policy" class="kh-terms-link" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
     </p>
 
     <p class="kh-auth-toggle">
@@ -155,6 +156,10 @@
       <div class="kh-account-dropdown-info">
         <span id="khUserEmailFull" class="kh-account-dropdown-email"></span>
       </div>
+      <button id="khSettingsBtn" type="button" class="kh-account-menu-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        Settings
+      </button>
       <button id="khSetPasswordBtn" type="button" class="kh-account-menu-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
         Set / change password
@@ -187,11 +192,15 @@
     </a>
     <a href="#sectionTeam" class="kh-sidebar-link" data-section="sectionTeam">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 20v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Team Members
+      Add Member
     </a>
     <a href="#attendanceRegisterSection" class="kh-sidebar-link" data-section="attendanceRegisterSection">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
       Reports
+    </a>
+    <a href="#sectionSettings" class="kh-sidebar-link" data-section="sectionSettings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      Settings
     </a>
   </nav>
   <div class="kh-sidebar-footer">
@@ -242,18 +251,6 @@
     </div>
   </div>
 
-  <section class="kh-card kh-card--mint" id="sectionTeam">
-    <h2 class="kh-card-title">Team Members</h2>
-    <div class="kh-add-row">
-      <input type="text" id="memberInput" placeholder="Enter new member name...">
-      <button class="btn3d btn-mint" id="addMemberBtn">+ Add Member</button>
-    </div>
-    <h3 class="kh-subtitle">Team Overview</h3>
-    <div class="member-card-grid" id="memberChips"><!-- JS injects member profile cards --></div>
-    <div class="kh-carousel-dots" id="memberDots"></div>
-    <p class="kh-empty-note" id="noMemberNote" style="display:none;">No members added yet. Enter a name above and click "Add Member".</p>
-  </section>
-
   <section class="kh-card kh-card--sky" id="sectionAttendance">
     <h2 class="kh-card-title">Record Attendance</h2>
     <p class="kh-section-desc">Select a member and record today's attendance and work hours.</p>
@@ -281,6 +278,15 @@
       <button type="submit" class="btn3d btn-sky kh-save-btn">Save Record</button>
     </form>
     <p class="kh-empty-note" id="noMemberWarn" style="display:none;">Add at least one member before recording attendance.</p>
+  </section>
+
+  <section class="kh-card kh-card--mint" id="sectionTeam">
+    <h2 class="kh-card-title">Add Member</h2>
+    <p class="kh-section-desc">Add a new team member. Manage all members from Settings.</p>
+    <div class="kh-add-row">
+      <input type="text" id="memberInput" placeholder="Enter new member name..." aria-label="New member name" autocomplete="off">
+      <button class="btn3d btn-mint" id="addMemberBtn">+ Add Member</button>
+    </div>
   </section>
 
   <section class="kh-card kh-card--amber">
@@ -321,9 +327,57 @@
     <p class="kh-empty-note" id="noRecordsNote" style="display:none;">No entries yet.</p>
   </section>
 
+  <div class="wt-head" id="sectionSettings"><div class="eyebrow">Settings</div><h2>Preferences &amp; Team</h2></div>
+
+  <section class="kh-card kh-card--sky">
+    <div class="wt-pref">
+      <div class="wt-pref-h"><span class="wt-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></span><div><b>Theme</b><small>Light, dark, or follow your phone</small></div></div>
+      <div class="wt-seg" role="group" aria-label="Theme">
+        <button type="button" data-wt-theme="light"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Light</button>
+        <button type="button" data-wt-theme="dark"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>Dark</button>
+        <button type="button" data-wt-theme="system"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>System</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="kh-card kh-card--mint" id="sectionMembers">
+    <h2 class="kh-card-title">Team Members</h2>
+    <p class="kh-section-desc">All members added from the dashboard. Use a card's menu to edit or remove.</p>
+    <h3 class="kh-subtitle">Team Overview</h3>
+    <div class="member-card-grid" id="memberChips"><!-- JS injects member profile cards --></div>
+    <div class="kh-carousel-dots" id="memberDots"></div>
+    <p class="kh-empty-note" id="noMemberNote" style="display:none;">No members added yet. Use the "Add Member" card on the dashboard.</p>
+  </section>
+
+  <section class="kh-card kh-card--violet">
+    <h2 class="kh-card-title">Legal &amp; Policies</h2>
+    <ul class="wt-legal">
+        <li><a href="https://masumcpex.bro.bd/legal#privacy-policy" target="_blank" rel="noopener noreferrer"><span><b>Privacy Policy</b><small>How your information is collected, used and protected</small></span><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li>
+        <li><a href="https://masumcpex.bro.bd/legal#terms-of-service" target="_blank" rel="noopener noreferrer"><span><b>Terms of Service</b><small>The terms for using WorkTrack</small></span><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li>
+        <li><a href="https://masumcpex.bro.bd/legal#cookie-policy" target="_blank" rel="noopener noreferrer"><span><b>Cookie Policy</b><small>How cookies and local storage are used</small></span><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li>
+    </ul>
+    <p class="wt-note">© 2026 Masum Cpex · masumcpex.bro.bd</p>
+  </section>
+
 </main>
 </div>
 
+<script>
+(function(){
+  var KEY="wt-theme", root=document.documentElement;
+  function mode(){try{return localStorage.getItem(KEY)||"light"}catch(e){return"light"}}
+  function apply(){var m=mode(),d=m==="dark"||(m==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);root.dataset.theme=d?"dark":"light";
+    document.querySelectorAll("[data-wt-theme]").forEach(function(b){b.classList.toggle("on",b.dataset.wtTheme===m);b.setAttribute("aria-pressed",b.dataset.wtTheme===m?"true":"false")})}
+  document.addEventListener("click",function(e){
+    var b=e.target.closest("[data-wt-theme]");
+    if(b){try{localStorage.setItem(KEY,b.dataset.wtTheme)}catch(x){}apply();return}
+    if(e.target.closest("#khSettingsBtn")){var dd=document.getElementById("khAccountDropdown");if(dd)dd.classList.remove("is-open");
+      var s=document.getElementById("sectionSettings");if(s)s.scrollIntoView({behavior:"smooth",block:"start"})}
+  });
+  try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){if(mode()==="system")apply()})}catch(e){}
+  apply();
+})();
+</script>
 <div id="khToastContainer" class="kh-toast-container" aria-live="polite"></div>
 
 <style>

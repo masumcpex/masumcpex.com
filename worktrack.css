@@ -654,3 +654,97 @@ html{ scroll-behavior:smooth; }
 }
 .kh-month-delete--outline svg{ width:14px; height:14px; }
 .kh-month-delete--outline:hover{ background:#FEF2F2 !important; }
+
+/* WorkTrack Attendance - design layer (loaded after worktrack.css; scoped to .kh-main). No logic here. */
+.kh-main{--wt-bg:#F3F5F9;--wt-navy:#101C2E;--wt-green:#20BF78;--wt-blue:#3B82F6;--sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:24px;--sp-6:32px}
+.kh-main{padding-left:max(1.4rem,env(safe-area-inset-left));padding-right:max(1.4rem,env(safe-area-inset-right))}
+.kh-main .kh-intro .eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--wt-green)}
+.kh-main .kh-intro .section-title{letter-spacing:-.01em;margin:var(--sp-1) 0 var(--sp-2)}
+.kh-main .kh-current-month-pill{display:inline-flex;align-items:center;gap:var(--sp-2);margin-top:var(--sp-3);padding:6px 14px;border-radius:999px;background:rgba(32,191,120,.12);color:#0E7A4E;font-weight:700;font-size:.82rem}
+.kh-main .kh-quickstats{gap:var(--sp-3)}
+.kh-main .kh-qs-card{border-radius:16px;padding:var(--sp-4);gap:var(--sp-3);min-height:84px;box-shadow:0 1px 2px rgba(16,28,46,.04)}
+.kh-main .kh-qs-icon{width:42px;height:42px;border-radius:12px}
+.kh-main .kh-qs-card:nth-child(1) .kh-qs-icon{background:rgba(59,130,246,.12);color:#3B82F6}
+.kh-main .kh-qs-card:nth-child(2) .kh-qs-icon{background:rgba(32,191,120,.14);color:#159A5F}
+.kh-main .kh-qs-card:nth-child(3) .kh-qs-icon{background:rgba(124,92,230,.12);color:#6D4FD6}
+.kh-main .kh-qs-card:nth-child(4) .kh-qs-icon{background:rgba(217,154,36,.16);color:#B97B0E}
+.kh-main .kh-qs-value{font-size:1.45rem;font-variant-numeric:tabular-nums}
+.kh-main .kh-qs-label{font-size:.78rem;color:var(--muted)}
+.kh-main .kh-card{border-radius:16px;border-top-width:3px;padding:var(--sp-5);box-shadow:0 1px 2px rgba(16,28,46,.04),0 8px 24px rgba(16,28,46,.05)}
+.kh-main .kh-card--mint{border-top-color:var(--wt-green)}
+.kh-main .kh-card-title{font-family:var(--font-body);font-weight:700;letter-spacing:-.005em}
+.kh-main .kh-section-desc{color:var(--muted);margin:calc(var(--sp-3) * -1) 0 var(--sp-4);font-size:.9rem}
+.kh-main input[type=text],.kh-main input[type=number],.kh-main input[type=date],.kh-main select{min-height:44px;border-radius:12px;font-size:16px}
+.kh-main .kh-field input[type=date],.kh-main .kh-field input[type=number]{padding:.6rem .9rem;border:1px solid var(--line);background:var(--card-bg);color:var(--ink);width:100%;box-sizing:border-box}
+.kh-main .kh-add-row input{flex:1 1 220px}
+.kh-main :is(input,select,textarea,button,a,summary):focus-visible{outline:2px solid var(--wt-blue);outline-offset:2px}
+.kh-main .radio-row{gap:var(--sp-2);flex-wrap:wrap}
+.kh-main .radio-row label{display:inline-flex;align-items:center;gap:var(--sp-2);min-height:44px;padding:0 var(--sp-4);border:1px solid var(--line);border-radius:12px;cursor:pointer;background:var(--card-bg)}
+.kh-main .radio-row label:has(input:checked){border-color:var(--wt-green);background:rgba(32,191,120,.1);font-weight:600}
+.kh-main .btn3d{min-height:44px;border-radius:12px;box-shadow:0 1px 2px rgba(16,28,46,.14),0 4px 12px rgba(16,28,46,.10)}
+.kh-main .btn3d:hover{transform:translateY(-1px)}
+.kh-main .btn3d:active{transform:translateY(1px);box-shadow:0 1px 2px rgba(16,28,46,.18)}
+.kh-main .btn-mint{background:var(--wt-green)}
+.kh-main .btn-sky{background:var(--wt-blue)}
+.kh-main .kh-save-btn{min-width:160px}
+.kh-main .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px}
+.kh-main .kh-table th{font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.kh-main .kh-table td{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.kh-main .kh-table tbody tr:hover{background:rgba(59,130,246,.05)}
+.kh-main .member-card{border-radius:14px;min-height:64px}
+.kh-main .kh-subtitle{font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:var(--sp-4) 0 var(--sp-3)}
+/* settings */
+.wt-head{margin:var(--sp-6) 0 var(--sp-4)}
+.wt-head .eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--wt-green)}
+.wt-head h2{margin:var(--sp-1) 0 0;font-size:1.5rem}
+.wt-pref{display:grid;gap:var(--sp-3)}
+.wt-pref-h{display:flex;align-items:center;gap:var(--sp-3)}
+.wt-ico{width:42px;height:42px;border-radius:12px;background:rgba(59,130,246,.12);color:#3B82F6;display:grid;place-items:center;flex:none}
+.wt-ico svg,.wt-legal svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.wt-pref-h b{display:block}.wt-pref-h small{display:block;color:var(--muted);font-size:.84rem}
+.wt-seg{display:flex;gap:6px;padding:4px;border-radius:14px;background:rgba(16,28,46,.06)}
+.wt-seg button{flex:1;min-height:44px;border:0;border-radius:11px;background:transparent;font:inherit;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer}
+.wt-seg button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.wt-seg button.on{background:var(--card-bg);color:var(--ink);box-shadow:0 1px 3px rgba(16,28,46,.15)}
+.wt-legal{list-style:none;margin:0;padding:0}.wt-legal li+li{border-top:1px solid var(--line)}
+.wt-legal a{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3);min-height:60px;padding:10px 2px;text-decoration:none;color:inherit}
+.wt-legal b{color:#1D5FD1;font-weight:600}.wt-legal a:hover b{text-decoration:underline}
+.wt-legal small{display:block;color:var(--muted);font-size:.85rem;margin-top:2px}
+.wt-legal svg{color:var(--muted);flex:none}
+.wt-note{margin-top:var(--sp-3);font-size:.8rem;color:var(--muted)}
+.kh-sidebar-link[href="#sectionSettings"]{margin-top:var(--sp-2)}
+@media (max-width:640px){
+  .kh-main{padding-top:1.4rem}
+  .kh-main .kh-quickstats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kh-main .kh-qs-card{flex-direction:column;align-items:flex-start;gap:var(--sp-2)}
+  .kh-main .kh-card{padding:var(--sp-4)}
+  .kh-main .kh-form{grid-template-columns:1fr}
+  .kh-main .kh-save-btn{width:100%;justify-self:stretch}
+  .kh-main .kh-add-row .btn3d{width:100%}
+}
+@media (prefers-reduced-motion:reduce){.kh-main *{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+/* dark theme (Settings > Theme) */
+html[data-theme=dark]{color-scheme:dark;--paper:#0B1220;--paper-2:#111C2E;--ink:#E7ECF4;--ink-2:#C9D3E3;--charcoal:#E7ECF4;--muted:#9FADC2;--line:#22324A;--line-soft:rgba(255,255,255,.08);--card-bg:#111C2E;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35)}
+html[data-theme=dark] .kh-main,html[data-theme=dark] .kh-header{--wt-bg:#0A1220;--wt-border:#22324A}
+html[data-theme=dark] body,html[data-theme=dark] .kh-app-shell{background:#0A1220;color:var(--ink)}
+html[data-theme=dark] .kh-main input,html[data-theme=dark] .kh-main select,html[data-theme=dark] .kh-main textarea{background:var(--card-bg);color:var(--ink);border-color:var(--line)}
+html[data-theme=dark] .kh-main .kh-current-month-pill{background:rgba(32,191,120,.16);color:#5EE6A8}
+html[data-theme=dark] .wt-seg{background:#0C1627}
+html[data-theme=dark] .wt-seg button.on{background:#1A2840}
+html[data-theme=dark] .wt-legal b{color:#7FB0FF}
+html[data-theme=dark] .kh-main .kh-table tbody tr:hover{background:rgba(255,255,255,.04)}
+html[data-theme=dark] .site-footer{background:transparent;color:var(--muted)}
+html[data-theme=dark] .kh-current-month-pill{background:var(--card-bg)}
+html[data-theme=dark] .kh-qs-card{background:var(--card-bg)}
+html[data-theme=dark] .kh-add-row input{background:var(--card-bg)}
+html[data-theme=dark] .kh-field input[type="date"],html[data-theme=dark] .kh-field input[type="number"],html[data-theme=dark] .kh-field select{background:var(--card-bg)}
+html[data-theme=dark] .row-actions-menu{background:var(--card-bg)}
+html[data-theme=dark] .filter-row select{background:var(--card-bg)}
+html[data-theme=dark] .kh-modal-card{background:var(--card-bg)}
+html[data-theme=dark] .member-card{background:var(--card-bg)}
+html[data-theme=dark] .kh-input-error{background:var(--card-bg)}
+html[data-theme=dark] .kh-toast{background:var(--card-bg)}
+html[data-theme=dark] .member-card-menu{background:var(--card-bg)}
+html[data-theme=dark] .kh-team-overview-card{background:var(--card-bg)}
+html[data-theme=dark] .kh-month-badge{background:var(--card-bg)}
+html[data-theme=dark] .kh-month-group{background:var(--card-bg)}

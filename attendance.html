@@ -57,7 +57,6 @@
 
 <header class="kh-header">
   <div class="kh-header-inner">
-    <button type="button" class="wt-menu-btn wt-menu-btn--head" data-wt-menu aria-label="Open menu" aria-controls="wtSidebar" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <a href="index.html" class="brand kh-brand">
       <img class="kh-profile-photo" src="masum.webp" alt="Masum Billah" decoding="async">
       <img class="kh-logo-img" src="masum2.png" alt="Masum">
@@ -196,8 +195,7 @@
 </div>
 
 <div id="khUserBar" class="kh-user-bar" style="display:none;">
-  <button type="button" class="wt-menu-btn wt-menu-btn--bar" data-wt-menu aria-label="Open menu" aria-controls="wtSidebar" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-  <a class="kh-bar-logo" href="https://masumcpex.com/" aria-label="Masum Cpex — open the main website" title="Masum Cpex"></a>
+    <a class="kh-bar-logo" href="https://masumcpex.com/" aria-label="Masum Cpex — open the main website" title="Masum Cpex"></a>
   <button type="button" class="wt-hd-dl" id="wtHeaderDownload" aria-label="Download monthly report as PDF" title="Download monthly report (PDF)"><span class="wt-hd-dl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg></span><span class="wt-hd-dl-txt"><span>Download</span><span>Monthly Report</span></span></button>
   <div class="kh-account-wrap">
     <button type="button" class="kh-account-trigger" id="khAccountTrigger" aria-haspopup="true" aria-label="Account menu">
@@ -246,7 +244,16 @@
     <a href="#sectionSummary" class="kh-sidebar-link" data-wt-view="dashboard" data-wt-target="sectionSummary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="4" width="4" height="16" rx="1"/><rect x="16" y="9" width="4" height="11" rx="1"/></svg><span>Monthly Summary</span></a>
 
     <div class="wt-side-label">More</div>
-    <a href="#sectionTeam" class="kh-sidebar-link" data-wt-view="team"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 20v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Team Members</span></a>
+    <a href="https://masumcpex.com/Finance.html" class="kh-sidebar-link" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v.01M18 14v.01"/></svg><span>Finance Tracker</span></a>
+    <a href="#sectionTeam" class="kh-sidebar-link" data-wt-view="team" data-wt-target="sectionMembers" data-wt-loose><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 20v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Team Members</span></a>
+    <a href="#" class="kh-sidebar-link" id="wtAdminAccounts" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6z"/><circle cx="12" cy="10" r="2.5"/><path d="M7.5 16c.8-2 2.5-3 4.5-3s3.7 1 4.5 3"/></svg><span>All Accounts (Admin)</span></a>
+    <div class="wt-side-theme wt-side-lang">
+      <span class="wt-side-theme-h">Language</span>
+      <div class="wt-side-seg wt-side-seg--2" role="group" aria-label="Language">
+        <button type="button" data-wt-lang="en" title="English"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span>English</span></button>
+        <button type="button" data-wt-lang="bn" title="বাংলা"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span>বাংলা</span></button>
+      </div>
+    </div>
     <div class="wt-side-theme">
       <span class="wt-side-theme-h">Theme</span>
       <div class="wt-side-seg" role="group" aria-label="Theme">
@@ -276,7 +283,7 @@
   <div class="wt-view is-active" id="wtView-dashboard" data-wt-view="dashboard">
   <div class="kh-intro" id="sectionDashboard">
     <h1 class="section-title wt-greeting" id="wtGreeting" aria-live="polite">সুপ্রভাত</h1>
-    <p class="section-sub">আজকের উপস্থিতি, কাজের ঘন্টা এবং টিমের সারাংশ এখানে দেখুন।</p>
+    <p class="section-sub" id="wtGreetingSub">আজকের উপস্থিতি, কাজের ঘন্টা এবং টিমের সারাংশ এখানে দেখুন।</p>
     <div class="kh-current-month-pill" id="dashboardMonthPill"></div>
   </div>
 
@@ -479,7 +486,7 @@
   function $(id){return document.getElementById(id)}
   function setActive(){
     document.querySelectorAll(".kh-sidebar-link[data-wt-view], .wt-bn-item").forEach(function(a){
-      var on = a.hasAttribute("data-wt-more") ? MORE.indexOf(cur)>=0 : (a.dataset.wtView===cur && (a.dataset.wtTarget||null)===curTarget);
+      var on = a.hasAttribute("data-wt-more") ? MORE.indexOf(cur)>=0 : a.hasAttribute("data-wt-loose") ? a.dataset.wtView===cur : (a.dataset.wtView===cur && (a.dataset.wtTarget||null)===curTarget);
       a.classList.toggle("is-active",on);
       if(on)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");
     });
@@ -533,6 +540,7 @@
     document.documentElement.classList.remove("wt-lock"); setExpanded(false);
     if(lastOpener&&lastOpener.offsetParent!==null)lastOpener.focus();
   }
+  window.wtCloseMenu=closeMenu;
   if(scrim)scrim.addEventListener("click",closeMenu);
   document.addEventListener("keydown",function(e){if(e.key==="Escape")closeMenu()});
   if(desktop.addEventListener)desktop.addEventListener("change",function(e){if(e.matches)closeMenu()});
@@ -555,6 +563,14 @@
       if(!desktop.matches)closeMenu();
       return;
     }
+    var lb=t.closest("[data-wt-lang]");
+    if(lb){
+      var lv=lb.dataset.wtLang, lc="bn";
+      try{lc=localStorage.getItem("wt-lang")||"bn"}catch(x){}
+      if(lv!==lc){try{localStorage.setItem("wt-lang",lv)}catch(x){}location.reload()}
+      return;
+    }
+    if(t.closest("a.kh-sidebar-link[href^='http']")&&!desktop.matches)closeMenu();
     var hd=t.closest("#wtHeaderDownload");
     if(hd){
       if(hd.disabled)return;
@@ -640,7 +656,15 @@
     evening:A+'<path d="M12 10V2M4.9 10.9l1.4 1.4M2 18h2M20 18h2M19.1 10.9l-1.4 1.4M22 22H2M16 6l-4 4-4-4M16 18a4 4 0 0 0-8 0"/></svg>',
     night:A+'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>'
   };
-  var TEXT={morning:"সুপ্রভাত",afternoon:"শুভ অপরাহ্ন",evening:"শুভ সন্ধ্যা",night:"শুভ রাত্রি"};
+  var LANG="bn";try{LANG=localStorage.getItem("wt-lang")==="en"?"en":"bn"}catch(e){}
+  var TEXTS={
+    bn:{morning:"সুপ্রভাত",afternoon:"শুভ অপরাহ্ন",evening:"শুভ সন্ধ্যা",night:"শুভ রাত্রি"},
+    en:{morning:"Good morning",afternoon:"Good afternoon",evening:"Good evening",night:"Good night"}
+  };
+  var SUBS={bn:"আজকের উপস্থিতি, কাজের ঘন্টা এবং টিমের সারাংশ এখানে দেখুন।",en:"See today's attendance, work hours and team summary here."};
+  var TEXT=TEXTS[LANG];
+  var subEl=document.getElementById("wtGreetingSub");if(subEl)subEl.textContent=SUBS[LANG];
+  document.querySelectorAll("[data-wt-lang]").forEach(function(b){var on=b.dataset.wtLang===LANG;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on?"true":"false")});
   /* Morning 5-12, Afternoon 12-17, Evening 17-20, Night 20-5 */
   function period(h){return h>=5&&h<12?"morning":h>=12&&h<17?"afternoon":h>=17&&h<20?"evening":"night"}
   function setGreeting(el,name,date){

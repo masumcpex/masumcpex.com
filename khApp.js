@@ -499,7 +499,16 @@ export function initKhApp(uid, isAdmin){
           <div class="member-card-name" id="khYouName"></div>
           <div class="member-card-stats" id="khYouStats"></div>
         </div>
+        <button type="button" class="kh-you-share" id="khYouShare" aria-label="Share attendance link" title="Share attendance link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
       </div>
+      <button type="button" class="kh-team-overview-card" id="khAddMemberShortcut">
+        <span class="kh-team-overview-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 20c0-3.6 3.1-6 7-6s7 2.4 7 6M19 8v6M16 11h6"/></svg></span>
+        <span class="kh-team-overview-text">
+          <span class="kh-team-overview-title">Add Member</span>
+          <span class="kh-team-overview-sub">Add a new team member</span>
+        </span>
+        <span class="kh-team-overview-chevron">${ICON_CHEVRON_RIGHT}</span>
+      </button>
       <button type="button" class="kh-team-overview-card" id="khTeamOverviewBtn">
         <span class="kh-team-overview-icon">${ICON_USER}</span>
         <span class="kh-team-overview-text">
@@ -513,6 +522,41 @@ export function initKhApp(uid, isAdmin){
       anchor.parentNode.insertBefore(wrap, anchor);
     }
     wrap.querySelector("#khTeamOverviewBtn").addEventListener("click", openTeamModal);
+
+    // Add Member shortcut: opens the Team view at the Add Member card and focuses the name box
+    wrap.querySelector("#khAddMemberShortcut").addEventListener("click", () => {
+      if(window.wtShowView) window.wtShowView("team", { keepScroll: true, target: "sectionTeam" });
+      setTimeout(() => {
+        const sec = document.getElementById("sectionTeam");
+        if(sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+        const inp = document.getElementById("memberInput");
+        if(inp) inp.focus({ preventScroll: true });
+      }, 80);
+    });
+
+    // Share icon on the YOU card: opens the existing secure "Share Attendance" window (copy link) for the member that matches this account's name
+    wrap.querySelector("#khYouShare").addEventListener("click", ev => {
+      ev.stopPropagation();
+      const label = String(ownerLabelFor(uid) || "").trim().toLowerCase();
+      const hits = members.filter(m => {
+        const n = String(m.name || "").trim().toLowerCase();
+        return n && label && (label === n || label.includes(n) || n.includes(label));
+      });
+      if(hits.length === 1){ openShareModal(hits[0]); return; }
+      showToast("Open a member's menu and choose Share Attendance to copy a view-only link.", "warning");
+    });
+
+    // The old dashboard "Team Members" (all accounts) card is hidden; admin reaches it from More > All Accounts (Admin)
+    const adminLink = document.getElementById("wtAdminAccounts");
+    if(adminLink){
+      adminLink.style.display = "";
+      adminLink.addEventListener("click", e => {
+        e.preventDefault();
+        if(window.wtCloseMenu) window.wtCloseMenu();
+        const b = document.getElementById("khTeamOverviewBtn");
+        if(b) b.click();
+      });
+    }
     return wrap;
   }
 

@@ -57,6 +57,7 @@
 
 <header class="kh-header">
   <div class="kh-header-inner">
+    <button type="button" class="wt-menu-btn wt-menu-btn--head" data-wt-menu aria-label="Open menu" aria-controls="wtSidebar" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <a href="index.html" class="brand kh-brand">
       <img class="kh-profile-photo" src="masum.webp" alt="Masum Billah" decoding="async">
       <img class="kh-logo-img" src="masum2.png" alt="Masum">
@@ -70,78 +71,132 @@
 </header>
 
 <div id="khAuthGate" class="kh-auth-gate">
-  <div class="kh-auth-box" id="khLoginSignupBox">
-    <h2 id="khAuthTitle">Welcome Back</h2>
-    <p id="khAuthSubtitle">Sign in to continue to WorkTrack</p>
-
-    <form id="khEmailForm" class="kh-email-form" novalidate>
-     
-      <div id="khFullNameWrap" style="display:none;">
-        <label class="kh-email-label" for="khFullNameInput">Full Name</label>
-        <input type="text" id="khFullNameInput" class="kh-email-input" placeholder="Enter your full name" autocomplete="name" aria-describedby="khFullNameError">
-        <span class="kh-field-error" id="khFullNameError" aria-live="polite"></span>
+  <div class="wt-auth-card">
+    <aside class="wt-auth-art" aria-hidden="true">
+      <svg class="wt-art-svg" viewBox="0 0 480 640" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="wtaSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2D6DB3"/><stop offset=".5" stop-color="#173B63"/><stop offset="1" stop-color="#091A2E"/></linearGradient>
+    <radialGradient id="wtaGlow" cx=".5" cy=".3" r=".65"><stop offset="0" stop-color="#7DB8FF" stop-opacity=".5"/><stop offset="1" stop-color="#7DB8FF" stop-opacity="0"/></radialGradient>
+    <linearGradient id="wtaCard" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset="1" stop-color="#fff" stop-opacity=".06"/></linearGradient>
+    <pattern id="wtaDots" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="#fff" fill-opacity=".08"/></pattern>
+  </defs>
+  <rect width="480" height="640" fill="url(#wtaSky)"/>
+  <rect width="480" height="640" fill="url(#wtaDots)"/>
+  <rect width="480" height="640" fill="url(#wtaGlow)"/>
+  <path d="M0 468C86 420 170 428 252 452S412 482 480 438V640H0Z" fill="#12335A" fill-opacity=".85"/>
+  <path d="M0 520C108 470 202 500 292 520S424 542 480 500V640H0Z" fill="#0D2746"/>
+  <path d="M0 578C120 546 230 576 330 590S432 602 480 582V640H0Z" fill="#081A30"/>
+  <g>
+    <rect x="60" y="128" width="270" height="262" rx="26" fill="url(#wtaCard)" stroke="#fff" stroke-opacity=".24"/>
+    <rect x="84" y="152" width="96" height="10" rx="5" fill="#fff" fill-opacity=".55"/>
+    <rect x="84" y="170" width="58" height="7" rx="3.5" fill="#fff" fill-opacity=".25"/>
+    <circle cx="298" cy="160" r="12" fill="#20BF78" fill-opacity=".9"/><path d="m292 160.5 4.2 4.2 7.6-8.4" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="96" y="196" text-anchor="middle" font-size="10" font-weight="600" fill="#fff" fill-opacity=".55">M</text><text x="134" y="196" text-anchor="middle" font-size="10" font-weight="600" fill="#fff" fill-opacity=".55">T</text><text x="172" y="196" text-anchor="middle" font-size="10" font-weight="600" fill="#fff" fill-opacity=".55">W</text><text x="210" y="196" text-anchor="middle" font-size="10" font-weight="600" fill="#fff" fill-opacity=".55">T</text><text x="248" y="196" text-anchor="middle" font-size="10" font-weight="600" fill="#fff" fill-opacity=".55">F</text><text x="286" y="196" text-anchor="middle" font-size="10" font-weight="600" fill="#fff" fill-opacity=".55">S</text><text x="324" y="196" text-anchor="middle" font-size="10" font-weight="600" fill="#fff" fill-opacity=".55">S</text>
+    <circle cx="96" cy="222" r="11" fill="#20BF78"/><path d="m91.5 222.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="134" cy="222" r="11" fill="#20BF78"/><path d="m129.5 222.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="172" cy="222" r="11" fill="#20BF78"/><path d="m167.5 222.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="210" cy="222" r="11" fill="#20BF78"/><path d="m205.5 222.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="248" cy="222" r="11" fill="#20BF78"/><path d="m243.5 222.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="286" cy="222" r="9" fill="#fff" fill-opacity=".10"/><circle cx="324" cy="222" r="9" fill="#fff" fill-opacity=".10"/><circle cx="96" cy="256" r="11" fill="#20BF78"/><path d="m91.5 256.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="134" cy="256" r="11" fill="#20BF78"/><path d="m129.5 256.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="172" cy="256" r="10" fill="none" stroke="#F2B544" stroke-width="2"/><circle cx="172" cy="256" r="2.4" fill="#F2B544"/><circle cx="210" cy="256" r="11" fill="#20BF78"/><path d="m205.5 256.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="248" cy="256" r="11" fill="#20BF78"/><path d="m243.5 256.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="286" cy="256" r="9" fill="#fff" fill-opacity=".10"/><circle cx="324" cy="256" r="9" fill="#fff" fill-opacity=".10"/><circle cx="96" cy="290" r="11" fill="#20BF78"/><path d="m91.5 290.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="134" cy="290" r="11" fill="#20BF78"/><path d="m129.5 290.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="172" cy="290" r="11" fill="#20BF78"/><path d="m167.5 290.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="210" cy="290" r="11" fill="#20BF78"/><path d="m205.5 290.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="248" cy="290" r="10" fill="none" stroke="#F2B544" stroke-width="2"/><circle cx="248" cy="290" r="2.4" fill="#F2B544"/><circle cx="286" cy="290" r="9" fill="#fff" fill-opacity=".10"/><circle cx="324" cy="290" r="9" fill="#fff" fill-opacity=".10"/><circle cx="96" cy="324" r="11" fill="#20BF78"/><path d="m91.5 324.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="134" cy="324" r="11" fill="#20BF78"/><path d="m129.5 324.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="172" cy="324" r="11" fill="#20BF78"/><path d="m167.5 324.5 3.2 3.2 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="210" cy="324" r="9" fill="#fff" fill-opacity=".16"/><circle cx="248" cy="324" r="9" fill="#fff" fill-opacity=".16"/><circle cx="286" cy="324" r="9" fill="#fff" fill-opacity=".16"/><circle cx="324" cy="324" r="9" fill="#fff" fill-opacity=".16"/>
+  </g>
+  <g>
+    <rect x="262" y="332" width="172" height="124" rx="22" fill="#0F2C4D" fill-opacity=".92" stroke="#fff" stroke-opacity=".2"/>
+    <circle cx="316" cy="394" r="26" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="7"/>
+    <circle cx="316" cy="394" r="26" fill="none" stroke="#20BF78" stroke-width="7" stroke-linecap="round" stroke-dasharray="118 164" transform="rotate(-90 316 394)"/>
+    <text x="316" y="399" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">8h</text>
+    <rect x="356" y="372" width="58" height="8" rx="4" fill="#fff" fill-opacity=".5"/>
+    <rect x="356" y="390" width="40" height="7" rx="3.5" fill="#fff" fill-opacity=".22"/>
+    <rect x="356" y="406" width="48" height="7" rx="3.5" fill="#fff" fill-opacity=".22"/>
+  </g>
+  <g>
+    <rect x="40" y="338" width="150" height="104" rx="22" fill="#0F2C4D" fill-opacity=".92" stroke="#fff" stroke-opacity=".2"/>
+    <rect x="62" y="360" width="64" height="8" rx="4" fill="#fff" fill-opacity=".5"/>
+    <text x="62" y="404" font-size="26" font-weight="800" fill="#fff">96%</text>
+    <rect x="62" y="416" width="104" height="7" rx="3.5" fill="#fff" fill-opacity=".15"/>
+    <rect x="62" y="416" width="82" height="7" rx="3.5" fill="#20BF78"/>
+  </g>
+</svg>
+      <div class="wt-art-top">
+        <span class="wt-art-logo" role="img" aria-label="Masum Cpex"></span>
+        <a class="wt-art-pill" href="index.html" tabindex="-1">Main Website <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
-
-      <label class="kh-email-label" for="khEmailInput">Email</label>
-      <input type="email" id="khEmailInput" class="kh-email-input" placeholder="Enter your email" required autocomplete="email" aria-describedby="khEmailError">
-      <span class="kh-field-error" id="khEmailError" aria-live="polite"></span>
-
-      <label class="kh-email-label" for="khPasswordInput">Password</label>
-      <div class="kh-password-wrap">
-        <input type="password" id="khPasswordInput" class="kh-email-input" placeholder="Enter your password" required autocomplete="current-password" minlength="6" aria-describedby="khPasswordError">
-        <button type="button" class="kh-eye-btn" id="khPasswordToggle" aria-label="Show password" aria-pressed="false" tabindex="-1"></button>
+      <div class="wt-art-bottom">
+        <div class="wt-art-slides"><div class="wt-art-slide is-on"><h3>Attendance, simplified.</h3><p>Record presence, leave and work hours for your whole team in seconds.</p></div><div class="wt-art-slide"><h3>Every hour accounted for.</h3><p>Monthly summaries, advances and reports, always ready to download.</p></div><div class="wt-art-slide"><h3>Live on all your devices.</h3><p>Secure cloud sync, so your register is the same on phone and desktop.</p></div></div>
+        <div class="wt-art-dots"><span class="is-on"></span><span></span><span></span></div>
       </div>
-      <span class="kh-field-error" id="khPasswordError" aria-live="polite"></span>
+    </aside>
 
-      <div id="khConfirmPasswordWrap" style="display:none;">
-        <label class="kh-email-label" for="khConfirmPasswordInput">Confirm Password</label>
-        <div class="kh-password-wrap">
-          <input type="password" id="khConfirmPasswordInput" class="kh-email-input" placeholder="Confirm your password" autocomplete="new-password" minlength="6" aria-describedby="khConfirmPasswordError">
-          <button type="button" class="kh-eye-btn" id="khConfirmPasswordToggle" aria-label="Show password" aria-pressed="false" tabindex="-1"></button>
+    <div class="wt-auth-panel">
+      <div class="kh-auth-box" id="khLoginSignupBox">
+        <h2 id="khAuthTitle">Welcome Back</h2>
+        <p id="khAuthSubtitle">Sign in to continue to WorkTrack</p>
+
+        <p class="kh-auth-toggle">
+          <span id="khToggleText">Don't have an account?</span>
+          <button type="button" id="khToggleModeBtn" class="kh-toggle-link">Sign up</button>
+        </p>
+
+        <form id="khEmailForm" class="kh-email-form" novalidate>
+          <div id="khFullNameWrap" style="display:none;">
+            <label class="kh-email-label" for="khFullNameInput">Full Name</label>
+            <input type="text" id="khFullNameInput" class="kh-email-input" placeholder="Enter your full name" autocomplete="name" aria-describedby="khFullNameError">
+            <span class="kh-field-error" id="khFullNameError" aria-live="polite"></span>
+          </div>
+
+          <label class="kh-email-label" for="khEmailInput">Email</label>
+          <input type="email" id="khEmailInput" class="kh-email-input" placeholder="Enter your email" required autocomplete="email" aria-describedby="khEmailError">
+          <span class="kh-field-error" id="khEmailError" aria-live="polite"></span>
+
+          <label class="kh-email-label" for="khPasswordInput">Password</label>
+          <div class="kh-password-wrap">
+            <input type="password" id="khPasswordInput" class="kh-email-input" placeholder="Enter your password" required autocomplete="current-password" minlength="6" aria-describedby="khPasswordError">
+            <button type="button" class="kh-eye-btn" id="khPasswordToggle" aria-label="Show password" aria-pressed="false" tabindex="-1"></button>
+          </div>
+          <span class="kh-field-error" id="khPasswordError" aria-live="polite"></span>
+
+          <div id="khConfirmPasswordWrap" style="display:none;">
+            <label class="kh-email-label" for="khConfirmPasswordInput">Confirm Password</label>
+            <div class="kh-password-wrap">
+              <input type="password" id="khConfirmPasswordInput" class="kh-email-input" placeholder="Confirm your password" autocomplete="new-password" minlength="6" aria-describedby="khConfirmPasswordError">
+              <button type="button" class="kh-eye-btn" id="khConfirmPasswordToggle" aria-label="Show password" aria-pressed="false" tabindex="-1"></button>
+            </div>
+            <span class="kh-field-error" id="khConfirmPasswordError" aria-live="polite"></span>
+          </div>
+
+          <button type="button" id="khForgotPasswordBtn" class="kh-forgot-link">Forgot Password?</button>
+
+          <button type="submit" id="khEmailSubmitBtn" class="btn3d btn-sky kh-provider-btn">Log In</button>
+        </form>
+
+        <p id="khTermsText" class="kh-terms-text" style="display:none;">
+          By signing up, you agree to WorkTrack's <a href="https://masumcpex.bro.bd/legal#terms-of-service" class="kh-terms-link" target="_blank" rel="noopener noreferrer">Terms of Use</a> and <a href="https://masumcpex.bro.bd/legal#privacy-policy" class="kh-terms-link" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+        </p>
+
+        <p class="kh-auth-error" id="khAuthError" style="display:none;" aria-live="polite"></p>
+
+        <div class="kh-or-divider"><span>Or continue with</span></div>
+
+        <div class="wt-social-row">
+          <button id="googleSignInBtn" type="button" class="btn3d btn-sky kh-provider-btn wt-social-btn"><svg class="kh-provider-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.5 5.5 0 0 1-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 7.9-2.9l-3.9-3c-1.1.7-2.5 1.2-4 1.2-3.1 0-5.7-2.1-6.6-4.9H1.4v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.4 14.4a7.2 7.2 0 0 1 0-4.8V6.5H1.4a12 12 0 0 0 0 11z"/><path fill="#EA4335" d="M12 4.8c1.7 0 3.3.6 4.5 1.8l3.4-3.4A12 12 0 0 0 1.4 6.5l4 3.1C6.3 6.9 8.9 4.8 12 4.8z"/></svg><span>Google</span></button>
+          <button id="facebookSignInBtn" type="button" class="btn3d btn-indigo kh-provider-btn wt-social-btn"><svg class="kh-provider-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="#1877F2" d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.4l-.5 3.5h-2.9v8.4A12 12 0 0 0 24 12z"/></svg><span>Facebook</span></button>
         </div>
-        <span class="kh-field-error" id="khConfirmPasswordError" aria-live="polite"></span>
       </div>
 
-      <button type="button" id="khForgotPasswordBtn" class="kh-forgot-link">Forgot Password?</button>
+      <div class="kh-auth-box" id="khVerifyEmailBox" style="display:none;">
+        <div class="kh-auth-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg></div>
+        <h2>Verify Your Email</h2>
+        <p>We've sent a verification link to your email address.</p>
+        <button type="button" id="khResendVerificationBtn" class="btn3d btn-sky kh-provider-btn">Resend Verification Email</button>
+        <button type="button" id="khBackToLoginBtn" class="btn3d btn-indigo kh-provider-btn">Back to Login</button>
+        <p class="kh-auth-error" id="khVerifyError" style="display:none;" aria-live="polite"></p>
+      </div>
 
-      <button type="submit" id="khEmailSubmitBtn" class="btn3d btn-sky kh-provider-btn">Log In</button>
-    </form>
-
-    <p id="khTermsText" class="kh-terms-text" style="display:none;">
-      By signing up, you agree to WorkTrack's <a href="https://masumcpex.bro.bd/legal#terms-of-service" class="kh-terms-link" target="_blank" rel="noopener noreferrer">Terms of Use</a> and <a href="https://masumcpex.bro.bd/legal#privacy-policy" class="kh-terms-link" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
-    </p>
-
-    <p class="kh-auth-toggle">
-      <span id="khToggleText">Don't have an account?</span>
-      <button type="button" id="khToggleModeBtn" class="kh-toggle-link">Sign up</button>
-    </p>
-
-    <div class="kh-or-divider"><span>Or</span></div>
-
-    <button id="googleSignInBtn" class="btn3d btn-sky kh-provider-btn">
-      <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="" class="kh-provider-icon">
-      Sign in with Google
-    </button>
-
-    <button id="facebookSignInBtn" class="btn3d btn-indigo kh-provider-btn">
-      <span class="kh-provider-icon kh-fb-icon">f</span>
-      Sign in with Facebook
-    </button>
-
-    <p class="kh-auth-error" id="khAuthError" style="display:none;" aria-live="polite"></p>
-  </div>
-
-  <div class="kh-auth-box" id="khVerifyEmailBox" style="display:none;">
-    <div class="kh-auth-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg></div>
-    <h2>Verify Your Email</h2>
-    <p>We've sent a verification link to your email address.</p>
-    <button type="button" id="khResendVerificationBtn" class="btn3d btn-sky kh-provider-btn">Resend Verification Email</button>
-    <button type="button" id="khBackToLoginBtn" class="btn3d btn-indigo kh-provider-btn">Back to Login</button>
-    <p class="kh-auth-error" id="khVerifyError" style="display:none;" aria-live="polite"></p>
+      <nav class="wt-auth-legal" aria-label="Legal">
+        <a href="https://masumcpex.bro.bd/legal#privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        <a href="https://masumcpex.bro.bd/legal#terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+        <a href="https://masumcpex.bro.bd/legal#cookie-policy" target="_blank" rel="noopener noreferrer">Cookie Policy</a>
+      </nav>
+    </div>
   </div>
 </div>
 
 <div id="khUserBar" class="kh-user-bar" style="display:none;">
+  <button type="button" class="wt-menu-btn wt-menu-btn--bar" data-wt-menu aria-label="Open menu" aria-controls="wtSidebar" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
   <a class="kh-bar-logo" href="https://masumcpex.com/" aria-label="Masum Cpex — open the main website" title="Masum Cpex"></a>
   <div class="kh-account-wrap">
     <button type="button" class="kh-account-trigger" id="khAccountTrigger" aria-haspopup="true" aria-label="Account menu">
@@ -173,46 +228,50 @@
 </div>
 
 <div class="kh-app-shell">
-<aside class="kh-sidebar">
+<aside class="kh-sidebar" id="wtSidebar" aria-label="Main navigation">
   <div class="kh-sidebar-brand">
     <img class="kh-logo-img" src="masum2.png" alt="Masum">
     <span>
       <span class="kh-sidebar-brand-name">WorkTrack</span>
       <span class="kh-sidebar-brand-tag">Attendance &amp; Workforce Management</span>
     </span>
+    <button type="button" class="wt-side-close" data-wt-menu-close aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   </div>
   <nav class="kh-sidebar-nav">
-    <a href="#sectionDashboard" class="kh-sidebar-link" data-section="sectionDashboard">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-      Dashboard
-    </a>
-    <a href="#sectionAttendance" class="kh-sidebar-link" data-section="sectionAttendance">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14l2.5 2.5L16 11"/></svg>
-      Attendance
-    </a>
-    <a href="#sectionTeam" class="kh-sidebar-link" data-section="sectionTeam">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 20v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Add Member
-    </a>
-    <a href="#attendanceRegisterSection" class="kh-sidebar-link" data-section="attendanceRegisterSection">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
-      Reports
-    </a>
-    <a href="#sectionSettings" class="kh-sidebar-link" data-section="sectionSettings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
-      Settings
-    </a>
+    <div class="wt-side-label">Menu</div>
+    <a href="#sectionDashboard" class="kh-sidebar-link" data-wt-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></a>
+    <a href="#sectionAttendance" class="kh-sidebar-link wt-side-sub" data-wt-view="dashboard" data-wt-target="sectionAttendance" data-wt-shortcut><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14l2.5 2.5L16 11"/></svg><span>Record Attendance</span></a>
+    <a href="#attendanceRegisterSection" class="kh-sidebar-link" data-wt-view="register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg><span>Attendance Register</span></a>
+    <a href="#sectionTeam" class="kh-sidebar-link" data-wt-view="team"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 20v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Team Members</span></a>
+
+    <div class="wt-side-label">Settings</div>
+    <div class="wt-side-theme">
+      <span class="wt-side-theme-h">Theme</span>
+      <div class="wt-side-seg" role="group" aria-label="Theme">
+        <button type="button" data-wt-theme="light" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Light</span></button>
+        <button type="button" data-wt-theme="dark" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>Dark</span></button>
+        <button type="button" data-wt-theme="system" title="Follow device"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Auto</span></button>
+      </div>
+    </div>
+    <a href="#wtData" class="kh-sidebar-link" data-wt-view="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span>Data &amp; Privacy</span></a>
+    <a href="#wtContact" class="kh-sidebar-link" data-wt-view="contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg><span>Contact</span></a>
+
+    <div class="wt-side-label">Legal &amp; Policies</div>
+    <div class="wt-side-legal">
+      <a class="wt-side-legal-item" href="https://masumcpex.bro.bd/legal#privacy-policy" target="_blank" rel="noopener noreferrer"><span class="wt-side-legal-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="wt-side-legal-txt"><b>Privacy Policy</b><small>How your data is used and protected</small></span><span class="wt-side-legal-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></span></a>
+      <a class="wt-side-legal-item" href="https://masumcpex.bro.bd/legal#terms-of-service" target="_blank" rel="noopener noreferrer"><span class="wt-side-legal-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9 15 2 2 4-4"/></svg></span><span class="wt-side-legal-txt"><b>Terms of Service</b><small>Rules for using WorkTrack</small></span><span class="wt-side-legal-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></span></a>
+      <a class="wt-side-legal-item" href="https://masumcpex.bro.bd/legal#cookie-policy" target="_blank" rel="noopener noreferrer"><span class="wt-side-legal-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.5A9 9 0 1 1 11.5 3a3.5 3.5 0 0 0 4 4 3 3 0 0 0 5.5 5.5z"/><path d="M8.5 9.5h.01M12 14h.01M8 14.5h.01M15.5 16h.01"/></svg></span><span class="wt-side-legal-txt"><b>Cookie Policy</b><small>Cookies and local storage</small></span><span class="wt-side-legal-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></span></a>
+    </div>
   </nav>
   <div class="kh-sidebar-footer">
-    <a href="index.html" class="kh-sidebar-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>
-      Main Website
-    </a>
+    <a href="index.html" class="kh-sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg><span>Main Website</span></a>
   </div>
 </aside>
+<div class="wt-scrim" id="wtScrim"></div>
 
 <main class="kh-main" id="khMain" style="display:none;">
 
+  <div class="wt-view is-active" id="wtView-dashboard" data-wt-view="dashboard">
   <div class="kh-intro" id="sectionDashboard">
     <div class="eyebrow">WorkTrack</div>
     <h1 class="section-title">Team Attendance Dashboard</h1>
@@ -280,15 +339,6 @@
     <p class="kh-empty-note" id="noMemberWarn" style="display:none;">Add at least one member before recording attendance.</p>
   </section>
 
-  <section class="kh-card kh-card--mint" id="sectionTeam">
-    <h2 class="kh-card-title">Add Member</h2>
-    <p class="kh-section-desc">Add a new team member. Manage all members from Settings.</p>
-    <div class="kh-add-row">
-      <input type="text" id="memberInput" placeholder="Enter new member name..." aria-label="New member name" autocomplete="off">
-      <button class="btn3d btn-mint" id="addMemberBtn">+ Add Member</button>
-    </div>
-  </section>
-
   <section class="kh-card kh-card--amber">
     <h2 class="kh-card-title">Monthly Summary</h2>
 
@@ -305,7 +355,9 @@
     </div>
     <p class="kh-empty-note" id="noSummaryNote" style="display:none;">No records for this month yet.</p>
   </section>
+  </div>
 
+  <div class="wt-view" id="wtView-register" data-wt-view="register">
   <section class="kh-card kh-card--violet" id="attendanceRegisterSection">
     <h2 class="kh-card-title">Attendance Register</h2>
 
@@ -326,38 +378,65 @@
     <div id="registerGroups"><!-- JS প্রতিটা মাসকে আলাদা collapsible সেকশন হিসেবে বসায় --></div>
     <p class="kh-empty-note" id="noRecordsNote" style="display:none;">No entries yet.</p>
   </section>
+  </div>
 
-  <div class="wt-head" id="sectionSettings"><div class="eyebrow">Settings</div><h2>Preferences &amp; Team</h2></div>
-
-  <section class="kh-card kh-card--sky">
-    <div class="wt-pref">
-      <div class="wt-pref-h"><span class="wt-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></span><div><b>Theme</b><small>Light, dark, or follow your phone</small></div></div>
-      <div class="wt-seg" role="group" aria-label="Theme">
-        <button type="button" data-wt-theme="light"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Light</button>
-        <button type="button" data-wt-theme="dark"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>Dark</button>
-        <button type="button" data-wt-theme="system"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>System</button>
-      </div>
+  <div class="wt-view" id="wtView-team" data-wt-view="team">
+  <section class="kh-card kh-card--mint" id="sectionTeam">
+    <h2 class="kh-card-title">Add Member</h2>
+    <p class="kh-section-desc">Add a new team member. Edit or remove members from the Team Members list below.</p>
+    <div class="kh-add-row">
+      <input type="text" id="memberInput" placeholder="Enter new member name..." aria-label="New member name" autocomplete="off">
+      <button class="btn3d btn-mint" id="addMemberBtn">+ Add Member</button>
     </div>
   </section>
 
   <section class="kh-card kh-card--mint" id="sectionMembers">
     <h2 class="kh-card-title">Team Members</h2>
-    <p class="kh-section-desc">All members added from the dashboard. Use a card's menu to edit or remove.</p>
+    <p class="kh-section-desc">Everyone on your team. Use a card's menu to edit or remove a member.</p>
     <h3 class="kh-subtitle">Team Overview</h3>
     <div class="member-card-grid" id="memberChips"><!-- JS injects member profile cards --></div>
     <div class="kh-carousel-dots" id="memberDots"></div>
-    <p class="kh-empty-note" id="noMemberNote" style="display:none;">No members added yet. Use the "Add Member" card on the dashboard.</p>
+    <p class="kh-empty-note" id="noMemberNote" style="display:none;">No members added yet. Use the "Add Member" card above.</p>
   </section>
+  </div>
 
-  <section class="kh-card kh-card--violet">
-    <h2 class="kh-card-title">Legal &amp; Policies</h2>
-    <ul class="wt-legal">
-        <li><a href="https://masumcpex.bro.bd/legal#privacy-policy" target="_blank" rel="noopener noreferrer"><span><b>Privacy Policy</b><small>How your information is collected, used and protected</small></span><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li>
-        <li><a href="https://masumcpex.bro.bd/legal#terms-of-service" target="_blank" rel="noopener noreferrer"><span><b>Terms of Service</b><small>The terms for using WorkTrack</small></span><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li>
-        <li><a href="https://masumcpex.bro.bd/legal#cookie-policy" target="_blank" rel="noopener noreferrer"><span><b>Cookie Policy</b><small>How cookies and local storage are used</small></span><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li>
-    </ul>
-    <p class="wt-note">© 2026 Masum Cpex · masumcpex.bro.bd</p>
-  </section>
+  <div class="wt-view" id="wtView-data" data-wt-view="data">
+    <div class="wt-head" id="wtData"><div class="eyebrow">Settings</div><h2>Data &amp; Privacy</h2><p class="wt-head-sub">How your attendance data is stored, protected and managed.</p></div>
+    <section class="kh-card kh-card--sky">
+      <div class="wt-data-hero"><span class="wt-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4 4 0 0 1-.6-7.96A6 6 0 0 1 18 9.5a4.5 4.5 0 0 1-.5 8.5z"/></svg></span><div><b>Synced with Firebase</b><small>Your register is saved in the cloud and updates live on every device you sign in on, including your phone.</small></div></div>
+      <div class="wt-acc-list"><details class="wt-acc"><summary><span class="wt-acc-n">1</span><span class="wt-acc-t">Secure cloud storage</span><span class="wt-acc-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="wt-acc-b"><p>Your team members, attendance records, work hours and advances are saved in Google Firebase (Cloud Firestore) and linked to your account. Because the data lives in the cloud, you can open it on any phone or computer after you sign in.</p></div></details><details class="wt-acc"><summary><span class="wt-acc-n">2</span><span class="wt-acc-t">Who can see your data</span><span class="wt-acc-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="wt-acc-b"><p>Your records are tied to the account you sign in with and are shown only after you log in. If you use a view-only share link, anyone who has that link can see what it shares, so send it only to people you trust.</p></div></details><details class="wt-acc"><summary><span class="wt-acc-n">3</span><span class="wt-acc-t">Sign-in &amp; security</span><span class="wt-acc-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="wt-acc-b"><p>Sign-in is handled by Firebase Authentication with email and password, Google or Facebook. WorkTrack never stores your password in readable form. You can set or change your password from the account menu. No online system can be called 100% risk-free, so keep your password private.</p></div></details><details class="wt-acc"><summary><span class="wt-acc-n">4</span><span class="wt-acc-t">Using it on your phone</span><span class="wt-acc-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="wt-acc-b"><p>WorkTrack works in your mobile browser and can be installed on your home screen like an app. Your data stays in the cloud, not only on the phone, so changing phones is easy: just sign in again. This device keeps only your login session and your theme choice. On a shared or public phone, always log out when you finish.</p></div></details><details class="wt-acc"><summary><span class="wt-acc-n">5</span><span class="wt-acc-t">Internet &amp; live sync</span><span class="wt-acc-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="wt-acc-b"><p>Records are loaded and saved live, so a working internet connection is needed. If your connection drops, wait until it is back before relying on the latest numbers, then check that your last entry appears in the register.</p></div></details><details class="wt-acc"><summary><span class="wt-acc-n">6</span><span class="wt-acc-t">Your own backup copy</span><span class="wt-acc-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="wt-acc-b"><p>Download a PDF report or export a CSV from the Attendance Register to keep a copy of your records. These files contain names, hours and advances, so store them somewhere private.</p></div></details><details class="wt-acc"><summary><span class="wt-acc-n">7</span><span class="wt-acc-t">Removing data</span><span class="wt-acc-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="wt-acc-b"><p>You can delete a single record, a whole month, or a team member from inside the app. If you want your account and all of its data removed, send us a message from the Contact section and we will help.</p></div></details></div>
+      <div class="wt-data-actions">
+        <button type="button" class="btn3d btn-sky wt-data-btn" data-wt-goto="register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg> Reports &amp; Export</button>
+        <button type="button" class="btn3d btn-indigo wt-data-btn" data-wt-pw><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Set / change password</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="wt-view" id="wtView-contact" data-wt-view="contact">
+    <div class="wt-head" id="wtContact"><div class="eyebrow">Settings</div><h2>Contact</h2><p class="wt-head-sub">Questions, suggestions or a problem? Get in touch.</p></div>
+    <section class="kh-card kh-card--mint">
+      <div class="wt-ct-hero"><img src="masum.webp" alt="Masum" decoding="async" onerror="this.onerror=null;this.src='photo.png'"><div><h3>Masum Cpex</h3><p>WorkTrack · Malaysia</p></div></div>
+      <ul class="wt-ct-list">
+        <li class="wt-ct-item"><a href="mailto:admin@masumcpex.com"><span class="wt-ct-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg></span><span class="wt-ct-txt"><small>Primary Email</small><b>admin@masumcpex.com</b></span></a><button type="button" class="wt-ct-copy" data-wt-copy="admin@masumcpex.com" aria-label="Copy Primary Email">Copy</button></li>
+        <li class="wt-ct-item"><a href="mailto:contact@masumcpex.com"><span class="wt-ct-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg></span><span class="wt-ct-txt"><small>Alternative Email</small><b>contact@masumcpex.com</b></span></a><button type="button" class="wt-ct-copy" data-wt-copy="contact@masumcpex.com" aria-label="Copy Alternative Email">Copy</button></li>
+        <li class="wt-ct-item"><a href="https://masumcpex.bro.bd" target="_blank" rel="noopener noreferrer"><span class="wt-ct-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><span class="wt-ct-txt"><small>Website</small><b>masumcpex.bro.bd</b></span></a><button type="button" class="wt-ct-copy" data-wt-copy="masumcpex.bro.bd" aria-label="Copy Website">Copy</button></li>
+        <li class="wt-ct-item"><a href="https://t.me/masumcpex" target="_blank" rel="noopener noreferrer"><span class="wt-ct-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 4.5 2.5 11.8l6 2.2 2.3 6.5 3.3-4 5 3.7z"/><path d="m8.5 14 9-6.5"/></svg></span><span class="wt-ct-txt"><small>Telegram</small><b>@masumcpex</b></span></a><button type="button" class="wt-ct-copy" data-wt-copy="@masumcpex" aria-label="Copy Telegram">Copy</button></li>
+        <li class="wt-ct-item"><div><span class="wt-ct-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><span class="wt-ct-txt"><small>Location</small><b>Malaysia</b></span></div><button type="button" class="wt-ct-copy" data-wt-copy="Malaysia" aria-label="Copy Location">Copy</button></li>
+      </ul>
+    </section>
+    <section class="kh-card kh-card--sky">
+      <h2 class="kh-card-title">Send a Message</h2>
+      <p class="kh-section-desc">Write below and your email app will open. Send the message from there.</p>
+      <div class="wt-ct-form" id="wtContactForm">
+        <div class="wt-fld"><label for="wtCfName">Name</label><input id="wtCfName" type="text" autocomplete="name"></div>
+        <div class="wt-fld"><label for="wtCfEmail">Email</label><input id="wtCfEmail" type="email" autocomplete="email" inputmode="email"></div>
+        <div class="wt-fld"><label for="wtCfSubject">Subject <em>(optional)</em></label><select id="wtCfSubject"><option value="">Select a subject (optional)</option><option>Attendance record issue</option><option>Wrong work hours or advance</option><option>Add / edit a team member</option><option>Login or account help</option><option>PDF / CSV report problem</option><option>Feature suggestion</option><option>Report a bug</option><option>Other</option></select></div>
+        <div class="wt-fld"><label for="wtCfMessage">Message</label><textarea id="wtCfMessage" rows="5"></textarea></div>
+        <p class="wt-ct-status" id="wtCfStatus" role="status" aria-live="polite"></p>
+        <button type="button" class="btn3d btn-sky wt-ct-send" id="wtCfSend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg> Send Message</button>
+      </div>
+    </section>
+  </div>
 
 </main>
 </div>
@@ -372,10 +451,163 @@
     var b=e.target.closest("[data-wt-theme]");
     if(b){try{localStorage.setItem(KEY,b.dataset.wtTheme)}catch(x){}apply();return}
     if(e.target.closest("#khSettingsBtn")){var dd=document.getElementById("khAccountDropdown");if(dd)dd.classList.remove("is-open");
-      var s=document.getElementById("sectionSettings");if(s)s.scrollIntoView({behavior:"smooth",block:"start"})}
+      if(window.wtShowView)window.wtShowView("data")}
   });
   try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){if(mode()==="system")apply()})}catch(e){}
   apply();
+})();
+</script>
+<script>
+/* WorkTrack navigation, contact form and login-art helpers (no other file is touched) */
+(function(){
+  var VIEWS=["dashboard","register","team","data","contact"];
+  var HASH={dashboard:"sectionDashboard",register:"attendanceRegisterSection",team:"sectionTeam",data:"wtData",contact:"wtContact"};
+  var main=document.getElementById("khMain"), gate=document.getElementById("khAuthGate");
+  var side=document.getElementById("wtSidebar"), scrim=document.getElementById("wtScrim");
+  var cur="dashboard", lastOpener=null;
+  var desktop=window.matchMedia?matchMedia("(min-width: 1024px)"):{matches:true};
+
+  function $(id){return document.getElementById(id)}
+  function setActive(){
+    document.querySelectorAll(".kh-sidebar-link[data-wt-view]").forEach(function(a){
+      var on=a.dataset.wtView===cur && !a.hasAttribute("data-wt-shortcut");
+      a.classList.toggle("is-active",on);
+      if(on)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");
+    });
+  }
+  function showView(n,o){
+    o=o||{};
+    if(VIEWS.indexOf(n)<0)n="dashboard";
+    VIEWS.forEach(function(v){var el=$("wtView-"+v);if(el)el.classList.toggle("is-active",v===n)});
+    cur=n; setActive();
+    if(o.hash!==false){try{history.replaceState(null,"","#"+HASH[n])}catch(e){}}
+    if(n==="contact")prefill();
+    if(!o.keepScroll)window.scrollTo({top:0,behavior:"auto"});
+  }
+  window.wtShowView=showView;
+
+  /* any code that scrolls to something inside a hidden view first opens that view */
+  var _siv=Element.prototype.scrollIntoView;
+  Element.prototype.scrollIntoView=function(){
+    try{var v=this.closest&&this.closest(".wt-view");if(v&&!v.classList.contains("is-active"))showView(v.dataset.wtView,{keepScroll:true});}catch(e){}
+    return _siv.apply(this,arguments);
+  };
+
+  /* hash links (also used by the installed app's shortcuts) */
+  function route(){
+    var id=(location.hash||"").slice(1), el=id?$(id):null, v=el&&el.closest?el.closest(".wt-view"):null;
+    if(!v){showView("dashboard",{hash:false,keepScroll:true});return}
+    showView(v.dataset.wtView,{hash:false,keepScroll:true});
+    if(el.id!==HASH[v.dataset.wtView])setTimeout(function(){el.scrollIntoView({behavior:"smooth",block:"start"})},60);
+  }
+  window.addEventListener("hashchange",route);
+  if(main&&window.MutationObserver){
+    var wasHidden=true;
+    new MutationObserver(function(){
+      var hidden=main.style.display==="none";
+      if(wasHidden&&!hidden)route();
+      wasHidden=hidden;
+    }).observe(main,{attributes:true,attributeFilter:["style"]});
+  }
+
+  /* menu drawer (phones/tablets) */
+  function setExpanded(v){document.querySelectorAll("[data-wt-menu]").forEach(function(b){b.setAttribute("aria-expanded",v?"true":"false")})}
+  function openMenu(opener){
+    if(!side)return; lastOpener=opener||null;
+    side.classList.add("is-open"); if(scrim)scrim.classList.add("is-on");
+    document.documentElement.classList.add("wt-lock"); setExpanded(true);
+    var c=side.querySelector("[data-wt-menu-close]"); if(c)setTimeout(function(){c.focus()},60);
+  }
+  function closeMenu(){
+    if(!side||!side.classList.contains("is-open"))return;
+    side.classList.remove("is-open"); if(scrim)scrim.classList.remove("is-on");
+    document.documentElement.classList.remove("wt-lock"); setExpanded(false);
+    if(lastOpener&&lastOpener.offsetParent!==null)lastOpener.focus();
+  }
+  if(scrim)scrim.addEventListener("click",closeMenu);
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeMenu()});
+  if(desktop.addEventListener)desktop.addEventListener("change",function(e){if(e.matches)closeMenu()});
+
+  document.addEventListener("click",function(e){
+    var t=e.target;
+    var mb=t.closest("[data-wt-menu]");
+    if(mb){side&&side.classList.contains("is-open")?closeMenu():openMenu(mb);return}
+    if(t.closest("[data-wt-menu-close]")){closeMenu();return}
+
+    var a=t.closest(".kh-sidebar-link[data-wt-view]");
+    if(a){
+      e.preventDefault();
+      var target=a.dataset.wtTarget;
+      showView(a.dataset.wtView,{keepScroll:!!target,hash:!target});
+      if(target){
+        try{history.replaceState(null,"","#"+target)}catch(x){}
+        setTimeout(function(){var el=$(target);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},40);
+      }
+      if(!desktop.matches)closeMenu();
+      return;
+    }
+    var g=t.closest("[data-wt-goto]");
+    if(g){showView(g.dataset.wtGoto);return}
+    if(t.closest("[data-wt-pw]")){var pb=$("khSetPasswordBtn");if(pb)pb.click();return}
+    if(t.closest(".wt-side-legal-item")&&!desktop.matches){closeMenu();return}
+
+    var cp=t.closest("[data-wt-copy]");
+    if(cp){copyText(cp.dataset.wtCopy,function(ok){cp.textContent=ok?"Copied":"Failed";setTimeout(function(){cp.textContent="Copy"},1600)});return}
+
+    /* tapping a member card jumps to the register; khApp.js asks for that scroll itself, this only makes sure the right view is open */
+  });
+
+  /* ---- contact ---- */
+  var EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var cfName=$("wtCfName"),cfEmail=$("wtCfEmail"),cfSubject=$("wtCfSubject"),cfMsg=$("wtCfMessage"),cfStatus=$("wtCfStatus"),cfSend=$("wtCfSend");
+  function prefill(){
+    if(!cfName||!cfEmail)return;
+    var em=($("khUserEmailFull")||{}).textContent||"", nm=($("khUserEmail")||{}).textContent||"";
+    if(!cfEmail.dataset.touched&&em)cfEmail.value=em.trim();
+    if(!cfName.dataset.touched&&nm&&nm.indexOf("@")<0)cfName.value=nm.trim();
+  }
+  function copyText(v,done){
+    function fb(){try{var ta=document.createElement("textarea");ta.value=v;ta.setAttribute("readonly","");ta.style.cssText="position:fixed;opacity:0;top:0;left:0";document.body.appendChild(ta);ta.select();var ok=document.execCommand("copy");document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(v).then(function(){done(true)},fb);else fb();
+  }
+  function fieldErr(input,msg){
+    var f=input.closest(".wt-fld"),old=f.querySelector(".wt-fld-err");if(old)old.remove();
+    if(msg){var s=document.createElement("span");s.className="wt-fld-err";s.setAttribute("role","alert");s.textContent=msg;f.appendChild(s);input.setAttribute("aria-invalid","true")}
+    else input.removeAttribute("aria-invalid");
+  }
+  [cfName,cfEmail,cfMsg].forEach(function(i){if(!i)return;i.addEventListener("input",function(){i.dataset.touched="1";fieldErr(i,"")})});
+  if(cfSend)cfSend.addEventListener("click",function(){
+    var nm=cfName.value.trim(),em=cfEmail.value.trim(),sb=cfSubject.value.trim(),ms=cfMsg.value.trim(),ok=true;
+    function chk(i,good,msg){fieldErr(i,good?"":msg);if(!good)ok=false}
+    chk(cfName,!!nm,"Please enter your name.");
+    chk(cfEmail,!!em&&EMAIL_RE.test(em),em?"Please enter a valid email address.":"Please enter your email.");
+    chk(cfMsg,!!ms,"Please write a message.");
+    if(!ok){cfStatus.textContent="Please fix the highlighted fields.";cfStatus.className="wt-ct-status err";return}
+    cfSend.disabled=true;cfStatus.textContent="";cfStatus.className="wt-ct-status";
+    var subject="[WorkTrack] "+(sb||"General message");
+    setTimeout(function(){
+      location.href="mailto:admin@masumcpex.com?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(ms+"\n\n— "+nm+"\nEmail: "+em);
+      cfSend.disabled=false;
+      cfStatus.textContent="Thank you! Your email app has opened. Send the message from there.";
+      cfStatus.className="wt-ct-status ok";
+    },500);
+  });
+
+  /* ---- login page ---- */
+  if(gate){
+    setTimeout(function(){gate.classList.add("wt-ready")},3500);
+    var slides=gate.querySelectorAll(".wt-art-slide"),dots=gate.querySelectorAll(".wt-art-dots span"),i=0;
+    var calm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if(slides.length>1&&!calm){
+      setInterval(function(){
+        if(document.hidden||gate.style.display==="none")return;
+        slides[i].classList.remove("is-on");dots[i].classList.remove("is-on");
+        i=(i+1)%slides.length;
+        slides[i].classList.add("is-on");dots[i].classList.add("is-on");
+      },4800);
+    }
+  }
+  setActive();
 })();
 </script>
 <div id="khToastContainer" class="kh-toast-container" aria-live="polite"></div>

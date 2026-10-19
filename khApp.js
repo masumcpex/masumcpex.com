@@ -1663,6 +1663,7 @@ export function initKhApp(uid, isAdmin){
     if(qsAdvance) qsAdvance.textContent = `RM ${totalAdvance.toFixed(2)}`;
     const pill = document.getElementById("dashboardMonthPill");
     if(pill) pill.textContent = monthLabel(ym);
+    refreshStatSheet();
   }
 
   summaryMonthSelect?.addEventListener("change", () => { renderSummary(); renderOverview(); });
@@ -3040,6 +3041,236 @@ export function initKhApp(uid, isAdmin){
         <div class="kh-ov-tile"><b>${fmtHours(avg)}h</b><span>Average / Duty Day</span></div>
       </div>`;
   }
+
+
+  // ===== STAT-SHEET BEGIN: dashboard stat cards -> details sheet (UI only; reads the already-loaded members/records) =====
+  let statType = "", statYm = "", statForm = false, statSaving = false, statTrigger = null;
+  const fmtRM = n => `RM ${(Number(n) || 0).toFixed(2)}`;
+  function daysElapsedIn(ym){
+    const [y, m] = ym.split("-").map(Number);
+    const now = new Date(), cy = now.getFullYear(), cm = now.getMonth() + 1;
+    if(y === cy && m === cm) return now.getDate();
+    if(y * 12 + m > cy * 12 + cm) return 0;
+    return new Date(y, m, 0).getDate();
+  }
+  function statMonths(){
+    const set = new Set(records.map(r => (r.date || "").slice(0, 7)).filter(Boolean));
+    set.add(currentYearMonth());
+    return Array.from(set).sort((a, b) => b.localeCompare(a));
+  }
+  function statMonthPicker(ym){
+    return `<label class="kh-sh-month">Month <select id="khStatMonth">${statMonths().map(m => `<option value="${m}"${m === ym ? " selected" : ""}>${monthLabel(m)}</option>`).join("")}</select></label>`;
+  }
+  function ensureStatSheet(){
+    let ov = document.getElementById("khStatSheet");
+    if(ov) return ov;
+    ov = document.createElement("div");
+    ov.id = "khStatSheet";
+    ov.className = "kh-modal-overlay kh-sheet-overlay";
+    ov.setAttribute("role", "dialog");
+    ov.setAttribute("aria-modal", "true");
+    ov.setAttribute("aria-labelledby", "khStatTitle");
+    ov.innerHTML = `<div class="kh-modal-card kh-sheet"><div class="kh-sheet-head"><h2 id="khStatTitle"></h2><button type="button" class="kh-modal-x" id="khStatClose" aria-label="Close">${ICON_CLOSE}</button></div><div class="kh-sheet-body" id="khStatBody"></div></div>`;
+    document.body.appendChild(ov);
+    ov.addEventListener("click", e => { if(e.target === ov) closeStatSheet(); });
+    ov.querySelector("#khStatClose").addEventListener("click", closeStatSheet);
+    ov.addEventListener("click", onSheetClick);
+    ov.addEventListener("change", e => { if(e.target.id === "khStatMonth"){ statYm = e.target.value; renderStatSheet(); } });
+    ov.addEventListener("submit", onAdvanceSubmit);
+    document.addEventListener("keydown", e => { if(e.key === "Escape" && ov.style.display === "flex" && !document.querySelector("#khMemberProfileOverlay[style*='flex']")) closeStatSheet(); });
+    return ov;
+  }
+  function closeStatSheet(){
+    const ov = document.getElementById("khStatSheet");
+    if(ov) ov.style.display = "none";
+    statType = ""; statForm = false;
+    if(statTrigger && statTrigger.focus) statTrigger.focus();
+  }
+  function openStatSheet(type, trigger){
+    statType = type; statYm = currentYearMonth(); statForm = false; statTrigger = trigger || null;
+    const ov = ensureStatSheet();
+    renderStatSheet();
+    ov.style.display = "flex";
+    const x = ov.querySelector("#khStatClose"); if(x) x.focus();
+  }
+  function refreshStatSheet(){
+    const ov = document.getElementById("khStatSheet");
+    if(ov && ov.style.display === "flex" && statType && !statForm && !statSaving) renderStatSheet();
+  }
+  function renderStatSheet(){
+    const ov = ensureStatSheet();
+    const title = { members: "Team Members", present: "Attendance Overview", hours: "Work Hours", advance: "Advance" }[statType] || "";
+    ov.querySelector("#khStatTitle").textContent = title;
+    const body = ov.querySelector("#khStatBody");
+    const html = statType === "members" ? sheetMembers() : statType === "present" ? sheetPresent() : statType === "hours" ? sheetHours() : statType === "advance" ? sheetAdvance() : "";
+    body.innerHTML = html;
+    if(statForm){ const f = body.querySelector("#khAdvMember"); if(f) f.focus(); }
+  }
+  const initialOf = n => (n || "?").trim().charAt(0).toUpperCase();
+  const sortedMembers = () => members.slice().sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+
+  function sheetMembers(){
+    const ym = currentYearMonth();
+    const rows = sortedMembers().map(m => {
+      const s = monthStatsFor(m.name, ym);
+      const adv = typeof m.advance === "number" ? m.advance : 0;
+      return `<button type="button" class="kh-sh-row" data-member="${m.id}" aria-label="View ${escapeHtml(m.name)} details">
+        <span class="kh-sh-avatar" style="background:${avatarColorFor(m.id)}">${escapeHtml(initialOf(m.name))}</span>
+        <span class="kh-sh-main"><b>${escapeHtml(m.name)}</b><small>${s.duty} work days · ${fmtHours(s.hours)}h · ${s.leave} leave</small></span>
+        <span class="kh-sh-side">${fmtRM(adv)}<small>Advance</small></span>
+        <span class="kh-sh-chev">${ICON_CHEVRON_RIGHT}</span></button>`;
+    }).join("");
+    return `<p class="kh-sh-note">${members.length} member${members.length === 1 ? "" : "s"} · ${monthLabel(ym)}. Tap a member to see their details.</p>
+      ${rows || `<p class="kh-empty-note" style="display:block;">No members added yet.</p>`}
+      <div class="kh-sh-actions"><button type="button" class="btn3d btn-mint" data-sheet-act="add-member">+ Add Member</button></div>`;
+  }
+
+  function donutSvg(duty, leave){
+    const total = duty + leave, R = 52, C = 2 * Math.PI * R;
+    const pArc = total ? C * duty / total : 0, lArc = total ? C * leave / total : 0;
+    const rate = total ? Math.round(duty / total * 100) : 0;
+    return `<svg class="kh-sh-donut" viewBox="0 0 140 140" role="img" aria-label="Present rate ${rate} percent">
+      <circle cx="70" cy="70" r="${R}" fill="none" stroke="currentColor" stroke-opacity=".12" stroke-width="16"/>
+      ${total ? `<circle cx="70" cy="70" r="${R}" fill="none" stroke="#20BF78" stroke-width="16" stroke-dasharray="${pArc} ${C - pArc}" transform="rotate(-90 70 70)"/>
+      <circle cx="70" cy="70" r="${R}" fill="none" stroke="#F5A524" stroke-width="16" stroke-dasharray="${lArc} ${C - lArc}" stroke-dashoffset="${-pArc}" transform="rotate(-90 70 70)"/>` : ""}
+      <text x="70" y="68" text-anchor="middle" class="kh-sh-donut-num">${total ? rate + "%" : "–"}</text>
+      <text x="70" y="86" text-anchor="middle" class="kh-sh-donut-sub">Present rate</text></svg>`;
+  }
+  function sheetPresent(){
+    const ym = statYm || currentYearMonth();
+    const days = daysElapsedIn(ym);
+    const per = sortedMembers().map(m => {
+      const s = monthStatsFor(m.name, ym);
+      return { m, duty: s.duty, leave: s.leave, none: Math.max(0, days - s.duty - s.leave) };
+    });
+    const duty = per.reduce((a, p) => a + p.duty, 0), leave = per.reduce((a, p) => a + p.leave, 0), none = per.reduce((a, p) => a + p.none, 0);
+    const total = duty + leave;
+    const pct = n => total ? Math.round(n / total * 100) : 0;
+    const rows = per.map(p => {
+      const t = p.duty + p.leave, r = t ? Math.round(p.duty / t * 100) : 0;
+      return `<div class="kh-sh-trow"><span class="kh-sh-name">${escapeHtml(p.m.name)}</span><span>${p.duty}</span><span>${p.leave}</span><span>${p.none}</span><span><b>${t ? r + "%" : "–"}</b></span></div>`;
+    }).join("");
+    return `${statMonthPicker(ym)}
+      <div class="kh-sh-chart">${donutSvg(duty, leave)}
+        <ul class="kh-sh-legend">
+          <li><i style="background:#20BF78"></i>Present<b>${duty}</b><small>${pct(duty)}%</small></li>
+          <li><i style="background:#F5A524"></i>Leave<b>${leave}</b><small>${pct(leave)}%</small></li>
+          <li><i style="background:#94A3B8"></i>Absent<b>${none}</b><small>member-days</small></li>
+        </ul></div>
+      <p class="kh-sh-note">Present rate = present days ÷ (present + leave), the same as before. "Absent" counts days up to today with no attendance entry, so days off are included.</p>
+      <h3 class="kh-sh-h">Member-wise</h3>
+      <div class="kh-sh-table"><div class="kh-sh-trow kh-sh-thead"><span class="kh-sh-name">Member</span><span>Present</span><span>Leave</span><span>Absent</span><span>Rate</span></div>
+      ${rows || `<p class="kh-empty-note" style="display:block;">No members yet.</p>`}</div>`;
+  }
+
+  function sheetHours(){
+    const ym = statYm || currentYearMonth();
+    const per = sortedMembers().map(m => ({ m, s: monthStatsFor(m.name, ym) }));
+    const total = per.reduce((a, p) => a + p.s.hours, 0), duty = per.reduce((a, p) => a + p.s.duty, 0);
+    const max = Math.max(1, ...per.map(p => p.s.hours));
+    const avg = duty ? Math.round(total / duty * 10) / 10 : 0;
+    const rows = per.map(p => `<div class="kh-sh-hrow"><div class="kh-sh-hrow-top"><span class="kh-sh-name">${escapeHtml(p.m.name)}</span><b>${fmtHours(p.s.hours)}h</b></div><div class="kh-sh-bar"><i style="width:${Math.round(p.s.hours / max * 100)}%"></i></div><small>${p.s.duty} work days · avg ${p.s.duty ? fmtHours(Math.round(p.s.hours / p.s.duty * 10) / 10) : 0}h/day</small></div>`).join("");
+    const now = new Date(); const last6 = [];
+    for(let i = 0; i < 6; i++){ const d = new Date(now.getFullYear(), now.getMonth() - i, 1); last6.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`); }
+    const mh = last6.map(m => ({ m, h: monthTotals(m).hours })); const mmax = Math.max(1, ...mh.map(x => x.h));
+    return `${statMonthPicker(ym)}
+      <div class="kh-sh-grid"><div class="kh-sh-tile"><b>${fmtHours(total)}h</b><span>Total hours</span></div><div class="kh-sh-tile"><b>${duty}</b><span>Work days</span></div><div class="kh-sh-tile"><b>${fmtHours(avg)}h</b><span>Avg / work day</span></div></div>
+      <h3 class="kh-sh-h">Member-wise · ${monthLabel(ym)}</h3>${rows || `<p class="kh-empty-note" style="display:block;">No members yet.</p>`}
+      <h3 class="kh-sh-h">Last 6 months</h3>
+      ${mh.map(x => `<div class="kh-sh-mrow"><span>${monthLabel(x.m)}</span><div class="kh-sh-bar"><i style="width:${Math.round(x.h / mmax * 100)}%"></i></div><b>${fmtHours(x.h)}h</b></div>`).join("")}`;
+  }
+
+  function sheetAdvance(){
+    if(statForm) return advanceFormHtml();
+    const ym = currentYearMonth();
+    const per = sortedMembers().map(m => ({ m, st: advanceStatsFor(m, ym) }));
+    const total = per.reduce((a, p) => a + p.st.balance, 0), taken = per.reduce((a, p) => a + p.st.taken, 0), ded = per.reduce((a, p) => a + p.st.deducted, 0);
+    const hist = [];
+    members.forEach(m => (Array.isArray(m.advanceLog) ? m.advanceLog : []).forEach(e => { if(e && typeof e.d === "string") hist.push({ d: e.d, a: Number(e.a) || 0, n: m.name }); }));
+    hist.sort((x, y) => y.d.localeCompare(x.d));
+    const rows = per.map(p => `<div class="kh-sh-arow"><span class="kh-sh-name">${escapeHtml(p.m.name)}</span><span class="kh-sh-abal">${fmtRM(p.st.balance)}</span><small>${monthLabel(ym)}: +${p.st.taken.toFixed(2)} / −${p.st.deducted.toFixed(2)}</small></div>`).join("");
+    return `<div class="kh-sh-actions kh-sh-actions--top"><button type="button" class="btn3d btn-mint kh-sh-addadv" data-sheet-act="add-advance">+ Add Advance</button></div>
+      <div class="kh-sh-grid"><div class="kh-sh-tile"><b>${fmtRM(total)}</b><span>Total advance</span></div><div class="kh-sh-tile"><b>${fmtRM(taken)}</b><span>Taken · ${monthLabel(ym)}</span></div><div class="kh-sh-tile"><b>${fmtRM(ded)}</b><span>Deducted · ${monthLabel(ym)}</span></div></div>
+      <h3 class="kh-sh-h">By member</h3>${rows || `<p class="kh-empty-note" style="display:block;">No members yet.</p>`}
+      <h3 class="kh-sh-h">Recent advance history</h3>
+      ${hist.length ? hist.slice(0, 8).map(x => `<div class="kh-sh-hist"><span>${x.d}</span><span class="kh-sh-name">${escapeHtml(x.n)}</span><b class="${x.a < 0 ? "is-neg" : "is-pos"}">${x.a < 0 ? "−" : "+"}${Math.abs(x.a).toFixed(2)}</b></div>`).join("") : `<p class="kh-empty-note" style="display:block;">No advance history yet.</p>`}
+      <p class="kh-sh-note">You can also edit an advance from the Monthly Summary table.</p>`;
+  }
+  function advanceFormHtml(){
+    return `<form id="khAdvForm" class="kh-sh-form" novalidate>
+      <div class="kh-sh-field"><label for="khAdvMember">Team member</label><select id="khAdvMember"><option value="">Select a member</option>${sortedMembers().map(m => `<option value="${m.id}">${escapeHtml(m.name)} — ${fmtRM(m.advance)}</option>`).join("")}</select><span class="kh-field-error" id="khAdvMemberErr" aria-live="polite"></span></div>
+      <div class="kh-sh-field"><span class="kh-sh-lbl">Type</span><div class="kh-sh-seg" role="radiogroup" aria-label="Advance type"><label><input type="radio" name="khAdvOp" value="add" checked><span>+ Add advance</span></label><label><input type="radio" name="khAdvOp" value="deduct"><span>− Deduct (repaid)</span></label></div></div>
+      <div class="kh-sh-field"><label for="khAdvAmount">Amount (RM)</label><input type="number" id="khAdvAmount" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00"><span class="kh-field-error" id="khAdvAmountErr" aria-live="polite"></span></div>
+      <div class="kh-sh-field"><label for="khAdvDate">Date</label><input type="date" id="khAdvDate" value="${localTodayStr()}"><span class="kh-field-error" id="khAdvDateErr" aria-live="polite"></span></div>
+      <div class="kh-sh-actions"><button type="button" class="btn3d kh-sh-cancel" data-sheet-act="adv-cancel">Cancel</button><button type="submit" class="btn3d btn-mint" id="khAdvSave">Save Advance</button></div></form>`;
+  }
+  function onSheetClick(e){
+    const act = e.target.closest("[data-sheet-act]");
+    if(act){
+      const a = act.dataset.sheetAct;
+      if(a === "add-member"){
+        closeStatSheet();
+        if(window.wtShowView) window.wtShowView("team", { keepScroll: true, target: "sectionTeam" });
+        setTimeout(() => { const i = document.getElementById("memberInput"); if(i) i.focus(); }, 80);
+      }else if(a === "add-advance"){ statForm = true; renderStatSheet(); }
+      else if(a === "adv-cancel"){ statForm = false; renderStatSheet(); }
+      return;
+    }
+    const row = e.target.closest("[data-member]");
+    if(row){ const m = members.find(x => x.id === row.dataset.member); if(m) openMemberProfileModal(m); }
+  }
+  async function onAdvanceSubmit(e){
+    if(e.target.id !== "khAdvForm") return;
+    e.preventDefault();
+    if(statSaving) return;
+    const q = id => document.getElementById(id);
+    const err = (id, msg) => { const el = q(id); if(el) el.textContent = msg || ""; };
+    const memberId = q("khAdvMember").value, op = (document.querySelector('input[name="khAdvOp"]:checked') || {}).value === "deduct" ? "deduct" : "add";
+    const raw = parseFloat(q("khAdvAmount").value), date = q("khAdvDate").value;
+    let ok = true;
+    err("khAdvMemberErr", memberId ? "" : "Please select a team member."); if(!memberId) ok = false;
+    if(!isFinite(raw) || raw <= 0){ err("khAdvAmountErr", "Enter an amount greater than 0."); ok = false; }
+    else if(raw > 1000000){ err("khAdvAmountErr", "Amount is too large."); ok = false; }
+    else err("khAdvAmountErr", "");
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){ err("khAdvDateErr", "Choose a valid date."); ok = false; } else err("khAdvDateErr", "");
+    if(!ok) return;
+    const amount = Math.round(raw * 100) / 100;
+    statSaving = true;
+    const btn = q("khAdvSave"); if(btn){ btn.disabled = true; btn.textContent = "Saving…"; }
+    let newBalance = 0;
+    try{
+      const ref = doc(db, "kh_members", memberId);
+      await runTransaction(db, async tx => {
+        const snap = await tx.get(ref);
+        if(!snap.exists()) throw new Error("member-missing");
+        const cur = snap.data();
+        const bal = typeof cur.advance === "number" ? cur.advance : 0;
+        newBalance = op === "deduct" ? bal - amount : bal + amount;
+        const log = Array.isArray(cur.advanceLog) ? cur.advanceLog.slice() : [];
+        log.push({ d: date, a: op === "deduct" ? -amount : amount });
+        tx.update(ref, { advance: newBalance, advanceLog: log });
+      });
+      if(newBalance < 0) showToast(`Saved, but new balance is negative: ${fmtRM(newBalance)}.`, "error");
+      else showToast(`${op === "deduct" ? "Deducted" : "Added"} ${fmtRM(amount)}. New balance: ${fmtRM(newBalance)}.`);
+      statSaving = false; statForm = false;
+      renderStatSheet();
+      setTimeout(() => { renderSummary(); renderQuickStats(); }, 350);
+    }catch(error){
+      console.error(error);
+      showToast("Failed to save advance. Please try again.", "error");
+      statSaving = false;
+      if(btn){ btn.disabled = false; btn.textContent = "Save Advance"; }
+    }
+  }
+  (function bindStatCards(){
+    const qs = document.getElementById("quickStats");
+    if(!qs || qs.dataset.wtBound) return;
+    qs.dataset.wtBound = "1";
+    const open = el => { const card = el.closest("[data-stat]"); if(card) openStatSheet(card.dataset.stat, card); };
+    qs.addEventListener("click", e => open(e.target));
+    qs.addEventListener("keydown", e => { if((e.key === "Enter" || e.key === " ") && e.target.closest("[data-stat]")){ e.preventDefault(); open(e.target); } });
+  })();
+  // ===== STAT-SHEET END =====
 
   // ---- Attendance Calendar ----
   let calCard = null, calYm = "", calSelected = "";

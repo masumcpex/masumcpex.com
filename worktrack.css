@@ -1205,3 +1205,13 @@ html[data-theme=dark] .kh-main .kh-qs-card[data-stat]:active{background:#16243A}
 html[data-theme=dark] .kh-main .kh-qs-card[data-stat] .kh-qs-chev{background:rgba(255,255,255,.08)}
 html[data-theme=dark] .kh-qs-action{color:color-mix(in srgb,var(--qs-accent) 70%,#fff)}
 @media (prefers-reduced-motion:reduce){.kh-main .kh-qs-card[data-stat]{transition:none}.kh-main .kh-qs-card[data-stat]:active{transform:none}}
+
+/* ===== Sidebar footer: Main Website + Instagram + Facebook ===== */
+.kh-sidebar-footer{display:flex;align-items:center;gap:8px}
+.kh-sidebar-footer>.kh-sidebar-link{flex:1;min-width:0}
+.wt-social-link{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.07);transition:background-color .15s ease,transform .15s ease;-webkit-tap-highlight-color:transparent}
+.wt-social-link svg{width:22px;height:22px;display:block;shape-rendering:geometricPrecision}
+@media (hover:hover){.wt-social-link:hover{background:rgba(255,255,255,.16);transform:translateY(-1px)}}
+.wt-social-link:active{transform:scale(.94)}
+.wt-social-link:focus-visible{outline:2px solid #7DB8FF;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.wt-social-link{transition:none}}

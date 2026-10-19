@@ -274,6 +274,8 @@
   </nav>
   <div class="kh-sidebar-footer">
     <a href="index.html" class="kh-sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg><span>Main Website</span></a>
+    <a href="https://www.instagram.com/masumcpex?psln=MTI4YXJ1dWg5dnA0eQ==" class="wt-social-link" target="_blank" rel="noopener noreferrer" aria-label="Instagram: masumcpex" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><radialGradient id="wtIgGrad" cx="30%" cy="107%" r="150%"><stop offset="0" stop-color="#fdf497"/><stop offset=".05" stop-color="#fdf497"/><stop offset=".45" stop-color="#fd5949"/><stop offset=".6" stop-color="#d6249f"/><stop offset=".9" stop-color="#285AEB"/></radialGradient></defs><rect width="24" height="24" rx="6.2" fill="url(#wtIgGrad)"/><rect x="5" y="5" width="14" height="14" rx="4.2" fill="none" stroke="#fff" stroke-width="1.7"/><circle cx="12" cy="12" r="3.3" fill="none" stroke="#fff" stroke-width="1.7"/><circle cx="16.1" cy="7.9" r="1" fill="#fff"/></svg></a>
+    <a href="https://www.facebook.com/masumcpex" class="wt-social-link" target="_blank" rel="noopener noreferrer" aria-label="Facebook: masumcpex" title="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="12" fill="#1877F2"/><path fill="#fff" d="M16.7 15.5l.5-3.5h-3.4V9.8c0-1 .5-1.9 2-1.9h1.5V4.9s-1.4-.2-2.7-.2c-2.8 0-4.5 1.7-4.5 4.7V12H7.1v3.5h3.1v8.4a12.2 12.2 0 0 0 3.7 0v-8.4z"/></svg></a>
   </div>
 </aside>
 <div class="wt-scrim" id="wtScrim"></div>
@@ -512,11 +514,67 @@
     if(VIEWS.indexOf(n)<0)n="dashboard";
     VIEWS.forEach(function(v){var el=$("wtView-"+v);if(el)el.classList.toggle("is-active",v===n)});
     cur=n; curTarget=o.target||null; setActive();
-    if(o.hash!==false){try{history.replaceState(null,"","#"+HASH[n])}catch(e){}}
+    if(o.hash!==false)setLoc(HASH[n],n==="dashboard"&&!o.target);
     if(n==="contact")prefill();
     if(!o.keepScroll)window.scrollTo({top:0,behavior:"auto"});
   }
   window.wtShowView=showView;
+
+  /* ===== Back button =====
+     Back closes the open popup / menu first, then returns from a screen to the dashboard.
+     The app itself only closes when you press Back on the dashboard. ===== */
+  var HB={pend:false,q:[],t:0,ovEntry:false};
+  function hState(){return history.state||{}}
+  function hRun(f){if(HB.pend)HB.q.push(f);else f()}
+  function hFlush(){HB.pend=false;clearTimeout(HB.t);var q=HB.q;HB.q=[];q.forEach(function(f){try{f()}catch(e){}})}
+  function hBack(){HB.pend=true;clearTimeout(HB.t);HB.t=setTimeout(hFlush,500);try{history.back()}catch(e){hFlush()}}
+  function setLoc(id,home){
+    if(HB.ovEntry&&!anyOpen()){HB.ovEntry=false;hBack()}
+    hRun(function(){
+      if(HB.ovEntry)return;
+      try{
+        var layered=!!hState().wtLayer, url=location.pathname+location.search;
+        if(home){if(layered)hBack();else history.replaceState(null,"",url)}
+        else if(layered)history.replaceState({wtLayer:1},"",url+"#"+id);
+        else history.pushState({wtLayer:1},"",url+"#"+id);
+      }catch(e){}
+    });
+  }
+  var OVSEL=".kh-modal-overlay,.kh-sheet-overlay";
+  function shown(e){var s=getComputedStyle(e);return s.display!=="none"&&s.visibility!=="hidden"&&e.getClientRects().length>0}
+  function openOverlays(){return Array.prototype.filter.call(document.querySelectorAll(OVSEL),shown)}
+  function drawerOpen(){return !!(side&&side.classList.contains("is-open"))}
+  function ddOpen(){var d=$("khAccountDropdown");return !!(d&&d.classList.contains("is-open"))}
+  function anyOpen(){return drawerOpen()||ddOpen()||openOverlays().length>0}
+  function closeTop(){
+    var o=openOverlays();
+    if(o.length){
+      o.sort(function(a,b){return (parseInt(getComputedStyle(a).zIndex,10)||0)-(parseInt(getComputedStyle(b).zIndex,10)||0)});
+      var top=o[o.length-1];
+      top.dispatchEvent(new MouseEvent("click",{bubbles:true}));
+      if(shown(top)){var x=top.querySelector(".kh-modal-x,[data-close],.kh-modal-close");if(x)x.click()}
+      return true;
+    }
+    if(drawerOpen()){closeMenu();return true}
+    if(ddOpen()){$("khAccountDropdown").classList.remove("is-open");return true}
+    return false;
+  }
+  var syncT=0;
+  function syncOv(){
+    clearTimeout(syncT);
+    syncT=setTimeout(function(){
+      var now=anyOpen();
+      if(now&&!HB.ovEntry){hRun(function(){try{history.pushState({wtOv:1,wtLayer:hState().wtLayer?1:0},"",location.href);HB.ovEntry=true}catch(e){}})}
+      else if(!now&&HB.ovEntry){HB.ovEntry=false;hRun(function(){if(hState().wtOv)hBack()})}
+    },30);
+  }
+  window.addEventListener("popstate",function(){
+    if(HB.pend){hFlush();return}
+    HB.ovEntry=false;
+    closeTop();
+    syncOv();
+  });
+  if(window.MutationObserver)new MutationObserver(syncOv).observe(document.body,{attributes:true,subtree:true,childList:true,attributeFilter:["style","class"]});
 
   /* any code that scrolls to something inside a hidden view first opens that view */
   var _siv=Element.prototype.scrollIntoView;
@@ -571,9 +629,10 @@
     if(a){
       e.preventDefault();
       var target=a.dataset.wtTarget||null;
+      if(!desktop.matches)closeMenu();
       showView(a.dataset.wtView,{keepScroll:!!target,hash:!target,target:target});
       if(target){
-        try{history.replaceState(null,"","#"+target)}catch(x){}
+        setLoc(target,false);
         setTimeout(function(){var el=$(target);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},40);
       }
       if(!desktop.matches)closeMenu();

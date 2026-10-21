@@ -1,15 +1,15 @@
 :root{
   color-scheme: light;
-  --paper:      #F8FAFC;
-  --paper-2:    #F1F5F9;
+  --paper:      #F5F7FA;
+  --paper-2:    #EEF2F7;
   --ink:        #1B2A45;
   --ink-2:      #23375B;
-  --charcoal:   #26221D;
-  --muted:      #7A6F5D;
+  --charcoal:   #1B2A45;
+  --muted:      #5B6B82;
   --teal:       #0E6E5C;
   --teal-dark:  #0A5347;
   --gold:       #C79A3B;
-  --line:       #E5E7EB;
+  --line:       #E3E8EF;
   --line-soft:  rgba(27,42,69,0.08);
   --card-bg:    #FFFFFF;
   --shadow:     0 4px 20px rgba(16,24,40,0.06);
@@ -278,7 +278,7 @@ img{ max-width:100%; display:block; }
   transition: transform .22s var(--ease), box-shadow .22s var(--ease), background .22s var(--ease);
   min-height: 44px;
 }
-.btn-primary{ background: var(--teal); color:#fff; box-shadow: 0 8px 22px rgba(14,110,92,.32); }
+.btn-primary{ background: var(--teal); color:#fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 6px 16px rgba(14,110,92,.24); }
 .btn-primary:hover{ transform: translateY(-3px); box-shadow: 0 14px 30px rgba(14,110,92,.4); }
 .btn-primary:active{ transform: translateY(-1px); }
 .btn-outline{ border: 2px solid var(--gold); color: var(--ink); font-weight:700; }
@@ -389,7 +389,7 @@ img{ max-width:100%; display:block; }
 }
 .chapter-count-line{
   margin: 1.6rem 0 1.2rem; font-weight:700; font-size:1.05rem;
-  color: #10182B !important; -webkit-text-fill-color:#10182B;
+  color: #0F1B2D !important; -webkit-text-fill-color:#0F1B2D;
 }
 
 .contact-intro{ padding-bottom: 1.4rem; }
@@ -426,6 +426,7 @@ img{ max-width:100%; display:block; }
 .contact-info-head p{
   color: rgba(255,255,255,.72); font-size:.94rem; line-height:1.7; margin:0; max-width: 32ch;
 }
+.ci-badge svg{ width:24px; height:24px; stroke: var(--gold); }
 .ci-badge{
   display:inline-flex; align-items:center; justify-content:center;
   width: 46px; height:46px; border-radius: 12px;
@@ -479,15 +480,15 @@ img{ max-width:100%; display:block; }
   outline:none; border-color: var(--teal); background:#fff;
   box-shadow: 0 0 0 4px rgba(14,110,92,.14);
 }
-.field.invalid input, .field.invalid textarea{ border-color:#C0453B; }
+.field.invalid input, .field.invalid textarea{ border-color:#D1493F; }
 .field-error{
-  font-size:.79rem; color:#C0453B; min-height: 1em; display:block;
+  font-size:.79rem; color:#D1493F; min-height: 1em; display:block;
 }
 
 .btn-send{
   position:relative; align-self:flex-start;
   background: var(--teal); color:#fff; border:none; cursor:pointer;
-  box-shadow: 0 8px 22px rgba(14,110,92,.32);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 6px 16px rgba(14,110,92,.24);
   display:inline-flex; align-items:center; gap:.65rem;
 }
 .btn-send:hover{ transform: translateY(-3px); background: var(--teal-dark); box-shadow: 0 14px 28px rgba(14,110,92,.42); }
@@ -506,7 +507,7 @@ img{ max-width:100%; display:block; }
   font-size:.87rem; min-height: 1.2em; margin:0;
 }
 .form-status.ok{ color: var(--teal-dark); font-weight:600; }
-.form-status.err{ color:#C0453B; font-weight:600; }
+.form-status.err{ color:#D1493F; font-weight:600; }
 
 /* responsive */
 @media (max-width: 860px){
@@ -663,7 +664,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 }
 .private-chapter-card:hover{ transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
 .private-chapter-card > span:first-child{
-  color:#10182B !important; -webkit-text-fill-color:#10182B; font-weight:700; font-size:1rem;
+  color:#0F1B2D !important; -webkit-text-fill-color:#0F1B2D; font-weight:700; font-size:1rem;
 }
 .private-chapter-num{ font-weight:700; color: var(--gold); margin-right:.6rem; }
 .private-chapter-soon{ font-size:.78rem; color: var(--muted); }
@@ -676,3 +677,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   font-size: 1rem; font-family: inherit; text-align:center;
 }
 .private-password-input:focus{ outline: 2px solid var(--teal); outline-offset: 2px; }
+
+/* calmer entrance: only the photo fades in; text and buttons are simply there */
+.hero-name,.hero-role,.hero-tagline,.hero .btn{ animation:none; }
+@media (prefers-reduced-motion: reduce){ *,*::before,*::after{ animation:none !important; transition:none !important; scroll-behavior:auto !important; } }

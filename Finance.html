@@ -480,6 +480,63 @@ html[data-theme=dark] .ct-form textarea{border-color:var(--line)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
+
+/* ---- Expenses (Monefy-inspired) ---- */
+.xq{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.xq-tile{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 4px;min-height:88px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:inherit;font-size:.76rem;font-weight:600;line-height:1.2;text-align:center;cursor:pointer}
+.xq-tile:active{transform:scale(.97)}
+.xq-tile:focus-visible,.xp-cats button:focus-visible,.xp-pay button:focus-visible,.xp-pad button:focus-visible,.xl button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.xq-ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:#fff;background:var(--c,#64748B);flex:none}
+.xq-ic .ic{width:22px;height:22px;stroke-width:2}
+@media(min-width:720px){.xq{grid-template-columns:repeat(8,1fr)}}
+.xm{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;margin-top:12px}
+.xm-mid{display:flex;flex-direction:column;align-items:center;gap:1px}
+.xm-mid b{font-size:1.05rem}
+.xm-link{background:none;border:0;color:var(--teal);font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;padding:2px 6px}
+.xm .icon-btn[disabled]{opacity:.35;cursor:default}
+.xd{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.xd-ring{position:relative;width:172px;height:172px;flex:none}
+.xd-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.xd-mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;padding:0 28px}
+.xd-mid small{color:var(--muted);font-size:.74rem}
+.xd-mid b{font-size:1rem;line-height:1.25;word-break:break-word}
+.xl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;flex:1;min-width:230px;width:100%}
+.xl button{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;width:100%;padding:9px 8px;border:0;background:transparent;border-radius:10px;font:inherit;color:var(--ink);cursor:pointer;text-align:left}
+.xl button.on{background:var(--teal-soft)}
+.xl .dot{width:12px;height:12px;border-radius:4px;background:var(--c)}
+.xl .pc{color:var(--muted);font-size:.78rem;margin-left:6px;font-weight:500}
+.xl .am{font-weight:700;font-variant-numeric:tabular-nums}
+.xh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 2px 8px}
+.xh h3{margin:0;font-size:1rem}
+.tag.cat{background:color-mix(in srgb,var(--c) 14%,transparent);color:var(--c)}
+.xp-body{gap:12px}
+.xp-cats{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.xp-cats::-webkit-scrollbar{display:none}
+.xp-cats button{flex:none;display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);padding:5px 12px 5px 5px;border-radius:999px;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer}
+.xp-cats button .xq-ic{width:26px;height:26px;border-radius:50%}
+.xp-cats button .xq-ic .ic{width:15px;height:15px}
+.xp-cats button[aria-pressed=true]{border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,transparent)}
+.xp-disp{text-align:right;padding:2px 4px}
+.xp-expr{min-height:1.3em;color:var(--muted);font-size:.95rem;font-variant-numeric:tabular-nums;word-break:break-all}
+.xp-amt{font-size:2.3rem;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;word-break:break-all}
+.xp-amt small{font-size:1rem;color:var(--muted);font-weight:700;margin-right:6px}
+.xp-pay{display:flex;gap:6px;flex-wrap:wrap}
+.xp-pay button{display:flex;align-items:center;gap:5px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);padding:6px 11px;border-radius:999px;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer}
+.xp-pay button .ic{width:15px;height:15px}
+.xp-pay button[aria-pressed=true]{border-color:var(--teal);background:var(--teal-soft);color:var(--teal-dark)}
+.xp-more{border:1px solid var(--line);border-radius:12px;padding:0 12px}
+.xp-more summary{padding:10px 0;cursor:pointer;font-weight:600;font-size:.88rem;color:var(--muted)}
+.xp-more .fld{margin-bottom:10px}
+.xp-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.xp-pad button{height:52px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:1.3rem;font-weight:700;cursor:pointer;display:grid;place-items:center;touch-action:manipulation}
+.xp-pad button:active{background:var(--soft,#EDF1F6)}
+.xp-pad .op{background:var(--teal-soft);color:var(--teal-dark)}
+.xp-pad .fn{color:var(--red)}
+html[data-theme=dark] .xl button.on{background:var(--soft)}
+html[data-theme=dark] .xm-link,html[data-theme=dark] .xp-pad .op{color:#5EEAD4}
+html[data-theme=dark] .xp-pay button[aria-pressed=true]{background:var(--teal-soft);color:#5EEAD4}
+html[data-theme=dark] .tag.cat{background:color-mix(in srgb,var(--c) 22%,transparent);color:color-mix(in srgb,var(--c) 70%,#fff)}
+html[data-theme=dark] .xp-pad button:active{background:var(--soft)}
 </style>
 </head>
 <body>
@@ -531,6 +588,15 @@ html[data-theme=dark] .ct-form textarea{border-color:var(--line)}
     <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+    <symbol id="i-cat-food" viewBox="0 0 24 24"><path d="M3 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6a2 2 0 0 0 2 2h3Zm0 0v7"/></symbol>
+    <symbol id="i-cat-bus" viewBox="0 0 24 24"><path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/></symbol>
+    <symbol id="i-cat-shirt" viewBox="0 0 24 24"><path d="M20.4 3.5 16 2a4 4 0 0 1-8 0L3.6 3.5a2 2 0 0 0-1.3 2.2l.6 3.5a1 1 0 0 0 1 .8H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.1a1 1 0 0 0 1-.8l.6-3.5a2 2 0 0 0-1.3-2.2z"/></symbol>
+    <symbol id="i-cat-heart" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"/></symbol>
+    <symbol id="i-cat-home" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .7-1.5l7-6a2 2 0 0 1 2.6 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-cash" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol>
+    <symbol id="i-card" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></symbol>
+    <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 22h18"/><path d="M6 18v-7M10 18v-7M14 18v-7M18 18v-7"/><path d="M12 2 20 7H4z"/></symbol>
+    <symbol id="i-backspace" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><path d="m18 9-6 6"/><path d="m12 9 6 6"/></symbol>
   </defs>
 </svg>
 <a class="skip" href="#view" id="skip">মূল কনটেন্টে যান</a>
@@ -1068,6 +1134,7 @@ const FinanceCore = (() => {
     applyImport,
     csvCell,
     incomeCSV,
+    toCSV,
     expensesCSV,
     supportCSV,
     monthlyCSV
@@ -1101,6 +1168,29 @@ const FinanceCore = (() => {
     method: { bank: "ব্যাংক", remittance: "রেমিট্যান্স সার্ভিস", other: "অন্যান্য" }
   };
   const NOUN = { income: "আয়", expenses: "খরচ", support: "ট্রান্সফার" };
+  const CAT_META = {
+    food: { c: "#F59E0B", ic: "cat-food" },
+    transport: { c: "#3B82F6", ic: "cat-bus" },
+    mobile: { c: "#8B5CF6", ic: "smartphone" },
+    clothing: { c: "#EC4899", ic: "cat-shirt" },
+    medical: { c: "#EF4444", ic: "cat-heart" },
+    accommodation: { c: "#0E9F83", ic: "cat-home" },
+    personal: { c: "#06B6D4", ic: "user" },
+    other: { c: "#64748B", ic: "layout" }
+  };
+  /* Payment method is kept inside the existing "note" text as a leading [Cash]/[Visa]/... tag,
+     so no Appwrite column is added or changed. */
+  const PAYMENTS = [["Cash", "Cash", "cash"], ["Visa", "Visa / Credit", "card"], ["Debit", "Debit Card", "card"], ["Bank", "Bank / Online", "bank"], ["Other", "অন্যান্য", "more"]];
+  const PAY_RE = /^\[(Cash|Visa|Debit|Bank|Other)\]\s*/;
+  const splitNote = (note) => {
+    const s = String(note || "");
+    const m = PAY_RE.exec(s);
+    return m ? { pay: m[1], text: s.slice(m[0].length) } : { pay: "", text: s };
+  };
+  const joinNote = (pay, text) => {
+    const t = String(text || "").trim();
+    return pay ? `[${pay}]${t ? " " + t : ""}` : t;
+  };
 
   const NAV = [
     { id: "dashboard", label: "Dashboard", icon: "layout" },
@@ -1121,7 +1211,7 @@ const FinanceCore = (() => {
     { id: "support", label: "Family", icon: "users" },
     { id: "more", label: "More", icon: "more" }
   ];
-  const MORE_IDS = ["monthly", "yearly", "lifetime", "settings", "contact", "more"];
+  const MORE_IDS = ["monthly", "yearly", "lifetime", "settings", "members", "contact", "more"];
   const MORE_NOTES = {
     loans: "ধার দেওয়া-নেওয়া, পরিশোধ ও বাকি হিসাব",
     monthly: "যেকোনো মাসের রিপোর্ট ও আগের মাসের সাথে তুলনা",
@@ -1398,12 +1488,12 @@ const FinanceCore = (() => {
 
   const lastBackupKey = () => `finance-last-backup:${state.user ? state.user.id : ""}`;
 
-  const state = { loans: [], loansStatus: "idle", user: null, income: [], expenses: [], support: [], completion: {}, completionIds: {}, lastBackupAt: null, legacy: null, ready: false, bootError: null, loadError: null };
+  const state = { members: [], loans: [], loansStatus: "idle", user: null, income: [], expenses: [], support: [], completion: {}, completionIds: {}, lastBackupAt: null, legacy: null, ready: false, bootError: null, loadError: null };
 
   const nowDate = new Date();
   const ui = {
     income: { year: "", month: "", type: "", query: "" },
-    expenses: { year: "", month: "", type: "", query: "" },
+    expenses: { year: String(nowDate.getFullYear()), month: String(nowDate.getMonth() + 1), type: "", query: "" },
     support: { year: "", month: "", query: "" },
     monthly: { y: String(nowDate.getFullYear()), m: String(nowDate.getMonth() + 1) },
     yearly: { year: String(nowDate.getFullYear()) },
@@ -1650,8 +1740,10 @@ const FinanceCore = (() => {
       amt = rm(r.amountMinor);
       cls = "rm";
     } else if (store === "expenses") {
+      const sn = splitNote(r.note);
+      const pm = PAYMENTS.find((p) => p[0] === sn.pay);
       title = r.description;
-      tags = [`<span class="tag">${esc(LABELS.expense[r.category])}</span>`, r.note ? esc(r.note) : ""];
+      tags = [`<span class="tag cat" style="--c:${(CAT_META[r.category] || CAT_META.other).c}">${esc(LABELS.expense[r.category])}</span>`, pm ? `<span class="tag">${esc(pm[1])}</span>` : "", sn.text ? esc(sn.text) : ""];
       amt = rm(r.amountMinor);
       cls = "rm";
     } else {
@@ -1667,6 +1759,7 @@ const FinanceCore = (() => {
     const acts = editable
       ? `<div class="row-act">${menuHtml(`${NOUN[store]}: ${esc(title)}`, [
           { act: `edit-${store}`, id: r.id, label: "সম্পাদনা", ic: "pencil" },
+          ...(store === "income" ? [{ act: "move-member", id: r.id, label: "Members-এ সরান", ic: "users" }] : []),
           { act: `del-${store}`, id: r.id, label: "মুছুন", ic: "trash", del: true }
         ])}</div>`
       : "";
@@ -1722,6 +1815,8 @@ const FinanceCore = (() => {
   const I18N = {"আমাকে দেবে":"Owed to Me","আমি দেব":"I Owe","ঋণ ও পাওনা":"Loans & Debts","বিস্তারিত":"Details","যোগ করুন":"Add","মুছুন":"Delete","সম্পাদনা":"Edit","কপি":"Copy","বাতিল":"Cancel","বন্ধ করুন":"Close","নিশ্চিত করুন":"Confirm","সংরক্ষণ করুন":"Save","সব":"All","সব বছর":"All years","সব মাস":"All months","খুঁজুন":"Search","ফিল্টার":"Filter","ডাউনলোড":"Download","সাইন আউট":"Sign out","একাউন্ট":"Account","তারিখ":"Date","ধরন":"Type","নোট":"Note","নোট (ঐচ্ছিক)":"Note (optional)","বিবরণ":"Description","বিবরণ / নোট":"Description / note","বিবরণ / নোট (ঐচ্ছিক)":"Description / note (optional)","রেফারেন্স":"Reference","রেফারেন্স (ঐচ্ছিক)":"Reference (optional)","রেফারেন্স / নোট (ঐচ্ছিক)":"Reference / note (optional)","পরিমাণ":"Amount","টাকার অংক":"Amount","ক্যাটাগরি":"Category","মাধ্যম":"Method","পদ্ধতি (ঐচ্ছিক)":"Method (optional)","প্রাপক":"Recipient","স্ট্যাটাস":"Status","মোট":"Total","বাকি":"Remaining","পরিশোধিত":"Paid","বাকি আছে":"Outstanding","মেয়াদোত্তীর্ণ":"Overdue","পরিশোধ যোগ করুন":"Add repayment","পরিশোধের ইতিহাস":"Repayment history","ইতিহাস দেখুন":"View history","পরিশোধ পেয়েছি":"Repayment received","পরিশোধ করেছি":"Repayment made","এখনো কোনো পরিশোধ নেই।":"No repayments yet.","এখনো কোনো রেকর্ড নেই":"No records yet","এখনো কোনো রেকর্ড নেই।":"No records yet.","কোনো রেকর্ড নেই":"No records","এই ফিল্টারে কিছু নেই":"Nothing matches this filter","এই ফিল্টারে কোনো আয় নেই":"No income matches this filter","এই ফিল্টারে কোনো খরচ নেই":"No expenses match this filter","এই ফিল্টারে কোনো ট্রান্সফার নেই":"No transfers match this filter","আয়":"Income","খরচ":"Expenses","ট্রান্সফার":"Transfers","আয় (RM)":"Income (RM)","খরচ (RM)":"Expenses (RM)","ব্যালেন্স (RM)":"Balance (RM)","অবশিষ্ট (RM)":"Remaining (RM)","পরিবার (BDT)":"Family (BDT)","পরিবারকে (BDT)":"To family (BDT)","পাঠানো (BDT)":"Sent (BDT)","পরিবারকে পাঠানো (BDT)":"Sent to family (BDT)","আয় যোগ করুন":"Add income","খরচ যোগ করুন":"Add expense","ট্রান্সফার যোগ করুন":"Add transfer","আয় সম্পাদনা":"Edit income","খরচ সম্পাদনা":"Edit expense","ট্রান্সফার সম্পাদনা":"Edit transfer","আয় সংরক্ষিত হয়েছে":"Income saved","খরচ সংরক্ষিত হয়েছে":"Expense saved","ট্রান্সফার সংরক্ষিত হয়েছে":"Transfer saved","আয় আপডেট হয়েছে":"Income updated","খরচ আপডেট হয়েছে":"Expense updated","ট্রান্সফার আপডেট হয়েছে":"Transfer updated","আয়ের তালিকা (RM)":"Income list (RM)","খরচের তালিকা (RM)":"Expense list (RM)","আয়ের ধরন":"Income type","আয়ের প্রথম রেকর্ড যোগ করুন।":"Add your first income record.","প্রথম খরচের রেকর্ড যোগ করুন।":"Add your first expense record.","পরিবারকে পাঠানো প্রথম টাকার রেকর্ড যোগ করুন।":"Add your first record of money sent to family.","ট্রান্সফারের তারিখ":"Transfer date","ট্রান্সফার সংখ্যা":"Number of transfers","মোট ট্রান্সফার":"Total transfers","মোট পাঠানো":"Total sent","মোট আয়":"Total income","মোট ব্যক্তিগত খরচ":"Total personal expenses","সাম্প্রতিক আয়":"Recent income","সাম্প্রতিক খরচ":"Recent expenses","সাম্প্রতিক পরিবার-সহায়তা":"Recent family support","এই মাসের আয়":"This month's income","এই মাসের ব্যক্তিগত খরচ":"This month's personal expenses","এই মাসের অবশিষ্ট":"This month's remaining","এই মাসে পাঠানো":"Sent this month","গত মাসে পাঠানো":"Sent last month","আজীবন মোট আয়":"Lifetime income","আজীবন মোট খরচ":"Lifetime expenses","আজীবন মোট পাঠানো":"Lifetime total sent","বর্তমান ব্যালান্স":"Current balance","অবশিষ্ট ব্যালান্স":"Remaining balance","মোট আয় (আজীবন)":"Total income (lifetime)","মোট খরচ (আজীবন)":"Total expenses (lifetime)","মোট আয় − মোট ব্যক্তিগত খরচ":"Total income − total personal expenses","পার্থক্য":"Difference","শতাংশ পরিবর্তন":"Percentage change","আগের মাস":"Previous month","পরের মাস":"Next month","মাস":"Month","বছর":"Year","মাসিক সারসংক্ষেপ":"Monthly summary","মাসভিত্তিক বিবরণ":"Monthly breakdown","আগের মাসের তুলনায়":"vs previous month","অসম্পূর্ণ হতে পারে":"may be incomplete","সম্পূর্ণ হিসেবে চিহ্নিত":"Marked complete","সম্পূর্ণ হিসেবে চিহ্নিত করুন":"Mark as complete","সম্পূর্ণ চিহ্ন তুলুন":"Remove complete mark","সর্বোচ্চ রেকর্ড করা মাস":"Highest recorded month","সর্বনিম্ন রেকর্ড করা মাস":"Lowest recorded month","রেকর্ড করা সংখ্যা":"Records count","ফিল্টার অনুযায়ী মোট আয়":"Total income (filtered)","ফিল্টার অনুযায়ী মোট খরচ":"Total expenses (filtered)","ফিল্টার অনুযায়ী মোট পাঠানো":"Total sent (filtered)","শুরু থেকে এখন পর্যন্ত মোট হিসাব":"Total since the beginning","শেষ ৬ মাসে পাঠানো টাকা":"Money sent in the last 6 months","পরিবারকে পাঠানো টাকা":"Money sent to family","জানুয়ারি–ডিসেম্বর সারসংক্ষেপ ও চার্ট":"January–December summary & chart","যেকোনো মাসের রিপোর্ট ও আগের মাসের সাথে তুলনা":"Report for any month and comparison with the previous month","BDT পরিবার-সহায়তা এই RM ব্যালান্সে ধরা হয় না।":"BDT family support is not counted in this RM balance.","ধার দেওয়া-নেওয়ার হিসাব":"Lending and borrowing records","ধার দেওয়া-নেওয়া, পরিশোধ ও বাকি হিসাব":"Lending, borrowing, repayments and balances","আমি ধার দিয়েছি":"I lent","আমি ধার নিয়েছি":"I borrowed","আমি ধার দিয়েছি (আমাকে দেবে)":"I lent (owed to me)","আমি ধার নিয়েছি (আমি দেব)":"I borrowed (I owe)","ঋণ / পাওনা যোগ করুন":"Add loan / receivable","ঋণ সম্পাদনা":"Edit loan","ব্যক্তির নাম":"Person's name","ফেরতের তারিখ (ঐচ্ছিক)":"Due date (optional)","তারিখ থেকে":"From date","তারিখ পর্যন্ত":"To date","নাম খুঁজুন":"Search name","এই পরিশোধ মুছুন":"Delete this repayment","এই রেকর্ড মুছবেন?":"Delete this record?","পরিশোধ যোগ হয়েছে":"Repayment added","পরিশোধ মুছে ফেলা হয়েছে":"Repayment deleted","ঋণ ও পাওনা ডাউনলোডে আসে না":"Loans & debts are not included in downloads","Loans টেবিল এখনো তৈরি হয়নি।":"The Loans table has not been created yet.","Loans ডেটা আনা যায়নি। পেজ রিফ্রেশ করে দেখুন।":"Could not load loans data. Refresh the page.","সংরক্ষিত হয়েছে":"Saved","আপডেট হয়েছে":"Updated","মুছে ফেলা হয়েছে":"Deleted","মুছে ফেলুন":"Delete","সব মুছুন":"Delete all","কপি হয়েছে":"Copied","কপি করা যায়নি":"Could not copy","কপি করুন":"Copy","অজানা সমস্যা হয়েছে।":"Something went wrong.","অনলাইন":"Online","অফলাইন · ডেটা লোড/সেভ হবে না":"Offline · data will not load or save","লোড হচ্ছে…":"Loading…","অপেক্ষা করুন…":"Please wait…","নাম দিন।":"Enter a name.","নাম লিখুন।":"Enter a name.","তারিখ দিন।":"Enter a date.","তারিখ অবৈধ।":"Invalid date.","ইমেইল দিন।":"Enter your email.","সঠিক ইমেইল ঠিকানা দিন।":"Enter a valid email address.","সঠিক ইমেইল দিন।":"Enter a valid email.","বিষয় লিখুন।":"Enter a subject.","বার্তা লিখুন।":"Enter a message.","সঠিক পরিমাণ লিখুন।":"Enter a valid amount.","সঠিক পরিমাণ লিখুন (যেমন 500 বা 500.50)।":"Enter a valid amount (e.g. 500 or 500.50).","অনুগ্রহ করে চিহ্নিত ঘরগুলো ঠিক করুন।":"Please fix the highlighted fields.","পাসওয়ার্ড ভুল।":"Wrong password.","ইমেইল বা পাসওয়ার্ড ভুল।":"Incorrect email or password.","পাসওয়ার্ড দুটো মেলেনি।":"Passwords do not match.","পাসওয়ার্ড দেওয়া হয়নি।":"No password provided.","পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।":"Password must be at least 8 characters.","ব্যাকআপ পাসওয়ার্ড":"Backup password","ব্যাকআপ ডাউনলোড করতে পাসওয়ার্ড দিন":"Enter the password to download the backup","ব্যাকআপ ফাইল তৈরি হয়েছে":"Backup file created","CSV ফাইল তৈরি হয়েছে":"CSV file created","এনক্রিপ্ট করা যায়নি।":"Could not encrypt.","সাইন আউট করবেন?":"Sign out?","সাইন আউট হয়েছে":"Signed out","সব ডেটা মুছবেন?":"Delete all data?","সব ডেটা মুছে ফেলা হয়েছে":"All data deleted","লোকাল কপি মুছবেন?":"Delete local copy?","লোকাল কপি মুছে ফেলা হয়েছে":"Local copy deleted","নিশ্চিত শূন্য":"Confirmed zero","এখনো নেওয়া হয়নি":"Not taken yet","ফাইল":"File","প্রিভিউ দেখুন":"Preview","ক্লাউডে ইমপোর্ট করুন":"Import to cloud","এই ডিভাইসের লোকাল ডেটা":"Local data on this device","ব্যাকআপ, রিস্টোর, CSV ও গোপনীয়তা":"Backup, restore, CSV & privacy","একাউন্ট, ব্যাকআপ, রিস্টোর, এক্সপোর্ট ও গোপনীয়তা":"Account, backup, restore, export & privacy","রিপোর্ট ও সেটিংস":"Reports & settings","লগইন করা আছে:":"Signed in as:","ব্যবহারকারী":"User","শেষ ব্যবহার":"Last used","এই ফিল্টারে":"in this filter","আপনার বর্তমান ডেটা অপরিবর্তিত আছে।":"Your current data is unchanged.","ডেটা লোড হয়নি":"Data did not load","সংযোগ হয়নি":"Not connected","কোনো প্রশ্ন, পরামর্শ বা সমস্যা হলে যোগাযোগ করুন":"Questions, suggestions or issues? Get in touch","নিচে লিখে পাঠালে আপনার ইমেইল অ্যাপ খুলবে, সেখান থেকে সেন্ড করুন।":"Write below and your email app will open; send the message from there.","ধন্যবাদ! আপনার ইমেইল অ্যাপ খুলেছে, সেখান থেকে সেন্ড করুন।":"Thank you! Your email app has opened; send the message from there.","যোগাযোগ করুন, ইমেইল, ওয়েবসাইট ও টেলিগ্রাম":"Contact, email, website & Telegram","ভাষা ও থিম":"Language & Theme","ভাষা":"Language","থিম":"Theme","লাইট":"Light","ডার্ক":"Dark","সিস্টেম":"System","ব্যক্তিগত খরচ":"Personal expenses","ব্যক্তিগত খরচ · শুধু RM":"Personal expenses · RM only","বাংলাদেশে পরিবারকে পাঠানো · শুধু BDT · হাতে লেখা পরিমাণ":"Sent to family in Bangladesh · BDT only · amount entered manually","শুধু মালয়েশিয়ান রিঙ্গিত (RM)":"Malaysian ringgit (RM) only","মাস-ভিত্তিক RM আয় ও খরচ":"Monthly RM income & expenses","মাস-ভিত্তিক পরিবার-সহায়তা (BDT)":"Monthly family support (BDT)","ক্যাটাগরি অনুযায়ী খরচ":"Expenses by category","বেতন":"Salary","বোনাস":"Bonus","ওভারটাইম":"Overtime","অন্যান্য":"Other","খাবার":"Food","চিকিৎসা":"Medical","থাকা ও ভাড়া":"Housing & rent","পোশাক":"Clothing","মোবাইল ও ইন্টারনেট":"Mobile & internet","যাতায়াত":"Transport","ব্যক্তিগত কেনাকাটা":"Personal shopping","ব্যাংক":"Bank","রেমিট্যান্স সার্ভিস":"Remittance service","মা":"Mother","বাবা":"Father","পরিবার":"Family","অক্টো":"Oct","—  বাছাই নেই —":"— none selected —","— বাছাই নেই —":"— none selected —"};
   Object.assign(I18N, { "আপনার তথ্য কীভাবে সংগ্রহ, ব্যবহার ও সুরক্ষিত হয়": "How your information is collected, used and protected", "এই অ্যাপ ব্যবহারের শর্তাবলী": "The terms for using this app", "কুকি ও লোকাল স্টোরেজ কীভাবে ব্যবহার হয়": "How cookies and local storage are used" });
   Object.assign(I18N, { "ইন্টারনেট সংযোগ নেই": "No internet connection", "আপনার ডেটা ক্লাউডে নিরাপদ আছে। সংযোগ ফিরলে অ্যাপ নিজে থেকেই আবার চেষ্টা করবে।": "Your data is safe in the cloud. The app will retry automatically when you are back online.", "Wi-Fi বা মোবাইল ডেটা চালু করুন": "Turn on Wi-Fi or mobile data", "Flight mode বন্ধ আছে কিনা দেখুন": "Check that Flight mode is off", "ঠিক হলে নিচের বাটনে চাপুন": "Then tap the button below", "আবার চেষ্টা করুন": "Try again", "টেকনিক্যাল তথ্য": "Technical details", "ইন্টারনেট সংযোগ পাওয়া যায়নি। নেট চালু আছে কিনা দেখে আবার চেষ্টা করুন।": "No internet connection found. Check your connection and try again.", "আপনার ডেটা ও গোপনীয়তা": "Your Data & Privacy", "অ্যাপ কোন ভাষায় দেখবেন": "Choose the app language", "আলো, অন্ধকার, অথবা ফোনের সেটিং অনুযায়ী": "Light, dark, or follow your phone" });
+  Object.assign(I18N, { "অন্যদের হিসাব · আপনার Dashboard, রিপোর্ট ও ব্যালান্সে যোগ হয় না": "Other people's records · not included in your Dashboard, reports or balance", "Members-এ সরান": "Move to Members", "Members খুলুন": "Open Members", "Member-এর নাম": "Member name", "Member হিসাব যোগ করুন": "Add member record", "Member হিসাব সম্পাদনা": "Edit member record", "এখনো কোনো Member রেকর্ড নেই": "No member records yet", "অন্য কারও হিসাব এখানে যোগ করুন — আপনার নিজের হিসাবের সাথে মিশবে না।": "Add someone else's records here — they won't mix with your own.", "Members মোট (RM)": "Members total (RM)", "Members সংখ্যা": "Members count", "সরান": "Move" });
+  Object.assign(I18N, { "দ্রুত খরচ যোগ করুন": "Quick add expense", "ক্যাটাগরি অনুযায়ী খরচ": "Expenses by category", "এই সময়ের মোট খরচ": "Total expenses (this period)", "সব সময়": "All time", "সব সময় দেখুন": "Show all time", "এই মাসে ফিরুন": "Back to this month", "সব লেনদেন": "All transactions", "ফিল্টার সরান": "Clear filter", "আগের মাস": "Previous month", "পরের মাস": "Next month", "খরচ যোগ করুন": "Add expense", "তারিখ, বিবরণ ও নোট (ঐচ্ছিক)": "Date, description & note (optional)", "বিবরণ / দোকানের নাম": "Description / merchant", "পেমেন্ট মাধ্যম (ঐচ্ছিক)": "Payment method (optional)", "এই সময়ে কোনো খরচ নেই": "No expenses in this period", "মোট": "Total" });
   window.addEventListener("online", () => { if (state.bootError && typeof boot === "function") boot(); });
   const MON = { "জানুয়ারি": "January", "ফেব্রুয়ারি": "February", "মার্চ": "March", "এপ্রিল": "April", "মে": "May", "জুন": "June", "জুলাই": "July", "আগস্ট": "August", "সেপ্টেম্বর": "September", "অক্টোবর": "October", "নভেম্বর": "November", "ডিসেম্বর": "December", "জানু": "Jan", "ফেব্রু": "Feb", "এপ্রি": "Apr", "সেপ্টে": "Sep", "অক্টো": "Oct", "নভে": "Nov", "ডিসে": "Dec" };
   const MON_RE = new RegExp("(^|[\\s\\-–(])(" + Object.keys(MON).sort((a, b) => b.length - a.length).join("|") + ")(?=$|[\\s,.\\-–)])", "g");
@@ -1843,10 +1938,12 @@ const FinanceCore = (() => {
   async function loadLoans() {
     try {
       const rows = await cloud.listAll("loans");
-      state.loans = rows.map(loanFromRow);
+      state.loans = rows.filter((r) => r.direction !== "member").map(loanFromRow);
+      state.members = rows.filter((r) => r.direction === "member").map(memberFromRow);
       state.loansStatus = "ok";
     } catch (err) {
       state.loans = [];
+      state.members = [];
       state.loansStatus = err && err.status === 404 ? "missing" : "error";
     }
   }
@@ -2018,6 +2115,130 @@ const FinanceCore = (() => {
     <div id="loan-region" class="region" style="margin-top:12px">${loansRegion()}</div>`;
   }
 
+  /* ---------- Members (অন্যদের হিসাব — আলাদা; Dashboard/রিপোর্ট/ব্যালান্সে যোগ হয় না) ----------
+     Stored in the existing "loans" table with direction = "member", so no new table is needed. */
+  const ui_members = { query: "" };
+  function memberFromRow(row) {
+    let meta = {};
+    try { const x = JSON.parse(row.repayments || "{}"); if (x && typeof x === "object" && !Array.isArray(x)) meta = x; } catch (err) { meta = {}; }
+    return {
+      id: row.$id,
+      name: String(row.person || "").trim(),
+      amountMinor: Number(row.amountMinor) || 0,
+      date: String(row.date || "").trim(),
+      type: LABELS.income[meta.type] ? meta.type : "other",
+      reference: String(meta.reference || "").trim(),
+      note: String(meta.note || "").trim(),
+      createdAt: Date.parse(row.$createdAt) || 0
+    };
+  }
+  const memberWrite = (m, isUpdate) => {
+    const data = { direction: "member", person: m.name, currency: "-", amountMinor: m.amountMinor, date: m.date, repayments: JSON.stringify({ type: m.type, reference: m.reference, note: m.note }) };
+    const send = (d) => (isUpdate ? cloud.updateRow("loans", m.id, d) : cloud.createRow("loans", m.id, d, state.user.id));
+    return send(data).catch((err) => {
+      if (err && /Unknown attribute: "?currency/i.test(String(err.message || ""))) { const d = { ...data }; delete d.currency; return send(d); }
+      throw err;
+    });
+  };
+  async function saveMember(m, isUpdate) {
+    try {
+      await memberWrite(m, isUpdate);
+    } catch (err) {
+      const msg = String((err && err.message) || "");
+      if (/Unknown attribute/i.test(msg)) throw new ApiError("Appwrite-এর loans টেবিলে প্রয়োজনীয় কলাম নেই। Columns ট্যাবে সব কলাম যোগ করুন।", 400, "unknown_column");
+      if (/direction/i.test(msg) && /(enum|one of|must be|invalid)/i.test(msg)) throw new ApiError("loans টেবিলের direction কলামটি Enum হওয়ায় member মান নিচ্ছে না। Appwrite-এ ওই কলামে member যোগ করুন (অথবা কলামটি String করুন)।", 400, "bad_direction");
+      throw err;
+    }
+    const i = state.members.findIndex((x) => x.id === m.id);
+    if (i >= 0) state.members[i] = m; else state.members.push(m);
+  }
+  function memberForm(existing) {
+    const v = existing || { name: "", amountMinor: 0, date: today(), type: "salary", reference: "", note: "" };
+    const names = new Set();
+    for (const x of state.members) names.add(x.name);
+    openForm({
+      title: existing ? "Member হিসাব সম্পাদনা" : "Member হিসাব যোগ করুন",
+      body: `${inputField({ name: "name", label: "Member-এর নাম", value: v.name, required: true, list: "member-names", attrs: 'maxlength="60" autocomplete="off"' })}
+        <datalist id="member-names">${[...names].map((n) => `<option value="${esc(n)}"></option>`).join("")}</datalist>
+        ${amountField("RM", existing ? C.minorToDecimal(v.amountMinor) : "")}
+        <div class="two">${inputField({ name: "date", label: "তারিখ", type: "date", value: v.date, required: true })}${selectField({ name: "type", label: "ধরন", options: Object.entries(LABELS.income), value: v.type, required: true })}</div>
+        ${inputField({ name: "note", label: "নোট (ঐচ্ছিক)", value: v.note, attrs: 'maxlength="200"' })}
+        ${inputField({ name: "reference", label: "রেফারেন্স (ঐচ্ছিক)", value: v.reference, attrs: 'maxlength="80"' })}`,
+      onSubmit: async (raw) => {
+        const errors = {};
+        const name = String(raw.name || "").trim();
+        if (!name) errors.name = "নাম লিখুন।";
+        const amountMinor = parseMinor(raw.amount);
+        if (!amountMinor) errors.amount = "সঠিক পরিমাণ লিখুন (যেমন 500 বা 500.50)।";
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(raw.date || "")) errors.date = "তারিখ দিন।";
+        if (Object.keys(errors).length) return { errors };
+        const m = { id: existing ? existing.id : newId(), name, amountMinor, date: raw.date, type: LABELS.income[raw.type] ? raw.type : "other", reference: String(raw.reference || "").trim(), note: String(raw.note || "").trim() };
+        try { await saveMember(m, !!existing); } catch (err) { return { errors: { _form: failMessage(err) } }; }
+        render();
+        toast(existing ? "আপডেট হয়েছে" : "সংরক্ষিত হয়েছে");
+        return null;
+      }
+    });
+  }
+  async function removeMember(id) {
+    const m = state.members.find((x) => x.id === id);
+    if (!m) return;
+    const ok = await confirmDialog({ title: "এই রেকর্ড মুছবেন?", message: `${esc(m.name)} · ${esc(fmtDate(m.date))} · <b>${rm(m.amountMinor)}</b><br>এটি ফেরানো যাবে না।`, confirmLabel: "মুছে ফেলুন", danger: true });
+    if (!ok) return;
+    try { await cloud.deleteRow("loans", id); } catch (err) { toast(failMessage(err)); return; }
+    state.members = state.members.filter((x) => x.id !== id);
+    render();
+    toast("মুছে ফেলা হয়েছে");
+  }
+  async function moveIncomeToMember(id) {
+    const r = state.income.find((x) => x.id === id);
+    if (!r) return;
+    const name = String(r.note || "").trim() || "নামহীন";
+    const ok = await confirmDialog({ title: "Members-এ সরাবেন?", message: `${esc(fmtDate(r.date))} · ${esc(name)} · <b>${rm(r.amountMinor)}</b><br>এটি আপনার আয়, Dashboard ও রিপোর্ট থেকে সরে Settings → Members-এ যাবে।`, confirmLabel: "সরান" });
+    if (!ok) return;
+    const m = { id: newId(), name, amountMinor: r.amountMinor, date: r.date, type: r.type, reference: r.reference || "", note: "" };
+    try { await saveMember(m, false); } catch (err) { toast(failMessage(err)); return; }
+    try { await cloud.deleteRow("income", id); } catch (err) { toast("Members-এ যোগ হয়েছে, কিন্তু আয় থেকে মুছতে পারিনি।"); render(); return; }
+    state.income = state.income.filter((x) => x.id !== id);
+    render();
+    toast("Members-এ সরানো হয়েছে");
+  }
+  function memberRow(m) {
+    const title = m.note || LABELS.income[m.type];
+    const meta = [esc(fmtDate(m.date)), `<span class="tag">${esc(LABELS.income[m.type])}</span>`, m.reference ? `রেফ: ${esc(m.reference)}` : ""].filter(Boolean).map((x) => `<span>${x}</span>`).join("");
+    return `<li class="row"><div class="row-main"><span class="row-title">${esc(title)}</span><span class="row-meta">${meta}</span></div><div class="row-amt rm">${rm(m.amountMinor)}</div><div class="row-act">${menuHtml(esc(m.name), [
+      { act: "member-edit", id: m.id, label: "সম্পাদনা", ic: "pencil" },
+      { act: "member-del", id: m.id, label: "মুছুন", ic: "trash", del: true }
+    ])}</div></li>`;
+  }
+  function membersRegion() {
+    const q = ui_members.query.trim().toLowerCase();
+    const list = state.members.filter((m) => !q || m.name.toLowerCase().includes(q) || m.note.toLowerCase().includes(q) || m.reference.toLowerCase().includes(q));
+    if (!list.length) return `<section class="card">${emptyBox("users", state.members.length ? "এই ফিল্টারে কিছু নেই" : "এখনো কোনো Member রেকর্ড নেই", state.members.length ? "" : "অন্য কারও হিসাব এখানে যোগ করুন — আপনার নিজের হিসাবের সাথে মিশবে না।")}</section>`;
+    const groups = new Map();
+    for (const m of list.slice().sort((a, b) => (a.date < b.date ? 1 : -1))) {
+      if (!groups.has(m.name)) groups.set(m.name, []);
+      groups.get(m.name).push(m);
+    }
+    return [...groups.entries()].map(([name, items]) => {
+      const total = items.reduce((t, x) => t + x.amountMinor, 0);
+      return `<section class="card"><div class="loan-top"><h3>${esc(name)}</h3><span class="row-amt rm">${rm(total)}</span></div><ul class="rows">${items.map(memberRow).join("")}</ul></section>`;
+    }).join("");
+  }
+  function renderMembers() {
+    const setup = state.loansStatus === "missing"
+      ? `<div class="banner warn">${icon("alert")}<div><b>Loans টেবিল পাওয়া যায়নি।</b><p>Members সংরক্ষণ করতে Appwrite-এ <code>loans</code> টেবিল লাগবে।</p></div></div>`
+      : state.loansStatus === "error" ? `<div class="banner err">${icon("alert")}<span>ডেটা আনা যায়নি। পেজ রিফ্রেশ করে দেখুন।</span></div>` : "";
+    const total = state.members.reduce((t, x) => t + x.amountMinor, 0);
+    const count = new Set(state.members.map((x) => x.name)).size;
+    return `<div class="page-head"><div><h1>Members</h1><p>অন্যদের হিসাব · আপনার Dashboard, রিপোর্ট ও ব্যালান্সে যোগ হয় না</p></div><div class="actions"><button type="button" class="btn primary" data-act="member-add">${icon("plus")} যোগ করুন</button></div></div>
+    ${setup}
+    <div class="tiles two" style="margin-top:12px">${tile("Members মোট (RM)", rm(total), { cls: "rm" })}${tile("Members সংখ্যা", String(count), { cls: "rm" })}</div>
+    <div class="actions" style="margin-top:12px"><button type="button" class="btn" data-act="export-pdf" data-kind="members">${icon("download", "sm")} PDF</button><button type="button" class="btn" data-act="export-csv" data-kind="members">${icon("download", "sm")} CSV</button></div>
+    <div class="filters" role="group" aria-label="ফিল্টার"><div class="fld"><label for="mf-q">নাম খুঁজুন</label><div class="sbox">${icon("search")}<input id="mf-q" type="search" data-mf="query" value="${esc(ui_members.query)}" placeholder="খুঁজুন" autocomplete="off"></div></div></div>
+    <div id="member-region" class="region" style="margin-top:12px">${membersRegion()}</div>`;
+  }
+
   function loanDashboardSection() {
     return `<div class="no-print"><div class="sec-head"><h2>ঋণ ও পাওনা</h2><a class="chip rm" href="#/loans">বিস্তারিত</a></div><div class="tiles two">${tile("আমাকে দেবে", loanMoney("", loanTotals("lent")), { cls: "loan-in" })}${tile("আমি দেব", loanMoney("", loanTotals("borrowed")), { cls: "loan-out" })}</div></div>`;
   }
@@ -2090,32 +2311,69 @@ const FinanceCore = (() => {
     <div id="region" class="region">${incomeRegion()}</div>`;
   }
 
+  function donutSvg(entries, total) {
+    let acc = 0;
+    const gap = entries.length > 1 ? 0.8 : 0;
+    const segs = entries
+      .map(([k, v]) => {
+        const pct = (v / total) * 100;
+        const len = Math.max(0.1, pct - gap);
+        const s = `<circle r="15.9155" cx="21" cy="21" fill="none" stroke="${(CAT_META[k] || CAT_META.other).c}" stroke-width="5.2" stroke-dasharray="${len.toFixed(3)} ${(100 - len).toFixed(3)}" stroke-dashoffset="${(-acc).toFixed(3)}"/>`;
+        acc += pct;
+        return s;
+      })
+      .join("");
+    const label = entries.map(([k, v]) => `${LABELS.expense[k]} ${rm(v)}`).join(", ");
+    return `<svg viewBox="0 0 42 42" role="img" aria-label="${esc("ক্যাটাগরি অনুযায়ী খরচ: " + label)}"><circle r="15.9155" cx="21" cy="21" fill="none" stroke="var(--line)" stroke-width="5.2"/>${segs}</svg>`;
+  }
+
   function expensesRegion() {
     const f = ui.expenses;
-    const list = C.sortRecords(C.filterRecords(state.expenses, { year: f.year, month: f.month, field: "category", value: f.type, query: f.query, searchFields: ["description", "note"] }));
+    const base = C.sortRecords(C.filterRecords(state.expenses, { year: f.year, month: f.month, query: f.query, searchFields: ["description", "note"] }));
+    const list = f.type ? base.filter((r) => r.category === f.type) : base;
     const life = C.lifetimeSummary(state);
-    const byCat = C.sumByKey(list, "category");
-    const entries = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
-    const top = entries.length ? entries[0][1] : 1;
-    const chart = entries.length
-      ? `<section class="card"><h3>ক্যাটাগরি অনুযায়ী খরচ</h3><ul class="hbars">${entries
-          .map(([k, v]) => `<li><span class="name">${esc(LABELS.expense[k])}</span><span class="amt">${rm(v)}</span><span class="track"><i style="width:${Math.max(2, Math.round((v / top) * 100))}%"></i></span></li>`)
-          .join("")}</ul></section>`
-      : "";
-    const body =
-      state.expenses.length === 0
-        ? `<section class="card">${emptyBox("receipt", "No expenses recorded yet", "প্রথম খরচের রেকর্ড যোগ করুন।", "add-expenses", "খরচ যোগ করুন")}</section>`
-        : list.length === 0
-          ? `<section class="card">${emptyBox("search", "এই ফিল্টারে কোনো খরচ নেই", "")}</section>`
-          : rowsCard("expenses", list, true);
-    return `<div class="tiles">
-      ${tile("ফিল্টার অনুযায়ী মোট খরচ", rm(C.sum(list)), { cls: "rm", sub: `${list.length}টি রেকর্ড` })}
+    const total = C.sum(base);
+    const entries = Object.entries(C.sumByKey(base, "category")).sort((a, b) => b[1] - a[1]);
+    const tiles = `<div class="tiles">
+      ${tile("এই সময়ের মোট খরচ", rm(total), { cls: "rm", sub: `${base.length}টি রেকর্ড` })}
       ${tile("আজীবন মোট খরচ", rm(life.expenseMinor), { cls: "rm strong", sub: `${life.expenseCount}টি রেকর্ড` })}
-    </div>${chart}${body}`;
+    </div>`;
+    if (state.expenses.length === 0) {
+      return `${tiles}<section class="card">${emptyBox("receipt", "No expenses recorded yet", "প্রথম খরচের রেকর্ড যোগ করুন।", "add-expenses", "খরচ যোগ করুন")}</section>`;
+    }
+    const chart = entries.length
+      ? `<section class="card"><h3>ক্যাটাগরি অনুযায়ী খরচ</h3><div class="xd" style="margin-top:12px"><div class="xd-ring">${donutSvg(entries, total)}<div class="xd-mid"><small>মোট</small><b>${rm(total)}</b></div></div><ul class="xl">${entries
+          .map(([k, v]) => {
+            const pct = (v / total) * 100;
+            const cm = CAT_META[k] || CAT_META.other;
+            return `<li><button type="button" data-act="xp-cat" data-cat="${k}" aria-pressed="${f.type === k}" class="${f.type === k ? "on" : ""}" style="--c:${cm.c}"><i class="dot"></i><span>${esc(LABELS.expense[k])}<span class="pc">${pct < 10 ? pct.toFixed(1) : Math.round(pct)}%</span></span><span class="am">${rm(v)}</span></button></li>`;
+          })
+          .join("")}</ul></div><p class="cmp-note" style="margin-top:8px">কোনো ক্যাটাগরিতে চাপলে নিচে শুধু সেই ক্যাটাগরির লেনদেন দেখাবে।</p></section>`
+      : "";
+    const head = `<div class="xh"><h3>${f.type ? esc(LABELS.expense[f.type]) + " — লেনদেন" : "সব লেনদেন"}</h3>${f.type ? '<button type="button" class="xm-link" data-act="xp-cat" data-cat="">ফিল্টার সরান</button>' : ""}</div>`;
+    const body = base.length === 0
+      ? `<section class="card">${emptyBox("receipt", "এই সময়ে কোনো খরচ নেই", "উপরের ক্যাটাগরিতে চেপে খরচ যোগ করুন, অথবা অন্য মাস দেখুন।")}</section>`
+      : list.length === 0
+        ? `<section class="card">${emptyBox("search", "এই ক্যাটাগরিতে কোনো খরচ নেই", "")}</section>`
+        : rowsCard("expenses", list, true);
+    return `${tiles}${chart}${head}${body}`;
   }
 
   function renderExpenses() {
+    const f = ui.expenses;
+    const y = Number(f.year);
+    const m = Number(f.month);
+    const nowY = nowDate.getFullYear();
+    const nowM = nowDate.getMonth() + 1;
+    const monthMode = y > 0 && m > 0;
+    const atNow = monthMode && (y > nowY || (y === nowY && m >= nowM));
+    const stepper = `<section class="card xm"><button type="button" class="icon-btn" data-act="xp-prev" aria-label="আগের মাস" ${monthMode ? "" : "disabled"}>${icon("chev-left")}</button><div class="xm-mid"><b>${monthMode ? esc(MONTH_NAMES[m - 1] + " " + y) : "সব সময়"}</b>${monthMode ? '<button type="button" class="xm-link" data-act="xp-all">সব সময় দেখুন</button>' : '<button type="button" class="xm-link" data-act="xp-now">এই মাসে ফিরুন</button>'}</div><button type="button" class="icon-btn" data-act="xp-next" aria-label="পরের মাস" ${monthMode && !atNow ? "" : "disabled"}>${icon("chev-right")}</button></section>`;
+    const quick = `<section class="card"><h3>দ্রুত খরচ যোগ করুন</h3><div class="xq" style="margin-top:12px">${Object.keys(LABELS.expense)
+      .map((k) => `<button type="button" class="xq-tile" data-act="quick-expense" data-cat="${k}"><span class="xq-ic" style="--c:${CAT_META[k].c}">${icon(CAT_META[k].ic)}</span>${esc(LABELS.expense[k])}</button>`)
+      .join("")}</div></section>`;
     return `<div class="page-head"><div><h1>Expenses</h1><p>ব্যক্তিগত খরচ · শুধু RM</p></div><div class="actions"><button type="button" class="btn primary" data-act="add-expenses">${icon("plus")} খরচ যোগ করুন</button></div></div>
+    ${quick}
+    ${stepper}
     ${listFilters("expenses", { label: "ক্যাটাগরি", items: Object.entries(LABELS.expense) }, "বিবরণ / নোট")}
     <div id="region" class="region">${expensesRegion()}</div>`;
   }
@@ -2324,6 +2582,10 @@ const FinanceCore = (() => {
     const last = state.lastBackupAt ? new Date(state.lastBackupAt).toLocaleString("bn-BD") : "এখনো নেওয়া হয়নি";
     return `<div class="page-head"><div><h1>Settings & Backup</h1><p>একাউন্ট, ব্যাকআপ, রিস্টোর, এক্সপোর্ট ও গোপনীয়তা</p></div></div>
     ${prefsCard()}
+    <section class="card"><h3>${icon("users", "sm")} Members</h3>
+      <p class="cmp-note">অন্য কারও আয়/হিসাব এখানে আলাদা রাখুন — আপনার নিজের Dashboard, রিপোর্ট ও ব্যালান্সে মিশবে না। এখন আছে: <b>${state.members.length}টি রেকর্ড</b></p>
+      <div class="actions" style="margin-top:12px"><button type="button" class="btn primary" data-act="open-members">${icon("users", "sm")} Members খুলুন</button></div>
+    </section>
     <section class="card"><h3>${icon("user", "sm")} একাউন্ট</h3>
       <div class="me-card">${avatarHtml("lg2")}<p class="cmp-note">লগইন করা আছে: <b>${esc(state.user.email)}</b></p></div>
       <div class="actions" style="margin-top:12px"><button type="button" class="btn" data-act="logout">${icon("log-out", "sm")} সাইন আউট</button></div>
@@ -2397,6 +2659,7 @@ const FinanceCore = (() => {
     expenses: { title: "Expenses", render: renderExpenses, region: expensesRegion },
     support: { title: "Family Support", render: renderSupport, region: supportRegion },
     loans: { title: "Loans & Debt", render: renderLoans },
+    members: { title: "Members", render: renderMembers },
     monthly: { title: "Monthly Reports", render: renderMonthly },
     yearly: { title: "Yearly Reports", render: renderYearly },
     lifetime: { title: "Lifetime Total", render: renderLifetime },
@@ -2697,16 +2960,148 @@ const FinanceCore = (() => {
     });
   }
 
-  function expenseForm(r) {
-    const v = r || { date: today(), category: "food", description: "", note: "" };
+  let lastExpenseCat = "food";
+  function quickExpense(cat) {
+    let category = CAT_META[cat] ? cat : lastExpenseCat;
+    let expr = "";
+    let pay = lsGet("fin-pay") || "";
+    if (!PAYMENTS.some((p) => p[0] === pay)) pay = "";
+    const grp = (s) => s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    const evalExpr = (s) => {
+      const t = String(s).replace(/[+−]$/, "");
+      if (!t) return null;
+      let total = 0;
+      let op = "+";
+      for (const p of t.split(/([+−])/)) {
+        if (p === "+" || p === "−") { op = p; continue; }
+        if (p === "" || p === ".") return null;
+        const n = Math.round(parseFloat(p) * 100);
+        if (!Number.isFinite(n)) return null;
+        total += op === "+" ? n : -n;
+      }
+      return total;
+    };
+    const catChips = () => Object.keys(LABELS.expense).map((k) => `<button type="button" data-xcat="${k}" aria-pressed="${k === category}" style="--c:${CAT_META[k].c}"><span class="xq-ic" style="--c:${CAT_META[k].c}">${icon(CAT_META[k].ic)}</span>${esc(LABELS.expense[k])}</button>`).join("");
+    const payChips = () => PAYMENTS.map((p) => `<button type="button" data-xpay="${p[0]}" aria-pressed="${p[0] === pay}">${icon(p[2], "sm")}${esc(p[1])}</button>`).join("");
+    const key = (k, label, cls = "", aria = "") => `<button type="button" data-xk="${k}" class="${cls}"${aria ? ` aria-label="${aria}"` : ""}>${label}</button>`;
+    const pad = [
+      key("7", "7"), key("8", "8"), key("9", "9"), key("back", icon("backspace"), "fn", "একটি অক্ষর মুছুন"),
+      key("4", "4"), key("5", "5"), key("6", "6"), key("+", "+", "op", "যোগ"),
+      key("1", "1"), key("2", "2"), key("3", "3"), key("−", "−", "op", "বিয়োগ"),
+      key("clear", "C", "fn", "সব মুছুন"), key("0", "0"), key(".", "."), key("eq", "=", "op", "যোগফল")
+    ].join("");
     openForm({
-      title: r ? "খরচ সম্পাদনা" : "খরচ যোগ করুন",
-      body: `${amountField("RM", r ? C.minorToDecimal(r.amountMinor) : "")}
-        <div class="two">${inputField({ name: "date", label: "তারিখ", type: "date", value: v.date, required: true })}${selectField({ name: "category", label: "ক্যাটাগরি", options: Object.entries(LABELS.expense), value: v.category, required: true })}</div>
-        ${inputField({ name: "description", label: "বিবরণ", value: v.description, required: true, attrs: 'maxlength="120"' })}
-        ${inputField({ name: "note", label: "নোট (ঐচ্ছিক)", value: v.note, attrs: 'maxlength="200"' })}`,
+      title: "খরচ যোগ করুন",
+      submit: "খরচ যোগ করুন",
+      body: `<div class="xp-cats" role="group" aria-label="ক্যাটাগরি">${catChips()}</div>
+        <div class="xp-disp"><div class="xp-expr" id="xp-expr" aria-live="polite"></div><div class="xp-amt"><small>RM</small><span id="xp-amt">0</span></div></div>
+        <div class="xp-pay" role="group" aria-label="পেমেন্ট মাধ্যম">${payChips()}</div>
+        <details class="xp-more"><summary>তারিখ, বিবরণ ও নোট (ঐচ্ছিক)</summary>
+          ${inputField({ name: "date", label: "তারিখ", type: "date", value: today(), required: true })}
+          ${inputField({ name: "description", label: "বিবরণ / দোকানের নাম", value: "", attrs: 'maxlength="120" placeholder="ফাঁকা রাখলে ক্যাটাগরির নাম বসবে"' })}
+          ${inputField({ name: "note", label: "নোট", value: "", attrs: 'maxlength="150"' })}
+        </details>
+        <div class="xp-pad">${pad}</div>`,
       onSubmit: async (raw) => {
-        const res = C.validateExpense(raw);
+        const minor = evalExpr(expr);
+        if (!minor || minor <= 0) {
+          toast("আগে পরিমাণ লিখুন");
+          return { errors: { _form: "আগে পরিমাণ লিখুন (০-এর বেশি)।" } };
+        }
+        const desc = String(raw.description || "").trim() || LABELS.expense[category];
+        const res = C.validateExpense({ date: raw.date, category, description: desc, note: joinNote(pay, raw.note), amount: C.minorToDecimal(minor) });
+        if (!res.ok) {
+          const msg = Object.values(res.errors).join(" ");
+          toast(msg);
+          return { errors: { _form: msg } };
+        }
+        try {
+          await saveRecord("expenses", null, res.value);
+        } catch (err) {
+          return { errors: { _form: failMessage(err) } };
+        }
+        lastExpenseCat = category;
+        lsSet("fin-pay", pay);
+        render();
+        toast("খরচ সংরক্ষিত হয়েছে");
+        return null;
+      }
+    });
+    const form = $("form", dlg);
+    const exprEl = $("#xp-expr", dlg);
+    const amtEl = $("#xp-amt", dlg);
+    const paint = () => {
+      const hasOp = /[+−]/.test(expr);
+      exprEl.textContent = hasOp ? expr.replace(/([+−])/g, " $1 ") : "";
+      let shown = expr;
+      if (hasOp) {
+        const v = evalExpr(expr);
+        shown = v !== null && v > 0 ? C.minorToDecimal(v) : expr.split(/[+−]/).filter(Boolean).pop() || "0";
+      }
+      const parts = (shown || "0").split(".");
+      amtEl.textContent = grp(parts[0] || "0") + (parts.length > 1 ? "." + parts[1] : "");
+    };
+    const press = (k) => {
+      const seg = expr.split(/[+−]/).pop();
+      if (/^\d$/.test(k)) {
+        const dot = seg.indexOf(".");
+        if (dot >= 0 && seg.length - dot > 2) return;
+        if (seg.replace(".", "").length >= 9) return;
+        if (seg === "0") expr = expr.slice(0, -1);
+        expr += k;
+      } else if (k === ".") {
+        if (seg.includes(".")) return;
+        expr += seg === "" ? "0." : ".";
+      } else if (k === "+" || k === "−") {
+        if (!expr) return;
+        expr = /[+−]$/.test(expr) ? expr.slice(0, -1) + k : expr + k;
+      } else if (k === "back") {
+        expr = expr.slice(0, -1);
+      } else if (k === "clear") {
+        expr = "";
+      } else if (k === "eq") {
+        const v = evalExpr(expr);
+        if (v && v > 0) expr = C.minorToDecimal(v).replace(/\.00$/, "");
+      }
+      paint();
+    };
+    form.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-xk],[data-xcat],[data-xpay]");
+      if (!b) return;
+      if (b.dataset.xk) {
+        press(b.dataset.xk);
+      } else if (b.dataset.xcat) {
+        category = b.dataset.xcat;
+        form.querySelectorAll("[data-xcat]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.xcat === category)));
+      } else if (b.dataset.xpay) {
+        pay = pay === b.dataset.xpay ? "" : b.dataset.xpay;
+        form.querySelectorAll("[data-xpay]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.xpay === pay)));
+      }
+    });
+    form.addEventListener("keydown", (e) => {
+      if (e.target.closest("input,select,textarea,button,summary")) return;
+      if (/^\d$/.test(e.key) || e.key === ".") press(e.key);
+      else if (e.key === "+") press("+");
+      else if (e.key === "-") press("−");
+      else if (e.key === "Backspace") press("back");
+    });
+    paint();
+    const sel = form.querySelector('[data-xcat][aria-pressed="true"]');
+    if (sel && sel.scrollIntoView) sel.scrollIntoView({ inline: "center", block: "nearest" });
+  }
+
+  function expenseForm(r) {
+    if (!r) { quickExpense(); return; }
+    const sn = splitNote(r.note);
+    openForm({
+      title: "খরচ সম্পাদনা",
+      body: `${amountField("RM", C.minorToDecimal(r.amountMinor))}
+        <div class="two">${inputField({ name: "date", label: "তারিখ", type: "date", value: r.date, required: true })}${selectField({ name: "category", label: "ক্যাটাগরি", options: Object.entries(LABELS.expense), value: r.category, required: true })}</div>
+        ${inputField({ name: "description", label: "বিবরণ", value: r.description, required: true, attrs: 'maxlength="120"' })}
+        ${selectField({ name: "payment", label: "পেমেন্ট মাধ্যম (ঐচ্ছিক)", options: PAYMENTS.map((p) => [p[0], p[1]]), value: sn.pay, blank: "— বাছাই নেই —" })}
+        ${inputField({ name: "note", label: "নোট (ঐচ্ছিক)", value: sn.text, attrs: 'maxlength="150"' })}`,
+      onSubmit: async (raw) => {
+        const res = C.validateExpense({ ...raw, note: joinNote(raw.payment, raw.note) });
         if (!res.ok) return { errors: res.errors };
         try {
           await saveRecord("expenses", r, res.value);
@@ -2714,7 +3109,7 @@ const FinanceCore = (() => {
           return { errors: { _form: failMessage(err) } };
         }
         render();
-        toast(r ? "খরচ আপডেট হয়েছে" : "খরচ সংরক্ষিত হয়েছে");
+        toast("খরচ আপডেট হয়েছে");
         return null;
       }
     });
@@ -2871,6 +3266,13 @@ const FinanceCore = (() => {
       head = th("তারিখ") + th("প্রাপক") + th("পরিমাণ", "num") + th("মাধ্যম") + th("রেফারেন্স");
       body = list.map((r) => `<tr>${td(fmtDate(r.date))}${td(r.recipient)}${td(bdt(r.amountMinor), "num")}${td(LABELS.method[r.method] || r.method)}${td(r.reference)}</tr>`).join("");
       foot = `<tr>${td("মোট")}${td("")}${td(bdt(C.sum(list.map((r) => r.amountMinor))), "num")}${td("")}${td("")}</tr>`;
+    } else if (kind === "members") {
+      const list = state.members.slice().sort((a, b) => String(a.name).localeCompare(String(b.name)) || byDate(a, b));
+      n = list.length;
+      title = "Members (RM)";
+      head = th("Member") + th("তারিখ") + th("ধরন") + th("পরিমাণ", "num") + th("নোট") + th("রেফারেন্স");
+      body = list.map((r) => `<tr>${td(r.name)}${td(fmtDate(r.date))}${td(LABELS.income[r.type] || r.type)}${td(rm(r.amountMinor), "num")}${td(r.note)}${td(r.reference)}</tr>`).join("");
+      foot = `<tr>${td("মোট")}${td("")}${td("")}${td(rm(C.sum(list.map((r) => r.amountMinor))), "num")}${td("")}${td("")}</tr>`;
     } else if (kind === "monthly") {
       const keys = new Set();
       for (const st of STORES) for (const r of state[st]) keys.add(C.monthKey(r.date));
@@ -2918,8 +3320,10 @@ const FinanceCore = (() => {
       income: [`finance-income-rm-${stamp}.csv`, C.incomeCSV(state)],
       expenses: [`finance-expenses-rm-${stamp}.csv`, C.expensesCSV(state)],
       support: [`finance-family-support-bdt-${stamp}.csv`, C.supportCSV(state)],
-      monthly: [`finance-monthly-summary-${stamp}.csv`, C.monthlyCSV(state, state.completion)]
+      monthly: [`finance-monthly-summary-${stamp}.csv`, C.monthlyCSV(state, state.completion)],
+      members: [`finance-members-rm-${stamp}.csv`, C.toCSV(["member", "date", "type", "amount_rm", "note", "reference"], state.members.slice().sort((a, b) => String(a.name).localeCompare(String(b.name)) || String(a.date).localeCompare(String(b.date))).map((r) => [r.name, r.date, r.type, C.minorToDecimal(r.amountMinor), r.note, r.reference]))]
     };
+    if (kind === "members" && !state.members.length) { toast("এখনো কোনো রেকর্ড নেই।"); return; }
     const f = files[kind];
     if (!f) return;
     download(f[0], "text/csv;charset=utf-8", f[1]);
@@ -3098,6 +3502,33 @@ const FinanceCore = (() => {
 
   async function handleAct(el) {
     const act = el.dataset.act;
+    if (act === "quick-expense") { quickExpense(el.dataset.cat); return; }
+    if (act === "xp-cat") {
+      const c = el.dataset.cat || "";
+      ui.expenses.type = c && ui.expenses.type !== c ? c : "";
+      refreshRegion();
+      const fs = $("#flt-expenses-type");
+      if (fs) fs.value = ui.expenses.type;
+      return;
+    }
+    if (act === "xp-prev" || act === "xp-next" || act === "xp-all" || act === "xp-now") {
+      const f = ui.expenses;
+      const nowY = nowDate.getFullYear();
+      const nowM = nowDate.getMonth() + 1;
+      let y = Number(f.year);
+      let m = Number(f.month);
+      if (act === "xp-all") { f.year = ""; f.month = ""; }
+      else if (act === "xp-now" || !y || !m) { f.year = String(nowY); f.month = String(nowM); }
+      else {
+        if (act === "xp-prev") { m -= 1; if (m < 1) { m = 12; y -= 1; } }
+        else { m += 1; if (m > 12) { m = 1; y += 1; } }
+        if (y > nowY || (y === nowY && m > nowM)) return;
+        f.year = String(y);
+        f.month = String(m);
+      }
+      render();
+      return;
+    }
     const recordAct = /^(add|edit|del)-(income|expenses|support)$/.exec(act);
     if (recordAct) {
       const [, verb, store] = recordAct;
@@ -3111,6 +3542,11 @@ const FinanceCore = (() => {
     }
     if (act === "set-lang") { if (el.dataset.id !== LANG) { lsSet("fin-lang", el.dataset.id === "en" ? "en" : "bn"); location.reload(); } return; }
     if (act === "set-theme") { lsSet("fin-theme", ["dark", "system"].includes(el.dataset.id) ? el.dataset.id : "light"); applyTheme(); render(); return; }
+    if (act === "member-add") { memberForm(null); return; }
+    if (act === "member-edit") { const mm = state.members.find((x) => x.id === el.dataset.id); if (mm) memberForm(mm); return; }
+    if (act === "member-del") { removeMember(el.dataset.id); return; }
+    if (act === "move-member") { moveIncomeToMember(el.dataset.id); return; }
+    if (act === "open-members") { location.hash = "#/members"; return; }
     if (act === "loan-add") { loanForm(null); return; }
     if (act === "loan-tab") { ui_loans.tab = el.dataset.id === "borrowed" ? "borrowed" : "lent"; render(); return; }
     if (/^loan-(pay|view|edit|del)$/.test(act)) { loanActs(act, el.dataset.id); return; }
@@ -3337,6 +3773,13 @@ const FinanceCore = (() => {
       ui_loans[lf.dataset.lf] = lf.value;
       const reg = $("#loan-region");
       if (reg) reg.innerHTML = loansRegion();
+      return;
+    }
+    const mf = e.target.closest("[data-mf]");
+    if (mf) {
+      ui_members.query = mf.value;
+      const mreg = $("#member-region");
+      if (mreg) mreg.innerHTML = membersRegion();
       return;
     }
     const el = e.target.closest("[data-filter]");

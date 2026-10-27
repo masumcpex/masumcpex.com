@@ -2526,7 +2526,9 @@ export function initKhApp(uid, isAdmin){
     }
 
     try{
-      const canvas = await window.html2canvas(wrap, { scale:2, useCORS:true, backgroundColor:"#ffffff" });
+      // Sharper text: up to 3x, lowered automatically for long reports so phones don't run out of canvas memory.
+      const hdScale = Math.max(2, Math.min(3, Math.sqrt(14500000 / (wrap.offsetWidth * wrap.scrollHeight))));
+      const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#ffffff" });
       const { jsPDF } = window.jspdf;
 
       const A4_WIDTH_MM  = 210;
@@ -2583,7 +2585,7 @@ export function initKhApp(uid, isAdmin){
         const g = c.getContext("2d");
         g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
         g.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
-        return c.toDataURL("image/jpeg", 0.95);
+        return c.toDataURL("image/png");
       };
 
       pages.forEach((pg, idx) => {
@@ -2591,10 +2593,10 @@ export function initKhApp(uid, isAdmin){
         let yMM = idx > 0 ? TOP_MARGIN_MM : 0;
         if(pg.head){
           const hh = pg.head.h / pxPerMM;
-          pdf.addImage(slice(pg.head.top, pg.head.top + pg.head.h), "JPEG", 0, yMM, A4_WIDTH_MM, hh);
+          pdf.addImage(slice(pg.head.top, pg.head.top + pg.head.h), "PNG", 0, yMM, A4_WIDTH_MM, hh, undefined, "FAST");
           yMM += hh;
         }
-        pdf.addImage(slice(pg.y0, pg.y1), "JPEG", 0, yMM, A4_WIDTH_MM, (pg.y1 - pg.y0) / pxPerMM);
+        pdf.addImage(slice(pg.y0, pg.y1), "PNG", 0, yMM, A4_WIDTH_MM, (pg.y1 - pg.y0) / pxPerMM, undefined, "FAST");
         drawFooter(pdf, idx + 1, pages.length, A4_WIDTH_MM, A4_HEIGHT_MM);
       });
       pdf.save(`attendance-report-${ym}${singleMember ? "-" + singleMember.name : ""}.pdf`);

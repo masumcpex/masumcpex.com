@@ -2278,6 +2278,7 @@ export function initKhApp(uid, isAdmin){
     const daysInMonth = new Date(Number(yy), Number(mm), 0).getDate();
     const periodLabel = `01 ${monthLabel(ym).split(" ")[0].slice(0,3)} ${yy} — ${String(daysInMonth).padStart(2,"0")} ${monthLabel(ym).split(" ")[0].slice(0,3)} ${yy}`;
 
+    const advSubText = (taken, deducted) => `Taken ${(taken || 0).toFixed(2)}` + (deducted > 0 ? ` · Deducted ${deducted.toFixed(2)}` : "");
     const kpiCard = (label, value, sub) => `
       <div style="flex:1; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:8px; padding:14px 12px;">
         <div style="font-size:8.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:${PDF_MUTED};">${label}</div>
@@ -2305,7 +2306,7 @@ export function initKhApp(uid, isAdmin){
           ${kpiCard("Present", toBn(stats.present), "Work Days")}
           ${kpiCard("Leave", toBn(stats.absent), "Leave Days")}
           ${kpiCard("Total Hours", toBn(stats.hours), "Hours")}
-          ${kpiCard("Advance Taken", money(advSingle.taken), `Balance ${money(advSingle.balance)}`)}
+          ${kpiCard("Advance Balance", money(advSingle.balance), advSubText(advSingle.taken, advSingle.deducted))}
         </div>`;
       detailRowsHtml = monthRecords
         .filter(r => r.member === singleMember.name)
@@ -2334,13 +2335,15 @@ export function initKhApp(uid, isAdmin){
       const totalPresentAll = memberNames.reduce((sum,n) => sum + byMember[n].present, 0);
       const totalLeaveAll   = memberNames.reduce((sum,n) => sum + byMember[n].absent, 0);
       const advTakenAll = memberNames.reduce((sum,n) => sum + advanceStatsFor(members.find(x => x.name === n), ym).taken, 0);
-      const advBalanceAll = memberNames.reduce((sum,n) => sum + advanceStatsFor(members.find(x => x.name === n), ym).balance, 0);
+      const advDeductedAll = memberNames.reduce((sum,n) => sum + advanceStatsFor(members.find(x => x.name === n), ym).deducted, 0);
+      // Same total as the dashboard "Total Advance" card: balance of every member.
+      const advBalanceAll = members.reduce((sum,m) => sum + (typeof m.advance === "number" ? m.advance : 0), 0);
       kpiCardsHtml = `
         <div style="display:flex; gap:10px; margin-bottom:22px;">
           ${kpiCard("Present", toBn(totalPresentAll), "Work Days")}
           ${kpiCard("Leave", toBn(totalLeaveAll), "Leave Days")}
           ${kpiCard("Total Hours", toBn(totalHoursAll), "Hours")}
-          ${kpiCard("Advance Taken", money(advTakenAll), `Balance ${money(advBalanceAll)}`)}
+          ${kpiCard("Advance Balance", money(advBalanceAll), advSubText(advTakenAll, advDeductedAll))}
         </div>`;
 
       const summaryRowsHtml = memberNames.map(name => {
@@ -2392,10 +2395,10 @@ export function initKhApp(uid, isAdmin){
     // ----- Advance details for this month (who took how much, and when) -----
     const advTargets = singleMember ? [singleMember] : memberNames.map(n => members.find(x => x.name === n)).filter(Boolean);
     const advEntriesPdf = [];
-    let advTakenTotal = 0, advDeductedTotal = 0, advUntrackedTotal = 0;
+    let advTakenTotal = 0, advDeductedTotal = 0, advUntrackedTotal = 0, advBalanceTotal = 0;
     advTargets.forEach(m => {
       const st = advanceStatsFor(m, ym);
-      advTakenTotal += st.taken; advDeductedTotal += st.deducted;
+      advTakenTotal += st.taken; advDeductedTotal += st.deducted; advBalanceTotal += st.balance;
       if(Math.abs(st.untracked) >= 0.01) advUntrackedTotal += st.untracked;
       st.entries.forEach(e => advEntriesPdf.push({ name: m.name, d: e.d, a: e.a }));
     });
@@ -2425,6 +2428,7 @@ export function initKhApp(uid, isAdmin){
           <tfoot>
             <tr class="pdf-tfoot-row"><td class="pdf-td pdf-td-left" style="font-weight:800;" colspan="3">Total Advance Taken</td><td class="pdf-td pdf-td-right" style="font-weight:800;">${money(advTakenTotal)}</td></tr>
             ${advDeductedTotal > 0 ? `<tr class="pdf-tfoot-row"><td class="pdf-td pdf-td-left" style="font-weight:800;" colspan="3">Total Deducted</td><td class="pdf-td pdf-td-right" style="font-weight:800;">${money(advDeductedTotal)}</td></tr>` : ""}
+            <tr class="pdf-tfoot-row"><td class="pdf-td pdf-td-left" style="font-weight:800;" colspan="3">Current Advance Balance</td><td class="pdf-td pdf-td-right" style="font-weight:800;">${money(advBalanceTotal)}</td></tr>
           </tfoot>
         </table>`
       : `<div style="font-size:10px; color:${PDF_MUTED};">No advance recorded for ${monthLabel(ym)}.</div>`}
@@ -2527,20 +2531,72 @@ export function initKhApp(uid, isAdmin){
 
       const A4_WIDTH_MM  = 210;
       const A4_HEIGHT_MM = 297;
-      const CONTENT_HEIGHT_MM = A4_HEIGHT_MM - FOOTER_MARGIN_MM - 8;
-      const imgWidthMM  = A4_WIDTH_MM;
-      const imgHeightMM = (canvas.height * imgWidthMM) / canvas.width;
-      const imgData = canvas.toDataURL("image/jpeg", 0.95);
-
-      const totalPages = Math.max(1, Math.ceil(imgHeightMM / CONTENT_HEIGHT_MM));
+      const BODY_BOTTOM_MM = A4_HEIGHT_MM - FOOTER_MARGIN_MM - 8;   // content must end above the footer band
+      const TOP_MARGIN_MM = 12;                                      // top gap on pages 2+
       const pdf = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
 
-      for(let page = 0; page < totalPages; page++){
-        if(page > 0) pdf.addPage();
-        const position = -(page * CONTENT_HEIGHT_MM);
-        pdf.addImage(imgData, "JPEG", 0, position, imgWidthMM, imgHeightMM);
-        drawFooter(pdf, page + 1, totalPages, A4_WIDTH_MM, A4_HEIGHT_MM);
+      // Work in the report's own pixel space; k converts to canvas pixels.
+      const wrapRect = wrap.getBoundingClientRect();
+      const totalPx = wrap.scrollHeight;
+      const k = canvas.width / wrap.offsetWidth;
+      const pxPerMM = wrap.offsetWidth / A4_WIDTH_MM;
+      const relTop = el => el.getBoundingClientRect().top - wrapRect.top;
+
+      // Places where a page may start: before a whole table row or a whole block, never inside one.
+      const breaks = [];
+      Array.from(wrap.children).forEach(el => {
+        const next = el.nextElementSibling;
+        if(next && next.tagName === "TABLE") return;          // keep a heading with its table
+        breaks.push({ y: relTop(el), table: null });
+      });
+      wrap.querySelectorAll("table").forEach(t => {
+        const head = t.tHead ? { top: relTop(t.tHead), h: t.tHead.getBoundingClientRect().height } : null;
+        const bodyRows = Array.from(t.querySelectorAll("tbody tr"));
+        bodyRows.forEach((tr, i) => { if(i > 0) breaks.push({ y: relTop(tr), table: head }); });
+        const foot = t.tFoot ? t.tFoot.querySelector("tr") : null;
+        if(foot && bodyRows.length) breaks.push({ y: relTop(foot), table: head });
+      });
+      breaks.sort((a, b) => a.y - b.y);
+
+      // Greedy: fill each page up to the last safe break that still fits.
+      const pages = [];
+      let start = 0, repeatHead = null;
+      while(start < totalPx - 1){
+        const headMM = repeatHead ? repeatHead.h / pxPerMM : 0;
+        const availMM = BODY_BOTTOM_MM - (pages.length ? TOP_MARGIN_MM : 0) - headMM;
+        const limit = start + availMM * pxPerMM;
+        if(totalPx <= limit){ pages.push({ y0: start, y1: totalPx, head: repeatHead }); break; }
+        let cut = null;
+        for(let i = 0; i < breaks.length; i++){
+          if(breaks[i].y > start + 20 && breaks[i].y <= limit) cut = breaks[i];
+        }
+        if(!cut) cut = { y: limit, table: null };               // a block taller than a page: split it
+        pages.push({ y0: start, y1: cut.y, head: repeatHead });
+        start = cut.y;
+        repeatHead = cut.table;
       }
+
+      const slice = (y0, y1) => {
+        const sy = Math.max(0, Math.round(y0 * k)), sh = Math.max(1, Math.round((y1 - y0) * k));
+        const c = document.createElement("canvas");
+        c.width = canvas.width; c.height = sh;
+        const g = c.getContext("2d");
+        g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+        g.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
+        return c.toDataURL("image/jpeg", 0.95);
+      };
+
+      pages.forEach((pg, idx) => {
+        if(idx > 0) pdf.addPage();
+        let yMM = idx > 0 ? TOP_MARGIN_MM : 0;
+        if(pg.head){
+          const hh = pg.head.h / pxPerMM;
+          pdf.addImage(slice(pg.head.top, pg.head.top + pg.head.h), "JPEG", 0, yMM, A4_WIDTH_MM, hh);
+          yMM += hh;
+        }
+        pdf.addImage(slice(pg.y0, pg.y1), "JPEG", 0, yMM, A4_WIDTH_MM, (pg.y1 - pg.y0) / pxPerMM);
+        drawFooter(pdf, idx + 1, pages.length, A4_WIDTH_MM, A4_HEIGHT_MM);
+      });
       pdf.save(`attendance-report-${ym}${singleMember ? "-" + singleMember.name : ""}.pdf`);
     }finally{
       document.body.removeChild(wrap);
@@ -3045,6 +3101,7 @@ export function initKhApp(uid, isAdmin){
 
   // ===== STAT-SHEET BEGIN: dashboard stat cards -> details sheet (UI only; reads the already-loaded members/records) =====
   let statType = "", statYm = "", statForm = false, statSaving = false, statTrigger = null;
+  let advHist = null;   // null = normal Advance sheet; { member, month } = full history view
   const fmtRM = n => `RM ${(Number(n) || 0).toFixed(2)}`;
   function daysElapsedIn(ym){
     const [y, m] = ym.split("-").map(Number);
@@ -3075,7 +3132,11 @@ export function initKhApp(uid, isAdmin){
     ov.addEventListener("click", e => { if(e.target === ov) closeStatSheet(); });
     ov.querySelector("#khStatClose").addEventListener("click", closeStatSheet);
     ov.addEventListener("click", onSheetClick);
-    ov.addEventListener("change", e => { if(e.target.id === "khStatMonth"){ statYm = e.target.value; renderStatSheet(); } });
+    ov.addEventListener("change", e => {
+      if(e.target.id === "khStatMonth"){ statYm = e.target.value; renderStatSheet(); }
+      else if(advHist && e.target.id === "khHistMember"){ advHist.member = e.target.value; renderStatSheet(); }
+      else if(advHist && e.target.id === "khHistMonth"){ advHist.month = e.target.value; renderStatSheet(); }
+    });
     ov.addEventListener("submit", onAdvanceSubmit);
     document.addEventListener("keydown", e => { if(e.key === "Escape" && ov.style.display === "flex" && !document.querySelector("#khMemberProfileOverlay[style*='flex']")) closeStatSheet(); });
     return ov;
@@ -3083,11 +3144,11 @@ export function initKhApp(uid, isAdmin){
   function closeStatSheet(){
     const ov = document.getElementById("khStatSheet");
     if(ov) ov.style.display = "none";
-    statType = ""; statForm = false;
+    statType = ""; statForm = false; advHist = null;
     if(statTrigger && statTrigger.focus) statTrigger.focus();
   }
   function openStatSheet(type, trigger){
-    statType = type; statYm = currentYearMonth(); statForm = false; statTrigger = trigger || null;
+    statType = type; statYm = currentYearMonth(); statForm = false; advHist = null; statTrigger = trigger || null;
     const ov = ensureStatSheet();
     renderStatSheet();
     ov.style.display = "flex";
@@ -3100,7 +3161,7 @@ export function initKhApp(uid, isAdmin){
   function renderStatSheet(){
     const ov = ensureStatSheet();
     const title = { members: "Team Members", present: "Attendance Overview", hours: "Work Hours", advance: "Advance" }[statType] || "";
-    ov.querySelector("#khStatTitle").textContent = title;
+    ov.querySelector("#khStatTitle").textContent = (statType === "advance" && advHist) ? "Advance History" : title;
     const body = ov.querySelector("#khStatBody");
     const html = statType === "members" ? sheetMembers() : statType === "present" ? sheetPresent() : statType === "hours" ? sheetHours() : statType === "advance" ? sheetAdvance() : "";
     body.innerHTML = html;
@@ -3182,6 +3243,7 @@ export function initKhApp(uid, isAdmin){
 
   function sheetAdvance(){
     if(statForm) return advanceFormHtml();
+    if(advHist) return advanceHistoryHtml();
     const ym = currentYearMonth();
     const per = sortedMembers().map(m => ({ m, st: advanceStatsFor(m, ym) }));
     const total = per.reduce((a, p) => a + p.st.balance, 0), taken = per.reduce((a, p) => a + p.st.taken, 0), ded = per.reduce((a, p) => a + p.st.deducted, 0);
@@ -3192,9 +3254,105 @@ export function initKhApp(uid, isAdmin){
     return `<div class="kh-sh-actions kh-sh-actions--top"><button type="button" class="btn3d btn-mint kh-sh-addadv" data-sheet-act="add-advance">+ Add Advance</button></div>
       <div class="kh-sh-grid"><div class="kh-sh-tile"><b>${fmtRM(total)}</b><span>Total advance</span></div><div class="kh-sh-tile"><b>${fmtRM(taken)}</b><span>Taken · ${monthLabel(ym)}</span></div><div class="kh-sh-tile"><b>${fmtRM(ded)}</b><span>Deducted · ${monthLabel(ym)}</span></div></div>
       <h3 class="kh-sh-h">By member</h3>${rows || `<p class="kh-empty-note" style="display:block;">No members yet.</p>`}
-      <h3 class="kh-sh-h">Recent advance history</h3>
+      <div class="kh-ah-headrow"><h3 class="kh-sh-h" style="margin:0;">Recent advance history</h3>${hist.length > 8 ? `<button type="button" class="kh-ah-viewall" data-sheet-act="adv-history">View all (${hist.length})</button>` : ""}</div>
       ${hist.length ? hist.slice(0, 8).map(x => `<div class="kh-sh-hist"><span>${x.d}</span><span class="kh-sh-name">${escapeHtml(x.n)}</span><b class="${x.a < 0 ? "is-neg" : "is-pos"}">${x.a < 0 ? "−" : "+"}${Math.abs(x.a).toFixed(2)}</b></div>`).join("") : `<p class="kh-empty-note" style="display:block;">No advance history yet.</p>`}
       <p class="kh-sh-note">You can also edit an advance from the Monthly Summary table.</p>`;
+  }
+
+  // ----- Full advance history (every + / − with its date), filterable by member and month -----
+  function ensureAdvHistStyle(){
+    if(document.getElementById("khAhStyle")) return;
+    const st = document.createElement("style");
+    st.id = "khAhStyle";
+    st.textContent = `
+      .kh-ah-headrow{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:18px 0 8px; }
+      .kh-ah-viewall{ border:1px solid rgba(15,76,129,.35); background:rgba(15,76,129,.08); color:#0F4C81; font-weight:700; font-size:.78rem; padding:6px 12px; border-radius:999px; cursor:pointer; font-family:inherit; }
+      [data-theme="dark"] .kh-ah-viewall{ color:#8FBFFF; border-color:rgba(143,191,255,.4); background:rgba(143,191,255,.1); }
+      .kh-ah-back{ display:inline-flex; align-items:center; gap:6px; border:none; background:none; color:inherit; font-weight:700; font-size:.85rem; cursor:pointer; padding:2px 0 10px; font-family:inherit; opacity:.8; }
+      .kh-ah-filters{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:2px 0 12px; }
+      .kh-ah-filters label{ display:flex; flex-direction:column; gap:4px; font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.85; }
+      .kh-ah-filters select{ width:100%; padding:9px 10px; border-radius:10px; border:1px solid rgba(128,128,128,.35); background:transparent; color:inherit; font-size:.9rem; font-family:inherit; text-transform:none; letter-spacing:0; font-weight:600; }
+      .kh-ah-month{ display:flex; justify-content:space-between; align-items:baseline; margin:16px 0 6px; padding-bottom:6px; border-bottom:1px solid rgba(128,128,128,.25); font-size:.78rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
+      .kh-ah-month small{ font-weight:700; text-transform:none; letter-spacing:0; opacity:.75; }
+      .kh-ah-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid rgba(128,128,128,.16); }
+      .kh-ah-ico{ width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.1rem; flex-shrink:0; }
+      .kh-ah-ico.is-pos{ background:rgba(22,160,133,.14); color:#16A085; }
+      .kh-ah-ico.is-neg{ background:rgba(214,69,69,.14); color:#D64545; }
+      .kh-ah-ico.is-open{ background:rgba(128,128,128,.16); color:inherit; font-size:.8rem; }
+      .kh-ah-mid{ flex:1; min-width:0; display:flex; flex-direction:column; }
+      .kh-ah-mid b{ font-size:.92rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .kh-ah-mid small, .kh-ah-amt small{ font-size:.74rem; opacity:.7; }
+      .kh-ah-amt{ display:flex; flex-direction:column; align-items:flex-end; }
+      .kh-ah-amt b{ font-size:.95rem; white-space:nowrap; }
+      .kh-ah-amt b.is-pos{ color:#16A085; } .kh-ah-amt b.is-neg{ color:#D64545; }
+    `;
+    document.head.appendChild(st);
+  }
+  function advanceHistoryHtml(){
+    ensureAdvHistStyle();
+    const all = [];
+    members.forEach(m => (Array.isArray(m.advanceLog) ? m.advanceLog : []).forEach((e, i) => {
+      if(e && typeof e.d === "string") all.push({ d: e.d, a: Number(e.a) || 0, n: m.name, id: m.id, i });
+    }));
+    const months = Array.from(new Set(all.map(x => x.d.slice(0, 7)))).sort((a, b) => b.localeCompare(a));
+    if(advHist.member && !members.some(m => m.id === advHist.member)) advHist.member = "";
+    if(advHist.month && months.indexOf(advHist.month) < 0) advHist.month = "";
+    const f = advHist;
+    const sel = f.member ? members.find(m => m.id === f.member) : null;
+    const list = all.filter(x => (!f.member || x.id === f.member) && (!f.month || x.d.startsWith(f.month)));
+    list.sort((x, y) => y.d.localeCompare(x.d) || y.i - x.i);
+
+    // Running balance only makes sense for one member: balance right after each entry.
+    const after = {};
+    let opening = 0;
+    if(sel){
+      const log = all.filter(x => x.id === sel.id).sort((x, y) => x.d.localeCompare(y.d) || x.i - y.i);
+      const sum = log.reduce((t, x) => t + x.a, 0);
+      opening = Math.round(((typeof sel.advance === "number" ? sel.advance : 0) - sum) * 100) / 100;
+      let run = opening;
+      log.forEach(x => { run += x.a; after[x.d + "|" + x.i] = run; });
+    }
+
+    const taken = list.reduce((t, x) => t + (x.a > 0 ? x.a : 0), 0);
+    const ded = list.reduce((t, x) => t + (x.a < 0 ? -x.a : 0), 0);
+    const balNow = sel ? (typeof sel.advance === "number" ? sel.advance : 0) : members.reduce((t, m) => t + (typeof m.advance === "number" ? m.advance : 0), 0);
+    const pretty = d => new Date(d + "T00:00:00").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    const dow = d => new Date(d + "T00:00:00").toLocaleDateString("en-US", { weekday: "short" });
+
+    const rowHtml = x => `<div class="kh-ah-row">
+        <span class="kh-ah-ico ${x.a < 0 ? "is-neg" : "is-pos"}" aria-hidden="true">${x.a < 0 ? "−" : "+"}</span>
+        <div class="kh-ah-mid"><b>${escapeHtml(x.n)}</b><small>${x.a < 0 ? "Deducted" : "Taken"} · ${escapeHtml(pretty(x.d))} · ${dow(x.d)}</small></div>
+        <div class="kh-ah-amt"><b class="${x.a < 0 ? "is-neg" : "is-pos"}">${x.a < 0 ? "−" : "+"}${fmtRM(Math.abs(x.a))}</b>${sel ? `<small>Balance ${fmtRM(after[x.d + "|" + x.i])}</small>` : ""}</div>
+      </div>`;
+
+    let body = "";
+    if(!list.length){
+      body = `<p class="kh-empty-note" style="display:block;">No advance entries${(f.member || f.month) ? " for this filter" : " yet"}.</p>`;
+    }else{
+      let curM = "";
+      list.forEach(x => {
+        const ym = x.d.slice(0, 7);
+        if(ym !== curM){
+          curM = ym;
+          const mt = list.filter(y => y.d.startsWith(ym));
+          const mTaken = mt.reduce((t, y) => t + (y.a > 0 ? y.a : 0), 0), mDed = mt.reduce((t, y) => t + (y.a < 0 ? -y.a : 0), 0);
+          body += `<div class="kh-ah-month"><span>${escapeHtml(monthLabel(ym))}</span><small>+${mTaken.toFixed(2)}${mDed > 0 ? " / −" + mDed.toFixed(2) : ""}</small></div>`;
+        }
+        body += rowHtml(x);
+      });
+      if(sel && !f.month && Math.abs(opening) >= 0.01){
+        body += `<div class="kh-ah-row"><span class="kh-ah-ico is-open" aria-hidden="true">•</span><div class="kh-ah-mid"><b>Opening balance</b><small>Saved before history started (no date)</small></div><div class="kh-ah-amt"><b>${fmtRM(opening)}</b></div></div>`;
+      }
+    }
+
+    return `<button type="button" class="kh-ah-back" data-sheet-act="adv-back">‹ Back to Advance</button>
+      <div class="kh-ah-filters">
+        <label>Member<select id="khHistMember"><option value="">All members</option>${sortedMembers().map(m => `<option value="${m.id}"${m.id === f.member ? " selected" : ""}>${escapeHtml(m.name)}</option>`).join("")}</select></label>
+        <label>Month<select id="khHistMonth"><option value="">All time</option>${months.map(m => `<option value="${m}"${m === f.month ? " selected" : ""}>${escapeHtml(monthLabel(m))}</option>`).join("")}</select></label>
+      </div>
+      <div class="kh-sh-grid"><div class="kh-sh-tile"><b>${fmtRM(taken)}</b><span>Taken</span></div><div class="kh-sh-tile"><b>${fmtRM(ded)}</b><span>Deducted</span></div><div class="kh-sh-tile"><b>${fmtRM(balNow)}</b><span>${sel ? "Current balance" : "Total balance"}</span></div></div>
+      ${body}
+      <p class="kh-sh-note">${list.length} entr${list.length === 1 ? "y" : "ies"}. Newest first.</p>`;
   }
   function advanceFormHtml(){
     return `<form id="khAdvForm" class="kh-sh-form" novalidate>
@@ -3214,6 +3372,8 @@ export function initKhApp(uid, isAdmin){
         setTimeout(() => { const i = document.getElementById("memberInput"); if(i) i.focus(); }, 80);
       }else if(a === "add-advance"){ statForm = true; renderStatSheet(); }
       else if(a === "adv-cancel"){ statForm = false; renderStatSheet(); }
+      else if(a === "adv-history"){ advHist = { member: "", month: "" }; renderStatSheet(); const b = document.getElementById("khStatBody"); if(b) b.scrollTop = 0; }
+      else if(a === "adv-back"){ advHist = null; renderStatSheet(); }
       return;
     }
     const row = e.target.closest("[data-member]");

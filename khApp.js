@@ -2494,7 +2494,6 @@ export function initKhApp(uid, isAdmin){
           </tr>
         </tfoot>
       </table>
-      ${advanceSectionHtml}
     `;
 
     const style = document.createElement("style");
@@ -2545,8 +2544,8 @@ export function initKhApp(uid, isAdmin){
 
     try{
       // Sharper text: up to 3x, lowered automatically for long reports so phones don't run out of canvas memory.
-      const hdScale = Math.max(2, Math.min(3, Math.sqrt(14500000 / (wrap.offsetWidth * wrap.scrollHeight))));
-      const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#ffffff" });
+      const hdScale = Math.max(2, Math.min(2.5, Math.sqrt(14500000 / (wrap.offsetWidth * wrap.scrollHeight))));
+      const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#ffffff", logging:false });
       const { jsPDF } = window.jspdf;
 
       const A4_WIDTH_MM  = 210;
@@ -2603,7 +2602,7 @@ export function initKhApp(uid, isAdmin){
         const g = c.getContext("2d");
         g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
         g.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
-        return c.toDataURL("image/png");
+        return c.toDataURL("image/jpeg", 0.95);
       };
 
       pages.forEach((pg, idx) => {
@@ -2611,10 +2610,10 @@ export function initKhApp(uid, isAdmin){
         let yMM = idx > 0 ? TOP_MARGIN_MM : 0;
         if(pg.head){
           const hh = pg.head.h / pxPerMM;
-          pdf.addImage(slice(pg.head.top, pg.head.top + pg.head.h), "PNG", 0, yMM, A4_WIDTH_MM, hh, undefined, "FAST");
+          pdf.addImage(slice(pg.head.top, pg.head.top + pg.head.h), "JPEG", 0, yMM, A4_WIDTH_MM, hh);
           yMM += hh;
         }
-        pdf.addImage(slice(pg.y0, pg.y1), "PNG", 0, yMM, A4_WIDTH_MM, (pg.y1 - pg.y0) / pxPerMM, undefined, "FAST");
+        pdf.addImage(slice(pg.y0, pg.y1), "JPEG", 0, yMM, A4_WIDTH_MM, (pg.y1 - pg.y0) / pxPerMM);
         drawFooter(pdf, idx + 1, pages.length, A4_WIDTH_MM, A4_HEIGHT_MM);
       });
       pdf.save(`attendance-report-${ym}${singleMember ? "-" + singleMember.name : ""}.pdf`);
@@ -3033,6 +3032,18 @@ export function initKhApp(uid, isAdmin){
     ]);
     return results.every(Boolean) && !!window.html2canvas && !!window.jspdf;
   }
+  // Warm up the PDF libraries and logo in the background, so the first tap on Download starts at once.
+  // (Waiting for a slow download on tap made the browser drop the tap's permission, so a 2nd tap was needed.)
+  function warmPdf(){
+    try{
+      ensurePdfLibs();
+      const im = new Image(); im.crossOrigin = "anonymous"; im.src = "masum.png";
+    }catch(_){}
+  }
+  (function schedulePdfWarm(){
+    const go = () => setTimeout(() => (window.requestIdleCallback ? window.requestIdleCallback(warmPdf, { timeout: 4000 }) : warmPdf()), 1500);
+    if(document.readyState === "complete") go(); else window.addEventListener("load", go, { once: true });
+  })();
 
   function secStateGet(key){ try{ return localStorage.getItem("kh_sec_" + key); }catch(_){ return null; } }
   function secStateSet(key, v){ try{ localStorage.setItem("kh_sec_" + key, v); }catch(_){} }

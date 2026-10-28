@@ -425,9 +425,9 @@ async function downloadPdf(btn){
     const pdf = new window.jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const pages = wrap.querySelectorAll(".pdfp");
     for(let i = 0; i < pages.length; i++){
-      const canvas = await window.html2canvas(pages[i], { scale: 2.4, backgroundColor: "#ffffff", useCORS: true });
+      const canvas = await window.html2canvas(pages[i], { scale: 2.2, backgroundColor: "#ffffff", useCORS: true, logging: false });
       if(i) pdf.addPage();
-      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, 297, undefined, "FAST");
+      pdf.addImage(canvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, 210, 297);
     }
     const safe = String(share.memberName).replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") || "member";
     pdf.save("attendance-" + safe + "-" + curYm + ".pdf");
@@ -442,6 +442,8 @@ async function downloadPdf(btn){
 
 document.getElementById("yr").textContent = new Date().getFullYear();
 load();
+// Warm up PDF libraries in the background so the first tap on Download is instant.
+setTimeout(() => { Promise.all([window.html2canvas ? 0 : loadScript(H2C), window.jspdf ? 0 : loadScript(JSPDF)]).catch(() => {}); }, 2000);
 </script>
 </body>
 </html>

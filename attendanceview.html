@@ -10,8 +10,8 @@
 <link rel="icon" href="/bdflag.webp" type="image/webp">
 <style>
 :root{
-  --navy:#173B63; --ink:#172033; --muted:#667085; --line:#E5E7EB; --soft:#EEF1F4;
-  --bg:#F6F8FA; --card:#fff; --ok:#0F766A; --okbg:rgba(21,154,134,.12); --lv:#9C6B0F; --lvbg:rgba(217,154,36,.16);
+  --navy:#173B63; --navy2:#0F2C4D; --ink:#172033; --muted:#667085; --line:#E4E8EE; --soft:#EEF1F4;
+  --bg:#F2F5F9; --card:#fff; --ok:#0F766A; --okbg:rgba(21,154,134,.12); --lv:#9C6B0F; --lvbg:rgba(217,154,36,.16);
   --danger:#C0392B;
   --font:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Bengali","Hind Siliguri","Noto Sans",Arial,sans-serif;
 }
@@ -19,68 +19,102 @@
 html{ -webkit-text-size-adjust:100%; }
 body{
   margin:0; background:var(--bg); color:var(--ink); font-family:var(--font); font-size:16px; line-height:1.45;
-  padding-bottom:env(safe-area-inset-bottom,0);
+  min-height:100vh; display:flex; flex-direction:column; padding-bottom:env(safe-area-inset-bottom,0);
 }
 button,select,textarea,input{ font-family:inherit; font-size:1rem; }
 .bar{
-  background:var(--navy); color:#fff; padding:calc(12px + env(safe-area-inset-top,0)) 16px 12px;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:linear-gradient(135deg,var(--navy2),var(--navy)); color:#fff;
+  padding:calc(14px + env(safe-area-inset-top,0)) 16px 14px;
+  display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 2px 10px rgba(15,44,77,.25);
 }
-.brand{ font-weight:800; letter-spacing:.02em; font-size:1.05rem; }
-.brand small{ display:block; font-weight:500; font-size:.72rem; opacity:.8; letter-spacing:.04em; }
-.chip{ background:rgba(255,255,255,.14); border-radius:999px; padding:4px 12px; font-size:.78rem; font-weight:700; white-space:nowrap; }
-main{ width:100%; max-width:720px; margin:0 auto; padding:16px 14px 28px; }
+.brandrow{ display:flex; align-items:center; gap:11px; min-width:0; }
+.mark{ height:40px; min-width:40px; padding:0 9px; border-radius:11px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.2); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.2rem; color:var(--navy); flex-shrink:0; }
+.mark img{ height:26px; width:auto; max-width:120px; display:block; object-fit:contain; }
+.byline{ display:inline-flex; align-items:center; gap:8px; margin-bottom:6px; font-weight:700; color:#475467; }
+.byline img{ width:26px; height:26px; border-radius:50%; object-fit:cover; border:1.5px solid #fff; box-shadow:0 1px 4px rgba(16,24,40,.25); }
+.brand{ font-weight:800; letter-spacing:.04em; font-size:1.05rem; line-height:1.15; }
+.brand small{ display:block; font-weight:500; font-size:.7rem; opacity:.78; letter-spacing:.03em; margin-top:2px; }
+.chip{ background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22); border-radius:999px; padding:5px 12px; font-size:.76rem; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:6px; }
+.chip svg{ width:14px; height:14px; }
+main{ width:100%; max-width:760px; margin:0 auto; padding:16px 14px 20px; flex:1; display:flex; flex-direction:column; gap:12px; }
 .card{
-  background:var(--card); border:1px solid var(--line); border-top:4px solid var(--navy);
-  border-radius:16px; padding:18px 16px; box-shadow:0 1px 3px rgba(16,24,40,.06);
+  background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px 16px;
+  box-shadow:0 1px 2px rgba(16,24,40,.04),0 6px 18px rgba(16,24,40,.05);
 }
-.eyebrow{ font-size:.72rem; font-weight:800; letter-spacing:.12em; color:var(--ok); text-transform:uppercase; margin:0 0 4px; }
-h1{ margin:0; font-size:1.55rem; line-height:1.2; color:var(--navy); overflow-wrap:anywhere; }
-.sub{ margin:6px 0 0; color:var(--muted); font-size:.85rem; }
-label.fl{ display:block; margin:16px 0 6px; font-size:.78rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+.hero{ border-top:4px solid var(--navy); }
+.herotop{ display:flex; align-items:center; gap:14px; }
+.avatar{ width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg,#2563A8,var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.5rem; flex-shrink:0; box-shadow:0 4px 10px rgba(23,59,99,.3); }
+.eyebrow{ font-size:.7rem; font-weight:800; letter-spacing:.12em; color:var(--ok); text-transform:uppercase; margin:0 0 2px; }
+h1{ margin:0; font-size:1.5rem; line-height:1.2; color:var(--navy); overflow-wrap:anywhere; }
+.sub{ margin:4px 0 0; color:var(--muted); font-size:.8rem; display:flex; align-items:center; gap:6px; }
+.sub::before{ content:""; width:7px; height:7px; border-radius:50%; background:#22C55E; box-shadow:0 0 0 3px rgba(34,197,94,.18); }
+label.fl{ display:block; margin:16px 0 6px; font-size:.74rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
 select,textarea{
   width:100%; border:1.5px solid #CBD5E1; border-radius:12px; background:#fff; color:var(--ink);
   padding:12px 12px; min-height:48px;
 }
 select:focus,textarea:focus{ outline:none; border-color:var(--navy); box-shadow:0 0 0 3px rgba(23,59,99,.12); }
-.tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px; }
-.tile{ background:#F3F6F9; border-radius:12px; padding:10px 6px; text-align:center; min-width:0; }
-.tile b{ display:block; font-size:1.25rem; color:var(--navy); }
-.tile span{ font-size:.7rem; color:var(--muted); font-weight:600; }
-.actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+.tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.tile{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 8px 11px; text-align:center; min-width:0; position:relative; overflow:hidden; box-shadow:0 1px 2px rgba(16,24,40,.04); }
+.tile::before{ content:""; position:absolute; left:0; right:0; top:0; height:3px; background:var(--navy); }
+.tile.t-ok::before{ background:#16A085; } .tile.t-lv::before{ background:#E0A32E; }
+.tile b{ display:block; font-size:1.55rem; line-height:1.15; color:var(--navy); }
+.tile span{ font-size:.7rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+.rate{ margin-top:2px; }
+.ratehead{ display:flex; justify-content:space-between; align-items:baseline; font-size:.8rem; font-weight:700; color:var(--muted); }
+.ratehead b{ color:var(--navy); font-size:.95rem; }
+.bar2{ height:8px; border-radius:8px; background:var(--soft); overflow:hidden; margin:8px 0 6px; }
+.bar2 i{ display:block; height:100%; border-radius:8px; background:linear-gradient(90deg,#16A085,#22C55E); }
+.ratefoot{ font-size:.75rem; color:var(--muted); }
+.actions{ display:flex; flex-wrap:wrap; gap:10px; }
 .btn{
-  flex:1 1 150px; min-height:48px; border-radius:12px; border:1.5px solid var(--navy); background:var(--navy); color:#fff;
+  flex:1 1 150px; min-height:50px; border-radius:13px; border:1.5px solid var(--navy); background:var(--navy); color:#fff;
   font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; padding:0 14px;
+  box-shadow:0 3px 8px rgba(23,59,99,.22);
 }
-.btn.sec{ background:#fff; color:var(--navy); }
+.btn.sec{ background:#fff; color:var(--navy); box-shadow:none; }
+.btn:active{ transform:translateY(1px); }
 .btn:disabled{ opacity:.6; cursor:default; }
 .btn svg{ width:18px; height:18px; flex-shrink:0; }
-.list{ list-style:none; margin:14px 0 0; padding:0; }
+.lhead{ display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+.lhead h3{ margin:0; font-size:.95rem; color:var(--navy); letter-spacing:.01em; }
+.lhead span{ font-size:.76rem; font-weight:700; color:var(--muted); background:var(--soft); border-radius:999px; padding:3px 10px; }
+.list{ list-style:none; margin:0; padding:0; }
 .row{
-  display:grid; grid-template-columns:1fr auto auto auto; align-items:center; gap:8px;
+  display:grid; grid-template-columns:46px 1fr auto 42px 40px; align-items:center; gap:10px;
   padding:10px 0; border-bottom:1px solid var(--soft);
 }
 .row:last-child{ border-bottom:none; }
-.d b{ display:block; font-size:1rem; }
-.d small{ color:var(--muted); font-size:.78rem; }
-.badge{ padding:3px 11px; border-radius:999px; font-size:.78rem; font-weight:700; }
+.dt{ width:46px; height:50px; border-radius:12px; background:#F3F6F9; display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1.1; }
+.dt b{ font-size:1.15rem; color:var(--navy); }
+.dt span{ font-size:.64rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+.row.is-leave .dt{ background:var(--lvbg); }
+.d b{ display:block; font-size:.98rem; }
+.d small{ color:var(--muted); font-size:.76rem; }
+.badge{ padding:3px 11px; border-radius:999px; font-size:.74rem; font-weight:700; }
 .badge.duty{ background:var(--okbg); color:var(--ok); }
 .badge.leave{ background:var(--lvbg); color:var(--lv); }
-.h{ min-width:40px; text-align:right; font-weight:800; color:var(--navy); }
+.h{ min-width:42px; text-align:right; font-weight:800; color:var(--navy); }
 .h.off{ color:#98A2B3; font-weight:600; }
 .flag{
-  width:40px; height:40px; border-radius:10px; border:1px solid var(--line); background:#fff; color:#667085;
+  width:40px; height:40px; border-radius:11px; border:1px solid var(--line); background:#fff; color:#667085;
   display:inline-flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
 }
+.flag:active{ background:var(--soft); }
 .flag svg{ width:18px; height:18px; }
+@media (max-width:370px){ .row{ grid-template-columns:44px 1fr auto 38px; } .flag{ display:none; } }
 .empty,.msg{ color:var(--muted); text-align:center; padding:22px 8px; }
-.state{ text-align:center; padding:28px 10px; }
-.state h2{ margin:10px 0 6px; color:var(--navy); font-size:1.3rem; }
+.state{ text-align:center; padding:30px 12px 24px; }
+.state h2{ margin:14px 0 6px; color:var(--navy); font-size:1.35rem; }
 .state p{ margin:0 auto; max-width:420px; color:var(--muted); }
-.state .ico{ width:54px; height:54px; margin:0 auto; border-radius:50%; background:#FDECEA; color:var(--danger); display:flex; align-items:center; justify-content:center; }
-.state .ico svg{ width:28px; height:28px; }
-.state .ico.ok{ background:var(--okbg); color:var(--ok); }
-footer{ text-align:center; color:var(--muted); font-size:.8rem; padding:6px 14px 22px; }
+.state .ico{ width:64px; height:64px; margin:0 auto; border-radius:50%; background:#FDECEA; color:var(--danger); display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 8px rgba(192,57,43,.07); }
+.state .ico svg{ width:30px; height:30px; }
+.state .ico.ok{ background:var(--okbg); color:var(--ok); box-shadow:0 0 0 8px rgba(21,154,134,.08); }
+.state .help{ margin-top:18px; font-size:.84rem; }
+.state .help a.btn{ display:inline-flex; flex:0 1 auto; margin-top:10px; text-decoration:none; color:var(--navy); background:#fff; box-shadow:none; }
+footer{ text-align:center; color:var(--muted); font-size:.78rem; padding:6px 14px 22px; }
+footer .sec{ display:inline-flex; align-items:center; gap:6px; font-weight:700; color:#475467; margin-bottom:4px; }
+footer .sec svg{ width:14px; height:14px; }
 footer a, .state a{ color:var(--navy); font-weight:700; }
 .ov{ position:fixed; inset:0; background:rgba(16,24,40,.55); display:flex; align-items:flex-end; justify-content:center; z-index:50; }
 .sheet{
@@ -102,18 +136,19 @@ footer a, .state a{ color:var(--navy); font-weight:700; }
   position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0)); transform:translateX(-50%);
   background:#0F172A; color:#fff; padding:11px 16px; border-radius:12px; font-weight:600; font-size:.9rem; z-index:70; max-width:92vw;
 }
-.skel{ height:14px; border-radius:7px; background:linear-gradient(90deg,#EEF1F4,#F8FAFB,#EEF1F4); margin:12px 0; }
+.skel{ height:14px; border-radius:7px; background:linear-gradient(90deg,#EEF1F4,#F8FAFB,#EEF1F4); background-size:200% 100%; animation:sk 1.2s linear infinite; margin:12px 0; }
+@keyframes sk{ 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 </style>
 </head>
 <body>
 <header class="bar">
-  <div class="brand">WORKTRACK<small>Attendance &amp; Workforce Management</small></div>
-  <span class="chip">View only</span>
+  <div class="brandrow"><div class="mark" aria-hidden="true"><img src="masum2.png" alt="" decoding="async" onerror="this.parentNode.textContent='M'"></div><div class="brand">WORKTRACK<small>Attendance &amp; Workforce Management</small></div></div>
+  <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>View only</span>
 </header>
 <main id="app" aria-live="polite">
   <div class="card"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;height:24px"></div><div class="skel"></div><div class="skel" style="width:85%"></div></div>
 </main>
-<footer>© Masum Cpex · <a href="mailto:info@masumcpex.com">info@masumcpex.com</a></footer>
+<footer><div class="byline"><img src="masum.webp" alt="" decoding="async" onerror="this.style.display='none'">Prepared by Masum Cpex</div><br><div class="sec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Secure view-only link</div><div>© <span id="yr">2026</span> Masum Cpex · <a href="mailto:info@masumcpex.com">info@masumcpex.com</a></div></footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -149,7 +184,8 @@ const TOKEN_OK = /^[A-Za-z0-9_-]{12,80}$/.test(token);
 let db = null, share = null, curYm = "";
 
 function unavailable(title, text){
-  app.innerHTML = `<div class="card"><div class="state"><div class="ico">${ICON_LOCK}</div><h2>${esc(title)}</h2><p>${esc(text)}</p></div></div>`;
+  app.innerHTML = `<div class="card hero"><div class="state"><div class="ico">${ICON_LOCK}</div><h2>${esc(title)}</h2><p>${esc(text)}</p>
+    <div class="help">Think this is a mistake? Ask the administrator for a new link.<br><a class="btn sec" href="mailto:${CONTACT}">Contact ${CONTACT}</a></div></div></div>`;
 }
 function toast(t){
   const el = document.createElement("div");
@@ -206,32 +242,46 @@ function render(){
   const st = stats(list);
   let updated = "";
   try{ if(share.updatedAt && share.updatedAt.toDate){ const u = share.updatedAt.toDate(); updated = "Last updated " + String(u.getDate()).padStart(2,"0") + " " + MONTHS[u.getMonth()].slice(0,3) + " " + u.getFullYear(); } }catch(_){}
+  const name = share.memberName || "";
+  const rate = (st.duty + st.leave) ? Math.round(st.duty / (st.duty + st.leave) * 100) : 0;
+  const avg = st.duty ? fmtH(st.hours / st.duty) : "0";
   app.innerHTML = `
-    <div class="card">
-      <p class="eyebrow">Shared Attendance</p>
-      <h1>${esc(share.memberName || "")}</h1>
-      ${updated ? `<p class="sub">${esc(updated)}</p>` : ""}
-      ${months.length ? `
-        <label class="fl" for="month">Month</label>
-        <select id="month">${months.map(m => `<option value="${m}"${m === curYm ? " selected" : ""}>${monthLabel(m)}</option>`).join("")}</select>
-        <div class="tiles">
-          <div class="tile"><b>${st.duty}</b><span>Work Days</span></div>
-          <div class="tile"><b>${st.leave}</b><span>Leave Days</span></div>
-          <div class="tile"><b>${fmtH(st.hours)}</b><span>Total Hours</span></div>
-        </div>
-        <div class="actions">
-          <button class="btn" id="pdfBtn">${ICON_DL}Download PDF</button>
-          <button class="btn sec" id="repBtn">${ICON_FLAG}Report an Issue</button>
-        </div>
-        <ul class="list" id="rows">${list.map(r => `
-          <li class="row">
-            <div class="d"><b>${dayLabel(r.d)}</b><small>${weekday(r.d)}</small></div>
-            <span class="badge ${r.s === "duty" ? "duty" : "leave"}">${r.s === "duty" ? "Present" : "Leave"}</span>
-            <span class="h${r.s === "duty" ? "" : " off"}">${r.s === "duty" ? fmtH(r.h) + "h" : "—"}</span>
-            <button class="flag" data-date="${r.d}" aria-label="Report an issue for ${fullLabel(r.d)}" title="Report an issue">${ICON_FLAG}</button>
-          </li>`).join("")}</ul>`
-      : `<div class="empty">No attendance records yet.</div>`}
-    </div>`;
+    <section class="card hero">
+      <div class="herotop">
+        <div class="avatar" aria-hidden="true">${esc((name.trim().charAt(0) || "?").toUpperCase())}</div>
+        <div><p class="eyebrow">Shared Attendance</p><h1>${esc(name)}</h1>${updated ? `<p class="sub">${esc(updated)}</p>` : ""}</div>
+      </div>
+      ${months.length ? `<label class="fl" for="month">Month</label>
+      <select id="month">${months.map(m => `<option value="${m}"${m === curYm ? " selected" : ""}>${monthLabel(m)}</option>`).join("")}</select>` : ""}
+    </section>
+    ${months.length ? `
+    <div class="tiles">
+      <div class="tile t-ok"><b>${st.duty}</b><span>Work Days</span></div>
+      <div class="tile t-lv"><b>${st.leave}</b><span>Leave Days</span></div>
+      <div class="tile"><b>${fmtH(st.hours)}</b><span>Total Hours</span></div>
+    </div>
+    <section class="card rate">
+      <div class="ratehead"><span>Attendance rate</span><b>${rate}%</b></div>
+      <div class="bar2" role="img" aria-label="Attendance rate ${rate} percent"><i style="width:${rate}%"></i></div>
+      <div class="ratefoot">Average ${avg}h per work day · ${monthLabel(curYm)}</div>
+    </section>
+    <div class="actions">
+      <button class="btn" id="pdfBtn">${ICON_DL}Download PDF</button>
+      <button class="btn sec" id="repBtn">${ICON_FLAG}Report an Issue</button>
+    </div>
+    <section class="card">
+      <div class="lhead"><h3>Daily Records</h3><span>${list.length} day${list.length === 1 ? "" : "s"}</span></div>
+      <ul class="list" id="rows">${list.map(r => {
+        const dd = r.d.slice(8, 10), mm = MONTHS[Number(r.d.slice(5, 7)) - 1].slice(0, 3);
+        return `
+        <li class="row${r.s === "duty" ? "" : " is-leave"}">
+          <div class="dt"><b>${dd}</b><span>${mm}</span></div>
+          <div class="d"><b>${weekday(r.d)}</b><small>${fullLabel(r.d)}</small></div>
+          <span class="badge ${r.s === "duty" ? "duty" : "leave"}">${r.s === "duty" ? "Present" : "Leave"}</span>
+          <span class="h${r.s === "duty" ? "" : " off"}">${r.s === "duty" ? fmtH(r.h) + "h" : "—"}</span>
+          <button class="flag" data-date="${r.d}" aria-label="Report an issue for ${fullLabel(r.d)}" title="Report an issue">${ICON_FLAG}</button>
+        </li>`; }).join("")}</ul>
+    </section>` : `<section class="card"><div class="empty">No attendance records yet.</div></section>`}`;
 }
 
 // ---- one set of delegated listeners (no per-row listeners) ----
@@ -375,9 +425,9 @@ async function downloadPdf(btn){
     const pdf = new window.jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const pages = wrap.querySelectorAll(".pdfp");
     for(let i = 0; i < pages.length; i++){
-      const canvas = await window.html2canvas(pages[i], { scale: 1.6, backgroundColor: "#ffffff", useCORS: true });
+      const canvas = await window.html2canvas(pages[i], { scale: 2.4, backgroundColor: "#ffffff", useCORS: true });
       if(i) pdf.addPage();
-      pdf.addImage(canvas.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, 210, 297);
+      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, 297, undefined, "FAST");
     }
     const safe = String(share.memberName).replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") || "member";
     pdf.save("attendance-" + safe + "-" + curYm + ".pdf");
@@ -390,6 +440,7 @@ async function downloadPdf(btn){
   }
 }
 
+document.getElementById("yr").textContent = new Date().getFullYear();
 load();
 </script>
 </body>

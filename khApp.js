@@ -568,7 +568,25 @@ export function initKhApp(uid, isAdmin){
     const myLabel = ownerLabelFor(uid);
     const avatarEl = wrap.querySelector("#khYouAvatar");
     avatarEl.style.background = avatarColorFor(uid);
-    avatarEl.textContent = (myLabel || "?").trim().charAt(0).toUpperCase();
+    const youLetter = (myLabel || "?").trim().charAt(0).toUpperCase();
+    avatarEl.textContent = youLetter;
+    // Show the signed-in Google account's photo (only this card; team members keep their first letter).
+    const acctImg = document.getElementById("khAccountAvatarImg");
+    const photoSrc = acctImg ? (acctImg.getAttribute("src") || "") : "";
+    if(photoSrc){
+      avatarEl.textContent = "";
+      const im = document.createElement("img");
+      im.alt = ""; im.referrerPolicy = "no-referrer"; im.decoding = "async";
+      im.style.cssText = "width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;";
+      im.onerror = () => { avatarEl.textContent = youLetter; };
+      im.src = photoSrc;
+      avatarEl.appendChild(im);
+    }
+    if(acctImg && !acctImg.dataset.khYouWatch){
+      acctImg.dataset.khYouWatch = "1";
+      // The account photo is set after sign-in; refresh the YOU card once it arrives.
+      new MutationObserver(() => renderAdminOverview()).observe(acctImg, { attributes: true, attributeFilter: ["src"] });
+    }
     wrap.querySelector("#khYouName").textContent = myLabel;
     wrap.querySelector("#khYouStats").textContent = `${myStats.hours}h • ${myStats.duty} Duty • ${myStats.leave} Leave`;
     const ids = otherOwnerIds();

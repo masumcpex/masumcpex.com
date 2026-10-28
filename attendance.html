@@ -56,7 +56,8 @@
 /* loading splash */
 #wtSplash{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:linear-gradient(160deg,#0F1B2D 0%,#16385F 100%);color:#fff;text-align:center;transition:opacity .35s ease,visibility .35s ease}
 #wtSplash.is-out{opacity:0;visibility:hidden;pointer-events:none}
-#wtSplash .sp-badge{width:76px;height:76px;border-radius:22px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font:800 34px/1 'Inter',system-ui,sans-serif;letter-spacing:-1px}
+#wtSplash .sp-badge{min-width:96px;height:96px;padding:0 16px;border-radius:26px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font:800 40px/1 'Inter',system-ui,sans-serif;letter-spacing:-1px;color:#173B63}
+#wtSplash .sp-badge img{height:58px;width:auto;max-width:170px;display:block;object-fit:contain}
 #wtSplash .sp-name{font:800 26px/1.1 'Inter',system-ui,sans-serif;letter-spacing:.3px}
 #wtSplash .sp-name span{color:#7FD6B0}
 #wtSplash .sp-sub{font:500 13px/1.4 'Inter',system-ui,sans-serif;opacity:.7;letter-spacing:.4px}
@@ -71,7 +72,7 @@ body:not(.wt-loaded) .site-footer{display:none}
 </head>
 <body>
 <div id="wtSplash" role="status" aria-live="polite" aria-label="Loading WorkTrack">
-  <div class="sp-badge">M</div>
+  <div class="sp-badge"><img src="masum2.png" alt="" decoding="async" onerror="this.parentNode.textContent='M'"></div>
   <div class="sp-name">Masum <span>Cpex</span></div>
   <div class="sp-sub">WorkTrack &middot; Attendance &amp; Workforce Management</div>
   <div class="sp-bar"><i></i></div>

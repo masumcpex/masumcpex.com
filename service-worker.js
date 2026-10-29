@@ -5,7 +5,7 @@
   - The shared view-only attendance page (/attendanceview/) is never intercepted or cached.
   - Pages are network-first, but if the network is slow (> 3 s) a saved copy is shown instead of waiting.
 */
-const SW_VERSION   = "v2.1.0";
+const SW_VERSION   = "v2.3.0";
 const STATIC_CACHE = `masumcpex-static-${SW_VERSION}`;
 const PAGES_CACHE  = `masumcpex-pages-${SW_VERSION}`;
 const OFFLINE_URL  = "offline.html";

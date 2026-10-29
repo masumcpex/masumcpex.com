@@ -13,7 +13,7 @@ export async function guardPrivatePage({ contentId, signOutBtnId, onReady }) {
   const contentEl = document.getElementById(contentId);
 
   function redirectHome() {
-    window.location.href = "unpublished.html";
+    window.location.href = "hidden.html";
   }
 
   const hexKey = getActiveSessionKey();

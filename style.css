@@ -736,3 +736,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 .pc-modal-alt{ display:flex; flex-direction:column; gap:.5rem; margin-top:1.1rem; padding-top:1rem; border-top:1px solid var(--line-soft); font-size:.85rem; color: var(--muted); }
 .pc-modal-alt a{ display:inline-flex; align-items:center; justify-content:center; gap:.45rem; color: var(--teal); font-weight:700; text-decoration:none; padding:.55rem .8rem; border:1px solid rgba(14,110,92,.28); border-radius:12px; }
 @media (max-width:560px){ .pc-book{ flex-direction:column; align-items:flex-start; } .pc-book-btn{ width:100%; text-align:center; } .pc-badge{ margin-left:0; } }
+
+/* hidden-name placeholder: looks blurred, real name is not in the page */
+.pc-name{ display:inline-block; filter: blur(5px); -webkit-user-select:none; user-select:none; pointer-events:none; opacity:.9; }

@@ -66,6 +66,12 @@ export function getActiveSessionKey() {
   }
 }
 
+export async function unlockWithPassword(password) {
+  const hexKey = await verifyPassword(password);
+  if (hexKey) { saveSession(hexKey); return true; }
+  return false;
+}
+
 export function clearSession() {
   localStorage.removeItem(SESSION_KEY);
 }

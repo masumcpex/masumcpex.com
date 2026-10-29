@@ -681,3 +681,58 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 /* calmer entrance: only the photo fades in; text and buttons are simply there */
 .hero-name,.hero-role,.hero-tagline,.hero .btn{ animation:none; }
 @media (prefers-reduced-motion: reduce){ *,*::before,*::after{ animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
+
+
+/* ---- About page polish & real photo ---- */
+.hero-photo{ object-position: 50% 16%; background: linear-gradient(160deg,#DCEFE9,#F3F8F6); }
+.about-photo{ background: linear-gradient(160deg,#DCEFE9,#F3F8F6); object-fit: cover; object-position: 50% 16%; aspect-ratio: 3 / 4; }
+.about-focus{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 0 0 2rem; }
+.focus-card{ background:#fff; border:1px solid var(--line-soft); border-radius:14px; padding:1.1rem 1.1rem 1rem; box-shadow: var(--shadow-md); }
+.focus-card h3{ margin:0 0 .35rem; font-size:1.02rem; color: var(--teal); }
+.focus-card p{ margin:0; color: var(--muted); font-size:.9rem; line-height:1.65; }
+.about-links{ display:flex; flex-wrap:wrap; gap:.7rem; margin-top:1.8rem; }
+@media (max-width:680px){
+  .about-focus{ grid-template-columns: 1fr; }
+  .about-photo{ width:140px; }
+  .about-links .btn{ flex:1 1 100%; text-align:center; }
+}
+
+
+/* ---- Unrevealed Chapter: teaser list, password popup, book box ---- */
+.pc-count{ color: var(--muted); font-size:.92rem; margin: .2rem 0 1.4rem; }
+.pc-card{ align-items:flex-start; gap:.8rem; }
+.pc-main{ display:block; flex:1; min-width:0; }
+.pc-top{ display:flex; align-items:center; flex-wrap:wrap; gap:.35rem .6rem; }
+.pc-top .private-chapter-num{ margin-right:0; }
+.pc-title{ font-weight:700; font-size:1.05rem; }
+.pc-badge{ margin-left:auto; display:inline-flex; align-items:center; gap:.3rem; font-size:.72rem; font-weight:700; color: var(--teal); background: rgba(14,110,92,.09); border:1px solid rgba(14,110,92,.22); padding:.18rem .6rem; border-radius:999px; }
+.pc-teaser{ display:block; margin-top:.5rem; color: var(--muted); font-size:.92rem; line-height:1.7; font-weight:400; }
+.pc-blur{ filter: blur(3.5px); -webkit-user-select:none; user-select:none; opacity:.85; }
+.pc-arrow{ align-self:center; font-size:1.2rem; }
+.pc-soon{ opacity:.7; cursor:default; border-style:dashed; }
+.pc-soon:hover{ transform:none; box-shadow:none; }
+.pc-unlocked{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:.8rem; margin:0 0 1rem; color: var(--teal); font-weight:600; font-size:.92rem; }
+.pc-unlocked[hidden]{ display:none; }
+.pc-key{ color: var(--muted); font-size:.88rem; margin-top:1.2rem; }
+.pc-key a{ color: var(--teal); font-weight:700; }
+.pc-book{ display:flex; align-items:center; gap:1rem; flex-wrap:wrap; text-align:left; background: linear-gradient(135deg,#F6FBF9,#EEF6F3); border:1px solid rgba(14,110,92,.25); border-radius:16px; padding:1rem 1.1rem; margin-top:1.6rem; box-shadow: var(--shadow-md); }
+.pc-book-ic{ width:46px; height:46px; border-radius:12px; background: var(--teal); color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.pc-book-body{ flex:1; min-width:180px; display:flex; flex-direction:column; gap:.2rem; }
+.pc-book-body b{ color: var(--teal); font-size:1rem; }
+.pc-book-body span{ color: var(--muted); font-size:.88rem; line-height:1.6; }
+.pc-book-btn{ margin-top:0 !important; white-space:nowrap; }
+.pc-book-wrap{ margin-top:1.4rem; }
+.pc-lock-scroll{ overflow:hidden; }
+.pc-modal[hidden]{ display:none; }
+.pc-modal{ position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center; padding:1rem; }
+.pc-modal-backdrop{ position:absolute; inset:0; background: rgba(15,27,45,.62); backdrop-filter: blur(3px); }
+.pc-modal-box{ position:relative; width:100%; max-width:400px; background:#fff; border-radius:20px; padding:1.6rem 1.3rem 1.3rem; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); max-height:92vh; overflow-y:auto; }
+.pc-modal-x{ position:absolute; top:.7rem; right:.8rem; border:none; background:none; font-size:1.1rem; color: var(--muted); cursor:pointer; padding:.3rem; }
+.pc-modal-lock{ width:54px; height:54px; margin:0 auto .6rem; border-radius:50%; background: rgba(14,110,92,.1); color: var(--teal); display:flex; align-items:center; justify-content:center; }
+.pc-modal-box h3{ margin:0 0 .3rem; font-size:1.25rem; }
+.pc-modal-sub{ margin:0 0 1rem; color: var(--muted); font-size:.92rem; }
+.pc-modal-box .private-password-input{ width:100%; }
+.pc-open{ width:100%; margin-top:.7rem; }
+.pc-modal-alt{ display:flex; flex-direction:column; gap:.5rem; margin-top:1.1rem; padding-top:1rem; border-top:1px solid var(--line-soft); font-size:.85rem; color: var(--muted); }
+.pc-modal-alt a{ display:inline-flex; align-items:center; justify-content:center; gap:.45rem; color: var(--teal); font-weight:700; text-decoration:none; padding:.55rem .8rem; border:1px solid rgba(14,110,92,.28); border-radius:12px; }
+@media (max-width:560px){ .pc-book{ flex-direction:column; align-items:flex-start; } .pc-book-btn{ width:100%; text-align:center; } .pc-badge{ margin-left:0; } }

@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>মাসুম | Masum Cpex</title>
-<meta name="description" content="মাসুম বিল্লাহর ব্যক্তিগত ডিজিটাল প্ল্যাটফর্ম — লেখা, বই, গল্প, জার্নাল, প্রজেক্ট ও জীবনের নানা অভিজ্ঞতার একটি নিজস্ব সংগ্রহ।">
+<title>মাসুম বিল্লাহ — লেখক | Masum Cpex</title>
+<meta name="description" content="লেখক মাসুম বিল্লাহর ওয়েবসাইট — ফ্রি ই-বুক, জার্নাল, প্রবন্ধ ও স্মার্ট টুলস। জীবনের অনুভূতি আর বাস্তব শিক্ষার এক নিজস্ব সংগ্রহ।">
 
-<meta property="og:title" content="মাসুম | Masum Cpex">
-<meta property="og:description" content="মাসুম বিল্লাহর ব্যক্তিগত ডিজিটাল প্ল্যাটফর্ম — লেখা, বই, গল্প, জার্নাল, প্রজেক্ট ও জীবনের নানা অভিজ্ঞতার একটি নিজস্ব সংগ্রহ।">
+<meta property="og:title" content="মাসুম বিল্লাহ — লেখক | Masum Cpex">
+<meta property="og:description" content="লেখক মাসুম বিল্লাহর ওয়েবসাইট — ফ্রি ই-বুক, জার্নাল, প্রবন্ধ ও স্মার্ট টুলস। জীবনের অনুভূতি আর বাস্তব শিক্ষার এক নিজস্ব সংগ্রহ।">
 <meta property="og:image" content="https://masumcpex.com/masum.webp">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://masumcpex.com">
@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="/bdflag.webp" type="image/webp">
 <link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="https://masumcpex.com/">
 <meta name="theme-color" content="#0E6E5C">
 <meta name="color-scheme" content="light">
 <link rel="apple-touch-icon" href="/bdflag.webp">
@@ -147,7 +148,13 @@
         <img class="about-photo" id="aboutPhoto" src="" alt="Masum">
         <div class="about-text" id="aboutText"></div>
       </div>
+      <div class="about-focus" id="aboutFocus"></div>
       <div class="stat-row" id="aboutStats"></div>
+      <div class="about-links">
+        <a class="btn btn-primary" href="#library">আমার বইসমূহ</a>
+        <a class="btn btn-outline" href="https://t.me/masumcpex" target="_blank" rel="noopener">Telegram চ্যানেল</a>
+        <a class="btn btn-outline" href="mailto:admin@masumcpex.com">ইমেইল করুন</a>
+      </div>
     </div>
   </section>
 
@@ -197,27 +204,21 @@
 
   <section class="page" id="private-chapters">
     <div class="page-inner narrow center">
-
-      <div class="private-gate" id="homePasswordStep">
-        <div class="eyebrow">Private</div>
-        <h2 class="section-title"> ব্যক্তিগত অধ্যায়</h2>
-        <p class="section-sub">এই অংশটি শুধুমাত্র নির্দিষ্ট পাসওয়ার্ডধারীদের জন্য উন্মুক্ত।</p>
-        <input type="password" id="homePasswordInput" placeholder="Enter private password" class="private-password-input">
-        <button type="button" class="btn btn-primary" id="homePasswordBtn"> প্রবেশ করুন</button>
-        <p class="private-gate-status" id="homePrivateGateStatus" style="display:none;"></p>
-      </div>
-
-      <div id="homePrivateContent" style="display:none;">
-        <div class="eyebrow">Private</div>
-        <h2 class="section-title"> বাস্তবতার অন্ধকার পৃষ্ঠা</h2>
-        <p class="section-sub">আমার জীবনের কিছু বাস্তব ঘটনা, স্মৃতি, কষ্ট ও না-বলা কথা।</p>
-        <p class="chapter-count-line"> 4টি অপ্রকাশিত অধ্যায়</p>
-        <a href="unpublished.html" class="btn btn-outline">বিস্তারিত দেখুন</a>
-        <div class="private-signout-row">
-          <button type="button" class="btn btn-outline" id="homePrivateSignOutBtn"> Logout</button>
+      <div class="eyebrow">Unrevealed Chapter</div>
+      <h2 class="section-title">বাস্তবতার অন্ধকার পৃষ্ঠা</h2>
+      <p class="section-sub">আমার জীবনের কিছু বাস্তব ঘটনা, স্মৃতি, কষ্ট ও না-বলা কথা — যা আগে কখনো বলা হয়নি।</p>
+      <p class="pc-count">৪টি অধ্যায় · প্রতিটিতে একাধিক গল্প · আরও আসছে</p>
+      <a href="unpublished.html" class="btn btn-primary">ভেতরে প্রবেশ করুন →</a>
+      <div class="pc-book-wrap">
+        <div class="pc-book">
+          <span class="pc-book-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5A2.5 2.5 0 0 1 6.5 19H20"/></svg></span>
+          <div class="pc-book-body">
+            <b>এই গল্পগুলো নিয়ে লেখা আমার বই</b>
+            <span>“চলার পথে আমার গল্প” এখন Google Play Books এ। চাবি ছাড়াই পড়তে পারবেন।</span>
+          </div>
+          <a class="btn btn-primary pc-book-btn" href="https://play.google.com/store/books/details/Masum_%E0%A6%9A%E0%A6%B2_%E0%A6%B0_%E0%A6%AA%E0%A6%A5_%E0%A6%86%E0%A6%AE_%E0%A6%B0_%E0%A6%97%E0%A6%B2_%E0%A6%AA_Cholar_pothe_Amar_Golpo?id=YuTkEQAAQBAJ" target="_blank" rel="noopener noreferrer">বইটি দেখুন</a>
         </div>
       </div>
-
     </div>
   </section>
 
@@ -246,13 +247,7 @@
                 <a href="mailto:admin@masumcpex.com">admin@masumcpex.com</a>
               </span>
             </li>
-            <li class="contact-item" data-copy="contact@masumcpex.com">
-              <span class="ci-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></span>
-              <span class="ci-text">
-                <span class="ci-label">Alternative Email</span>
-                <a href="mailto:contact@masumcpex.com">contact@masumcpex.com</a>
-              </span>
-            </li>
+            
             <li class="contact-item" data-copy="https://masumcpex.com">
               <span class="ci-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
               <span class="ci-text">
@@ -343,17 +338,5 @@
 <script src="script.js"></script>
 <script src="contact.js"></script>
 <script src="/pwa.js" defer></script>
-
-<script type="module">
-  import { initPrivateGate } from "./private-access.js";
-  initPrivateGate({
-    passwordStepId: "homePasswordStep",
-    contentId: "homePrivateContent",
-    passwordInputId: "homePasswordInput",
-    passwordSubmitBtnId: "homePasswordBtn",
-    signOutBtnId: "homePrivateSignOutBtn",
-    statusId: "homePrivateGateStatus"
-  });
-</script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>বাস্তবতার অন্ধকার পৃষ্ঠা |Masum</title>
+<title>বাস্তবতার অন্ধকার পৃষ্ঠা | Masum</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -43,62 +43,146 @@
 <main>
   <section class="page" style="display:block;">
     <div class="page-inner narrow center">
+      <div class="eyebrow">Unrevealed Chapter</div>
+      <h2 class="section-title">বাস্তবতার অন্ধকার পৃষ্ঠা</h2>
+      <p class="section-sub">আমার জীবনের কিছু বাস্তব ঘটনা, স্মৃতি, কষ্ট ও না-বলা কথা। প্রতিটি অধ্যায়ের ভেতরে আছে একাধিক গল্প।</p>
+      <p class="pc-count">৪টি অধ্যায় · প্রতিটিতে একাধিক গল্প · আরও আসছে</p>
 
-      <p id="idxLoading" style="color:var(--muted);">লোড হচ্ছে…</p>
-
-      <!-- কনটেন্ট: guard পাস করলেই দেখা যাবে -->
-      <div id="idxPrivateContent" style="display:none;">
-        <div class="eyebrow">Private</div>
-        <h2 class="section-title"> বাস্তবতার অন্ধকার পৃষ্ঠা</h2>
-        <p class="section-sub">আমার জীবনের কিছু বাস্তব ঘটনা, স্মৃতি, কষ্ট ও না-বলা কথা।</p>
-
-        <ul class="private-chapter-list">
-          <li>
-            <a class="private-chapter-card" href="nasir.html">
-              <span><span class="private-chapter-num">01</span> নাসির অধ্যায়</span>
-              <span>→</span>
-            </a>
-          </li>
-          <li>
-            <a class="private-chapter-card" href="nazim.html">
-              <span><span class="private-chapter-num">02</span> নাজিম অধ্যায়</span>
-              <span>→</span>
-            </a>
-          </li>
-          <li>
-            <a class="private-chapter-card" href="hafsa.html">
-              <span><span class="private-chapter-num">03</span> হাফসা অধ্যায়</span>
-              <span>→</span>
-            </a>
-          </li>
-          <li>
-            <a class="private-chapter-card" href="amar-golpo.html">
-              <span><span class="private-chapter-num">04</span> আমার কথা</span>
-              <span>→</span>
-            </a>
-          </li>
-        </ul>
-
-        <div class="private-signout-row">
-          <button type="button" class="btn btn-outline" id="idxPrivateSignOutBtn"> Logout</button>
-        </div>
+      <div class="pc-unlocked" id="pcUnlocked" hidden>
+        <span>✓ আপনি এখন সব অধ্যায় পড়তে পারবেন।</span>
+        <button type="button" class="btn btn-outline" id="pcLogout">Logout</button>
       </div>
 
+      <ul class="private-chapter-list">
+          <li>
+            <a class="private-chapter-card pc-card" href="nasir.html" data-chapter="অধ্যায় ০১">
+              <span class="pc-main">
+                <span class="pc-top"><span class="private-chapter-num">01</span><span class="pc-title">অধ্যায় ০১</span><span class="pc-badge"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>তালাবদ্ধ</span></span>
+                <span class="pc-teaser">কিছু সম্পর্ক, অনেক না-বলা কথা। <span class="pc-blur">যা কখনো কাউকে বলা হয়নি, আজ প্রথমবার লিখে রাখা…</span></span>
+              </span>
+              <span class="pc-arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="private-chapter-card pc-card" href="nazim.html" data-chapter="অধ্যায় ০২">
+              <span class="pc-main">
+                <span class="pc-top"><span class="private-chapter-num">02</span><span class="pc-title">অধ্যায় ০২</span><span class="pc-badge"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>তালাবদ্ধ</span></span>
+                <span class="pc-teaser">কিছু স্মৃতি মুছে যায় না। <span class="pc-blur">সময় পেরিয়ে গেলেও রয়ে যায় বুকের ভেতর, নিঃশব্দে…</span></span>
+              </span>
+              <span class="pc-arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="private-chapter-card pc-card" href="hafsa.html" data-chapter="অধ্যায় ০৩">
+              <span class="pc-main">
+                <span class="pc-top"><span class="private-chapter-num">03</span><span class="pc-title">অধ্যায় ০৩</span><span class="pc-badge"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>তালাবদ্ধ</span></span>
+                <span class="pc-teaser">একটি নাম, কয়েকটি পাতা। <span class="pc-blur">আর তার ভেতরে লুকিয়ে থাকা অনেকটা নীরবতা…</span></span>
+              </span>
+              <span class="pc-arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="private-chapter-card pc-card" href="amar-golpo.html" data-chapter="আমার কথা">
+              <span class="pc-main">
+                <span class="pc-top"><span class="private-chapter-num">04</span><span class="pc-title">আমার কথা</span><span class="pc-badge"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>তালাবদ্ধ</span></span>
+                <span class="pc-teaser">বাকিদের গল্পের পর, এবার আমার নিজের কথা। <span class="pc-blur">যেভাবে আমি দেখেছি, সয়েছি আর শিখেছি…</span></span>
+              </span>
+              <span class="pc-arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+          <li>
+            <div class="private-chapter-card pc-card pc-soon" aria-disabled="true">
+              <span class="pc-main">
+                <span class="pc-top"><span class="private-chapter-num">05</span><span class="pc-title">???</span><span class="pc-badge"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>শিগগিরই</span></span>
+                <span class="pc-teaser"><span class="pc-blur">নতুন একটি অধ্যায় লেখা হচ্ছে…</span></span>
+              </span>
+            </div>
+          </li>
+      </ul>
+
+      <div class="pc-book">
+          <span class="pc-book-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5A2.5 2.5 0 0 1 6.5 19H20"/></svg></span>
+          <div class="pc-book-body">
+            <b>এই গল্পগুলো নিয়ে লেখা আমার বই</b>
+            <span>“চলার পথে আমার গল্প” এখন Google Play Books এ। চাবি ছাড়াই পড়তে পারবেন।</span>
+          </div>
+          <a class="btn btn-primary pc-book-btn" href="https://play.google.com/store/books/details/Masum_%E0%A6%9A%E0%A6%B2_%E0%A6%B0_%E0%A6%AA%E0%A6%A5_%E0%A6%86%E0%A6%AE_%E0%A6%B0_%E0%A6%97%E0%A6%B2_%E0%A6%AA_Cholar_pothe_Amar_Golpo?id=YuTkEQAAQBAJ" target="_blank" rel="noopener noreferrer">বইটি দেখুন</a>
+        </div>
+
+      <p class="pc-key">অধ্যায় পড়তে চাবি (পাসওয়ার্ড) লাগবে। চাবি চাইলে <a href="https://t.me/masumcpex" target="_blank" rel="noopener noreferrer">Telegram এ লিখুন</a>।</p>
     </div>
   </section>
 </main>
+
+<div class="pc-modal" id="pcModal" hidden>
+  <div class="pc-modal-backdrop" data-close></div>
+  <div class="pc-modal-box" role="dialog" aria-modal="true" aria-labelledby="pcModalTitle">
+    <button type="button" class="pc-modal-x" data-close aria-label="বন্ধ করুন">✕</button>
+    <div class="pc-modal-lock"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <h3 id="pcModalTitle">চাবি লাগবে</h3>
+    <p class="pc-modal-sub" id="pcModalSub">এই অধ্যায় পড়তে পাসওয়ার্ড দিন।</p>
+    <input type="password" id="pcPassword" class="private-password-input" placeholder="Enter private password" autocomplete="current-password">
+    <p class="private-gate-status" id="pcStatus" style="display:none;"></p>
+    <button type="button" class="btn btn-primary pc-open" id="pcOpen">খুলুন</button>
+    <div class="pc-modal-alt">
+      <span>পাসওয়ার্ড নেই?</span>
+      <a href="https://play.google.com/store/books/details/Masum_%E0%A6%9A%E0%A6%B2_%E0%A6%B0_%E0%A6%AA%E0%A6%A5_%E0%A6%86%E0%A6%AE_%E0%A6%B0_%E0%A6%97%E0%A6%B2_%E0%A6%AA_Cholar_pothe_Amar_Golpo?id=YuTkEQAAQBAJ" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5A2.5 2.5 0 0 1 6.5 19H20"/></svg>বইটি Google Play তে পড়ুন</a>
+      <a href="https://t.me/masumcpex" target="_blank" rel="noopener noreferrer">Telegram এ চাবি চান</a>
+    </div>
+  </div>
+</div>
 
 <footer class="site-footer">
   <p>© 2026 <b>Masum Cpex</b>. All Rights Reserved.</p>
 </footer>
 
 <script type="module">
-  import { guardPrivatePage } from "./private-guard.js";
-  guardPrivatePage({
-    contentId: "idxPrivateContent",
-    signOutBtnId: "idxPrivateSignOutBtn",
-    onReady: () => { document.getElementById("idxLoading").style.display = "none"; }
+  import { getActiveSessionKey, unlockWithPassword, clearSession } from "./private-access.js";
+
+  const modal = document.getElementById("pcModal");
+  const pw = document.getElementById("pcPassword");
+  const statusEl = document.getElementById("pcStatus");
+  const openBtn = document.getElementById("pcOpen");
+  const sub = document.getElementById("pcModalSub");
+  const unlocked = document.getElementById("pcUnlocked");
+  let target = "";
+
+  function status(msg){
+    if(!msg){ statusEl.style.display = "none"; statusEl.textContent = ""; return; }
+    statusEl.textContent = msg; statusEl.style.display = "block"; statusEl.classList.add("private-gate-error");
+  }
+  function openModal(href, title){
+    target = href; sub.textContent = title + " পড়তে পাসওয়ার্ড দিন।";
+    pw.value = ""; status(""); modal.hidden = false; document.body.classList.add("pc-lock-scroll");
+    setTimeout(() => pw.focus(), 50);
+  }
+  function closeModal(){ modal.hidden = true; document.body.classList.remove("pc-lock-scroll"); }
+
+  document.querySelectorAll("[data-chapter]").forEach(a => {
+    a.addEventListener("click", e => {
+      if(getActiveSessionKey()) return;            // already unlocked: open normally
+      e.preventDefault();
+      openModal(a.getAttribute("href"), a.dataset.chapter);
+    });
   });
+  modal.addEventListener("click", e => { if(e.target.hasAttribute("data-close")) closeModal(); });
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && !modal.hidden) closeModal(); });
+
+  async function tryOpen(){
+    const val = (pw.value || "").trim();
+    if(!val){ status("Password লিখুন।"); return; }
+    openBtn.disabled = true; openBtn.textContent = "যাচাই হচ্ছে…";
+    try{
+      if(await unlockWithPassword(val)){ window.location.href = target; return; }
+      status("Password সঠিক নয়। আবার চেষ্টা করুন।");
+    } finally { openBtn.disabled = false; openBtn.textContent = "খুলুন"; }
+  }
+  openBtn.addEventListener("click", tryOpen);
+  pw.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); tryOpen(); } });
+
+  function showUnlocked(){ unlocked.hidden = !getActiveSessionKey(); }
+  showUnlocked();
+  document.getElementById("pcLogout").addEventListener("click", () => { clearSession(); showUnlocked(); });
 </script>
 <script src="/pwa.js" defer></script>
 </body>

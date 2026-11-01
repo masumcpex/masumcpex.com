@@ -2549,7 +2549,7 @@ export function initKhApp(uid, isAdmin){
 
     try{
       // Sharper text: up to 3x, lowered automatically for long reports so phones don't run out of canvas memory.
-      const hdScale = Math.max(2, Math.min(2.5, Math.sqrt(14500000 / (wrap.offsetWidth * wrap.scrollHeight))));
+      const hdScale = Math.max(2, Math.min(4, Math.sqrt(20000000 / (wrap.offsetWidth * wrap.scrollHeight))));
       const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#ffffff", logging:false });
       const { jsPDF } = window.jspdf;
 
@@ -2607,7 +2607,7 @@ export function initKhApp(uid, isAdmin){
         const g = c.getContext("2d");
         g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
         g.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
-        return c.toDataURL("image/jpeg", 0.95);
+        return c.toDataURL("image/jpeg", 0.98);
       };
 
       pages.forEach((pg, idx) => {
@@ -2653,7 +2653,9 @@ export function initKhApp(uid, isAdmin){
       .kh-sal-row .nm small{ font-weight:500; opacity:.65; font-size:.76rem; }
       .kh-sal-row .inp{ display:flex; align-items:center; gap:6px; }
       .kh-sal-row .inp em{ font-style:normal; font-size:.8rem; opacity:.7; font-weight:700; }
-      .kh-sal-row input{ width:84px; padding:9px 8px; border-radius:10px; border:1.5px solid rgba(128,128,128,.4); background:transparent; color:inherit; font-size:1rem; font-weight:700; text-align:right; font-family:inherit; }
+      .kh-sal-step{ width:34px; height:36px; border-radius:10px; border:1.5px solid rgba(128,128,128,.4); background:rgba(15,118,106,.1); color:inherit; font-size:1.2rem; font-weight:800; line-height:1; cursor:pointer; touch-action:manipulation; -webkit-user-select:none; user-select:none; font-family:inherit; }
+      .kh-sal-step:active{ background:rgba(15,118,106,.28); }
+      .kh-sal-row input{ width:72px; padding:9px 8px; border-radius:10px; border:1.5px solid rgba(128,128,128,.4); background:transparent; color:inherit; font-size:1rem; font-weight:700; text-align:right; font-family:inherit; }
       .kh-sal-row input.is-bad{ border-color:#D64545; }
       .kh-sal-note{ font-size:.76rem; opacity:.65; margin:0 0 12px; line-height:1.5; }
       .kh-sal-go{ background:#0F766A !important; color:#fff !important; border-color:#0F766A !important; }
@@ -2695,7 +2697,7 @@ export function initKhApp(uid, isAdmin){
             const cur = rateFor(r.member, ym);
             return `<label class="kh-sal-row">
               <span class="nm">${escapeHtml(r.name)}<small>${fmtHours(r.hours)} h · ${r.days} days</small></span>
-              <span class="inp"><em>RM</em><input type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-i="${i}" value="${cur ? cur : ""}"><em>/h</em></span>
+              <span class="inp"><em>RM</em><button type="button" class="kh-sal-step" data-i="${i}" data-step="-0.1" aria-label="Decrease rate">−</button><input type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-i="${i}" value="${cur ? cur.toFixed(2) : ""}"><button type="button" class="kh-sal-step" data-i="${i}" data-step="0.1" aria-label="Increase rate">+</button><em>/h</em></span>
             </label>`;
           }).join("")}
         </div>
@@ -2708,7 +2710,26 @@ export function initKhApp(uid, isAdmin){
     const first = overlay.querySelector("input");
     if(first) setTimeout(() => first.focus(), 60);
 
-    const close = () => { if(overlay.parentNode) overlay.parentNode.removeChild(overlay); };
+    // − / + buttons: one tap = 0.10, hold to keep changing
+    let holdT = null, holdI = null;
+    const stepInput = btn => {
+      const inp = overlay.querySelector(`input[data-i="${btn.dataset.i}"]`);
+      if(!inp) return;
+      const v = parseFloat(inp.value) || 0;
+      inp.value = Math.max(0, Math.round((v + Number(btn.dataset.step)) * 100) / 100).toFixed(2);
+      inp.classList.remove("is-bad");
+    };
+    const stopHold = () => { clearTimeout(holdT); clearInterval(holdI); holdT = holdI = null; };
+    overlay.addEventListener("pointerdown", e => {
+      const b = e.target.closest(".kh-sal-step");
+      if(!b) return;
+      e.preventDefault();
+      stepInput(b);
+      holdT = setTimeout(() => { holdI = setInterval(() => stepInput(b), 90); }, 400);
+    });
+    ["pointerup", "pointercancel"].forEach(ev => { overlay.addEventListener(ev, stopHold); window.addEventListener(ev, stopHold); });
+
+    const close = () => { stopHold(); if(overlay.parentNode) overlay.parentNode.removeChild(overlay); };
     overlay.addEventListener("click", async e => {
       if(e.target === overlay){ close(); return; }
       const b = e.target.closest("[data-act]");
@@ -2997,7 +3018,7 @@ export function initKhApp(uid, isAdmin){
       pdf.text(`Page ${pageNum} of ${totalPages}`, pageWidthMM - 16, y + 4, { align: "right" });
     }
 
-    const hdScale = Math.max(2, Math.min(2.5, Math.sqrt(14500000 / (wrap.offsetWidth * wrap.scrollHeight))));
+    const hdScale = Math.max(2, Math.min(4, Math.sqrt(20000000 / (wrap.offsetWidth * wrap.scrollHeight))));
     const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#ffffff", logging:false });
     const { jsPDF } = window.jspdf;
     const A4_WIDTH_MM = 210, A4_HEIGHT_MM = 297;
@@ -3047,7 +3068,7 @@ export function initKhApp(uid, isAdmin){
       const g = c.getContext("2d");
       g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
       g.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
-      return c.toDataURL("image/jpeg", 0.95);
+      return c.toDataURL("image/jpeg", 0.98);
     };
     pages.forEach((pg, idx) => {
       if(idx > 0) pdf.addPage();

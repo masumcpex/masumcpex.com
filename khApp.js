@@ -2636,8 +2636,20 @@ export function initKhApp(uid, isAdmin){
     if(typeof monthly === "number" && monthly > 0) return monthly;
     return (member && typeof member.rate === "number" && member.rate > 0) ? member.rate : 0;
   }
+  // Exact-money helpers: rates keep up to 4 decimals (e.g. 9.375); only the final amounts are rounded to sen.
+  const round2 = x => Math.round((Number(x) || 0) * 100 + 1e-7) / 100;
+  const round4 = x => Math.round((Number(x) || 0) * 10000 + 1e-7) / 10000;
+  function fmtRate(n){
+    let t = round4(n).toFixed(4);
+    t = t.replace(/0+$/, "");
+    if(/\.\d$/.test(t)) t += "0";
+    if(t.endsWith(".")) t += "00";
+    return t;
+  }
+  const fmtRateRM = n => "RM " + fmtRate(n);
   function fmtMoneyRM(n){
-    return "RM " + (Number(n) || 0).toLocaleString("en-US", { minimumFractionDigits:2, maximumFractionDigits:2 });
+    const v = Number(n) || 0;
+    return (v < 0 ? "− " : "") + "RM " + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits:2, maximumFractionDigits:2 });
   }
   function ensureSalaryStyle(){
     if(document.getElementById("khSalaryStyle")) return;
@@ -2668,7 +2680,7 @@ export function initKhApp(uid, isAdmin){
     const map = {};
     recs.forEach(r => {
       const o = map[r.member] || (map[r.member] = { name:r.member, days:0, leave:0, hours:0, daily:[] });
-      if(r.status === "duty"){ o.days++; const h = Number(r.hours) || 0; o.hours += h; o.daily.push({ d:r.date, h }); }
+      if(r.status === "duty"){ o.days++; const h = Number(r.hours) || 0; o.hours = round4(o.hours + h); o.daily.push({ d:r.date, h }); }
       else o.leave++;
     });
     return Object.keys(map).sort((a, b) => a.localeCompare(b)).map(n => {
@@ -2697,7 +2709,7 @@ export function initKhApp(uid, isAdmin){
             const cur = rateFor(r.member, ym);
             return `<label class="kh-sal-row">
               <span class="nm">${escapeHtml(r.name)}<small>${fmtHours(r.hours)} h · ${r.days} days</small></span>
-              <span class="inp"><em>RM</em><button type="button" class="kh-sal-step" data-i="${i}" data-step="-0.1" aria-label="Decrease rate">−</button><input type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-i="${i}" value="${cur ? cur.toFixed(2) : ""}"><button type="button" class="kh-sal-step" data-i="${i}" data-step="0.1" aria-label="Increase rate">+</button><em>/h</em></span>
+              <span class="inp"><em>RM</em><button type="button" class="kh-sal-step" data-i="${i}" data-step="-0.1" aria-label="Decrease rate">−</button><input type="number" inputmode="decimal" min="0" step="any" placeholder="0.00" data-i="${i}" value="${cur ? fmtRate(cur) : ""}"><button type="button" class="kh-sal-step" data-i="${i}" data-step="0.1" aria-label="Increase rate">+</button><em>/h</em></span>
             </label>`;
           }).join("")}
         </div>
@@ -2716,7 +2728,7 @@ export function initKhApp(uid, isAdmin){
       const inp = overlay.querySelector(`input[data-i="${btn.dataset.i}"]`);
       if(!inp) return;
       const v = parseFloat(inp.value) || 0;
-      inp.value = Math.max(0, Math.round((v + Number(btn.dataset.step)) * 100) / 100).toFixed(2);
+      inp.value = fmtRate(Math.max(0, round4(v + Number(btn.dataset.step))));
       inp.classList.remove("is-bad");
     };
     const stopHold = () => { clearTimeout(holdT); clearInterval(holdI); holdT = holdI = null; };
@@ -2744,7 +2756,7 @@ export function initKhApp(uid, isAdmin){
         const ok = isFinite(v) && v > 0;
         inp.classList.toggle("is-bad", !ok && single);
         if(!ok && single) bad = true;
-        return ok ? Math.round(v * 100) / 100 : 0;
+        return ok ? round4(v) : 0;
       });
       if(bad){ showToast("Please enter the hourly rate.", "error"); return; }
       close();
@@ -2785,16 +2797,17 @@ export function initKhApp(uid, isAdmin){
 
     // numbers per member
     rows.forEach(r => {
-      r.gross = Math.round(r.hours * (r.rate || 0) * 100) / 100;
+      r.gross = round2(r.hours * (r.rate || 0));
       const adv = advanceStatsFor(r.member, ym);
       r.advTaken = adv.taken; r.advDeducted = adv.deducted; r.advBalance = adv.balance;
-      r.net = Math.round((r.gross - r.advDeducted) * 100) / 100;
+      r.advTaken = round2(r.advTaken); r.advDeducted = round2(r.advDeducted); r.advBalance = round2(r.advBalance);
+      r.net = round2(r.gross - r.advDeducted);
       r.attRate = pct(r.days, r.days + r.leave);
       r.avg = r.days ? r.hours / r.days : 0;
     });
     const T = rows.reduce((t, r) => ({
       hours: t.hours + r.hours, days: t.days + r.days, leave: t.leave + r.leave,
-      gross: t.gross + r.gross, ded: t.ded + r.advDeducted, net: t.net + r.net
+      gross: round2(t.gross + r.gross), ded: round2(t.ded + r.advDeducted), net: round2(t.net + r.net)
     }), { hours:0, days:0, leave:0, gross:0, ded:0, net:0 });
 
     const panel = (label, big, body) => `
@@ -2833,7 +2846,7 @@ export function initKhApp(uid, isAdmin){
       const takeHome = r.gross > 0 ? Math.max(0, Math.min(100, Math.round(r.net / r.gross * 100))) : 0;
       const dedPct = r.gross > 0 ? Math.max(0, Math.min(100 - takeHome, Math.round(r.advDeducted / r.gross * 100))) : 0;
       const sh = m ? activeShareFor(m.id) : null;
-      const rateText = r.rate > 0 ? fmtMoneyRM(r.rate) : "Not set";
+      const rateText = r.rate > 0 ? fmtRateRM(r.rate) : "Not set";
 
       bodyHtml = `
         <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:12px; margin-bottom:14px;">
@@ -2849,7 +2862,7 @@ export function initKhApp(uid, isAdmin){
         <div style="display:flex; gap:10px; margin-bottom:16px;">
           ${kpi("Total Hours", `${fmtHours(r.hours)} h`, `${r.days} work days`)}
           ${kpi("Hourly Rate", rateText, "per hour")}
-          ${kpi("Gross Salary", fmtMoneyRM(r.gross), `${fmtHours(r.hours)} h × ${r.rate > 0 ? fmtMoneyRM(r.rate) : "—"}`, PDF_BLUE)}
+          ${kpi("Gross Salary", fmtMoneyRM(r.gross), `${fmtHours(r.hours)} h × ${r.rate > 0 ? fmtRateRM(r.rate) : "—"}`, PDF_BLUE)}
           ${kpi("Net Payable", fmtMoneyRM(r.net), "after advance deduction", PDF_GREEN)}
         </div>
 
@@ -2858,7 +2871,7 @@ export function initKhApp(uid, isAdmin){
           <table class="pdf-table">
             <thead><tr><th class="pdf-th pdf-th-left">Description</th><th class="pdf-th pdf-th-left">Calculation</th><th class="pdf-th pdf-th-right">Amount</th></tr></thead>
             <tbody>
-              <tr><td class="pdf-td pdf-td-left" style="font-weight:700;">Gross salary</td><td class="pdf-td pdf-td-left" style="color:${PDF_MUTED};">${fmtHours(r.hours)} h × ${r.rate > 0 ? fmtMoneyRM(r.rate) : "rate not set"}</td><td class="pdf-td pdf-td-right" style="font-weight:700;">${fmtMoneyRM(r.gross)}</td></tr>
+              <tr><td class="pdf-td pdf-td-left" style="font-weight:700;">Gross salary</td><td class="pdf-td pdf-td-left" style="color:${PDF_MUTED};">${fmtHours(r.hours)} h × ${r.rate > 0 ? fmtRateRM(r.rate) : "rate not set"}</td><td class="pdf-td pdf-td-right" style="font-weight:700;">${fmtMoneyRM(r.gross)}</td></tr>
               <tr><td class="pdf-td pdf-td-left" style="font-weight:700;">Advance deducted</td><td class="pdf-td pdf-td-left" style="color:${PDF_MUTED};">Recorded in ${monthLabel(ym)}</td><td class="pdf-td pdf-td-right" style="font-weight:700; color:${PDF_AMBER};">− ${fmtMoneyRM(r.advDeducted)}</td></tr>
             </tbody>
             <tfoot><tr class="pdf-tfoot-row"><td class="pdf-td pdf-td-left" style="font-weight:800; font-size:11px;" colspan="2">Net Payable</td><td class="pdf-td pdf-td-right" style="font-weight:800; font-size:12px; color:${PDF_GREEN};">${fmtMoneyRM(r.net)}</td></tr></tfoot>
@@ -2925,7 +2938,7 @@ export function initKhApp(uid, isAdmin){
               ${rows.map(r => `<tr>
                 <td class="pdf-td pdf-td-left" style="font-weight:700;">${escapeHtml(r.name)}</td>
                 <td class="pdf-td">${r.days}</td><td class="pdf-td">${fmtHours(r.hours)}</td>
-                <td class="pdf-td">${r.rate > 0 ? (r.rate).toFixed(2) : "—"}</td>
+                <td class="pdf-td">${r.rate > 0 ? fmtRate(r.rate) : "—"}</td>
                 <td class="pdf-td pdf-td-right">${r.rate > 0 ? fmtMoneyRM(r.gross) : "—"}</td>
                 <td class="pdf-td pdf-td-right" style="color:${PDF_AMBER};">${r.advDeducted > 0 ? "− " + fmtMoneyRM(r.advDeducted) : "—"}</td>
                 <td class="pdf-td pdf-td-right" style="font-weight:800; color:${PDF_GREEN};">${r.rate > 0 ? fmtMoneyRM(r.net) : "—"}</td>
@@ -2945,7 +2958,7 @@ export function initKhApp(uid, isAdmin){
           <div style="display:flex; gap:10px;">
             ${panel("Attendance rate", `${teamAtt}%`, `${bar(teamAtt, PDF_GREEN)}<div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:6px;">${T.days} present · ${T.leave} leave</div>`)}
             ${panel("Take-home", T.gross > 0 ? `${takeHome}%` : "—", `<div style="display:flex; height:7px; border-radius:6px; overflow:hidden; background:${PDF_BORDER};"><div style="width:${takeHome}%; background:${PDF_GREEN};"></div><div style="width:${dedPct}%; background:${PDF_AMBER};"></div></div><div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:6px;">${dedPct}% advance deducted</div>`)}
-            ${panel("Average rate", avgRate > 0 ? fmtMoneyRM(avgRate) : "—", `<div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:2px;">per hour, weighted by hours</div>`)}
+            ${panel("Average rate", avgRate > 0 ? fmtRateRM(avgRate) : "—", `<div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:2px;">per hour, weighted by hours</div>`)}
           </div>
         </div>
 

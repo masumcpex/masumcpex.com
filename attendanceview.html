@@ -66,6 +66,21 @@ select:focus,textarea:focus{ outline:none; border-color:var(--navy); box-shadow:
 .bar2{ height:8px; border-radius:8px; background:var(--soft); overflow:hidden; margin:8px 0 6px; }
 .bar2 i{ display:block; height:100%; border-radius:8px; background:linear-gradient(90deg,#16A085,#22C55E); }
 .ratefoot{ font-size:.75rem; color:var(--muted); }
+.earn{ border-top:4px solid var(--ok); }
+.earnhead{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.earn-ic{ width:40px; height:40px; border-radius:12px; background:var(--okbg); color:var(--ok); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.earn-ic svg{ width:22px; height:22px; }
+.earnhead h3{ margin:0; font-size:1.05rem; color:var(--navy); }
+.earnhead p{ margin:2px 0 0; font-size:.78rem; color:var(--muted); }
+.earn-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.earn-grid > div{ background:#F6F8FA; border:1px solid var(--line); border-radius:14px; padding:12px; min-width:0; }
+.earn-grid > div.take{ background:linear-gradient(135deg,#0F766A,#14917F); border-color:#0F766A; color:#fff; }
+.earn-grid span{ display:block; font-size:.66rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; opacity:.78; }
+.earn-grid b{ display:block; font-size:1.22rem; margin:4px 0 2px; color:inherit; overflow-wrap:anywhere; }
+.earn-grid > div:not(.take) b{ color:var(--navy); }
+.earn-grid small{ font-size:.72rem; opacity:.78; }
+.earn-note{ margin:0 0 12px; font-size:.74rem; color:var(--muted); }
+.earn-btn{ width:100%; flex:none; }
 .actions{ display:flex; flex-wrap:wrap; gap:10px; }
 .btn{
   flex:1 1 150px; min-height:50px; border-radius:13px; border:1.5px solid var(--navy); background:var(--navy); color:#fff;
@@ -176,6 +191,11 @@ const dayLabel = d => { const [y,m,dd] = d.split("-").map(Number); return String
 const fullLabel = d => dayLabel(d) + " " + d.slice(0,4);
 const weekday = d => { const [y,m,dd] = d.split("-").map(Number); return new Date(y, m-1, dd).toLocaleDateString("en-US", { weekday: "long" }); };
 const monthLabel = ym => MONTHS[Number(ym.slice(5,7)) - 1] + " " + ym.slice(0,4);
+const moneyRM = n => { const v = Number(n) || 0; return (v < 0 ? "− " : "") + "RM " + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+const rateTxt = n => { let t = (Math.round((Number(n) || 0) * 10000) / 10000).toFixed(4).replace(/0+$/, ""); if(/\.\d$/.test(t)) t += "0"; if(t.endsWith(".")) t += "00"; return t; };
+const ekey = ym => "m" + ym.replace("-", "");
+const ICON_EARN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 10v.01M18 14v.01"/></svg>';
+
 
 const params = new URLSearchParams(location.search);
 const token = params.get("token") || "";
@@ -245,6 +265,7 @@ function render(){
   const name = share.memberName || "";
   const rate = (st.duty + st.leave) ? Math.round(st.duty / (st.duty + st.leave) * 100) : 0;
   const avg = st.duty ? fmtH(st.hours / st.duty) : "0";
+  const eg = months.length ? earningsFor(curYm) : null;
   app.innerHTML = `
     <section class="card hero">
       <div class="herotop">
@@ -265,6 +286,15 @@ function render(){
       <div class="bar2" role="img" aria-label="Attendance rate ${rate} percent"><i style="width:${rate}%"></i></div>
       <div class="ratefoot">Average ${avg}h per work day · ${monthLabel(curYm)}</div>
     </section>
+    ${eg ? `<section class="card earn">
+      <div class="earnhead"><span class="earn-ic">${ICON_EARN}</span><div><h3>My Earnings</h3><p>${monthLabel(curYm)}</p></div></div>
+      <div class="earn-grid">
+        <div><span>Total Earned</span><b>${moneyRM(eg.gross)}</b><small>${fmtH(eg.hours)} h × RM ${rateTxt(eg.rate)}</small></div>
+        <div class="take"><span>Take-home</span><b>${moneyRM(eg.net)}</b><small>after advance cut</small></div>
+      </div>
+      <p class="earn-note">Calculated from recorded attendance hours. For reference only.</p>
+      <button class="btn sec earn-btn" id="earnBtn">${ICON_DL}Download Earnings Summary</button>
+    </section>` : ""}
     <div class="actions">
       <button class="btn" id="pdfBtn">${ICON_DL}Download PDF</button>
       <button class="btn sec" id="repBtn">${ICON_FLAG}Report an Issue</button>
@@ -293,6 +323,7 @@ app.addEventListener("click", e => {
   if(f){ openReport(f.dataset.date); return; }
   if(e.target.closest("#repBtn")) openReport("");
   else if(e.target.closest("#pdfBtn")) downloadPdf(e.target.closest("#pdfBtn"));
+  else if(e.target.closest("#earnBtn")) downloadEarnings(e.target.closest("#earnBtn"));
 });
 
 // ---- Report an issue ----
@@ -382,6 +413,99 @@ function loadScript(src){
     document.head.appendChild(s);
   });
 }
+  // Shared by the app and the share page: builds the "Earnings Summary" sections (each one a direct child of the page).
+function buildEarningsSections(E){
+  const INK = "#172033", MUTED = "#667085", BORDER = "#E4E7EC", LIGHT = "#F8FAFC", BLUE = "#0F4C81", GREEN = "#0F766A", AMBER = "#D97706";
+  const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+  const hrs = n => String(Math.round((Number(n) || 0) * 100) / 100);
+  const money = n => { const v = Number(n) || 0; return (v < 0 ? "− " : "") + "RM " + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits:2, maximumFractionDigits:2 }); };
+  const rateStr = n => { let t = (Math.round((Number(n) || 0) * 10000) / 10000).toFixed(4).replace(/0+$/, ""); if(/\.\d$/.test(t)) t += "0"; if(t.endsWith(".")) t += "00"; return t; };
+  const rateRM = n => "RM " + rateStr(n);
+  const pct = (a, b) => b > 0 ? Math.round(a / b * 100) : 0;
+  const MN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const [yy, mm] = E.ym.split("-");
+  const monthName = MN[Number(mm) - 1] + " " + yy;
+  const mon3 = MN[Number(mm) - 1].slice(0, 3);
+  const dim = new Date(Number(yy), Number(mm), 0).getDate();
+  const period = `01 ${mon3} ${yy} — ${String(dim).padStart(2, "0")} ${mon3} ${yy}`;
+  const bar = (v, color, h) => `<div style="height:${h || 7}px; background:${BORDER}; border-radius:6px; overflow:hidden;"><div style="height:100%; width:${Math.max(0, Math.min(100, v))}%; background:${color}; border-radius:6px;"></div></div>`;
+  const heading = t => `<div style="display:flex; align-items:center; gap:8px; margin:0 0 10px;"><div style="width:3px; height:15px; background:${BLUE}; border-radius:2px;"></div><div style="font-size:13px; font-weight:700; color:${INK};">${t}</div></div>`;
+  const panel = (label, big, body) => `<div style="flex:1; background:${LIGHT}; border:1px solid ${BORDER}; border-radius:10px; padding:13px 13px 12px;"><div style="font-size:8.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:${MUTED};">${label}</div><div style="font-size:22px; font-weight:800; color:${INK}; margin:5px 0 7px;">${big}</div>${body}</div>`;
+  const kpi = (label, value, sub, dark) => `<div style="flex:1; border-radius:10px; padding:14px 12px; ${dark ? `background:${dark}; border:1px solid ${dark};` : `background:${LIGHT}; border:1px solid ${BORDER};`}"><div style="font-size:8.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:${dark ? "rgba(255,255,255,.78)" : MUTED};">${label}</div><div style="font-size:18px; font-weight:800; color:${dark ? "#fff" : INK}; margin:5px 0 2px;">${value}</div><div style="font-size:8.5px; color:${dark ? "rgba(255,255,255,.78)" : MUTED};">${sub}</div></div>`;
+  const pd = d => { const x = new Date(d + "T00:00:00"); return String(x.getDate()).padStart(2, "0") + " " + MN[x.getMonth()].slice(0, 3); };
+
+  const takeHome = E.gross > 0 ? Math.max(0, Math.min(100, Math.round(E.net / E.gross * 100))) : 0;
+  const cutPct = E.gross > 0 ? Math.max(0, Math.min(100 - takeHome, Math.round(E.ded / E.gross * 100))) : 0;
+  const weeks = E.weeks || [];
+  const maxWeek = Math.max(1, ...weeks.map(w => w.h));
+  const rateOk = E.rate > 0;
+
+  const css = `<style>
+    .earn-root .pdf-table{ width:100%; border-collapse:collapse; font-size:10px; }
+    .earn-root .pdf-th{ background:${BLUE}; color:#fff; padding:9px 10px; text-align:center; font-weight:600; text-transform:uppercase; font-size:8.5px; letter-spacing:.04em; }
+    .earn-root .pdf-th-left{ text-align:left; } .earn-root .pdf-th-right{ text-align:right; }
+    .earn-root .pdf-td{ padding:9px 10px; text-align:center; border-bottom:1px solid ${BORDER}; line-height:1.4; font-size:10px; }
+    .earn-root .pdf-td-left{ text-align:left; } .earn-root .pdf-td-right{ text-align:right; }
+    .earn-root .pdf-tfoot-row td{ background:${LIGHT}; border-bottom:none; border-top:1px solid ${BORDER}; }
+    .earn-root tr{ height:32px; }
+  </style>`;
+
+  return css + `
+    <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom:1px solid ${BORDER}; margin-bottom:20px;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <img src="masum.png" style="height:42px; object-fit:contain;" crossorigin="anonymous">
+        <div><div style="font-size:13px; font-weight:800; color:${INK}; letter-spacing:.03em;">WORKTRACK</div><div style="font-size:9px; color:${MUTED};">Attendance &amp; Workforce Management</div></div>
+      </div>
+      <div style="text-align:right;"><div style="font-size:11px; font-weight:800; color:${BLUE}; letter-spacing:.05em;">EARNINGS SUMMARY</div><div style="font-size:9px; color:${MUTED}; margin-top:2px;">${monthName}</div></div>
+    </div>
+    <div style="margin-bottom:16px;"><div style="font-size:23px; font-weight:800; color:${INK};">Earnings Summary</div><div style="font-size:10.5px; color:${MUTED}; margin-top:3px;">${period}</div></div>
+    <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; background:${LIGHT}; border:1px solid ${BORDER}; border-radius:12px; margin-bottom:14px;">
+      <div style="width:44px; height:44px; border-radius:50%; background:${BLUE}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:800; flex-shrink:0;">${esc((E.name.trim().charAt(0) || "?").toUpperCase())}</div>
+      <div style="flex:1;"><div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; color:${MUTED};">MEMBER</div><div style="font-size:18px; font-weight:800; color:${INK};">${esc(E.name)}</div><div style="font-size:9px; color:${MUTED};">Monthly earnings overview — ${monthName}</div></div>
+      <div style="text-align:right;"><div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; color:${MUTED};">REFERENCE</div><div style="font-size:11px; font-weight:800; color:${INK};">${esc(E.rid)}</div></div>
+    </div>
+    <div style="display:flex; gap:10px; margin-bottom:16px;">
+      ${kpi("Total Hours", `${hrs(E.hours)} h`, `${E.days} work days`)}
+      ${kpi("Hourly Rate", rateOk ? rateRM(E.rate) : "Not set", "per hour")}
+      ${kpi("Total Earned", money(E.gross), `${hrs(E.hours)} h × ${rateOk ? rateRM(E.rate) : "—"}`, BLUE)}
+      ${kpi("Take-home", money(E.net), "after advance cut", GREEN)}
+    </div>
+    <div style="margin-bottom:16px;">
+      ${heading("Earnings Breakdown")}
+      <table class="pdf-table">
+        <thead><tr><th class="pdf-th pdf-th-left">Description</th><th class="pdf-th pdf-th-left">Calculation</th><th class="pdf-th pdf-th-right">Amount</th></tr></thead>
+        <tbody>
+          <tr><td class="pdf-td pdf-td-left" style="font-weight:700;">Total earned</td><td class="pdf-td pdf-td-left" style="color:${MUTED};">${hrs(E.hours)} h × ${rateOk ? rateRM(E.rate) : "rate not set"}</td><td class="pdf-td pdf-td-right" style="font-weight:700;">${money(E.gross)}</td></tr>
+          <tr><td class="pdf-td pdf-td-left" style="font-weight:700;">Advance cut</td><td class="pdf-td pdf-td-left" style="color:${MUTED};">Recorded in ${monthName}</td><td class="pdf-td pdf-td-right" style="font-weight:700; color:${AMBER};">− ${money(E.ded)}</td></tr>
+        </tbody>
+        <tfoot><tr class="pdf-tfoot-row"><td class="pdf-td pdf-td-left" style="font-weight:800; font-size:11px;" colspan="2">Take-home</td><td class="pdf-td pdf-td-right" style="font-weight:800; font-size:12px; color:${GREEN};">${money(E.net)}</td></tr></tfoot>
+      </table>
+      <div style="font-size:9px; color:${MUTED}; margin-top:7px;">Advance taken this month: ${money(E.taken)} &nbsp;·&nbsp; Remaining advance balance: <b style="color:${INK};">${money(E.balance)}</b></div>
+    </div>
+    <div style="margin-bottom:16px;">
+      ${heading("Performance Analysis")}
+      <div style="display:flex; gap:10px;">
+        ${panel("Attendance rate", `${E.att}%`, `${bar(E.att, GREEN)}<div style="font-size:8.5px; color:${MUTED}; margin-top:6px;">${E.days} present · ${E.leave} leave</div>`)}
+        ${panel("Take-home", E.gross > 0 ? `${takeHome}%` : "—", `<div style="display:flex; height:7px; border-radius:6px; overflow:hidden; background:${BORDER};"><div style="width:${takeHome}%; background:${GREEN};"></div><div style="width:${cutPct}%; background:${AMBER};"></div></div><div style="font-size:8.5px; color:${MUTED}; margin-top:6px;">${cutPct}% advance cut</div>`)}
+        ${panel("Average per day", `${hrs(Math.round(E.avg * 10) / 10)} h`, `<div style="font-size:8.5px; color:${MUTED}; margin-top:2px;">${E.longest ? `Longest: ${hrs(E.longest.h)} h on ${pd(E.longest.d)}` : "No work days"}</div>`)}
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      ${heading("Hours by Week")}
+      ${weeks.map(w => `<div style="display:flex; align-items:center; gap:10px; margin-bottom:7px;"><div style="width:62px; font-size:9px; color:${MUTED}; font-weight:600;">${mon3} ${w.l}</div><div style="flex:1;">${bar(Math.round(w.h / maxWeek * 100), BLUE, 8)}</div><div style="width:78px; text-align:right; font-size:9.5px; font-weight:700; color:${INK};">${hrs(w.h)} h <span style="color:${MUTED}; font-weight:600;">· ${pct(w.h, E.hours)}%</span></div></div>`).join("")}
+    </div>
+    ${E.linkUrl ? `<div id="khEarnLinkBox" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 14px; border:1px solid ${BORDER}; border-radius:10px; background:${LIGHT}; margin-bottom:16px;"><div><div style="font-size:10px; font-weight:700; color:${INK};">Daily attendance details</div><div style="font-size:8.5px; color:${MUTED}; margin-top:2px;">Day-by-day records are in the attendance report.</div></div><div style="font-size:9.5px; font-weight:700; color:${BLUE}; white-space:nowrap;">Open attendance report &rarr;</div></div>` : ""}
+    <div style="border-top:1px solid ${BORDER}; padding-top:9px; font-size:8.5px; color:${MUTED}; line-height:1.6;">Calculated from recorded attendance hours and the hourly rate. For reference only.</div>`;
+}
+
+// Earnings are shown only while they still match the attendance (otherwise the owner has changed something and must publish again).
+function earningsFor(ym){
+  const raw = share.earnings && share.earnings[ekey(ym)];
+  if(!raw || typeof raw !== "object" || !(Number(raw.rate) > 0)) return null;
+  const st = stats(monthRecords(ym));
+  if(Math.abs((Number(raw.hours) || 0) - st.hours) > 0.005 || raw.days !== st.duty || raw.leave !== st.leave) return null;
+  return raw;
+}
 function pdfPagesHtml(ym, list){
   const asc = list.slice().sort((a, b) => a.d.localeCompare(b.d));
   const st = stats(asc);
@@ -431,6 +555,46 @@ async function downloadPdf(btn){
     }
     const safe = String(share.memberName).replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") || "member";
     pdf.save("attendance-" + safe + "-" + curYm + ".pdf");
+  }catch(err){
+    console.error(err);
+    toast("Couldn't create the PDF. Please check your connection and try again.");
+  }finally{
+    if(wrap) wrap.remove();
+    btn.disabled = false; btn.innerHTML = old;
+  }
+}
+
+async function downloadEarnings(btn){
+  const raw = earningsFor(curYm);
+  if(!raw){ toast("Earnings are not available for this month."); return; }
+  const old = btn.innerHTML; btn.disabled = true; btn.textContent = "Preparing PDF...";
+  let wrap = null;
+  try{
+    await Promise.all([window.html2canvas ? 0 : loadScript(H2C), window.jspdf ? 0 : loadScript(JSPDF)]);
+    const E = {
+      name: share.memberName, ym: curYm, rate: raw.rate, hours: raw.hours, days: raw.days, leave: raw.leave, gross: raw.gross, ded: raw.ded, net: raw.net,
+      taken: raw.taken, balance: raw.balance, att: raw.att, avg: raw.avg, weeks: Array.isArray(raw.weeks) ? raw.weeks : [], longest: raw.longest || null, rid: raw.rid || "", linkUrl: ""
+    };
+    wrap = document.createElement("div");
+    wrap.className = "earn-root";
+    wrap.style.cssText = "position:fixed;left:-10000px;top:0;width:800px;background:#fff;padding:38px 34px 26px;font-family:Inter,'Hind Siliguri',system-ui,sans-serif;color:#172033;";
+    wrap.innerHTML = buildEarningsSections(E);
+    document.body.appendChild(wrap);
+    const canvas = await window.html2canvas(wrap, { scale: 3, backgroundColor: "#ffffff", useCORS: true, logging: false });
+    const pdf = new window.jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const availH = 275;                                   // keep clear of the footer
+    let w = 210, h = canvas.height / canvas.width * 210;
+    if(h > availH){ w = w * availH / h; h = availH; }
+    pdf.addImage(canvas.toDataURL("image/jpeg", 0.98), "JPEG", (210 - w) / 2, 0, w, h);
+    const gen = new Date(); const genTxt = String(gen.getDate()).padStart(2, "0") + " " + MONTHS[gen.getMonth()].slice(0, 3) + " " + gen.getFullYear();
+    pdf.setDrawColor(228, 231, 236); pdf.setLineWidth(0.2); pdf.line(16, 281, 194, 281);
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(7.5); pdf.setTextColor(23, 32, 51); pdf.text("masumcpex.com", 16, 286);
+    pdf.setFont("helvetica", "normal"); pdf.setTextColor(102, 112, 133);
+    pdf.text("Report ID: " + (E.rid || "-"), 105 - 15, 286);
+    pdf.text("Generated: " + genTxt, 194, 286, { align: "right" });
+    pdf.text("info@masumcpex.com", 16, 290);
+    const safe = String(share.memberName).replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") || "member";
+    pdf.save("earnings-summary-" + safe + "-" + curYm + ".pdf");
   }catch(err){
     console.error(err);
     toast("Couldn't create the PDF. Please check your connection and try again.");

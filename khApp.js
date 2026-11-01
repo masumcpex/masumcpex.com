@@ -2003,6 +2003,7 @@ export function initKhApp(uid, isAdmin){
         <p class="kh-reg-sheet-title">${monthLabel(ym)}</p>
         <p class="kh-reg-sheet-sub">${dayCount} ${dayCount === 1 ? "day" : "days"} · ${mo.records} ${mo.records === 1 ? "record" : "records"}</p>
         <button type="button" class="kh-reg-sheet-btn" data-act="pdf">${ICON_DOC}Download PDF Report</button>
+        <button type="button" class="kh-reg-sheet-btn" data-act="salary">${ICON_DOC}Salary PDF</button>
         <button type="button" class="kh-reg-sheet-btn" data-act="csv">${ICON_TABLE}Export CSV</button>
         <button type="button" class="kh-reg-sheet-btn is-danger" data-act="delete">${ICON_TRASH}Delete Month</button>
         <button type="button" class="kh-reg-sheet-btn is-cancel" data-act="cancel">Cancel</button>
@@ -2026,6 +2027,8 @@ export function initKhApp(uid, isAdmin){
       if(act === "pdf"){
         showToast(`Preparing ${monthLabel(ym)} PDF...`);
         exportMonthPdf(ym, document.createElement("button"));
+      }else if(act === "salary"){
+        openSalaryDialog(ym);
       }else if(act === "csv"){
         exportMonthCsv(ym, document.createElement("button"));
       }else if(act === "delete"){
@@ -2253,6 +2256,8 @@ export function initKhApp(uid, isAdmin){
   }
 
   // Top buttons: current month. Each month in the register has its own PDF/CSV buttons.
+  const downloadSalaryBtn = document.getElementById("downloadSalaryBtn");
+  if(downloadSalaryBtn) downloadSalaryBtn.addEventListener("click", () => { khBounce(downloadSalaryBtn); openSalaryDialog(currentYearMonth()); });
   downloadCsvBtn.addEventListener("click", () => exportMonthCsv(currentYearMonth(), downloadCsvBtn));
   downloadPdfBtn.addEventListener("click", () => exportMonthPdf(currentYearMonth(), downloadPdfBtn));
   // Header "Download Monthly Report" button: the month chosen in Monthly Summary (or the current month), all members.
@@ -2621,6 +2626,455 @@ export function initKhApp(uid, isAdmin){
       document.body.removeChild(wrap);
       document.body.removeChild(style);
     }
+  }
+
+
+  // ================= Salary PDF (hourly rate x hours, with analytics) =================
+  const rateKey = ym => "m" + ym.replace("-", "");
+  function rateFor(member, ym){
+    const monthly = member && member.rates && member.rates[rateKey(ym)];
+    if(typeof monthly === "number" && monthly > 0) return monthly;
+    return (member && typeof member.rate === "number" && member.rate > 0) ? member.rate : 0;
+  }
+  function fmtMoneyRM(n){
+    return "RM " + (Number(n) || 0).toLocaleString("en-US", { minimumFractionDigits:2, maximumFractionDigits:2 });
+  }
+  function ensureSalaryStyle(){
+    if(document.getElementById("khSalaryStyle")) return;
+    const st = document.createElement("style");
+    st.id = "khSalaryStyle";
+    st.textContent = `
+      .kh-sal{ max-width:430px; width:100%; max-height:88vh; overflow-y:auto; }
+      .kh-sal h3{ margin:0 0 2px; font-size:1.2rem; }
+      .kh-sal-sub{ margin:0 0 14px; font-size:.85rem; opacity:.7; }
+      .kh-sal-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:10px; }
+      .kh-sal-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; border:1px solid rgba(128,128,128,.28); border-radius:12px; }
+      .kh-sal-row .nm{ display:flex; flex-direction:column; min-width:0; font-weight:700; }
+      .kh-sal-row .nm small{ font-weight:500; opacity:.65; font-size:.76rem; }
+      .kh-sal-row .inp{ display:flex; align-items:center; gap:6px; }
+      .kh-sal-row .inp em{ font-style:normal; font-size:.8rem; opacity:.7; font-weight:700; }
+      .kh-sal-row input{ width:84px; padding:9px 8px; border-radius:10px; border:1.5px solid rgba(128,128,128,.4); background:transparent; color:inherit; font-size:1rem; font-weight:700; text-align:right; font-family:inherit; }
+      .kh-sal-row input.is-bad{ border-color:#D64545; }
+      .kh-sal-note{ font-size:.76rem; opacity:.65; margin:0 0 12px; line-height:1.5; }
+      .kh-sal-go{ background:#0F766A !important; color:#fff !important; border-color:#0F766A !important; }
+    `;
+    document.head.appendChild(st);
+  }
+
+  // One row per member who has records in the month.
+  function buildSalaryRows(ym, recs){
+    const map = {};
+    recs.forEach(r => {
+      const o = map[r.member] || (map[r.member] = { name:r.member, days:0, leave:0, hours:0, daily:[] });
+      if(r.status === "duty"){ o.days++; const h = Number(r.hours) || 0; o.hours += h; o.daily.push({ d:r.date, h }); }
+      else o.leave++;
+    });
+    return Object.keys(map).sort((a, b) => a.localeCompare(b)).map(n => {
+      const o = map[n];
+      o.member = members.find(m => m.name === n) || null;
+      return o;
+    });
+  }
+
+  function openSalaryDialog(ym, filterOverride){
+    const filter = filterOverride || filterMember.value;
+    const recs = getMonthRecordsForExport(ym, filter);
+    if(!recs.length){ alert(`No records for ${monthLabel(ym)} yet.`); return; }
+    const rows = buildSalaryRows(ym, recs);
+    ensureSalaryStyle();
+    const single = rows.length === 1;
+
+    const overlay = document.createElement("div");
+    overlay.className = "kh-modal-overlay";
+    overlay.innerHTML = `
+      <div class="kh-modal-card kh-sal" role="dialog" aria-modal="true" aria-label="Salary PDF">
+        <h3>Salary PDF</h3>
+        <p class="kh-sal-sub">${escapeHtml(monthLabel(ym))} · ${rows.length} ${rows.length === 1 ? "member" : "members"}</p>
+        <div class="kh-sal-list">
+          ${rows.map((r, i) => {
+            const cur = rateFor(r.member, ym);
+            return `<label class="kh-sal-row">
+              <span class="nm">${escapeHtml(r.name)}<small>${fmtHours(r.hours)} h · ${r.days} days</small></span>
+              <span class="inp"><em>RM</em><input type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-i="${i}" value="${cur ? cur : ""}"><em>/h</em></span>
+            </label>`;
+          }).join("")}
+        </div>
+        <p class="kh-sal-note">Enter the hourly rate. It is saved for this month and filled in automatically next time.</p>
+        <button type="button" class="kh-reg-sheet-btn kh-sal-go" data-act="go">${ICON_DOC}Generate Salary PDF</button>
+        <button type="button" class="kh-reg-sheet-btn is-cancel" data-act="cancel">Cancel</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.style.display = "flex";
+    const first = overlay.querySelector("input");
+    if(first) setTimeout(() => first.focus(), 60);
+
+    const close = () => { if(overlay.parentNode) overlay.parentNode.removeChild(overlay); };
+    overlay.addEventListener("click", async e => {
+      if(e.target === overlay){ close(); return; }
+      const b = e.target.closest("[data-act]");
+      if(!b) return;
+      if(b.dataset.act === "cancel"){ close(); return; }
+      if(b.dataset.act !== "go") return;
+
+      let bad = false;
+      const rates = rows.map((r, i) => {
+        const inp = overlay.querySelector(`input[data-i="${i}"]`);
+        const v = parseFloat(inp.value);
+        const ok = isFinite(v) && v > 0;
+        inp.classList.toggle("is-bad", !ok && single);
+        if(!ok && single) bad = true;
+        return ok ? Math.round(v * 100) / 100 : 0;
+      });
+      if(bad){ showToast("Please enter the hourly rate.", "error"); return; }
+      close();
+
+      // Remember the rates (private to the owner). A failed save must never block the PDF.
+      try{
+        for(let i = 0; i < rows.length; i++){
+          const m = rows[i].member;
+          if(m && rates[i] > 0 && rateFor(m, ym) !== rates[i]){
+            await updateDoc(doc(db, "kh_members", m.id), { rate: rates[i], ["rates." + rateKey(ym)]: rates[i] });
+          }
+        }
+      }catch(err){ console.error("rate save failed", err); showToast("PDF is ready, but the rate could not be saved.", "error"); }
+
+      rows.forEach((r, i) => { r.rate = rates[i]; });
+      showToast(`Preparing ${monthLabel(ym)} salary PDF...`);
+      try{
+        if(!(await ensurePdfLibs())){ alert("PDF generation library failed to load. Please check your internet connection and try again."); return; }
+        await generateSalaryPdf(ym, rows);
+      }catch(err){
+        console.error(err);
+        alert("Failed to generate the salary PDF. Please try again.");
+      }
+    });
+  }
+
+  async function generateSalaryPdf(ym, rows){
+    const PDF_BLUE = "#0F4C81", PDF_INK = "#172033", PDF_MUTED = "#667085", PDF_BORDER = "#E4E7EC", PDF_LIGHT = "#F8FAFC";
+    const PDF_GREEN = "#0F766A", PDF_AMBER = "#D97706";
+    const [yy, mm] = ym.split("-");
+    const daysInMonth = new Date(Number(yy), Number(mm), 0).getDate();
+    const mon3 = monthLabel(ym).split(" ")[0].slice(0, 3);
+    const periodLabel = `01 ${mon3} ${yy} — ${String(daysInMonth).padStart(2, "0")} ${mon3} ${yy}`;
+    const single = rows.length === 1;
+    const pct = (a, b) => b > 0 ? Math.round(a / b * 100) : 0;
+    const bar = (value, color, h) => `<div style="height:${h || 7}px; background:${PDF_BORDER}; border-radius:6px; overflow:hidden;"><div style="height:100%; width:${Math.max(0, Math.min(100, value))}%; background:${color}; border-radius:6px;"></div></div>`;
+    const prettyDate = d => new Date(d + "T00:00:00").toLocaleDateString("en-GB", { day:"2-digit", month:"short" });
+
+    // numbers per member
+    rows.forEach(r => {
+      r.gross = Math.round(r.hours * (r.rate || 0) * 100) / 100;
+      const adv = advanceStatsFor(r.member, ym);
+      r.advTaken = adv.taken; r.advDeducted = adv.deducted; r.advBalance = adv.balance;
+      r.net = Math.round((r.gross - r.advDeducted) * 100) / 100;
+      r.attRate = pct(r.days, r.days + r.leave);
+      r.avg = r.days ? r.hours / r.days : 0;
+    });
+    const T = rows.reduce((t, r) => ({
+      hours: t.hours + r.hours, days: t.days + r.days, leave: t.leave + r.leave,
+      gross: t.gross + r.gross, ded: t.ded + r.advDeducted, net: t.net + r.net
+    }), { hours:0, days:0, leave:0, gross:0, ded:0, net:0 });
+
+    const panel = (label, big, body) => `
+      <div style="flex:1; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:10px; padding:13px 13px 12px;">
+        <div style="font-size:8.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:${PDF_MUTED};">${label}</div>
+        <div style="font-size:22px; font-weight:800; color:${PDF_INK}; margin:5px 0 7px;">${big}</div>
+        ${body}
+      </div>`;
+    const kpi = (label, value, sub, dark) => `
+      <div style="flex:1; border-radius:10px; padding:14px 12px; ${dark ? `background:${dark}; border:1px solid ${dark};` : `background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER};`}">
+        <div style="font-size:8.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:${dark ? "rgba(255,255,255,.75)" : PDF_MUTED};">${label}</div>
+        <div style="font-size:18px; font-weight:800; color:${dark ? "#fff" : PDF_INK}; margin:5px 0 2px;">${value}</div>
+        <div style="font-size:8.5px; color:${dark ? "rgba(255,255,255,.75)" : PDF_MUTED};">${sub}</div>
+      </div>`;
+    const heading = t => `<div style="display:flex; align-items:center; gap:8px; margin:0 0 10px;"><div style="width:3px; height:15px; background:${PDF_BLUE}; border-radius:2px;"></div><div style="font-size:13px; font-weight:700; color:${PDF_INK};">${t}</div></div>`;
+
+    let reportId, bodyHtml, linkEls = [], fileName;
+    const clean3 = x => String(x || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 3) || "GEN";
+
+    if(single){
+      const r = rows[0];
+      const m = r.member;
+      reportId = `WT-S-${ym}-${clean3(m ? (m.memberId || m.name) : r.name)}`;
+      fileName = `salary-statement-${ym}-${r.name}.pdf`;
+
+      // weekly distribution
+      const weeks = [];
+      for(let w = 0; w < 5; w++){
+        const from = w * 7 + 1, to = Math.min(daysInMonth, w * 7 + 7);
+        if(from > daysInMonth) break;
+        weeks.push({ label: `${String(from).padStart(2, "0")}–${String(to).padStart(2, "0")}`, hours: 0 });
+      }
+      r.daily.forEach(x => { const w = Math.min(weeks.length - 1, Math.floor((Number(x.d.slice(8, 10)) - 1) / 7)); weeks[w].hours += x.h; });
+      const maxWeek = Math.max(1, ...weeks.map(w => w.hours));
+      const longest = r.daily.reduce((a, b) => (b.h > (a ? a.h : -1) ? b : a), null);
+      const takeHome = r.gross > 0 ? Math.max(0, Math.min(100, Math.round(r.net / r.gross * 100))) : 0;
+      const dedPct = r.gross > 0 ? Math.max(0, Math.min(100 - takeHome, Math.round(r.advDeducted / r.gross * 100))) : 0;
+      const sh = m ? activeShareFor(m.id) : null;
+      const rateText = r.rate > 0 ? fmtMoneyRM(r.rate) : "Not set";
+
+      bodyHtml = `
+        <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:12px; margin-bottom:14px;">
+          <div style="width:44px; height:44px; border-radius:50%; background:${PDF_BLUE}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:800; flex-shrink:0;">${escapeHtml((r.name.trim().charAt(0) || "?").toUpperCase())}</div>
+          <div style="flex:1;">
+            <div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; color:${PDF_MUTED};">EMPLOYEE</div>
+            <div style="font-size:18px; font-weight:800; color:${PDF_INK};">${escapeHtml(r.name)}</div>
+            <div style="font-size:9px; color:${PDF_MUTED};">Monthly Salary Statement — ${monthLabel(ym)}</div>
+          </div>
+          <div style="text-align:right;"><div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; color:${PDF_MUTED};">STATEMENT NO.</div><div style="font-size:11px; font-weight:800; color:${PDF_INK};">${reportId}</div></div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-bottom:16px;">
+          ${kpi("Total Hours", `${fmtHours(r.hours)} h`, `${r.days} work days`)}
+          ${kpi("Hourly Rate", rateText, "per hour")}
+          ${kpi("Gross Salary", fmtMoneyRM(r.gross), `${fmtHours(r.hours)} h × ${r.rate > 0 ? fmtMoneyRM(r.rate) : "—"}`, PDF_BLUE)}
+          ${kpi("Net Payable", fmtMoneyRM(r.net), "after advance deduction", PDF_GREEN)}
+        </div>
+
+        <div style="margin-bottom:16px;">
+          ${heading("Salary Breakdown")}
+          <table class="pdf-table">
+            <thead><tr><th class="pdf-th pdf-th-left">Description</th><th class="pdf-th pdf-th-left">Calculation</th><th class="pdf-th pdf-th-right">Amount</th></tr></thead>
+            <tbody>
+              <tr><td class="pdf-td pdf-td-left" style="font-weight:700;">Gross salary</td><td class="pdf-td pdf-td-left" style="color:${PDF_MUTED};">${fmtHours(r.hours)} h × ${r.rate > 0 ? fmtMoneyRM(r.rate) : "rate not set"}</td><td class="pdf-td pdf-td-right" style="font-weight:700;">${fmtMoneyRM(r.gross)}</td></tr>
+              <tr><td class="pdf-td pdf-td-left" style="font-weight:700;">Advance deducted</td><td class="pdf-td pdf-td-left" style="color:${PDF_MUTED};">Recorded in ${monthLabel(ym)}</td><td class="pdf-td pdf-td-right" style="font-weight:700; color:${PDF_AMBER};">− ${fmtMoneyRM(r.advDeducted)}</td></tr>
+            </tbody>
+            <tfoot><tr class="pdf-tfoot-row"><td class="pdf-td pdf-td-left" style="font-weight:800; font-size:11px;" colspan="2">Net Payable</td><td class="pdf-td pdf-td-right" style="font-weight:800; font-size:12px; color:${PDF_GREEN};">${fmtMoneyRM(r.net)}</td></tr></tfoot>
+          </table>
+          <div style="font-size:9px; color:${PDF_MUTED}; margin-top:7px;">Advance taken this month: ${fmtMoneyRM(r.advTaken)} &nbsp;·&nbsp; Remaining advance balance: <b style="color:${PDF_INK};">${fmtMoneyRM(r.advBalance)}</b></div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          ${heading("Performance Analysis")}
+          <div style="display:flex; gap:10px;">
+            ${panel("Attendance rate", `${r.attRate}%`, `${bar(r.attRate, PDF_GREEN)}<div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:6px;">${r.days} present · ${r.leave} leave</div>`)}
+            ${panel("Take-home", r.gross > 0 ? `${takeHome}%` : "—", `<div style="display:flex; height:7px; border-radius:6px; overflow:hidden; background:${PDF_BORDER};"><div style="width:${takeHome}%; background:${PDF_GREEN};"></div><div style="width:${dedPct}%; background:${PDF_AMBER};"></div></div><div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:6px;">${dedPct}% advance deducted</div>`)}
+            ${panel("Average per day", `${fmtHours(Math.round(r.avg * 10) / 10)} h`, `<div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:2px;">${longest ? `Longest: ${fmtHours(longest.h)} h on ${prettyDate(longest.d)}` : "No work days"}</div>`)}
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          ${heading("Hours by Week")}
+          ${weeks.map(w => `
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:7px;">
+              <div style="width:62px; font-size:9px; color:${PDF_MUTED}; font-weight:600;">${mon3} ${w.label}</div>
+              <div style="flex:1;">${bar(Math.round(w.hours / maxWeek * 100), PDF_BLUE, 8)}</div>
+              <div style="width:78px; text-align:right; font-size:9.5px; font-weight:700; color:${PDF_INK};">${fmtHours(w.hours)} h <span style="color:${PDF_MUTED}; font-weight:600;">· ${pct(w.hours, r.hours)}%</span></div>
+            </div>`).join("")}
+        </div>
+
+        ${sh ? `<div id="khSalaryLinkBox" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 14px; border:1px solid ${PDF_BORDER}; border-radius:10px; background:${PDF_LIGHT}; margin-bottom:18px;">
+          <div><div style="font-size:10px; font-weight:700; color:${PDF_INK};">Daily attendance details</div><div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:2px;">Day-by-day records are in the attendance report.</div></div>
+          <div style="font-size:9.5px; font-weight:700; color:${PDF_BLUE}; white-space:nowrap;">Open attendance report &rarr;</div>
+        </div>` : ""}
+
+        <div style="display:flex; gap:40px; margin-top:26px;">
+          <div style="flex:1;"><div style="height:34px; border-bottom:1px solid ${PDF_INK};"></div><div style="font-size:9px; color:${PDF_MUTED}; margin-top:5px;">Authorised by (Employer)</div></div>
+          <div style="flex:1;"><div style="height:34px; border-bottom:1px solid ${PDF_INK};"></div><div style="font-size:9px; color:${PDF_MUTED}; margin-top:5px;">Received by (${escapeHtml(r.name)})</div></div>
+        </div>`;
+      if(sh) linkEls = [{ id:"khSalaryLinkBox", url: SHARE_VIEW_URL + "?token=" + encodeURIComponent(sh.id) }];
+    }else{
+      reportId = `WT-S-${ym}-ALL`;
+      fileName = `salary-report-${ym}-all-members.pdf`;
+      const withRate = rows.filter(r => r.rate > 0);
+      const ratedHours = withRate.reduce((t, r) => t + r.hours, 0);
+      const avgRate = ratedHours > 0 && T.gross > 0 ? T.gross / ratedHours : 0;
+      const takeHome = T.gross > 0 ? Math.max(0, Math.min(100, Math.round(T.net / T.gross * 100))) : 0;
+      const dedPct = T.gross > 0 ? Math.max(0, Math.min(100 - takeHome, Math.round(T.ded / T.gross * 100))) : 0;
+      const teamAtt = pct(T.days, T.days + T.leave);
+      const missing = rows.length - withRate.length;
+
+      bodyHtml = `
+        <div style="display:flex; gap:10px; margin-bottom:16px;">
+          ${kpi("Members", String(rows.length), `${T.days} work days`)}
+          ${kpi("Total Hours", `${fmtHours(T.hours)} h`, `avg ${fmtHours(Math.round((rows.length ? T.hours / rows.length : 0) * 10) / 10)} h per member`)}
+          ${kpi("Gross Payroll", fmtMoneyRM(T.gross), "hours × rate", PDF_BLUE)}
+          ${kpi("Net Payable", fmtMoneyRM(T.net), "after advance deduction", PDF_GREEN)}
+        </div>
+
+        <div style="margin-bottom:16px;">
+          ${heading("Payroll Summary")}
+          <table class="pdf-table">
+            <thead><tr>
+              <th class="pdf-th pdf-th-left">Member</th><th class="pdf-th">Days</th><th class="pdf-th">Hours</th><th class="pdf-th">Rate</th>
+              <th class="pdf-th pdf-th-right">Gross</th><th class="pdf-th pdf-th-right">Deducted</th><th class="pdf-th pdf-th-right">Net</th><th class="pdf-th pdf-th-left" style="width:92px;">Share</th>
+            </tr></thead>
+            <tbody>
+              ${rows.map(r => `<tr>
+                <td class="pdf-td pdf-td-left" style="font-weight:700;">${escapeHtml(r.name)}</td>
+                <td class="pdf-td">${r.days}</td><td class="pdf-td">${fmtHours(r.hours)}</td>
+                <td class="pdf-td">${r.rate > 0 ? (r.rate).toFixed(2) : "—"}</td>
+                <td class="pdf-td pdf-td-right">${r.rate > 0 ? fmtMoneyRM(r.gross) : "—"}</td>
+                <td class="pdf-td pdf-td-right" style="color:${PDF_AMBER};">${r.advDeducted > 0 ? "− " + fmtMoneyRM(r.advDeducted) : "—"}</td>
+                <td class="pdf-td pdf-td-right" style="font-weight:800; color:${PDF_GREEN};">${r.rate > 0 ? fmtMoneyRM(r.net) : "—"}</td>
+                <td class="pdf-td pdf-td-left"><div style="display:flex; align-items:center; gap:6px;"><div style="flex:1;">${bar(pct(r.gross, T.gross), PDF_BLUE, 6)}</div><span style="font-size:8.5px; font-weight:700; width:26px; text-align:right;">${pct(r.gross, T.gross)}%</span></div></td>
+              </tr>`).join("")}
+            </tbody>
+            <tfoot><tr class="pdf-tfoot-row">
+              <td class="pdf-td pdf-td-left" style="font-weight:800;">Total</td><td class="pdf-td" style="font-weight:800;">${T.days}</td><td class="pdf-td" style="font-weight:800;">${fmtHours(T.hours)}</td><td class="pdf-td"></td>
+              <td class="pdf-td pdf-td-right" style="font-weight:800;">${fmtMoneyRM(T.gross)}</td><td class="pdf-td pdf-td-right" style="font-weight:800;">${T.ded > 0 ? "− " + fmtMoneyRM(T.ded) : "—"}</td><td class="pdf-td pdf-td-right" style="font-weight:800; color:${PDF_GREEN};">${fmtMoneyRM(T.net)}</td><td class="pdf-td"></td>
+            </tr></tfoot>
+          </table>
+          ${missing ? `<div style="font-size:9px; color:${PDF_AMBER}; margin-top:7px;">${missing} member${missing > 1 ? "s have" : " has"} no hourly rate set, so ${missing > 1 ? "their salary is" : "the salary is"} not included in the totals.</div>` : ""}
+        </div>
+
+        <div style="margin-bottom:18px;">
+          ${heading("Team Analysis")}
+          <div style="display:flex; gap:10px;">
+            ${panel("Attendance rate", `${teamAtt}%`, `${bar(teamAtt, PDF_GREEN)}<div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:6px;">${T.days} present · ${T.leave} leave</div>`)}
+            ${panel("Take-home", T.gross > 0 ? `${takeHome}%` : "—", `<div style="display:flex; height:7px; border-radius:6px; overflow:hidden; background:${PDF_BORDER};"><div style="width:${takeHome}%; background:${PDF_GREEN};"></div><div style="width:${dedPct}%; background:${PDF_AMBER};"></div></div><div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:6px;">${dedPct}% advance deducted</div>`)}
+            ${panel("Average rate", avgRate > 0 ? fmtMoneyRM(avgRate) : "—", `<div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:2px;">per hour, weighted by hours</div>`)}
+          </div>
+        </div>
+
+        <div style="display:flex; gap:40px; margin-top:26px;">
+          <div style="flex:1;"><div style="height:34px; border-bottom:1px solid ${PDF_INK};"></div><div style="font-size:9px; color:${PDF_MUTED}; margin-top:5px;">Authorised by (Employer)</div></div>
+          <div style="flex:1;"><div style="height:34px; border-bottom:1px solid ${PDF_INK};"></div><div style="font-size:9px; color:${PDF_MUTED}; margin-top:5px;">Date</div></div>
+        </div>`;
+    }
+
+    const wrap = document.createElement("div");
+    wrap.id = "pdfReportRoot";
+    wrap.style.cssText = `position:fixed; left:-99999px; top:0; width:800px; background:#fff; padding:38px 34px 26px; font-family:'Inter','Hind Siliguri',sans-serif; color:${PDF_INK};`;
+    wrap.innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom:1px solid ${PDF_BORDER}; margin-bottom:20px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <img src="masum.png" style="height:42px; object-fit:contain;" crossorigin="anonymous">
+          <div>
+            <div style="font-size:13px; font-weight:800; color:${PDF_INK}; letter-spacing:.03em;">WORKTRACK</div>
+            <div style="font-size:9px; color:${PDF_MUTED};">Attendance &amp; Workforce Management</div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px; font-weight:800; color:${PDF_BLUE}; letter-spacing:.05em;">SALARY ${single ? "STATEMENT" : "REPORT"}</div>
+          <div style="font-size:9px; color:${PDF_MUTED}; margin-top:2px;">${monthLabel(ym)}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:23px; font-weight:800; color:${PDF_INK};">Salary ${single ? "Statement" : "Report"}</div>
+        <div style="font-size:10.5px; color:${PDF_MUTED}; margin-top:3px;">${periodLabel}</div>
+      </div>
+      ${bodyHtml}`;
+
+    const style = document.createElement("style");
+    style.textContent = `
+      #pdfReportRoot .pdf-table{ width:100%; border-collapse:collapse; font-size:10px; }
+      #pdfReportRoot .pdf-th{ background:${PDF_BLUE}; color:#fff; padding:9px 10px; text-align:center; vertical-align:middle; font-weight:600; text-transform:uppercase; font-size:8.5px; letter-spacing:.04em; }
+      #pdfReportRoot .pdf-th-left{ text-align:left; } #pdfReportRoot .pdf-th-right{ text-align:right; }
+      #pdfReportRoot .pdf-td{ padding:9px 10px; text-align:center; vertical-align:middle; border-bottom:1px solid ${PDF_BORDER}; line-height:1.4; font-size:10px; }
+      #pdfReportRoot .pdf-td-left{ text-align:left; } #pdfReportRoot .pdf-td-right{ text-align:right; }
+      #pdfReportRoot .pdf-tfoot-row td{ background:${PDF_LIGHT}; border-bottom:none; border-top:1px solid ${PDF_BORDER}; }
+      #pdfReportRoot tr{ height:32px; }
+    `;
+    document.body.appendChild(style);
+    document.body.appendChild(wrap);
+    try{
+      await renderWrapToA4Pdf(wrap, reportId, fileName, linkEls);
+    }finally{
+      document.body.removeChild(wrap);
+      document.body.removeChild(style);
+    }
+  }
+
+  // Turns the prepared report element into an A4 portrait PDF. Pages break only between rows/sections.
+  async function renderWrapToA4Pdf(wrap, reportId, fileName, linkEls){
+    const FOOTER_MARGIN_MM = 14;
+    const generatedAt = new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
+    function drawFooter(pdf, pageNum, totalPages, pageWidthMM, pageHeightMM){
+      const bandTop = pageHeightMM - FOOTER_MARGIN_MM - 8;
+      pdf.setFillColor(255, 255, 255);
+      pdf.rect(0, bandTop, pageWidthMM, pageHeightMM - bandTop, "F");
+      const y = pageHeightMM - FOOTER_MARGIN_MM;
+      pdf.setDrawColor(228, 231, 236); pdf.setLineWidth(0.2);
+      pdf.line(16, y - 5, pageWidthMM - 16, y - 5);
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(7.5); pdf.setTextColor(23, 32, 51);
+      pdf.text("masumcpex.com", 16, y);
+      pdf.setFont("helvetica", "normal"); pdf.setTextColor(102, 112, 133);
+      pdf.text("info@masumcpex.com", 16, y + 4);
+      pdf.text(`Report ID: ${reportId}`, pageWidthMM / 2 - 15, y);
+      pdf.text(`Generated: ${generatedAt}`, pageWidthMM - 16, y, { align: "right" });
+      pdf.text(`Page ${pageNum} of ${totalPages}`, pageWidthMM - 16, y + 4, { align: "right" });
+    }
+
+    const hdScale = Math.max(2, Math.min(2.5, Math.sqrt(14500000 / (wrap.offsetWidth * wrap.scrollHeight))));
+    const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#ffffff", logging:false });
+    const { jsPDF } = window.jspdf;
+    const A4_WIDTH_MM = 210, A4_HEIGHT_MM = 297;
+    const BODY_BOTTOM_MM = A4_HEIGHT_MM - FOOTER_MARGIN_MM - 8;
+    const TOP_MARGIN_MM = 12;
+    const pdf = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
+
+    const wrapRect = wrap.getBoundingClientRect();
+    const totalPx = wrap.scrollHeight;
+    const k = canvas.width / wrap.offsetWidth;
+    const pxPerMM = wrap.offsetWidth / A4_WIDTH_MM;
+    const relTop = el => el.getBoundingClientRect().top - wrapRect.top;
+
+    const breaks = [];
+    Array.from(wrap.children).forEach(el => {
+      const next = el.nextElementSibling;
+      if(next && next.tagName === "TABLE") return;
+      breaks.push({ y: relTop(el), table: null });
+    });
+    wrap.querySelectorAll("table").forEach(t => {
+      const head = t.tHead ? { top: relTop(t.tHead), h: t.tHead.getBoundingClientRect().height } : null;
+      const bodyRows = Array.from(t.querySelectorAll("tbody tr"));
+      bodyRows.forEach((tr, i) => { if(i > 0) breaks.push({ y: relTop(tr), table: head }); });
+      const foot = t.tFoot ? t.tFoot.querySelector("tr") : null;
+      if(foot && bodyRows.length) breaks.push({ y: relTop(foot), table: head });
+    });
+    breaks.sort((a, b) => a.y - b.y);
+
+    const pages = [];
+    let start = 0, repeatHead = null;
+    while(start < totalPx - 1){
+      const headMM = repeatHead ? repeatHead.h / pxPerMM : 0;
+      const availMM = BODY_BOTTOM_MM - (pages.length ? TOP_MARGIN_MM : 0) - headMM;
+      const limit = start + availMM * pxPerMM;
+      if(totalPx <= limit){ pages.push({ y0: start, y1: totalPx, head: repeatHead }); break; }
+      let cut = null;
+      for(let i = 0; i < breaks.length; i++){ if(breaks[i].y > start + 20 && breaks[i].y <= limit) cut = breaks[i]; }
+      if(!cut) cut = { y: limit, table: null };
+      pages.push({ y0: start, y1: cut.y, head: repeatHead });
+      start = cut.y; repeatHead = cut.table;
+    }
+
+    const slice = (y0, y1) => {
+      const sy = Math.max(0, Math.round(y0 * k)), sh = Math.max(1, Math.round((y1 - y0) * k));
+      const c = document.createElement("canvas");
+      c.width = canvas.width; c.height = sh;
+      const g = c.getContext("2d");
+      g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+      g.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
+      return c.toDataURL("image/jpeg", 0.95);
+    };
+    pages.forEach((pg, idx) => {
+      if(idx > 0) pdf.addPage();
+      let yMM = idx > 0 ? TOP_MARGIN_MM : 0;
+      if(pg.head){
+        const hh = pg.head.h / pxPerMM;
+        pdf.addImage(slice(pg.head.top, pg.head.top + pg.head.h), "JPEG", 0, yMM, A4_WIDTH_MM, hh);
+        yMM += hh;
+      }
+      pdf.addImage(slice(pg.y0, pg.y1), "JPEG", 0, yMM, A4_WIDTH_MM, (pg.y1 - pg.y0) / pxPerMM);
+      drawFooter(pdf, idx + 1, pages.length, A4_WIDTH_MM, A4_HEIGHT_MM);
+    });
+
+    // clickable links drawn over the page image
+    (linkEls || []).forEach(l => {
+      const el = document.getElementById(l.id);
+      if(!el) return;
+      const r = el.getBoundingClientRect();
+      const topPx = r.top - wrapRect.top;
+      const idx = pages.findIndex(pg => topPx >= pg.y0 && topPx < pg.y1);
+      if(idx < 0) return;
+      const pg = pages[idx];
+      const yMM = (idx > 0 ? TOP_MARGIN_MM : 0) + (pg.head ? pg.head.h / pxPerMM : 0) + (topPx - pg.y0) / pxPerMM;
+      pdf.setPage(idx + 1);
+      pdf.link((r.left - wrapRect.left) / pxPerMM, yMM, r.width / pxPerMM, r.height / pxPerMM, { url: l.url });
+    });
+    pdf.save(fileName);
   }
 
   function escapeHtml(str){

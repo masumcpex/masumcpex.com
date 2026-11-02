@@ -2632,9 +2632,15 @@ export function initKhApp(uid, isAdmin){
   // ================= Salary PDF (hourly rate x hours, with analytics) =================
   const rateKey = ym => "m" + ym.replace("-", "");
   function rateFor(member, ym){
-    const monthly = member && member.rates && member.rates[rateKey(ym)];
-    if(typeof monthly === "number" && monthly > 0) return monthly;
-    return (member && typeof member.rate === "number" && member.rate > 0) ? member.rate : 0;
+    if(!member) return 0;
+    const map = member.rates || {};
+    const keys = Object.keys(map).filter(k => /^m\d{6}$/.test(k) && Number(map[k]) > 0).sort();
+    const want = rateKey(ym);
+    let pick = null;
+    keys.forEach(k => { if(k <= want) pick = k; });
+    if(pick) return Number(map[pick]);                         // latest rate saved for this month or earlier
+    if(keys.length) return Number(map[keys[0]]);               // before the first saved month: use the first saved rate
+    return (typeof member.rate === "number" && member.rate > 0) ? member.rate : 0;
   }
   // Exact-money helpers: rates keep up to 4 decimals (e.g. 9.375); only the final amounts are rounded to sen.
   const round2 = x => Math.round((Number(x) || 0) * 100 + 1e-7) / 100;
@@ -2656,24 +2662,36 @@ export function initKhApp(uid, isAdmin){
     const st = document.createElement("style");
     st.id = "khSalaryStyle";
     st.textContent = `
-      .kh-sal{ max-width:430px; width:100%; max-height:88vh; overflow-y:auto; }
-      .kh-sal h3{ margin:0 0 2px; font-size:1.2rem; }
-      .kh-sal-sub{ margin:0 0 14px; font-size:.85rem; opacity:.7; }
+      .kh-sal{ max-width:430px; width:100%; max-height:90vh; overflow-y:auto; }
+      .kh-sal-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+      .kh-sal-title{ text-align:center; flex:1; min-width:0; }
+      .kh-sal-title h3{ margin:0; font-size:1.15rem; }
+      .kh-sal-sub{ margin:2px 0 0; font-size:.82rem; opacity:.7; }
+      .kh-sal-nav{ width:38px; height:38px; border-radius:12px; border:1.5px solid rgba(128,128,128,.35); background:transparent; color:inherit; font-size:1.4rem; font-weight:700; line-height:1; cursor:pointer; flex-shrink:0; font-family:inherit; }
+      .kh-sal-nav:active{ background:rgba(15,118,106,.18); }
       .kh-sal-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:10px; }
-      .kh-sal-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 12px; padding:10px 12px; border:1px solid rgba(128,128,128,.28); border-radius:12px; }
+      .kh-sal-empty{ text-align:center; opacity:.65; font-size:.9rem; margin:8px 0; }
+      .kh-sal-row{ display:flex; flex-direction:column; gap:10px; padding:12px; border:1px solid rgba(128,128,128,.28); border-radius:14px; }
+      .kh-sal-row.is-edit{ border-color:#0F766A; box-shadow:0 0 0 2px rgba(15,118,106,.14); }
       .kh-sal-row .nm{ display:flex; flex-direction:column; min-width:0; font-weight:700; }
       .kh-sal-row .nm small{ font-weight:500; opacity:.65; font-size:.76rem; }
+      .kh-sal-rate{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
       .kh-sal-row .inp{ display:flex; align-items:center; gap:6px; }
       .kh-sal-row .inp em{ font-style:normal; font-size:.8rem; opacity:.7; font-weight:700; }
-      .kh-sal-pub{ flex-basis:100%; display:flex; align-items:center; gap:8px; font-size:.78rem; padding-top:6px; border-top:1px dashed rgba(128,128,128,.3); }
+      .kh-sal-row input[type="number"]{ width:84px; padding:9px 8px; border-radius:10px; border:1.5px solid rgba(128,128,128,.4); background:transparent; color:inherit; font-size:1rem; font-weight:700; text-align:right; font-family:inherit; }
+      .kh-sal-row input[readonly]{ border-color:transparent; background:rgba(128,128,128,.1); }
+      .kh-sal-row input.is-bad{ border-color:#D64545; }
+      .kh-sal-edit{ width:38px; height:38px; border-radius:12px; border:1.5px solid rgba(128,128,128,.35); background:transparent; color:inherit; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; }
+      .kh-sal-row.is-edit .kh-sal-edit{ background:#0F766A; border-color:#0F766A; color:#fff; }
+      .kh-sal-pub{ display:flex; align-items:center; gap:8px; font-size:.78rem; padding-top:8px; border-top:1px dashed rgba(128,128,128,.3); }
       .kh-sal-pub.is-off{ opacity:.55; }
       .kh-sal-pub input{ width:18px; height:18px; accent-color:#0F766A; margin:0; }
       .kh-sal-step{ width:34px; height:36px; border-radius:10px; border:1.5px solid rgba(128,128,128,.4); background:rgba(15,118,106,.1); color:inherit; font-size:1.2rem; font-weight:800; line-height:1; cursor:pointer; touch-action:manipulation; -webkit-user-select:none; user-select:none; font-family:inherit; }
-      .kh-sal-step:active{ background:rgba(15,118,106,.28); }
-      .kh-sal-row input{ width:72px; padding:9px 8px; border-radius:10px; border:1.5px solid rgba(128,128,128,.4); background:transparent; color:inherit; font-size:1rem; font-weight:700; text-align:right; font-family:inherit; }
-      .kh-sal-row input.is-bad{ border-color:#D64545; }
+      .kh-sal-step:disabled{ opacity:.3; cursor:default; }
+      .kh-sal-step:not(:disabled):active{ background:rgba(15,118,106,.28); }
       .kh-sal-note{ font-size:.76rem; opacity:.65; margin:0 0 12px; line-height:1.5; }
       .kh-sal-go{ background:#0F766A !important; color:#fff !important; border-color:#0F766A !important; }
+      .kh-sal-alt{ border-color:#0F766A !important; color:#0F766A !important; }
     `;
     document.head.appendChild(st);
   }
@@ -2693,57 +2711,133 @@ export function initKhApp(uid, isAdmin){
     });
   }
 
-  function openSalaryDialog(ym, filterOverride){
-    const filter = filterOverride || filterMember.value;
-    const recs = getMonthRecordsForExport(ym, filter);
-    if(!recs.length){ alert(`No records for ${monthLabel(ym)} yet.`); return; }
-    const rows = buildSalaryRows(ym, recs);
+  function openSalaryDialog(startYm, filterOverride){
     ensureSalaryStyle();
-    const single = rows.length === 1;
+    const filter = filterOverride || filterMember.value;
+    let ym = startYm;
+    let rows = [];
+    const PEN = `<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>`;
+    const shiftYm = (v, d) => { const [y, m] = v.split("-").map(Number); const t = new Date(y, m - 1 + d, 1); return t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0"); };
 
     const overlay = document.createElement("div");
     overlay.className = "kh-modal-overlay";
     overlay.innerHTML = `
       <div class="kh-modal-card kh-sal" role="dialog" aria-modal="true" aria-label="Earnings PDF">
-        <h3>Earnings PDF</h3>
-        <p class="kh-sal-sub">${escapeHtml(monthLabel(ym))} · ${rows.length} ${rows.length === 1 ? "member" : "members"}</p>
-        <div class="kh-sal-list">
-          ${rows.map((r, i) => {
-            const cur = rateFor(r.member, ym);
-            const sh = r.member ? activeShareFor(r.member.id) : null;
-            const on = !!(sh && sh.earnings && sh.earnings[rateKey(ym)]);
-            const pubRow = sh
-              ? `<span class="kh-sal-pub"><input type="checkbox" data-pub="${i}"${on ? " checked" : ""}><span>Show on this member's share link</span></span>`
-              : `<span class="kh-sal-pub is-off"><span>No active share link</span></span>`;
-            return `<label class="kh-sal-row">
-              <span class="nm">${escapeHtml(r.name)}<small>${fmtHours(r.hours)} h · ${r.days} days</small></span>
-              <span class="inp"><em>RM</em><button type="button" class="kh-sal-step" data-i="${i}" data-step="-0.1" aria-label="Decrease rate">−</button><input type="number" inputmode="decimal" min="0" step="any" placeholder="0.00" data-i="${i}" value="${cur ? fmtRate(cur) : ""}"><button type="button" class="kh-sal-step" data-i="${i}" data-step="0.1" aria-label="Increase rate">+</button><em>/h</em></span>
-              ${pubRow}
-            </label>`;
-          }).join("")}
+        <div class="kh-sal-head">
+          <button type="button" class="kh-sal-nav" data-nav="-1" aria-label="Previous month">‹</button>
+          <div class="kh-sal-title"><h3>Earnings PDF</h3><p class="kh-sal-sub" id="khSalSub"></p></div>
+          <button type="button" class="kh-sal-nav" data-nav="1" aria-label="Next month">›</button>
         </div>
-        <p class="kh-sal-note">Enter the hourly rate. It is saved for this month and filled in automatically next time. Tick “Show on share link” only after you have checked the numbers; untick it to hide them again.</p>
-        <button type="button" class="kh-reg-sheet-btn kh-sal-go" data-act="go">${ICON_DOC}Generate Earnings PDF</button>
-        <button type="button" class="kh-reg-sheet-btn is-cancel" data-act="cancel">Cancel</button>
+        <div class="kh-sal-list" id="khSalList"></div>
+        <p class="kh-sal-note" id="khSalNote"></p>
+        <button type="button" class="kh-reg-sheet-btn kh-sal-go" data-act="save">Save</button>
+        <button type="button" class="kh-reg-sheet-btn kh-sal-alt" data-act="go" id="khSalGen">${ICON_DOC}Generate Earnings PDF</button>
+        <button type="button" class="kh-reg-sheet-btn is-cancel" data-act="cancel">Close</button>
       </div>`;
     document.body.appendChild(overlay);
     overlay.style.display = "flex";
-    const first = overlay.querySelector("input");
-    if(first) setTimeout(() => first.focus(), 60);
+    const listEl = overlay.querySelector("#khSalList"), subEl = overlay.querySelector("#khSalSub");
+    const noteEl = overlay.querySelector("#khSalNote"), genBtn = overlay.querySelector("#khSalGen");
 
-    // − / + buttons: one tap = 0.10, hold to keep changing
+    function loadRows(){
+      const recs = getMonthRecordsForExport(ym, filter);
+      if(recs.length){
+        rows = buildSalaryRows(ym, recs);
+        rows.forEach(r => { r.hasData = true; });
+      }else{
+        const scope = filter === "All" ? members.slice() : members.filter(m => m.name === filter);
+        rows = scope.sort((a, b) => a.name.localeCompare(b.name)).map(m => ({ name: m.name, member: m, days: 0, leave: 0, hours: 0, daily: [], hasData: false }));
+      }
+    }
+    function rowHtml(r, i){
+      const cur = rateFor(r.member, ym);
+      const sh = r.member ? activeShareFor(r.member.id) : null;
+      const on = !!(sh && sh.earnings && sh.earnings[rateKey(ym)]);
+      const pub = !r.hasData ? "" : sh
+        ? `<span class="kh-sal-pub"><input type="checkbox" data-pub="${i}"${on ? " checked" : ""}><span>Show on this member's share link</span></span>`
+        : `<span class="kh-sal-pub is-off"><span>No active share link</span></span>`;
+      return `<div class="kh-sal-row" data-row="${i}">
+        <div class="nm">${escapeHtml(r.name)}<small>${r.hasData ? `${fmtHours(r.hours)} h · ${r.days} ${r.days === 1 ? "day" : "days"}` : "No attendance yet"}</small></div>
+        <div class="kh-sal-rate">
+          <span class="inp"><em>RM</em><button type="button" class="kh-sal-step" data-i="${i}" data-step="-0.1" aria-label="Decrease rate" disabled>−</button><input type="number" inputmode="decimal" min="0" step="any" placeholder="0.00" data-rate="${i}" value="${cur ? fmtRate(cur) : ""}" readonly><button type="button" class="kh-sal-step" data-i="${i}" data-step="0.1" aria-label="Increase rate" disabled>+</button><em>/h</em></span>
+          <button type="button" class="kh-sal-edit" data-edit="${i}" aria-label="Edit rate">${PEN}</button>
+        </div>
+        ${pub}
+      </div>`;
+    }
+    function draw(){
+      const hasData = rows.some(r => r.hasData);
+      subEl.textContent = `${monthLabel(ym)} · ${rows.length} ${rows.length === 1 ? "member" : "members"}`;
+      listEl.innerHTML = rows.length ? rows.map(rowHtml).join("") : `<p class="kh-sal-empty">No members found.</p>`;
+      genBtn.style.display = hasData ? "" : "none";
+      noteEl.textContent = hasData
+        ? "Tap the pen to change a rate, then press Save. Tick “Show on share link” only after you have checked the numbers; untick it to hide them again."
+        : "No attendance is recorded for this month yet. You can still set the rates in advance and press Save.";
+    }
+    function setEdit(i, on){
+      const row = overlay.querySelector(`[data-row="${i}"]`);
+      if(!row) return;
+      row.classList.toggle("is-edit", on);
+      const inp = row.querySelector("input[data-rate]");
+      inp.readOnly = !on;
+      row.querySelectorAll(".kh-sal-step").forEach(b => { b.disabled = !on; });
+      if(on){ inp.focus(); inp.select(); } else inp.blur();
+    }
+    function readRates(){
+      return rows.map((r, i) => {
+        const v = parseFloat(overlay.querySelector(`input[data-rate="${i}"]`).value);
+        return isFinite(v) && v > 0 ? round4(v) : 0;
+      });
+    }
+    // Saves the rates (and the share-link switches). Never throws: a failed save must not lose the user's work.
+    async function persist(){
+      const key = rateKey(ym);
+      const rates = readRates();
+      let failed = false;
+      for(let i = 0; i < rows.length; i++){
+        const m = rows[i].member ? members.find(x => x.id === rows[i].member.id) : null;
+        if(!m || !(rates[i] > 0)) continue;
+        const had = m.rates && m.rates[key];
+        if(had === rates[i]) continue;
+        try{ await updateDoc(doc(db, "kh_members", m.id), { ["rates." + key]: rates[i] }); }
+        catch(err){ console.error("rate save failed", err); failed = true; }
+      }
+      if(failed) showToast("Some rates could not be saved. Please try again.", "error");
+
+      rows.forEach((r, i) => { r.rate = rates[i]; });
+      const dataRows = rows.filter(r => r.hasData);
+      if(dataRows.length){
+        computeEarnings(dataRows, ym);
+        try{
+          for(let i = 0; i < rows.length; i++){
+            const r = rows[i];
+            if(!r.hasData) continue;
+            const sh = r.member ? activeShareFor(r.member.id) : null;
+            if(!sh) continue;
+            const box = overlay.querySelector(`input[data-pub="${i}"]`);
+            const want = !!(box && box.checked) && r.rate > 0;
+            const have = !!(sh.earnings && sh.earnings[key]);
+            if(want) await updateDoc(doc(db, SHARE_COLLECTION, sh.id), { ["earnings." + key]: earningsPayload(r), updatedAt: serverTimestamp() });
+            else if(have) await updateDoc(doc(db, SHARE_COLLECTION, sh.id), { ["earnings." + key]: null, updatedAt: serverTimestamp() });
+          }
+        }catch(err){ console.error("earnings publish failed", err); failed = true; showToast("Could not update the share link.", "error"); }
+      }
+      return { rates, failed };
+    }
+
+    // - / + buttons: one tap = 0.10, hold to keep changing (only while the row is in edit mode)
     let holdT = null, holdI = null;
     const stepInput = btn => {
-      const inp = overlay.querySelector(`input[data-i="${btn.dataset.i}"]`);
+      if(btn.disabled) return;
+      const inp = overlay.querySelector(`input[data-rate="${btn.dataset.i}"]`);
       if(!inp) return;
       const v = parseFloat(inp.value) || 0;
       inp.value = fmtRate(Math.max(0, round4(v + Number(btn.dataset.step))));
-      inp.classList.remove("is-bad");
     };
     const stopHold = () => { clearTimeout(holdT); clearInterval(holdI); holdT = holdI = null; };
     overlay.addEventListener("pointerdown", e => {
       const b = e.target.closest(".kh-sal-step");
-      if(!b) return;
+      if(!b || b.disabled) return;
       e.preventDefault();
       stepInput(b);
       holdT = setTimeout(() => { holdI = setInterval(() => stepInput(b), 90); }, 400);
@@ -2751,61 +2845,61 @@ export function initKhApp(uid, isAdmin){
     ["pointerup", "pointercancel"].forEach(ev => { overlay.addEventListener(ev, stopHold); window.addEventListener(ev, stopHold); });
 
     const close = () => { stopHold(); if(overlay.parentNode) overlay.parentNode.removeChild(overlay); };
+    let busy = false;
     overlay.addEventListener("click", async e => {
       if(e.target === overlay){ close(); return; }
+      const nav = e.target.closest("[data-nav]");
+      if(nav){ ym = shiftYm(ym, Number(nav.dataset.nav)); loadRows(); draw(); return; }
+      const edit = e.target.closest("[data-edit]");
+      if(edit){
+        const i = edit.dataset.edit;
+        const row = overlay.querySelector(`[data-row="${i}"]`);
+        setEdit(i, !(row && row.classList.contains("is-edit")));
+        return;
+      }
       const b = e.target.closest("[data-act]");
-      if(!b) return;
-      if(b.dataset.act === "cancel"){ close(); return; }
-      if(b.dataset.act !== "go") return;
+      if(!b || busy) return;
+      const act = b.dataset.act;
+      if(act === "cancel"){ close(); return; }
 
-      let bad = false;
-      const rates = rows.map((r, i) => {
-        const inp = overlay.querySelector(`input[data-i="${i}"]`);
-        const v = parseFloat(inp.value);
-        const ok = isFinite(v) && v > 0;
-        inp.classList.toggle("is-bad", !ok && single);
-        if(!ok && single) bad = true;
-        return ok ? round4(v) : 0;
-      });
-      if(bad){ showToast("Please enter the hourly rate.", "error"); return; }
-      close();
+      if(act === "save"){
+        busy = true; const old = b.innerHTML; b.textContent = "Saving...";
+        const res = await persist();
+        rows.forEach((r, i) => {
+          setEdit(i, false);
+          const inp = overlay.querySelector(`input[data-rate="${i}"]`);
+          if(inp && res.rates[i] > 0) inp.value = fmtRate(res.rates[i]);
+        });
+        if(!res.failed) showToast("Saved");
+        b.innerHTML = old; busy = false;
+        return;
+      }
 
-      // Remember the rates (private to the owner). A failed save must never block the PDF.
-      try{
-        for(let i = 0; i < rows.length; i++){
-          const m = rows[i].member;
-          if(m && rates[i] > 0 && rateFor(m, ym) !== rates[i]){
-            await updateDoc(doc(db, "kh_members", m.id), { rate: rates[i], ["rates." + rateKey(ym)]: rates[i] });
-          }
+      if(act === "go"){
+        const dataRows = rows.filter(r => r.hasData);
+        if(!dataRows.length) return;
+        if(dataRows.length === 1 && !(readRates()[rows.indexOf(dataRows[0])] > 0)){
+          const inp = overlay.querySelector(`input[data-rate="${rows.indexOf(dataRows[0])}"]`);
+          if(inp) inp.classList.add("is-bad");
+          showToast("Please enter the hourly rate.", "error");
+          return;
         }
-      }catch(err){ console.error("rate save failed", err); showToast("PDF is ready, but the rate could not be saved.", "error"); }
-
-      rows.forEach((r, i) => { r.rate = rates[i]; });
-
-      // Publish (or hide) this month's earnings on each member's share link. A failure must not block the PDF.
-      computeEarnings(rows, ym);
-      try{
-        for(let i = 0; i < rows.length; i++){
-          const r = rows[i];
-          const sh = r.member ? activeShareFor(r.member.id) : null;
-          if(!sh) continue;
-          const box = overlay.querySelector(`input[data-pub="${i}"]`);
-          const want = !!(box && box.checked) && r.rate > 0;
-          const have = !!(sh.earnings && sh.earnings[rateKey(ym)]);
-          if(want) await updateDoc(doc(db, SHARE_COLLECTION, sh.id), { ["earnings." + rateKey(ym)]: earningsPayload(r), updatedAt: serverTimestamp() });
-          else if(have) await updateDoc(doc(db, SHARE_COLLECTION, sh.id), { ["earnings." + rateKey(ym)]: null, updatedAt: serverTimestamp() });
+        busy = true;
+        await persist();
+        close();
+        showToast(`Preparing ${monthLabel(ym)} earnings PDF...`);
+        try{
+          if(!(await ensurePdfLibs())){ alert("PDF generation library failed to load. Please check your internet connection and try again."); return; }
+          await generateSalaryPdf(ym, dataRows);
+        }catch(err){
+          console.error(err);
+          alert("Failed to generate the earnings PDF. Please try again.");
         }
-      }catch(err){ console.error("earnings publish failed", err); showToast("Could not update the share link. The Firestore Rules need a small update.", "error"); }
-
-      showToast(`Preparing ${monthLabel(ym)} earnings PDF...`);
-      try{
-        if(!(await ensurePdfLibs())){ alert("PDF generation library failed to load. Please check your internet connection and try again."); return; }
-        await generateSalaryPdf(ym, rows);
-      }catch(err){
-        console.error(err);
-        alert("Failed to generate the earnings PDF. Please try again.");
       }
     });
+
+    loadRows();
+    draw();
   }
 
   // Shared by the app and the share page: builds the "Earnings Summary" sections (each one a direct child of the page).

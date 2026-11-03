@@ -1497,6 +1497,7 @@ export function initKhApp(uid, isAdmin){
       const overlay = ensureConfirmModal();
       overlay.querySelector("#khConfirmText").textContent = message;
       overlay.style.display = "flex";
+      overlay.style.zIndex = "2147483000";
       const yesBtn = overlay.querySelector("#khConfirmYesBtn");
       const noBtn  = overlay.querySelector("#khConfirmNoBtn");
       function cleanup(result){
@@ -1738,6 +1739,11 @@ export function initKhApp(uid, isAdmin){
       if(!b) return;
       window.__wtScope = b.dataset.scope === "all" ? "all" : "month";
       renderQuickStats();
+    });
+    const eb = document.getElementById("wtEarnBtn");
+    if(eb) eb.addEventListener("click", () => {
+      if(!members.length){ showToast(tr("আগে একজন সদস্য যোগ করুন।", "Add a member first."), "info"); return; }
+      openSalaryDialog(currentYearMonth());
     });
     const tb = document.getElementById("wtTodayBtn");
     if(tb) tb.addEventListener("click", () => {
@@ -3976,21 +3982,67 @@ export function initKhApp(uid, isAdmin){
       ${mh.map(x => `<div class="kh-sh-mrow"><span>${monthLabel(x.m)}</span><div class="kh-sh-bar"><i style="width:${Math.round(x.h / mmax * 100)}%"></i></div><b>${fmtHours(x.h)}h</b></div>`).join("")}`;
   }
 
+  // Small trash button that removes one advance entry (always asks first).
+  function advDelBtn(x){
+    return `<button type="button" class="kh-adv-del" data-sheet-act="adv-del" data-id="${x.id}" data-i="${x.i}" data-d="${x.d}" data-a="${x.a}" aria-label="Delete this advance entry" title="Delete">${ICON_TRASH}</button>`;
+  }
+  async function deleteAdvanceEntry(ds){
+    if(statSaving) return;
+    const m = members.find(x => x.id === ds.id);
+    const idx = Number(ds.i), amt = Number(ds.a);
+    const e = m && Array.isArray(m.advanceLog) ? m.advanceLog[idx] : null;
+    if(!m || !e || e.d !== ds.d || Math.abs((Number(e.a) || 0) - amt) > 0.0001){
+      showToast("This entry has changed. Please check the list again.", "error");
+      renderStatSheet();
+      return;
+    }
+    const bal = typeof m.advance === "number" ? m.advance : 0;
+    const after = Math.round((bal - amt) * 100) / 100;
+    const ok = await askConfirm(`Delete this advance entry? ${m.name} · ${amt < 0 ? "Deducted" : "Taken"} ${fmtRM(Math.abs(amt))} · ${ds.d}. ${m.name}'s balance will change from ${fmtRM(bal)} to ${fmtRM(after)}.`);
+    if(!ok) return;
+    statSaving = true;
+    let nb = 0;
+    try{
+      const ref = doc(db, "kh_members", m.id);
+      await runTransaction(db, async tx => {
+        const snap = await tx.get(ref);
+        if(!snap.exists()) throw new Error("member-missing");
+        const cur = snap.data();
+        const log = Array.isArray(cur.advanceLog) ? cur.advanceLog.slice() : [];
+        const ce = log[idx];
+        if(!ce || ce.d !== ds.d || Math.abs((Number(ce.a) || 0) - amt) > 0.0001) throw new Error("entry-changed");
+        log.splice(idx, 1);
+        const b = typeof cur.advance === "number" ? cur.advance : 0;
+        nb = Math.round((b - amt) * 100) / 100;
+        tx.update(ref, { advance: nb, advanceLog: log });
+      });
+      showToast(`Entry deleted. New balance: ${fmtRM(nb)}.`);
+    }catch(err){
+      console.error(err);
+      showToast(err && err.message === "entry-changed" ? "This entry has changed. Please check the list again." : "Failed to delete. Please try again.", "error");
+    }finally{
+      statSaving = false;
+      renderStatSheet();
+      setTimeout(() => { renderSummary(); renderQuickStats(); }, 350);
+    }
+  }
+
   function sheetAdvance(){
+    ensureAdvHistStyle();
     if(statForm) return advanceFormHtml();
     if(advHist) return advanceHistoryHtml();
     const ym = currentYearMonth();
     const per = sortedMembers().map(m => ({ m, st: advanceStatsFor(m, ym) }));
     const total = per.reduce((a, p) => a + p.st.balance, 0), taken = per.reduce((a, p) => a + p.st.taken, 0), ded = per.reduce((a, p) => a + p.st.deducted, 0);
     const hist = [];
-    members.forEach(m => (Array.isArray(m.advanceLog) ? m.advanceLog : []).forEach(e => { if(e && typeof e.d === "string") hist.push({ d: e.d, a: Number(e.a) || 0, n: m.name }); }));
+    members.forEach(m => (Array.isArray(m.advanceLog) ? m.advanceLog : []).forEach((e, i) => { if(e && typeof e.d === "string") hist.push({ d: e.d, a: Number(e.a) || 0, n: m.name, id: m.id, i }); }));
     hist.sort((x, y) => y.d.localeCompare(x.d));
     const rows = per.map(p => `<div class="kh-sh-arow"><span class="kh-sh-name">${escapeHtml(p.m.name)}</span><span class="kh-sh-abal">${fmtRM(p.st.balance)}</span><small>${monthLabel(ym)}: +${p.st.taken.toFixed(2)} / −${p.st.deducted.toFixed(2)}</small></div>`).join("");
     return `<div class="kh-sh-actions kh-sh-actions--top"><button type="button" class="btn3d btn-mint kh-sh-addadv" data-sheet-act="add-advance">+ Add Advance</button></div>
       <div class="kh-sh-grid"><div class="kh-sh-tile"><b>${fmtRM(total)}</b><span>Total advance</span></div><div class="kh-sh-tile"><b>${fmtRM(taken)}</b><span>Taken · ${monthLabel(ym)}</span></div><div class="kh-sh-tile"><b>${fmtRM(ded)}</b><span>Deducted · ${monthLabel(ym)}</span></div></div>
       <h3 class="kh-sh-h">By member</h3>${rows || `<p class="kh-empty-note" style="display:block;">No members yet.</p>`}
       <div class="kh-ah-headrow"><h3 class="kh-sh-h" style="margin:0;">Recent advance history</h3>${hist.length > 8 ? `<button type="button" class="kh-ah-viewall" data-sheet-act="adv-history">View all (${hist.length})</button>` : ""}</div>
-      ${hist.length ? hist.slice(0, 8).map(x => `<div class="kh-sh-hist"><span>${x.d}</span><span class="kh-sh-name">${escapeHtml(x.n)}</span><b class="${x.a < 0 ? "is-neg" : "is-pos"}">${x.a < 0 ? "−" : "+"}${Math.abs(x.a).toFixed(2)}</b></div>`).join("") : `<p class="kh-empty-note" style="display:block;">No advance history yet.</p>`}
+      ${hist.length ? hist.slice(0, 8).map(x => `<div class="kh-sh-hist"><span>${x.d}</span><span class="kh-sh-name">${escapeHtml(x.n)}</span><b class="${x.a < 0 ? "is-neg" : "is-pos"}">${x.a < 0 ? "−" : "+"}${Math.abs(x.a).toFixed(2)}</b>${advDelBtn(x)}</div>`).join("") : `<p class="kh-empty-note" style="display:block;">No advance history yet.</p>`}
       <p class="kh-sh-note">You can also edit an advance from the Monthly Summary table.</p>`;
   }
 
@@ -4020,6 +4072,12 @@ export function initKhApp(uid, isAdmin){
       .kh-ah-amt{ display:flex; flex-direction:column; align-items:flex-end; }
       .kh-ah-amt b{ font-size:.95rem; white-space:nowrap; }
       .kh-ah-amt b.is-pos{ color:#16A085; } .kh-ah-amt b.is-neg{ color:#D64545; }
+      .kh-sh-hist{ display:flex !important; align-items:center; gap:10px; }
+      .kh-sh-hist .kh-sh-name{ flex:1; min-width:0; }
+      .kh-adv-del{ flex:none; width:30px; height:30px; padding:0; border:none; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; background:rgba(214,69,69,.1); color:#D64545; cursor:pointer; }
+      .kh-adv-del svg{ width:15px; height:15px; }
+      .kh-adv-del:active{ transform:scale(.92); }
+      [data-theme="dark"] .kh-adv-del{ background:rgba(255,120,120,.14); color:#FF8A8A; }
     `;
     document.head.appendChild(st);
   }
@@ -4058,6 +4116,7 @@ export function initKhApp(uid, isAdmin){
         <span class="kh-ah-ico ${x.a < 0 ? "is-neg" : "is-pos"}" aria-hidden="true">${x.a < 0 ? "−" : "+"}</span>
         <div class="kh-ah-mid"><b>${escapeHtml(x.n)}</b><small>${x.a < 0 ? "Deducted" : "Taken"} · ${escapeHtml(pretty(x.d))} · ${dow(x.d)}</small></div>
         <div class="kh-ah-amt"><b class="${x.a < 0 ? "is-neg" : "is-pos"}">${x.a < 0 ? "−" : "+"}${fmtRM(Math.abs(x.a))}</b>${sel ? `<small>Balance ${fmtRM(after[x.d + "|" + x.i])}</small>` : ""}</div>
+        ${advDelBtn(x)}
       </div>`;
 
     let body = "";
@@ -4109,6 +4168,7 @@ export function initKhApp(uid, isAdmin){
       else if(a === "adv-cancel"){ statForm = false; renderStatSheet(); }
       else if(a === "adv-history"){ advHist = { member: "", month: "" }; renderStatSheet(); const b = document.getElementById("khStatBody"); if(b) b.scrollTop = 0; }
       else if(a === "adv-back"){ advHist = null; renderStatSheet(); }
+      else if(a === "adv-del"){ deleteAdvanceEntry(act.dataset); }
       return;
     }
     const row = e.target.closest("[data-member]");

@@ -2,6 +2,16 @@
 (function () {
   "use strict";
 
+  /* Clean address bar: show /attendance instead of /attendance.html (and "/" instead of /index.html).
+     Only the visible address changes (no reload); the real .html page and every old link keep working. */
+  try {
+    var p0 = location.pathname;
+    if (/\.html$/i.test(p0)) {
+      var clean = p0.replace(/\/index\.html$/i, "/").replace(/\.html$/i, "");
+      if (clean !== p0) history.replaceState(history.state, "", clean + location.search + location.hash);
+    }
+  } catch (e) { /* ignore: the address simply stays as it is */ }
+
   /* Service worker: updateViaCache "none" so a new version is picked up quickly */
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {

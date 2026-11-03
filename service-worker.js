@@ -5,7 +5,7 @@
   - The shared view-only attendance page (/attendanceview/) is never intercepted or cached.
   - Pages are network-first, but if the network is slow (> 3 s) a saved copy is shown instead of waiting.
 */
-const SW_VERSION   = "v2.3.0";
+const SW_VERSION   = "v2.4.0";
 const STATIC_CACHE = `masumcpex-static-${SW_VERSION}`;
 const PAGES_CACHE  = `masumcpex-pages-${SW_VERSION}`;
 const OFFLINE_URL  = "offline.html";
@@ -83,6 +83,16 @@ function cacheable(response) {
   return response && response.status === 200 && response.type === "basic";
 }
 
+// A page opened through its clean address (/attendance) is stored as attendance.html: look for both.
+async function matchPage(request) {
+  const hit = await caches.match(request);
+  if (hit || request.mode !== "navigate") return hit;
+  const path = new URL(request.url).pathname;
+  if (path === "/" || path === "") return caches.match("index.html");
+  if (!/\.[a-z0-9]+$/i.test(path)) return caches.match(path.replace(/\/$/, "") + ".html");
+  return hit;
+}
+
 // Network first; if the network is slow, answer from the saved copy (when there is one) and refresh in background.
 function networkFirst(request) {
   return new Promise((resolve) => {
@@ -90,7 +100,7 @@ function networkFirst(request) {
     const done = (res) => { if (!settled) { settled = true; resolve(res); } };
 
     const timer = setTimeout(async () => {
-      const cached = await caches.match(request);
+      const cached = await matchPage(request);
       if (cached) done(cached);
     }, SLOW_NETWORK_MS);
 
@@ -105,7 +115,7 @@ function networkFirst(request) {
       })
       .catch(async () => {
         clearTimeout(timer);
-        const cached = await caches.match(request);
+        const cached = await matchPage(request);
         if (cached) return done(cached);
         if (request.mode === "navigate") {
           const offline = await caches.match(OFFLINE_URL);

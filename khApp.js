@@ -3042,7 +3042,16 @@ export function initKhApp(uid, isAdmin){
           </tbody>
           <tfoot><tr class="pdf-tfoot-row"><td class="pdf-td pdf-td-left" style="font-weight:800; font-size:11px;" colspan="2">Take-home</td><td class="pdf-td pdf-td-right" style="font-weight:800; font-size:12px; color:${GREEN};">${money(E.net)}</td></tr></tfoot>
         </table>
-        <div style="font-size:9px; color:${MUTED}; margin-top:7px;">Advance taken this month: ${money(E.taken)} &nbsp;·&nbsp; Remaining advance balance: <b style="color:${INK};">${money(E.balance)}</b></div>
+        ${(() => {
+          const bal = Math.round((Number(E.balance) || 0) * 100) / 100, tk = Number(E.taken) || 0;
+          if(Math.abs(bal) < 0.005 && tk < 0.005) return `<div style="font-size:9px; color:${MUTED}; margin-top:7px;">Take-home = Total earned &minus; Advance cut</div>`;
+          const label = bal >= 0 ? "Advance still to be cut later" : "Advance cut is more than taken by";
+          return `<div style="margin-top:9px; padding:9px 12px; border:1px solid #F3D9A4; background:#FFF8EA; border-radius:9px; font-size:9.5px; color:${INK};">
+            <div style="display:flex; justify-content:space-between; gap:10px;"><span style="color:${MUTED};">Advance taken this month</span><b>${money(tk)}</b></div>
+            <div style="display:flex; justify-content:space-between; gap:10px; margin-top:5px; font-size:10.5px;"><span style="font-weight:700;">${label}</span><b style="color:${AMBER};">${money(Math.abs(bal))}</b></div>
+            <div style="margin-top:5px; font-size:8.5px; color:${MUTED};">Take-home = Total earned &minus; Advance cut</div>
+          </div>`;
+        })()}
       </div>
       <div style="margin-bottom:16px;">
         ${heading("Performance Analysis")}

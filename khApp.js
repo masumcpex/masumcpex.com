@@ -3982,6 +3982,47 @@ export function initKhApp(uid, isAdmin){
       ${mh.map(x => `<div class="kh-sh-mrow"><span>${monthLabel(x.m)}</span><div class="kh-sh-bar"><i style="width:${Math.round(x.h / mmax * 100)}%"></i></div><b>${fmtHours(x.h)}h</b></div>`).join("")}`;
   }
 
+  // Opening balance = the saved advance balance minus everything in the dated history (old advance from before history existed).
+  function openingBalanceOf(m){
+    const log = Array.isArray(m && m.advanceLog) ? m.advanceLog : [];
+    const sum = log.reduce((t, e) => t + (Number(e && e.a) || 0), 0);
+    const bal = typeof (m && m.advance) === "number" ? m.advance : 0;
+    return Math.round((bal - sum) * 100) / 100;
+  }
+  async function clearOpeningBalance(id){
+    if(statSaving) return;
+    const m = members.find(x => x.id === id);
+    if(!m) return;
+    const opening = openingBalanceOf(m);
+    if(Math.abs(opening) < 0.01){ showToast("No opening balance to clear.", "info"); renderStatSheet(); return; }
+    const bal = typeof m.advance === "number" ? m.advance : 0;
+    const target = Math.round((bal - opening) * 100) / 100;
+    const ok = await askConfirm(`Clear ${m.name}'s opening balance of ${fmtRM(opening)}? This is advance saved before the dated history started. ${m.name}'s balance will change from ${fmtRM(bal)} to ${fmtRM(target)}.`);
+    if(!ok) return;
+    statSaving = true;
+    let nb = 0;
+    try{
+      const ref = doc(db, "kh_members", m.id);
+      await runTransaction(db, async tx => {
+        const snap = await tx.get(ref);
+        if(!snap.exists()) throw new Error("member-missing");
+        const cur = snap.data();
+        const op = openingBalanceOf(cur);
+        if(Math.abs(op - opening) > 0.009) throw new Error("entry-changed");
+        nb = Math.round((typeof cur.advance === "number" ? cur.advance : 0) * 100 - op * 100) / 100;
+        tx.update(ref, { advance: nb });
+      });
+      showToast(`Opening balance cleared. New balance: ${fmtRM(nb)}.`);
+    }catch(err){
+      console.error(err);
+      showToast(err && err.message === "entry-changed" ? "The balance changed. Please check and try again." : "Failed to clear. Please try again.", "error");
+    }finally{
+      statSaving = false;
+      renderStatSheet();
+      setTimeout(() => { renderSummary(); renderQuickStats(); }, 350);
+    }
+  }
+
   // Small trash button that removes one advance entry (always asks first).
   function advDelBtn(x){
     return `<button type="button" class="kh-adv-del" data-sheet-act="adv-del" data-id="${x.id}" data-i="${x.i}" data-d="${x.d}" data-a="${x.a}" aria-label="Delete this advance entry" title="Delete">${ICON_TRASH}</button>`;
@@ -4037,7 +4078,13 @@ export function initKhApp(uid, isAdmin){
     const hist = [];
     members.forEach(m => (Array.isArray(m.advanceLog) ? m.advanceLog : []).forEach((e, i) => { if(e && typeof e.d === "string") hist.push({ d: e.d, a: Number(e.a) || 0, n: m.name, id: m.id, i }); }));
     hist.sort((x, y) => y.d.localeCompare(x.d));
-    const rows = per.map(p => `<div class="kh-sh-arow"><span class="kh-sh-name">${escapeHtml(p.m.name)}</span><span class="kh-sh-abal">${fmtRM(p.st.balance)}</span><small>${monthLabel(ym)}: +${p.st.taken.toFixed(2)} / −${p.st.deducted.toFixed(2)}</small></div>`).join("");
+    const rows = per.map(p => {
+      const op = openingBalanceOf(p.m);
+      const note = Math.abs(op) >= 0.01
+        ? `<div class="kh-open-note"><span>Includes <b>${fmtRM(op)}</b> opening balance (saved before dated history, so it has no entry to delete)</span><button type="button" class="kh-open-clear" data-sheet-act="adv-open-del" data-id="${p.m.id}">Clear</button></div>`
+        : "";
+      return `<div class="kh-sh-arow"><span class="kh-sh-name">${escapeHtml(p.m.name)}</span><span class="kh-sh-abal">${fmtRM(p.st.balance)}</span><small>${monthLabel(ym)}: +${p.st.taken.toFixed(2)} / −${p.st.deducted.toFixed(2)}</small></div>${note}`;
+    }).join("");
     return `<div class="kh-sh-actions kh-sh-actions--top"><button type="button" class="btn3d btn-mint kh-sh-addadv" data-sheet-act="add-advance">+ Add Advance</button></div>
       <div class="kh-sh-grid"><div class="kh-sh-tile"><b>${fmtRM(total)}</b><span>Total advance</span></div><div class="kh-sh-tile"><b>${fmtRM(taken)}</b><span>Taken · ${monthLabel(ym)}</span></div><div class="kh-sh-tile"><b>${fmtRM(ded)}</b><span>Deducted · ${monthLabel(ym)}</span></div></div>
       <h3 class="kh-sh-h">By member</h3>${rows || `<p class="kh-empty-note" style="display:block;">No members yet.</p>`}
@@ -4076,6 +4123,9 @@ export function initKhApp(uid, isAdmin){
       .kh-sh-hist .kh-sh-name{ flex:1; min-width:0; }
       .kh-adv-del{ flex:none; width:30px; height:30px; padding:0; border:none; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; background:rgba(214,69,69,.1); color:#D64545; cursor:pointer; }
       .kh-adv-del svg{ width:15px; height:15px; }
+      .kh-open-note{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:-4px 0 10px; padding:8px 10px; border-radius:10px; background:rgba(245,165,36,.14); font-size:.74rem; line-height:1.4; }
+      .kh-open-clear{ flex:none; border:1px solid rgba(214,69,69,.45); background:rgba(214,69,69,.1); color:#D64545; font-weight:700; font-size:.74rem; padding:5px 11px; border-radius:999px; cursor:pointer; font-family:inherit; }
+      [data-theme="dark"] .kh-open-clear{ color:#FF8A8A; border-color:rgba(255,138,138,.45); }
       .kh-adv-del:active{ transform:scale(.92); }
       [data-theme="dark"] .kh-adv-del{ background:rgba(255,120,120,.14); color:#FF8A8A; }
     `;
@@ -4135,7 +4185,7 @@ export function initKhApp(uid, isAdmin){
         body += rowHtml(x);
       });
       if(sel && !f.month && Math.abs(opening) >= 0.01){
-        body += `<div class="kh-ah-row"><span class="kh-ah-ico is-open" aria-hidden="true">•</span><div class="kh-ah-mid"><b>Opening balance</b><small>Saved before history started (no date)</small></div><div class="kh-ah-amt"><b>${fmtRM(opening)}</b></div></div>`;
+        body += `<div class="kh-ah-row"><span class="kh-ah-ico is-open" aria-hidden="true">•</span><div class="kh-ah-mid"><b>Opening balance</b><small>Saved before history started (no date)</small></div><div class="kh-ah-amt"><b>${fmtRM(opening)}</b></div><button type="button" class="kh-adv-del" data-sheet-act="adv-open-del" data-id="${sel.id}" aria-label="Clear opening balance" title="Clear opening balance">${ICON_TRASH}</button></div>`;
       }
     }
 
@@ -4169,6 +4219,7 @@ export function initKhApp(uid, isAdmin){
       else if(a === "adv-history"){ advHist = { member: "", month: "" }; renderStatSheet(); const b = document.getElementById("khStatBody"); if(b) b.scrollTop = 0; }
       else if(a === "adv-back"){ advHist = null; renderStatSheet(); }
       else if(a === "adv-del"){ deleteAdvanceEntry(act.dataset); }
+      else if(a === "adv-open-del"){ clearOpeningBalance(act.dataset.id); }
       return;
     }
     const row = e.target.closest("[data-member]");

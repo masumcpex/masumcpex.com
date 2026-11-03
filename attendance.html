@@ -899,7 +899,11 @@ body:not(.wt-loaded) .site-footer{display:none}
 .wt-today-chip.is-leave{background:rgba(245,165,36,.2);color:#A66300}
 .wt-today-chip.is-none{background:rgba(128,128,128,.16);color:inherit;opacity:.85}
 .wt-card-linkbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid rgba(15,76,129,.35);background:rgba(15,76,129,.08);color:#0F4C81;font-weight:700;font-size:.78rem;padding:7px 10px;border-radius:10px;cursor:pointer;font-family:inherit}
-.wt-card-linkbtn svg{width:14px;height:14px}
+.wt-card-linkbtn svg{width:14px;height:14px;flex:none}
+.wt-card-btns{display:flex;flex-direction:column;gap:6px}
+.wt-card-btns .wt-card-linkbtn{width:100%;min-width:0;padding:7px 8px;font-size:.78rem;white-space:nowrap}
+.wt-card-earnbtn{border-color:rgba(15,118,106,.4);background:rgba(15,118,106,.09);color:#0F766A}
+[data-theme="dark"] .wt-card-earnbtn{color:#6FE0CF;border-color:rgba(111,224,207,.4);background:rgba(111,224,207,.1)}
 [data-theme="dark"] .wt-today-chip.is-duty{color:#5EE6A0}[data-theme="dark"] .wt-today-chip.is-leave{color:#FFC857}
 [data-theme="dark"] .wt-card-linkbtn{color:#8FBFFF;border-color:rgba(143,191,255,.4);background:rgba(143,191,255,.1)}
 [data-theme="dark"] .wt-scope button.is-on{background:#2B6CB0}

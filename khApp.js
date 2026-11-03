@@ -1070,7 +1070,10 @@ export function initKhApp(uid, isAdmin){
           <div class="member-card-stats">${stats2}</div>
           <div class="member-card-id">${m.memberId ? "ID: " + escapeHtmlLocal(m.memberId) : ""}</div>
         </div>
-        <button type="button" class="member-card-share wt-card-linkbtn" data-id="${m.id}" aria-label="${tr("লিংক কপি করুন","Share link")}">${ICON_SHARE}<span>${tr("লিংক","Link")}</span></button>
+        <div class="wt-card-btns">
+          <button type="button" class="member-card-share wt-card-linkbtn" data-id="${m.id}" aria-label="${tr("লিংক শেয়ার","Share link")}">${ICON_SHARE}<span>${tr("লিংক","Link")}</span></button>
+          <button type="button" class="member-card-earn wt-card-linkbtn wt-card-earnbtn" data-id="${m.id}" aria-label="${tr("আয়ের PDF","Earnings PDF")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><circle cx="17" cy="14.5" r="1.2"/></svg><span>${tr("আয়","Earnings")}</span></button>
+        </div>
       </div>`;
     }).join("");
     const memberDots = document.getElementById("memberDots");
@@ -1387,6 +1390,13 @@ export function initKhApp(uid, isAdmin){
       closeAllMemberMenus();
       const m = members.find(x => x.id === editBtn.dataset.id);
       if(m) openEditMemberModal(m);
+      return;
+    }
+    const earnBtn = e.target.closest(".member-card-earn");
+    if(earnBtn){
+      closeAllMemberMenus();
+      const m = members.find(x => x.id === earnBtn.dataset.id);
+      if(m) openSalaryDialog(currentYearMonth(), m.name);
       return;
     }
     const shareBtn = e.target.closest(".member-card-share");
@@ -3187,14 +3197,14 @@ export function initKhApp(uid, isAdmin){
     wrap.innerHTML = innerHtml;
     document.body.appendChild(wrap);
     try{
-      await renderWrapToA4Pdf(wrap, reportId, fileName, linkEls);
+      await renderWrapToA4Pdf(wrap, reportId, fileName, linkEls, { fitOnePage: true });
     }finally{
       document.body.removeChild(wrap);
     }
   }
 
   // Turns the prepared report element into an A4 portrait PDF. Pages break only between rows/sections.
-  async function renderWrapToA4Pdf(wrap, reportId, fileName, linkEls){
+  async function renderWrapToA4Pdf(wrap, reportId, fileName, linkEls, opts){
     const FOOTER_MARGIN_MM = 14;
     const generatedAt = new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
     function drawFooter(pdf, pageNum, totalPages, pageWidthMM, pageHeightMM){
@@ -3242,8 +3252,21 @@ export function initKhApp(uid, isAdmin){
     });
     breaks.sort((a, b) => a.y - b.y);
 
-    const pages = [];
+    let pages = [];
     let start = 0, repeatHead = null;
+    // Earnings report: if it only slightly overflows one page, shrink it to fit instead of leaving a near-empty page 2.
+    let fitScale = 0;
+    if(opts && opts.fitOnePage){
+      const onePagePx = BODY_BOTTOM_MM * pxPerMM;
+      if(totalPx > onePagePx){
+        const sc = onePagePx / totalPx;
+        if(sc >= 0.7) fitScale = sc;
+      }
+    }
+    if(fitScale){
+      pages = [{ y0: 0, y1: totalPx, head: null, fit: fitScale }];
+      start = totalPx;
+    }
     while(start < totalPx - 1){
       const headMM = repeatHead ? repeatHead.h / pxPerMM : 0;
       const availMM = BODY_BOTTOM_MM - (pages.length ? TOP_MARGIN_MM : 0) - headMM;
@@ -3267,6 +3290,12 @@ export function initKhApp(uid, isAdmin){
     };
     pages.forEach((pg, idx) => {
       if(idx > 0) pdf.addPage();
+      if(pg.fit){
+        const wMM = A4_WIDTH_MM * pg.fit, hMM = (pg.y1 - pg.y0) / pxPerMM * pg.fit;
+        pdf.addImage(slice(pg.y0, pg.y1), "JPEG", (A4_WIDTH_MM - wMM) / 2, 0, wMM, hMM);
+        drawFooter(pdf, idx + 1, pages.length, A4_WIDTH_MM, A4_HEIGHT_MM);
+        return;
+      }
       let yMM = idx > 0 ? TOP_MARGIN_MM : 0;
       if(pg.head){
         const hh = pg.head.h / pxPerMM;
@@ -3286,8 +3315,13 @@ export function initKhApp(uid, isAdmin){
       const idx = pages.findIndex(pg => topPx >= pg.y0 && topPx < pg.y1);
       if(idx < 0) return;
       const pg = pages[idx];
-      const yMM = (idx > 0 ? TOP_MARGIN_MM : 0) + (pg.head ? pg.head.h / pxPerMM : 0) + (topPx - pg.y0) / pxPerMM;
       pdf.setPage(idx + 1);
+      if(pg.fit){
+        const f = pg.fit, offX = (A4_WIDTH_MM - A4_WIDTH_MM * f) / 2;
+        pdf.link(offX + (r.left - wrapRect.left) / pxPerMM * f, topPx / pxPerMM * f, r.width / pxPerMM * f, r.height / pxPerMM * f, { url: l.url });
+        return;
+      }
+      const yMM = (idx > 0 ? TOP_MARGIN_MM : 0) + (pg.head ? pg.head.h / pxPerMM : 0) + (topPx - pg.y0) / pxPerMM;
       pdf.link((r.left - wrapRect.left) / pxPerMM, yMM, r.width / pxPerMM, r.height / pxPerMM, { url: l.url });
     });
     pdf.save(fileName);

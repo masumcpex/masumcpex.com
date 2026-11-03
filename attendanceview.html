@@ -573,7 +573,7 @@ async function downloadEarnings(btn){
     await Promise.all([window.html2canvas ? 0 : loadScript(H2C), window.jspdf ? 0 : loadScript(JSPDF)]);
     const E = {
       name: share.memberName, ym: curYm, rate: raw.rate, hours: raw.hours, days: raw.days, leave: raw.leave, gross: raw.gross, ded: raw.ded, net: raw.net,
-      taken: raw.taken, balance: raw.balance, att: raw.att, avg: raw.avg, weeks: Array.isArray(raw.weeks) ? raw.weeks : [], longest: raw.longest || null, rid: raw.rid || "", linkUrl: ""
+      taken: raw.taken, balance: raw.balance, att: raw.att, avg: raw.avg, weeks: Array.isArray(raw.weeks) ? raw.weeks : [], longest: raw.longest || null, rid: raw.rid || "", linkUrl: location.origin + location.pathname + location.search
     };
     wrap = document.createElement("div");
     wrap.className = "earn-root";
@@ -586,6 +586,12 @@ async function downloadEarnings(btn){
     let w = 210, h = canvas.height / canvas.width * 210;
     if(h > availH){ w = w * availH / h; h = availH; }
     pdf.addImage(canvas.toDataURL("image/jpeg", 0.98), "JPEG", (210 - w) / 2, 0, w, h);
+    // Make the "Open attendance report" box clickable (opens this member's day-by-day records).
+    const lb = wrap.querySelector("#khEarnLinkBox");
+    if(lb && E.linkUrl){
+      const wr = wrap.getBoundingClientRect(), r = lb.getBoundingClientRect();
+      pdf.link((210 - w) / 2 + (r.left - wr.left) / wr.width * w, (r.top - wr.top) / wr.height * h, r.width / wr.width * w, r.height / wr.height * h, { url: E.linkUrl });
+    }
     const gen = new Date(); const genTxt = String(gen.getDate()).padStart(2, "0") + " " + MONTHS[gen.getMonth()].slice(0, 3) + " " + gen.getFullYear();
     pdf.setDrawColor(228, 231, 236); pdf.setLineWidth(0.2); pdf.line(16, 281, 194, 281);
     pdf.setFont("helvetica", "bold"); pdf.setFontSize(7.5); pdf.setTextColor(23, 32, 51); pdf.text("masumcpex.com", 16, 286);

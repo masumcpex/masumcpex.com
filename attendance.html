@@ -322,87 +322,96 @@ body:not(.wt-loaded) .site-footer{display:none}
     <div class="kh-current-month-pill" id="dashboardMonthPill"></div>
   </div>
 
+  <section class="wt-today" id="wtTodayCard" aria-label="Today">
+    <div class="wt-today-head">
+      <div><div class="wt-today-eyebrow" data-i18n="today">আজ</div><div class="wt-today-date" id="wtTodayDate"></div></div>
+    </div>
+    <div class="wt-today-stats" id="wtTodayStats"></div>
+    <button type="button" class="wt-today-btn" id="wtTodayBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span>আজকের হাজিরা লিখুন</span></button>
+  </section>
+  <div class="wt-scope" id="wtScopeTabs" role="group" aria-label="Time range"><button type="button" data-scope="month" class="is-on" data-i18n="scope_m">এই মাস</button><button type="button" data-scope="all" data-i18n="scope_a">সব সময়</button></div>
+
   <div class="kh-quickstats" id="quickStats">
     <div class="kh-qs-card" data-stat="members" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Team Members — view details">
       <div class="kh-qs-main">
         <span class="kh-qs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 20v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
         <div class="kh-qs-text">
           <div class="kh-qs-value" id="qsMembers">0</div>
-        <div class="kh-qs-label">Team Members</div>
+        <div class="kh-qs-label" id="qsLblMembers">আমার টিম</div>
         </div>
       </div>
       <span class="kh-qs-chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-      <div class="kh-qs-action" aria-hidden="true"><span>View members</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></div>
+      <div class="kh-qs-action" aria-hidden="true"><span data-i18n="qa_members">View members</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>
     <div class="kh-qs-card" data-stat="present" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Present (This Month) — view details">
       <div class="kh-qs-main">
         <span class="kh-qs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
         <div class="kh-qs-text">
           <div class="kh-qs-value" id="qsPresent">0</div>
-        <div class="kh-qs-label">Present (This Month)</div>
+        <div class="kh-qs-label" id="qsLblPresent">এই মাসে কাজের দিন</div>
         </div>
       </div>
       <span class="kh-qs-chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-      <div class="kh-qs-action" aria-hidden="true"><span>View attendance</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></div>
+      <div class="kh-qs-action" aria-hidden="true"><span data-i18n="qa_att">View attendance</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>
     <div class="kh-qs-card" data-stat="hours" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Total Work Hours — view details">
       <div class="kh-qs-main">
         <span class="kh-qs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
         <div class="kh-qs-text">
           <div class="kh-qs-value" id="qsHours">0</div>
-        <div class="kh-qs-label">Total Work Hours</div>
+        <div class="kh-qs-label" id="qsLblHours">এই মাসে ঘণ্টা</div>
         </div>
       </div>
       <span class="kh-qs-chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-      <div class="kh-qs-action" aria-hidden="true"><span>View work hours</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></div>
+      <div class="kh-qs-action" aria-hidden="true"><span data-i18n="qa_hours">View work hours</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>
     <div class="kh-qs-card" data-stat="advance" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Total Advance — view details">
       <div class="kh-qs-main">
         <span class="kh-qs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v.01M18 14v.01"/></svg></span>
         <div class="kh-qs-text">
           <div class="kh-qs-value" id="qsAdvance">RM 0.00</div>
-        <div class="kh-qs-label">Total Advance</div>
+        <div class="kh-qs-label" id="qsLblAdvance">অ্যাডভান্স ব্যালেন্স</div>
         </div>
       </div>
       <span class="kh-qs-chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-      <div class="kh-qs-action" aria-hidden="true"><span>View &amp; manage</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></div>
+      <div class="kh-qs-action" aria-hidden="true"><span data-i18n="qa_adv">View &amp; manage</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>
   </div>
 
   <section class="kh-card kh-card--sky" id="sectionAttendance">
-    <h2 class="kh-card-title">Record Attendance</h2>
-    <p class="kh-section-desc">Select a member and record today's attendance and work hours.</p>
+    <h2 class="kh-card-title" data-i18n="rec_h">Record Attendance</h2>
+    <p class="kh-section-desc" data-i18n="rec_d">Select a member and record today's attendance and work hours.</p>
     <form id="entryForm" class="kh-form">
       <div class="kh-field">
-        <label>Date</label>
+        <label data-i18n="f_date">Date</label>
         <input type="date" id="entryDate" required onclick="this.showPicker()">
       </div>
       <div class="kh-field">
-        <label>Member Name</label>
+        <label data-i18n="f_member">Member Name</label>
         <select id="entryMember" required></select>
       </div>
       <div class="kh-field">
-        <label>Status</label>
+        <label data-i18n="f_status">Status</label>
         <div class="radio-row">
-          <label><input type="radio" name="status" value="duty" checked> Worked / Present</label>
-          <label><input type="radio" name="status" value="leave"> Leave</label>
+          <label><input type="radio" name="status" value="duty" checked> <span data-i18n="f_duty">Worked / Present</span></label>
+          <label><input type="radio" name="status" value="leave"> <span data-i18n="f_leave">Leave</span></label>
         </div>
       </div>
       <div class="kh-field" id="hoursField">
-        <label>Work Hours</label>
+        <label data-i18n="f_hours">Work Hours</label>
         <input type="number" id="entryHours" min="0" max="24" step="0.5" placeholder="e.g. 8">
         <span class="kh-field-error" id="entryHoursError" aria-live="polite"></span>
       </div>
-      <button type="submit" class="btn3d btn-sky kh-save-btn">Save Record</button>
+      <button type="submit" class="btn3d btn-sky kh-save-btn" data-i18n="f_save">Save Record</button>
     </form>
     <p class="kh-empty-note" id="noMemberWarn" style="display:none;">Add at least one member before recording attendance.</p>
   </section>
 
   <section class="kh-card kh-card--amber" id="sectionSummary">
-    <h2 class="kh-card-title">Monthly Summary</h2>
+    <h2 class="kh-card-title" data-i18n="sum_h">Monthly Summary</h2>
 
     <div class="filter-row kh-summary-month-row">
-      <label for="summaryMonthSelect" class="kh-summary-month-label">Viewing month:</label>
+      <label for="summaryMonthSelect" class="kh-summary-month-label" data-i18n="sum_m">Viewing month:</label>
       <select id="summaryMonthSelect"></select>
     </div>
 
@@ -442,18 +451,18 @@ body:not(.wt-loaded) .site-footer{display:none}
 
   <div class="wt-view" id="wtView-team" data-wt-view="team">
   <section class="kh-card kh-card--mint" id="sectionTeam">
-    <h2 class="kh-card-title">Add Member</h2>
-    <p class="kh-section-desc">Add a new team member. Edit or remove members from the Team Members list below.</p>
+    <h2 class="kh-card-title" data-i18n="am_h">Add Member</h2>
+    <p class="kh-section-desc" data-i18n="am_d">Add a new team member. Edit or remove members from the Team Members list below.</p>
     <div class="kh-add-row">
-      <input type="text" id="memberInput" placeholder="Enter new member name..." aria-label="New member name" autocomplete="off">
-      <button class="btn3d btn-mint" id="addMemberBtn">+ Add Member</button>
+      <input type="text" id="memberInput" placeholder="Enter new member name..." data-i18n-ph="am_ph" aria-label="New member name" autocomplete="off">
+      <button class="btn3d btn-mint" id="addMemberBtn" data-i18n="am_btn">+ Add Member</button>
     </div>
   </section>
 
   <section class="kh-card kh-card--mint" id="sectionMembers">
-    <h2 class="kh-card-title">Team Members</h2>
-    <p class="kh-section-desc">Everyone on your team. Use a card's menu to edit or remove a member.</p>
-    <h3 class="kh-subtitle">Team Overview</h3>
+    <h2 class="kh-card-title" data-i18n="tm_h">Team Members</h2>
+    <p class="kh-section-desc" data-i18n="tm_d">Everyone on your team. Use a card's menu to edit or remove a member.</p>
+    <h3 class="kh-subtitle" data-i18n="tm_s">Team Overview</h3>
     <div class="member-card-grid" id="memberChips"><!-- JS injects member profile cards --></div>
     <div class="kh-carousel-dots" id="memberDots"></div>
     <p class="kh-empty-note" id="noMemberNote" style="display:none;">No members added yet. Use the "Add Member" card above.</p>
@@ -500,10 +509,10 @@ body:not(.wt-loaded) .site-footer{display:none}
 
 
 <nav class="wt-bottom-nav" id="wtBottomNav" aria-label="Primary">
-  <a href="#sectionDashboard" class="wt-bn-item" data-wt-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></a>
-  <a href="#sectionAttendance" class="wt-bn-item" data-wt-view="dashboard" data-wt-target="sectionAttendance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14l2.5 2.5L16 11"/></svg><span>Record Attendance</span></a>
-  <a href="#attendanceRegisterSection" class="wt-bn-item" data-wt-view="register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg><span>Attendance Register</span></a>
-  <a href="#sectionSummary" class="wt-bn-item" data-wt-view="dashboard" data-wt-target="sectionSummary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="4" width="4" height="16" rx="1"/><rect x="16" y="9" width="4" height="11" rx="1"/></svg><span>Monthly Summary</span></a>
+  <a href="#sectionDashboard" class="wt-bn-item" data-wt-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span data-i18n="nav_dash">Dashboard</span></a>
+  <a href="#sectionAttendance" class="wt-bn-item" data-wt-view="dashboard" data-wt-target="sectionAttendance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14l2.5 2.5L16 11"/></svg><span data-i18n="nav_rec">Record Attendance</span></a>
+  <a href="#attendanceRegisterSection" class="wt-bn-item" data-wt-view="register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg><span data-i18n="nav_reg">Attendance Register</span></a>
+  <a href="#sectionSummary" class="wt-bn-item" data-wt-view="dashboard" data-wt-target="sectionSummary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="4" width="4" height="16" rx="1"/><rect x="16" y="9" width="4" height="11" rx="1"/></svg><span data-i18n="nav_sum">Monthly Summary</span></a>
   <button type="button" class="wt-bn-item" data-wt-menu data-wt-more aria-controls="wtSidebar" aria-expanded="false" aria-label="More"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg><span>More</span></button>
 </nav>
 </main>
@@ -807,6 +816,94 @@ body:not(.wt-loaded) .site-footer{display:none}
   }
 })();
 </script>
+<script>
+/* WorkTrack dashboard v2: Bengali/English labels, today's date, info tips */
+(function(){
+  var LANG="bn";try{LANG=localStorage.getItem("wt-lang")==="en"?"en":"bn"}catch(e){}
+  var D={
+    today:["আজ","Today"],scope_m:["এই মাস","This month"],scope_a:["সব সময়","All time"],
+    qa_members:["সদস্যরা","View members"],qa_att:["উপস্থিতি","View attendance"],qa_hours:["ঘণ্টার হিসাব","View work hours"],qa_adv:["দেখুন ও পরিচালনা","View & manage"],
+    nav_dash:["ড্যাশবোর্ড","Dashboard"],nav_rec:["হাজিরা লিখুন","Record Attendance"],nav_reg:["রেকর্ড","Attendance Register"],nav_sum:["রিপোর্ট","Monthly Summary"],
+    rec_h:["হাজিরা লিখুন","Record Attendance"],rec_d:["সদস্য বেছে হাজিরা ও কাজের ঘণ্টা লিখুন।","Select a member and record today's attendance and work hours."],
+    f_date:["তারিখ","Date"],f_member:["সদস্যের নাম","Member Name"],f_status:["অবস্থা","Status"],f_duty:["কাজ করেছে / উপস্থিত","Worked / Present"],f_leave:["ছুটি","Leave"],f_hours:["কাজের ঘণ্টা","Work Hours"],f_save:["সেভ করুন","Save Record"],
+    sum_h:["মাসিক রিপোর্ট","Monthly Summary"],sum_m:["মাস:","Viewing month:"],
+    am_h:["সদস্য যোগ করুন","Add Member"],am_d:["নতুন সদস্যের নাম লিখুন। নাম বদল বা মুছতে নিচের তালিকার কার্ডের মেনু ব্যবহার করুন।","Add a new team member. Edit or remove members from the Team Members list below."],am_btn:["+ সদস্য যোগ","+ Add Member"],am_ph:["নতুন সদস্যের নাম লিখুন...","Enter new member name..."],
+    tm_h:["টিম সদস্য","Team Members"],tm_d:["আপনার টিমের সবাই। প্রতিটি কার্ডে আজকের অবস্থা, এই মাসের হিসাব আর ID দেখা যায়।","Everyone on your team. Each card shows today's status, this month's totals and the ID."],tm_s:["সবার সারসংক্ষেপ (এই মাস)","Team Overview (this month)"]
+  };
+  var TIPS={
+    qsLblMembers:["আপনার টিমে মোট কতজন সদস্য আছে।","How many people are on your team."],
+    qsLblPresent:["বেছে নেওয়া সময়ে সব সদস্য মিলিয়ে মোট কত দিন কাজ করেছে। উপরের ট্যাবে এই মাস / সব সময় বদলানো যায়।","Total days worked by all members in the selected range. Switch this month / all time with the tabs above."],
+    qsLblHours:["বেছে নেওয়া সময়ে সবার মোট কাজের ঘণ্টা।","Total hours worked by everyone in the selected range."],
+    qsLblAdvance:["সবার অ্যাডভান্সের বর্তমান জমা ব্যালেন্স। এটা মাস বদলালে বদলায় না।","The current advance balance across everyone. It does not change with the month."]
+  };
+  function ap(){
+    var i=LANG==="en"?1:0;
+    document.querySelectorAll("[data-i18n]").forEach(function(e){var d=D[e.getAttribute("data-i18n")];if(d&&!e.children.length)e.textContent=d[i]});
+    document.querySelectorAll("[data-i18n-ph]").forEach(function(e){var d=D[e.getAttribute("data-i18n-ph")];if(d)e.setAttribute("placeholder",d[i])});
+    var dt=document.getElementById("wtTodayDate");
+    if(dt){try{dt.textContent=new Date().toLocaleDateString(LANG==="en"?"en-GB":"bn-BD",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}catch(e){}}
+  }
+  ap();
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)ap()});
+  /* small (i) tips on the dashboard number cards */
+  Object.keys(TIPS).forEach(function(id){
+    var el=document.getElementById(id);if(!el||el.querySelector(".wt-info"))return;
+    var b=document.createElement("span");b.className="wt-info";b.setAttribute("role","button");b.setAttribute("tabindex","0");b.setAttribute("aria-label","Info");b.textContent="i";
+    function show(ev){
+      ev.stopPropagation();ev.preventDefault();
+      var old=document.getElementById("wtTip");if(old)old.remove();
+      var t=document.createElement("div");t.id="wtTip";t.className="wt-tip";t.textContent=TIPS[id][LANG==="en"?1:0];
+      document.body.appendChild(t);
+      var r=b.getBoundingClientRect(),w=t.offsetWidth;
+      t.style.top=(window.scrollY+r.bottom+8)+"px";
+      t.style.left=Math.max(10,Math.min(window.innerWidth-w-10,r.left+window.scrollX-w/2))+"px";
+      setTimeout(function(){var x=document.getElementById("wtTip");if(x)x.remove()},4200);
+    }
+    b.addEventListener("click",show);b.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" ")show(e)});
+    el.appendChild(b);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".wt-info")){var x=document.getElementById("wtTip");if(x)x.remove()}});
+})();
+</script>
+<style id="wtDashV2Css">
+/* ===== Dashboard v2 ===== */
+.wt-today{margin:0 0 12px;padding:16px;border-radius:18px;background:linear-gradient(135deg,#0F2C4D,#14497d);color:#fff;box-shadow:0 8px 22px rgba(15,44,77,.22)}
+.wt-today-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.wt-today-eyebrow{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.wt-today-date{font-size:1rem;font-weight:700;margin-top:2px}
+.wt-today-stats{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 14px}
+.wt-tc-pill{display:inline-flex;gap:5px;align-items:baseline;font-size:.8rem;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.12)}
+.wt-tc-pill b{font-size:1rem}
+.wt-tc-pill.is-duty b{color:#5EE6A0}.wt-tc-pill.is-leave b{color:#FFC857}.wt-tc-pill.is-none b{color:#CBD5E1}
+.wt-tc-empty{font-size:.85rem;opacity:.9}
+.wt-today-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;border:none;border-radius:14px;padding:13px 14px;font-size:1rem;font-weight:800;font-family:inherit;color:#0F2C4D;background:#fff;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.wt-today-btn:active{transform:translateY(2px);box-shadow:none}
+.wt-today-btn svg{width:19px;height:19px}
+.wt-scope{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:rgba(128,128,128,.14);margin:0 0 12px}
+.wt-scope button{border:none;background:transparent;color:inherit;font-family:inherit;font-weight:700;font-size:.82rem;padding:7px 16px;border-radius:999px;cursor:pointer;opacity:.75}
+.wt-scope button.is-on{background:#0F4C81;color:#fff;opacity:1}
+.wt-info{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;border:1px solid currentColor;font-size:.62rem;font-weight:800;font-style:italic;opacity:.65;cursor:pointer;vertical-align:middle}
+.wt-tip{position:absolute;z-index:99999;max-width:230px;padding:9px 12px;border-radius:10px;background:#0F2C4D;color:#fff;font-size:.78rem;line-height:1.45;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+/* team members: grid instead of swipe */
+#memberChips.member-card-grid{display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:12px !important;overflow:visible !important;scroll-snap-type:none !important;flex-wrap:wrap}
+@media (min-width:760px){#memberChips.member-card-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important}}
+#memberDots{display:none !important}
+#memberChips .member-card{position:relative;display:flex !important;flex-direction:column;align-items:stretch;gap:8px;min-width:0 !important;width:auto !important;max-width:none !important;flex:none !important;padding:12px !important;scroll-snap-align:none}
+#memberChips .member-card-top{display:flex;justify-content:space-between;align-items:flex-start}
+#memberChips .member-card-body{min-width:0;display:flex;flex-direction:column;gap:5px}
+#memberChips .member-card-name{font-weight:800;overflow-wrap:anywhere}
+#memberChips .member-card-stats{font-size:.74rem;opacity:.8}
+.member-card-id{font-size:.68rem;opacity:.6;font-family:ui-monospace,Menlo,monospace;min-height:1em}
+.wt-today-chip{align-self:flex-start;font-size:.7rem;font-weight:800;padding:3px 9px;border-radius:999px}
+.wt-today-chip.is-duty{background:rgba(32,191,120,.16);color:#0E8A55}
+.wt-today-chip.is-leave{background:rgba(245,165,36,.2);color:#A66300}
+.wt-today-chip.is-none{background:rgba(128,128,128,.16);color:inherit;opacity:.85}
+.wt-card-linkbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid rgba(15,76,129,.35);background:rgba(15,76,129,.08);color:#0F4C81;font-weight:700;font-size:.78rem;padding:7px 10px;border-radius:10px;cursor:pointer;font-family:inherit}
+.wt-card-linkbtn svg{width:14px;height:14px}
+[data-theme="dark"] .wt-today-chip.is-duty{color:#5EE6A0}[data-theme="dark"] .wt-today-chip.is-leave{color:#FFC857}
+[data-theme="dark"] .wt-card-linkbtn{color:#8FBFFF;border-color:rgba(143,191,255,.4);background:rgba(143,191,255,.1)}
+[data-theme="dark"] .wt-scope button.is-on{background:#2B6CB0}
+</style>
 <div id="khToastContainer" class="kh-toast-container" aria-live="polite"></div>
 
 <style>

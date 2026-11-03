@@ -447,6 +447,16 @@ export function initKhApp(uid, isAdmin){
     for(let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
     return AVATAR_COLORS[hash % AVATAR_COLORS.length];
   }
+  // ---- WorkTrack dashboard v2 helpers (language + today status) ----
+  const WT_LANG = (() => { try{ return localStorage.getItem("wt-lang") === "en" ? "en" : "bn"; }catch(e){ return "bn"; } })();
+  const tr = (bn, en) => WT_LANG === "en" ? en : bn;
+  window.__wtScope = window.__wtScope || "month";
+  function todayStatusFor(name){
+    const t = new Date();
+    const ds = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}-${String(t.getDate()).padStart(2, "0")}`;
+    const r = records.find(x => x.member === name && x.date === ds);
+    return r ? (r.status === "duty" ? "duty" : "leave") : "none";
+  }
   function monthStatsFor(name, ym){
     const monthRecords = records.filter(r => r.member === name && r.date.startsWith(ym));
     let hours = 0, duty = 0, leave = 0;
@@ -1037,22 +1047,30 @@ export function initKhApp(uid, isAdmin){
       const stats = monthStatsFor(m.name, ym);
       const initial = (m.name || "?").trim().charAt(0).toUpperCase();
       const isSelected = m.id === selectedMemberId;
+      const st = todayStatusFor(m.name);
+      const stTxt = st === "duty" ? tr("আজ: উপস্থিত","Today: Present") : st === "leave" ? tr("আজ: ছুটি","Today: Leave") : tr("আজ: বাকি","Today: Pending");
+      const stats2 = WT_LANG === "en" ? `${stats.hours}h • ${stats.duty} Duty • ${stats.leave} Leave` : `${stats.hours} ঘণ্টা • ${stats.duty} দিন কাজ • ${stats.leave} দিন ছুটি`;
       return `
       <div class="member-card${isSelected ? " is-selected" : ""}" data-id="${m.id}" data-name="${escapeHtmlLocal(m.name)}">
-        <div class="member-card-avatar" style="background:${avatarColorFor(m.id)}">${escapeHtmlLocal(initial)}</div>
-        <div class="member-card-body">
-          <div class="member-card-name">${escapeHtmlLocal(m.name)}</div>
-          <div class="member-card-stats">${stats.hours}h • ${stats.duty} Duty • ${stats.leave} Leave</div>
-        </div>
-        <div class="member-card-actions">
-          <button type="button" class="member-card-icon-btn member-card-more" data-id="${m.id}" title="More options" aria-label="More options" aria-haspopup="true">${ICON_KEBAB}</button>
-          <div class="member-card-menu" data-id="${m.id}">
-            <button type="button" class="member-card-menu-item member-card-view" data-id="${m.id}">${ICON_USER}View Profile</button>
-            <button type="button" class="member-card-menu-item member-card-edit" data-id="${m.id}">${ICON_EDIT}Edit Member</button>
-            <button type="button" class="member-card-menu-item member-card-share" data-id="${m.id}">${ICON_SHARE}Share Attendance</button>
-            <button type="button" class="member-card-menu-item is-danger member-card-delete" data-id="${m.id}">${ICON_TRASH}Remove Member</button>
+        <div class="member-card-top">
+          <div class="member-card-avatar" style="background:${avatarColorFor(m.id)}">${escapeHtmlLocal(initial)}</div>
+          <div class="member-card-actions">
+            <button type="button" class="member-card-icon-btn member-card-more" data-id="${m.id}" title="${tr("আরও","More options")}" aria-label="More options" aria-haspopup="true">${ICON_KEBAB}</button>
+            <div class="member-card-menu" data-id="${m.id}">
+              <button type="button" class="member-card-menu-item member-card-view" data-id="${m.id}">${ICON_USER}${tr("প্রোফাইল দেখুন","View Profile")}</button>
+              <button type="button" class="member-card-menu-item member-card-edit" data-id="${m.id}">${ICON_EDIT}${tr("নাম বদলান","Edit Member")}</button>
+              <button type="button" class="member-card-menu-item member-card-share" data-id="${m.id}">${ICON_SHARE}${tr("লিংক শেয়ার","Share Attendance")}</button>
+              <button type="button" class="member-card-menu-item is-danger member-card-delete" data-id="${m.id}">${ICON_TRASH}${tr("সদস্য মুছুন","Remove Member")}</button>
+            </div>
           </div>
         </div>
+        <div class="member-card-body">
+          <div class="member-card-name">${escapeHtmlLocal(m.name)}</div>
+          <span class="wt-today-chip is-${st}">${stTxt}</span>
+          <div class="member-card-stats">${stats2}</div>
+          <div class="member-card-id">${m.memberId ? "ID: " + escapeHtmlLocal(m.memberId) : ""}</div>
+        </div>
+        <button type="button" class="member-card-share wt-card-linkbtn" data-id="${m.id}" aria-label="${tr("লিংক কপি করুন","Share link")}">${ICON_SHARE}<span>${tr("লিংক","Link")}</span></button>
       </div>`;
     }).join("");
     const memberDots = document.getElementById("memberDots");
@@ -1663,26 +1681,65 @@ export function initKhApp(uid, isAdmin){
     renderCalendar();
   }
 
+  function renderTodayCard(){
+    const el = document.getElementById("wtTodayStats");
+    if(!el) return;
+    let p = 0, l = 0;
+    members.forEach(m => { const st = todayStatusFor(m.name); if(st === "duty") p++; else if(st === "leave") l++; });
+    const pending = Math.max(0, members.length - p - l);
+    el.innerHTML = members.length
+      ? `<span class="wt-tc-pill is-duty"><b>${p}</b> ${tr("উপস্থিত","present")}</span><span class="wt-tc-pill is-leave"><b>${l}</b> ${tr("ছুটি","leave")}</span><span class="wt-tc-pill is-none"><b>${pending}</b> ${tr("বাকি","pending")}</span>`
+      : `<span class="wt-tc-empty">${tr("আগে প্রথম সদস্য যোগ করুন","Add your first member to begin")}</span>`;
+    const btn = document.getElementById("wtTodayBtn");
+    if(btn) btn.querySelector("span").textContent = members.length ? tr("আজকের হাজিরা লিখুন","Record today's attendance") : tr("সদস্য যোগ করুন","Add a member");
+  }
+
   function renderQuickStats(){
     const ym = currentYearMonth();
-    const monthRecords = records.filter(r => r.date.startsWith(ym));
+    const all = window.__wtScope === "all";
+    const baseRecords = all ? records : records.filter(r => r.date.startsWith(ym));
     let present = 0, hours = 0;
-    monthRecords.forEach(r => {
+    baseRecords.forEach(r => {
       if(r.status === "duty"){ present++; hours += (r.hours || 0); }
     });
+    hours = Math.round(hours * 100) / 100;
     const totalAdvance = members.reduce((sum, m) => sum + (typeof m.advance === "number" ? m.advance : 0), 0);
-    const qsMembers = document.getElementById("qsMembers");
-    const qsPresent = document.getElementById("qsPresent");
-    const qsHours   = document.getElementById("qsHours");
-    const qsAdvance = document.getElementById("qsAdvance");
-    if(qsMembers) qsMembers.textContent = toBn(members.length);
-    if(qsPresent) qsPresent.textContent = toBn(present);
-    if(qsHours)   qsHours.textContent = toBn(hours);
-    if(qsAdvance) qsAdvance.textContent = `RM ${totalAdvance.toFixed(2)}`;
+    const set = (id, v) => { const e = document.getElementById(id); if(e) e.textContent = v; };
+    set("qsMembers", toBn(members.length));
+    set("qsPresent", toBn(present));
+    set("qsHours", toBn(hours));
+    set("qsAdvance", `RM ${totalAdvance.toFixed(2)}`);
+    set("qsLblMembers", tr("আমার টিম", "My team"));
+    set("qsLblPresent", all ? tr("মোট কাজের দিন", "Total days worked") : tr("এই মাসে কাজের দিন", "Days worked this month"));
+    set("qsLblHours", all ? tr("মোট ঘণ্টা", "Total hours") : tr("এই মাসে ঘণ্টা", "Hours this month"));
+    set("qsLblAdvance", tr("অ্যাডভান্স ব্যালেন্স", "Advance balance"));
     const pill = document.getElementById("dashboardMonthPill");
-    if(pill) pill.textContent = monthLabel(ym);
+    if(pill) pill.textContent = all ? tr("সব সময়ের হিসাব", "All-time totals") : monthLabel(ym);
+    document.querySelectorAll("#wtScopeTabs button").forEach(b => b.classList.toggle("is-on", b.dataset.scope === (all ? "all" : "month")));
+    renderTodayCard();
     refreshStatSheet();
   }
+  (function bindScopeTabs(){
+    const tabs = document.getElementById("wtScopeTabs");
+    if(!tabs || tabs.dataset.bound) return;
+    tabs.dataset.bound = "1";
+    tabs.addEventListener("click", e => {
+      const b = e.target.closest("button[data-scope]");
+      if(!b) return;
+      window.__wtScope = b.dataset.scope === "all" ? "all" : "month";
+      renderQuickStats();
+    });
+    const tb = document.getElementById("wtTodayBtn");
+    if(tb) tb.addEventListener("click", () => {
+      if(!members.length){
+        if(window.wtShowView) window.wtShowView("team", { keepScroll: true, target: "sectionTeam" });
+        setTimeout(() => { const i = document.getElementById("memberInput"); if(i) i.focus({ preventScroll: false }); }, 120);
+        return;
+      }
+      const sec = document.getElementById("sectionAttendance");
+      if(sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  })();
 
   summaryMonthSelect?.addEventListener("change", () => { renderSummary(); renderOverview(); });
 

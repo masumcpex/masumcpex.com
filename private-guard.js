@@ -1,4 +1,4 @@
-import { getActiveSessionKey, clearSession, refreshSession } from "./private-access.js";
+import { getChapterKey, clearChapter, refreshChapter } from "./private-access.js";
 
 function hexToBytes(hex) {
   const bytes = new Uint8Array(hex.length / 2);
@@ -9,20 +9,20 @@ function b64ToBytes(b64) {
   return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
 }
 
-export async function guardPrivatePage({ contentId, signOutBtnId, onReady }) {
+// chapter = this page's own slug (e.g. "nasir"): only THAT chapter's password can open it.
+export async function guardPrivatePage({ chapter, contentId, signOutBtnId, onReady }) {
   const contentEl = document.getElementById(contentId);
 
   function redirectHome() {
     window.location.href = "hidden.html";
   }
 
-  const hexKey = getActiveSessionKey();
+  const hexKey = getChapterKey(chapter);
   if (!hexKey) { redirectHome(); return; }
 
   const cipherEl = document.getElementById(contentId + "Cipher");
 
   if (cipherEl) {
-    
     let payload;
     try {
       payload = JSON.parse(cipherEl.textContent);
@@ -39,18 +39,17 @@ export async function guardPrivatePage({ contentId, signOutBtnId, onReady }) {
       );
       contentEl.innerHTML = new TextDecoder().decode(plainBuf);
     } catch (e) {
-      
-      clearSession();
+      clearChapter(chapter);
       redirectHome();
       return;
     }
   }
- 
-  refreshSession();
+
+  refreshChapter(chapter);
 
   const signOutBtn = signOutBtnId ? document.getElementById(signOutBtnId) : null;
   signOutBtn?.addEventListener("click", () => {
-    clearSession();
+    clearChapter(chapter);
     redirectHome();
   });
 

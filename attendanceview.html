@@ -28,6 +28,9 @@ button,select,textarea,input{ font-family:inherit; font-size:1rem; }
   display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 2px 10px rgba(15,44,77,.25);
 }
 .brandrow{ display:flex; align-items:center; gap:11px; min-width:0; }
+a.brandrow{text-decoration:none;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+a.brandrow:active{opacity:.85}
+
 .mark{ height:40px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.5rem; color:#fff; flex-shrink:0; }
 .mark img{ height:34px; width:auto; max-width:46vw; display:block; object-fit:contain; }
 .byline{ display:inline-flex; align-items:center; gap:8px; margin-bottom:6px; font-weight:700; color:#475467; }
@@ -157,7 +160,7 @@ footer a, .state a{ color:var(--navy); font-weight:700; }
 </head>
 <body>
 <header class="bar">
-  <div class="brandrow"><div class="mark" aria-hidden="true"><img src="masum2.png" alt="" decoding="async" onerror="this.parentNode.textContent='M'"></div><div class="brand">WORKTRACK<small>Attendance &amp; Workforce Management</small></div></div>
+  <a class="brandrow" href="https://masumcpex.com" target="_blank" rel="noopener noreferrer" aria-label="Masum Cpex website (opens in a new tab)"><div class="mark" aria-hidden="true"><img src="masum2.png" alt="" decoding="async" onerror="this.parentNode.textContent='M'"></div><div class="brand">WORKTRACK<small>Attendance &amp; Workforce Management</small></div></a>
   <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>View only</span>
 </header>
 <main id="app" aria-live="polite">

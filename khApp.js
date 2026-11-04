@@ -1,6 +1,7 @@
 import {
   db, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot,
-  query, where, serverTimestamp, writeBatch, runTransaction, getDoc, setDoc, getDocs
+  query, where, serverTimestamp, writeBatch, runTransaction, getDoc, setDoc, getDocs,
+  auth, GoogleAuthProvider, FacebookAuthProvider, EmailAuthProvider, reauthenticateWithPopup
 } from "./firebase.js";
 
 const membersCol = collection(db, "kh_members");
@@ -1691,6 +1692,219 @@ export function initKhApp(uid, isAdmin){
     renderOverview();
     renderCalendar();
   }
+
+  // ===== Backup & Delete account (More menu) =====
+  let accountDeleting = false;
+  const AUTH_MODULE_URL = "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  function fileStamp(){
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+  function downloadBlob(filename, blob){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 1500);
+  }
+  function csvCell(v){
+    const t = String(v == null ? "" : v);
+    return /[",\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+  }
+  async function downloadBackupJson(){
+    let meta = null;
+    try{ const sn = await getDoc(doc(db, "kh_meta", uid)); if(sn.exists()) meta = sn.data(); }catch(e){ /* optional */ }
+    const data = {
+      app: "WorkTrack", format: 1, exportedAt: new Date().toISOString(),
+      members: members.map(m => ({ ...m })),
+      records: records.map(r => ({ ...r })),
+      settings: meta
+    };
+    const text = JSON.stringify(data, function(k, v){
+      const raw = this[k];
+      return raw && typeof raw.toDate === "function" ? raw.toDate().toISOString() : v;   // Firestore time → text
+    }, 2);
+    downloadBlob(`worktrack-backup-${fileStamp()}.json`, new Blob([text], { type: "application/json" }));
+  }
+  function downloadAttendanceCsv(){
+    const rows = [["Date", "Member", "Status", "Hours"]];
+    records.slice().sort((a, b) => String(a.date).localeCompare(String(b.date)) || String(a.member).localeCompare(String(b.member)))
+      .forEach(r => rows.push([r.date, r.member, r.status === "duty" ? "Present" : "Leave", r.status === "duty" ? (r.hours || 0) : ""]));
+    const text = "\ufeff" + rows.map(r => r.map(csvCell).join(",")).join("\r\n");   // BOM so Excel reads Bengali names correctly
+    downloadBlob(`worktrack-attendance-${fileStamp()}.csv`, new Blob([text], { type: "text/csv;charset=utf-8" }));
+  }
+
+  function openOverlay(id, inner){
+    const old = document.getElementById(id);
+    if(old) old.remove();
+    const ov = document.createElement("div");
+    ov.id = id;
+    ov.className = "kh-modal-overlay";
+    ov.style.display = "flex";
+    ov.style.zIndex = "2147483000";
+    ov.innerHTML = inner;
+    document.body.appendChild(ov);
+    return ov;
+  }
+
+  function openBackupDialog(){
+    if(!membersLoaded || !recordsLoaded){ showToast(tr("একটু অপেক্ষা করুন, ডেটা লোড হচ্ছে।", "Please wait, data is still loading."), "warning"); return; }
+    const ov = openOverlay("wtBackupOverlay", `
+      <div class="kh-modal-card wt-bk-card" role="dialog" aria-modal="true">
+        <button type="button" class="kh-modal-x" id="wtBkX" aria-label="Close">${ICON_CLOSE}</button>
+        <p class="wt-dlg-title">${tr("ডেটা ব্যাকআপ", "Backup your data")}</p>
+        <p class="wt-dlg-sub">${tr(`${members.length} জন সদস্য, ${records.length}টি হাজিরা রেকর্ড, অ্যাডভান্স ও রেট ফাইলে নামবে। ফাইলটা নিরাপদ জায়গায় রাখুন।`, `${members.length} members, ${records.length} attendance records, advances and rates will be saved to a file. Keep it somewhere safe.`)}</p>
+        <div class="wt-dlg-btns">
+          <button type="button" class="btn3d btn-sky" id="wtBkJson">${tr("সম্পূর্ণ ব্যাকআপ (JSON)", "Full backup (JSON)")}</button>
+          <button type="button" class="btn3d btn-mint" id="wtBkCsv">${tr("হাজিরার তালিকা (Excel / CSV)", "Attendance list (Excel / CSV)")}</button>
+        </div>
+        <p class="wt-dlg-note">${tr("শেয়ার লিংকের গোপন টোকেন ব্যাকআপে থাকে না।", "Share-link secret tokens are not included in the backup.")}</p>
+      </div>`);
+    const close = () => ov.remove();
+    ov.addEventListener("click", e => { if(e.target === ov) close(); });
+    ov.querySelector("#wtBkX").addEventListener("click", close);
+    ov.querySelector("#wtBkJson").addEventListener("click", async () => {
+      try{ await downloadBackupJson(); showToast(tr("ব্যাকআপ ফাইল নামানো হয়েছে।", "Backup file downloaded.")); }
+      catch(err){ console.error(err); showToast(tr("ব্যাকআপ নামানো যায়নি।", "Could not create the backup."), "error"); }
+    });
+    ov.querySelector("#wtBkCsv").addEventListener("click", () => {
+      try{ downloadAttendanceCsv(); showToast(tr("হাজিরার তালিকা নামানো হয়েছে।", "Attendance list downloaded.")); }
+      catch(err){ console.error(err); showToast(tr("ফাইল নামানো যায়নি।", "Could not create the file."), "error"); }
+    });
+  }
+
+  async function deleteRefsInBatches(refs){
+    for(let i = 0; i < refs.length; i += 400){
+      const batch = writeBatch(db);
+      refs.slice(i, i + 400).forEach(r => batch.delete(r));
+      await batch.commit();
+    }
+  }
+
+  // Proves "it is really you" right before deleting. The sign-in popup must be the FIRST thing that happens after the tap.
+  async function reauthForDelete(user, password){
+    const pid = (user.providerData && user.providerData[0] && user.providerData[0].providerId) || "";
+    if(pid === "google.com") await reauthenticateWithPopup(user, new GoogleAuthProvider());
+    else if(pid === "facebook.com") await reauthenticateWithPopup(user, new FacebookAuthProvider());
+    else if(pid === "password"){
+      const m = await import(AUTH_MODULE_URL);
+      await m.reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password));
+    }else{
+      const last = Date.parse((user.metadata && user.metadata.lastSignInTime) || "") || 0;
+      if(Date.now() - last > 4 * 60 * 1000) throw new Error("needs-fresh-login");
+    }
+  }
+
+  function openDeleteAccountDialog(){
+    if(!membersLoaded || !recordsLoaded){ showToast(tr("একটু অপেক্ষা করুন, ডেটা লোড হচ্ছে।", "Please wait, data is still loading."), "warning"); return; }
+    const user = auth.currentUser;
+    if(!user){ showToast(tr("আবার লগইন করুন।", "Please sign in again."), "error"); return; }
+    const isPassword = !!(user.providerData && user.providerData[0] && user.providerData[0].providerId === "password");
+    const activeLinks = shares.filter(x => x.active === true).length;
+    const ov = openOverlay("wtDeleteOverlay", `
+      <div class="kh-modal-card wt-del-card" role="dialog" aria-modal="true">
+        <button type="button" class="kh-modal-x" id="wtDelX" aria-label="Close">${ICON_CLOSE}</button>
+        <p class="wt-dlg-title wt-del-title">${tr("অ্যাকাউন্ট চিরতরে ডিলিট করবেন?", "Delete your account forever?")}</p>
+        <p class="wt-dlg-sub">${tr("এটা আর ফেরানো যাবে না। যা যা মুছে যাবে:", "This cannot be undone. This will be deleted:")}</p>
+        <ul class="wt-del-list">
+          <li>${tr(`${members.length} জন সদস্য`, `${members.length} team member(s)`)}</li>
+          <li>${tr(`${records.length}টি হাজিরা রেকর্ড, অ্যাডভান্স ও রেট`, `${records.length} attendance record(s), advances and rates`)}</li>
+          <li>${tr(`${activeLinks}টি চালু শেয়ার লিংক (সাথে সাথে বন্ধ হবে)`, `${activeLinks} active share link(s) (closed immediately)`)}</li>
+          <li>${tr("আপনার লগইন অ্যাকাউন্ট", "Your sign-in account")}</li>
+        </ul>
+        <button type="button" class="wt-del-bk" id="wtDelBackup">${tr("আগে ব্যাকআপ নামান", "Download a backup first")}</button>
+        ${isPassword ? `<input type="password" id="wtDelPw" class="wt-del-input" autocomplete="current-password" placeholder="${tr("আপনার পাসওয়ার্ড", "Your password")}">` : ""}
+        <label class="wt-del-lbl" for="wtDelType">${tr("নিশ্চিত করতে নিচে DELETE লিখুন", "Type DELETE below to confirm")}</label>
+        <input type="text" id="wtDelType" class="wt-del-input" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="DELETE">
+        <p class="wt-del-status" id="wtDelStatus" aria-live="polite"></p>
+        <div class="wt-dlg-btns">
+          <button type="button" class="btn3d btn-coral" id="wtDelGo" disabled>${tr("চিরতরে ডিলিট করুন", "Delete forever")}</button>
+          <button type="button" class="wt-del-cancel" id="wtDelCancel">${tr("বাতিল", "Cancel")}</button>
+        </div>
+      </div>`);
+    const close = () => { if(!accountDeleting) ov.remove(); };
+    ov.addEventListener("click", e => { if(e.target === ov) close(); });
+    ov.querySelector("#wtDelX").addEventListener("click", close);
+    ov.querySelector("#wtDelCancel").addEventListener("click", close);
+    ov.querySelector("#wtDelBackup").addEventListener("click", async () => {
+      try{ await downloadBackupJson(); showToast(tr("ব্যাকআপ ফাইল নামানো হয়েছে।", "Backup file downloaded.")); }
+      catch(err){ console.error(err); showToast(tr("ব্যাকআপ নামানো যায়নি।", "Could not create the backup."), "error"); }
+    });
+    const typed = ov.querySelector("#wtDelType");
+    const go = ov.querySelector("#wtDelGo");
+    const okWord = v => { const t = String(v || "").trim(); return t.toUpperCase() === "DELETE" || t === "ডিলেট"; };
+    typed.addEventListener("input", () => { go.disabled = !okWord(typed.value); });
+    go.addEventListener("click", () => runAccountDeletion(ov, user, isPassword ? (ov.querySelector("#wtDelPw").value || "") : ""));
+  }
+
+  async function runAccountDeletion(ov, user, password){
+    const status = msg => { const e = ov.querySelector("#wtDelStatus"); if(e) e.textContent = msg; };
+    const go = ov.querySelector("#wtDelGo");
+    if(go) go.disabled = true;
+    // 1) identity check first (nothing is deleted if this fails)
+    try{
+      status(tr("পরিচয় যাচাই হচ্ছে…", "Checking it is you…"));
+      await reauthForDelete(user, password);
+    }catch(err){
+      console.error(err);
+      if(go) go.disabled = false;
+      status(err && err.message === "needs-fresh-login"
+        ? tr("নিরাপত্তার জন্য আগে লগআউট করে আবার লগইন করুন, তারপর ৫ মিনিটের মধ্যে ডিলিট করুন। কিছু মোছা হয়নি।", "For safety, log out and sign in again, then delete within 5 minutes. Nothing was deleted.")
+        : tr("পরিচয় যাচাই হয়নি, তাই কিছুই মোছা হয়নি। আবার চেষ্টা করুন।", "Identity check failed, so nothing was deleted. Please try again."));
+      return;
+    }
+    accountDeleting = true;
+    clearTimeout(shareSyncTimer);
+    let dataGone = false;
+    try{
+      // 2) close share links first, so nobody can see anything any more
+      status(tr("শেয়ার লিংক বন্ধ করা হচ্ছে…", "Closing share links…"));
+      const shareSnap = await getDocs(query(collection(db, SHARE_COLLECTION), where("ownerId", "==", uid)));
+      for(const d of shareSnap.docs){
+        try{ await updateDoc(d.ref, { active: false, memberName: "", records: [], dates: [], hash: "", earnings: {}, disabledAt: serverTimestamp(), updatedAt: serverTimestamp() }); }
+        catch(e){ console.warn("share scrub failed", e); }
+        try{ await deleteDoc(d.ref); }catch(e){ /* the rules do not allow deleting: the emptied, closed shell stays and shows nothing */ }
+      }
+      // 3) issue reports, attendance records, members
+      status(tr("রিপোর্ট ও হাজিরা মোছা হচ্ছে…", "Deleting reports and attendance…"));
+      const repSnap = await getDocs(query(collection(db, REPORT_COLLECTION), where("ownerId", "==", uid)));
+      await deleteRefsInBatches(repSnap.docs.map(d => d.ref));
+      const recSnap = await getDocs(query(recordsCol, where("ownerId", "==", uid)));
+      await deleteRefsInBatches(recSnap.docs.map(d => d.ref));
+      status(tr("সদস্য মোছা হচ্ছে…", "Deleting members…"));
+      const memSnap = await getDocs(query(membersCol, where("ownerId", "==", uid)));
+      await deleteRefsInBatches(memSnap.docs.map(d => d.ref));
+      try{ await deleteDoc(doc(db, "kh_meta", uid)); }catch(e){ console.warn(e); }
+      try{ await deleteDoc(doc(db, "kh_users", uid)); }catch(e){ console.warn(e); }
+      dataGone = true;
+      // 4) the sign-in account itself
+      status(tr("লগইন অ্যাকাউন্ট মোছা হচ্ছে…", "Deleting your sign-in account…"));
+      const m = await import(AUTH_MODULE_URL);
+      await m.deleteUser(user);
+      ov.querySelector(".wt-del-card").innerHTML = `
+        <p class="wt-dlg-title">${tr("অ্যাকাউন্ট ডিলিট হয়েছে", "Account deleted")}</p>
+        <p class="wt-dlg-sub">${tr("আপনার সব ডেটা মুছে গেছে। এখন পেজটা বন্ধ হয়ে লগইন পেজে যাবে।", "All your data has been removed. The page will now return to the sign-in screen.")}</p>`;
+      setTimeout(() => { window.location.replace(window.location.pathname); }, 2500);
+    }catch(err){
+      console.error(err);
+      accountDeleting = false;
+      if(go) go.disabled = false;
+      status(dataGone
+        ? tr("আপনার ডেটা মুছে গেছে, কিন্তু লগইন অ্যাকাউন্ট মোছা যায়নি। লগআউট করে আবার লগইন করুন, তারপর আবার ডিলিট চাপুন।", "Your data was deleted, but the sign-in account could not be removed. Log out, sign in again and press delete once more.")
+        : tr("সব মোছা যায়নি। কিছু ডেটা থেকে যেতে পারে, আবার চেষ্টা করুন।", "Not everything could be deleted. Some data may remain, please try again."));
+    }
+  }
+
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-wt-backup]");
+    const d = e.target.closest("[data-wt-delete-account]");
+    if(!b && !d) return;
+    e.preventDefault();
+    const closeBtn = document.querySelector("[data-wt-menu-close]");
+    if(closeBtn && document.getElementById("wtSidebar") && document.getElementById("wtSidebar").classList.contains("is-open")) closeBtn.click();
+    if(b) openBackupDialog(); else openDeleteAccountDialog();
+  });
 
   function renderTodayCard(){
     const el = document.getElementById("wtTodayStats");
@@ -3411,6 +3625,7 @@ export function initKhApp(uid, isAdmin){
   }
 
   async function syncShares(){
+    if(accountDeleting) return;
     if(!membersLoaded || !recordsLoaded || !sharesLoaded) return;   // never push half-loaded (empty) data
     for(const sh of shares){
       if(sh.active !== true) continue;
@@ -3431,7 +3646,7 @@ export function initKhApp(uid, isAdmin){
   }
 
   function scheduleShareSync(){
-    if(!shares.length) return;
+    if(accountDeleting || !shares.length) return;
     clearTimeout(shareSyncTimer);
     shareSyncTimer = setTimeout(syncShares, 1200);   // batches bursts (e.g. Delete Month) into one write
   }

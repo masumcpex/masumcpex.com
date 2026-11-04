@@ -295,6 +295,8 @@ body:not(.wt-loaded) .site-footer{display:none}
       </div>
     </div>
     <a href="#wtData" class="kh-sidebar-link" data-wt-view="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span>Data &amp; Privacy</span></a>
+    <a href="#" class="kh-sidebar-link" data-wt-backup><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span data-i18n="bk">Backup my data</span></a>
+    <a href="#" class="kh-sidebar-link wt-side-danger" data-wt-delete-account><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg><span data-i18n="da">Delete my account</span></a>
     <a href="#wtContact" class="kh-sidebar-link" data-wt-view="contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg><span>Contact</span></a>
 
     <div class="wt-side-label">Legal &amp; Policies</div>
@@ -478,6 +480,14 @@ body:not(.wt-loaded) .site-footer{display:none}
       <div class="wt-data-actions">
         <button type="button" class="btn3d btn-sky wt-data-btn" data-wt-goto="register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg> Reports &amp; Export</button>
         <button type="button" class="btn3d btn-indigo wt-data-btn" data-wt-pw><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Set / change password</button>
+      </div>
+    </section>
+    <section class="kh-card" id="wtYourControl">
+      <h2 class="kh-card-title" data-i18n="yc_h">Your data, your control</h2>
+      <p class="kh-section-desc" data-i18n="yc_d">Save a copy of your data any time, or delete your account and everything in it.</p>
+      <div class="wt-yc-btns">
+        <button type="button" class="btn3d btn-sky" data-wt-backup><span data-i18n="bk">Backup my data</span></button>
+        <button type="button" class="btn3d btn-coral" data-wt-delete-account><span data-i18n="da">Delete my account</span></button>
       </div>
     </section>
   </div>
@@ -829,7 +839,7 @@ body:not(.wt-loaded) .site-footer{display:none}
     f_date:["তারিখ","Date"],f_member:["সদস্যের নাম","Member Name"],f_status:["অবস্থা","Status"],f_duty:["কাজ করেছে / উপস্থিত","Worked / Present"],f_leave:["ছুটি","Leave"],f_hours:["কাজের ঘণ্টা","Work Hours"],f_save:["সেভ করুন","Save Record"],
     sum_h:["মাসিক রিপোর্ট","Monthly Summary"],sum_m:["মাস:","Viewing month:"],
     am_h:["সদস্য যোগ করুন","Add Member"],am_d:["নতুন সদস্যের নাম লিখুন। নাম বদল বা মুছতে নিচের তালিকার কার্ডের মেনু ব্যবহার করুন।","Add a new team member. Edit or remove members from the Team Members list below."],am_btn:["+ সদস্য যোগ","+ Add Member"],am_ph:["নতুন সদস্যের নাম লিখুন...","Enter new member name..."],
-    tm_h:["টিম সদস্য","Team Members"],tm_d:["আপনার টিমের সবাই। প্রতিটি কার্ডে আজকের অবস্থা, এই মাসের হিসাব আর ID দেখা যায়।","Everyone on your team. Each card shows today's status, this month's totals and the ID."],tm_s:["সবার সারসংক্ষেপ (এই মাস)","Team Overview (this month)"]
+    tm_h:["টিম সদস্য","Team Members"],bk:["ডেটা ব্যাকআপ","Backup my data"],da:["অ্যাকাউন্ট ডিলিট","Delete my account"],yc_h:["আপনার ডেটা, আপনার নিয়ন্ত্রণ","Your data, your control"],yc_d:["যেকোনো সময় ডেটার কপি নামান, অথবা অ্যাকাউন্ট ও ভেতরের সব ডেটা ডিলিট করুন।","Save a copy of your data any time, or delete your account and everything in it."],tm_d:["আপনার টিমের সবাই। প্রতিটি কার্ডে আজকের অবস্থা, এই মাসের হিসাব আর ID দেখা যায়।","Everyone on your team. Each card shows today's status, this month's totals and the ID."],tm_s:["সবার সারসংক্ষেপ (এই মাস)","Team Overview (this month)"]
   };
   var TIPS={
     qsLblMembers:["আপনার টিমে মোট কতজন সদস্য আছে।","How many people are on your team."],
@@ -875,6 +885,22 @@ body:not(.wt-loaded) .site-footer{display:none}
 .wt-today-earn{flex:none;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.13);color:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
 .wt-today-earn svg{width:21px;height:21px}
 .wt-today-earn:active{transform:scale(.93);background:rgba(255,255,255,.22)}
+.wt-side-danger{color:#D64545 !important}
+.wt-yc-btns{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.wt-dlg-title{margin:0 0 .35rem;font-weight:800;font-size:1.1rem}
+.wt-del-title{color:#D64545}
+.wt-dlg-sub{margin:0 0 .6rem;font-size:.9rem;line-height:1.5;opacity:.85}
+.wt-dlg-note{margin:.7rem 0 0;font-size:.74rem;opacity:.65}
+.wt-dlg-btns{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.wt-del-list{margin:0 0 .8rem;padding-left:1.1rem;font-size:.88rem;line-height:1.6;text-align:left}
+.wt-del-bk{width:100%;border:1px dashed rgba(15,76,129,.5);background:rgba(15,76,129,.07);color:#0F4C81;font-weight:700;font-size:.85rem;padding:9px;border-radius:10px;cursor:pointer;font-family:inherit;margin-bottom:12px}
+.wt-del-lbl{display:block;font-size:.82rem;font-weight:700;margin:6px 0 6px;text-align:left}
+.wt-del-input{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:10px;border:1.5px solid rgba(128,128,128,.45);background:transparent;color:inherit;font-size:1rem;font-family:inherit;margin-bottom:10px}
+.wt-del-input:focus{outline:none;border-color:#D64545}
+.wt-del-status{min-height:1.2em;margin:4px 0 0;font-size:.82rem;color:#D64545;line-height:1.45;text-align:left}
+.wt-del-cancel{border:none;background:transparent;color:inherit;font-weight:700;font-size:.95rem;padding:10px;cursor:pointer;font-family:inherit;opacity:.8}
+.btn3d[disabled]{opacity:.45;cursor:not-allowed}
+[data-theme="dark"] .wt-del-bk{color:#8FBFFF;border-color:rgba(143,191,255,.5);background:rgba(143,191,255,.1)}
 .wt-today-stats{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 14px}
 .wt-tc-pill{display:inline-flex;gap:5px;align-items:baseline;font-size:.8rem;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.12)}
 .wt-tc-pill b{font-size:1rem}

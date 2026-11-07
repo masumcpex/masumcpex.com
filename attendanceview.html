@@ -177,6 +177,15 @@ import {
 const CONTACT = "info@masumcpex.com";
 const H2C = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
 const JSPDF = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+const QRLIB = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";
+async function qrFor(text){
+  try{
+    if(typeof window.qrcode !== "function") await loadScript(QRLIB);
+    if(typeof window.qrcode !== "function") return "";
+    const qr = window.qrcode(0, "M"); qr.addData(text); qr.make();
+    return qr.createDataURL(6, 12);
+  }catch(e){ return ""; }
+}
 const CATS = {
   status: "Incorrect attendance status", hours: "Incorrect work hours", missing: "Missing attendance record",
   leave: "Incorrect leave record", duplicate: "Duplicate attendance", date: "Incorrect date", other: "Other"
@@ -506,7 +515,7 @@ function buildEarningsSections(E){
       ${heading("Hours by Week")}
       ${weeks.map(w => `<div style="display:flex; align-items:center; gap:10px; margin-bottom:7px;"><div style="width:62px; font-size:9px; color:${MUTED}; font-weight:600;">${mon3} ${w.l}</div><div style="flex:1;">${bar(Math.round(w.h / maxWeek * 100), BLUE, 8)}</div><div style="width:78px; text-align:right; font-size:9.5px; font-weight:700; color:${INK};">${hrs(w.h)} h <span style="color:${MUTED}; font-weight:600;">· ${pct(w.h, E.hours)}%</span></div></div>`).join("")}
     </div>
-    ${E.linkUrl ? `<div id="khEarnLinkBox" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 14px; border:1px solid ${BORDER}; border-radius:10px; background:${LIGHT}; margin-bottom:16px;"><div><div style="font-size:10px; font-weight:700; color:${INK};">Daily attendance details</div><div style="font-size:8.5px; color:${MUTED}; margin-top:2px;">Day-by-day records are in the attendance report.</div></div><div style="font-size:9.5px; font-weight:700; color:${BLUE}; white-space:nowrap;">Open attendance report &rarr;</div></div>` : ""}
+    ${E.linkUrl ? `<div id="khEarnLinkBox" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 14px; border:1px solid ${BORDER}; border-radius:10px; background:${LIGHT}; margin-bottom:16px;"><div><div style="font-size:10px; font-weight:700; color:${INK};">Daily attendance details</div><div style="font-size:8.5px; color:${MUTED}; margin-top:2px;">Day-by-day records are in the attendance report.</div></div><div style="display:flex; align-items:center; gap:12px;"><div style="font-size:9.5px; font-weight:700; color:${BLUE}; white-space:nowrap; text-align:right;">Open attendance report &rarr;${E.qr ? `<div style="font-size:7.5px; font-weight:600; color:${MUTED}; margin-top:2px;">or scan the code</div>` : ""}</div>${E.qr ? `<img src="${E.qr}" alt="QR code" style="width:62px; height:62px; display:block;">` : ""}</div></div>` : ""}
     <div style="border-top:1px solid ${BORDER}; padding-top:9px; font-size:8.5px; color:${MUTED}; line-height:1.6;">Calculated from recorded attendance hours and the hourly rate. For reference only.</div>`;
 }
 
@@ -587,6 +596,7 @@ async function downloadEarnings(btn){
       name: share.memberName, ym: curYm, rate: raw.rate, hours: raw.hours, days: raw.days, leave: raw.leave, gross: raw.gross, ded: raw.ded, net: raw.net,
       taken: raw.taken, balance: raw.balance, att: raw.att, avg: raw.avg, weeks: Array.isArray(raw.weeks) ? raw.weeks : [], longest: raw.longest || null, rid: raw.rid || "", linkUrl: location.origin + location.pathname + location.search
     };
+    E.qr = E.linkUrl ? await qrFor(E.linkUrl) : "";
     wrap = document.createElement("div");
     wrap.className = "earn-root";
     wrap.style.cssText = "position:fixed;left:-10000px;top:0;width:800px;background:#fff;padding:38px 34px 26px;font-family:Inter,'Hind Siliguri',system-ui,sans-serif;color:#172033;";
@@ -625,7 +635,7 @@ async function downloadEarnings(btn){
 document.getElementById("yr").textContent = new Date().getFullYear();
 load();
 // Warm up PDF libraries in the background so the first tap on Download is instant.
-setTimeout(() => { Promise.all([window.html2canvas ? 0 : loadScript(H2C), window.jspdf ? 0 : loadScript(JSPDF)]).catch(() => {}); }, 2000);
+setTimeout(() => { Promise.all([window.html2canvas ? 0 : loadScript(H2C), window.jspdf ? 0 : loadScript(JSPDF), typeof window.qrcode === "function" ? 0 : loadScript(QRLIB)]).catch(() => {}); }, 2000);
 </script>
 </body>
 </html>

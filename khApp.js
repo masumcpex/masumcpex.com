@@ -1906,6 +1906,139 @@ export function initKhApp(uid, isAdmin){
     if(b) openBackupDialog(); else openDeleteAccountDialog();
   });
 
+  // ===== Daily evening reminder (calendar file; nothing happens until the person adds it) =====
+  function icsFold(line){
+    // Calendar files must not have lines longer than 75 bytes; fold on whole characters so Bengali letters never split.
+    const enc = new TextEncoder();
+    const out = [];
+    let cur = "", bytes = 0;
+    for(const ch of line){
+      const n = enc.encode(ch).length;
+      if(bytes + n > 72){ out.push(cur); cur = " " + ch; bytes = 1 + n; }
+      else{ cur += ch; bytes += n; }
+    }
+    out.push(cur);
+    return out.join("\r\n");
+  }
+  function buildReminderIcs(hhmm){
+    const [hh, mm] = hhmm.split(":").map(Number);
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0);
+    if(start.getTime() <= now.getTime()) start.setDate(start.getDate() + 1);   // first reminder: the next time that clock time comes
+    const end = new Date(start.getTime() + 10 * 60 * 1000);
+    const pad = n => String(n).padStart(2, "0");
+    const local = d => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;   // floating time: follows the phone's own time zone
+    const stamp = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}T${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}00Z`;
+    const title = tr("WorkTrack: আজকের হাজিরা লিখুন", "WorkTrack: Record today's attendance");
+    const lines = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Masum Cpex//WorkTrack//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+      "BEGIN:VEVENT",
+      "UID:worktrack-daily-reminder@masumcpex.com",
+      `DTSTAMP:${stamp}`,
+      `DTSTART:${local(start)}`,
+      `DTEND:${local(end)}`,
+      "RRULE:FREQ=DAILY",
+      `SUMMARY:${title}`,
+      "DESCRIPTION:https://masumcpex.com/attendance",
+      "URL:https://masumcpex.com/attendance",
+      "TRANSP:TRANSPARENT",
+      "BEGIN:VALARM", "TRIGGER:PT0M", "ACTION:DISPLAY", `DESCRIPTION:${title}`, "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR"
+    ];
+    return lines.map(icsFold).join("\r\n") + "\r\n";
+  }
+  function openReminderDialog(){
+    let saved = "21:00";
+    try{ saved = localStorage.getItem("wt-reminder-time") || "21:00"; }catch(e){}
+    const ov = openOverlay("wtReminderOverlay", `
+      <div class="kh-modal-card wt-bk-card" role="dialog" aria-modal="true">
+        <button type="button" class="kh-modal-x" id="wtRmX" aria-label="Close">${ICON_CLOSE}</button>
+        <p class="wt-dlg-title">${tr("রাতের রিমাইন্ডার", "Daily evening reminder")}</p>
+        <p class="wt-dlg-sub">${tr("প্রতিদিন নির্দিষ্ট সময়ে ফোন আপনাকে মনে করাবে: \"আজকের হাজিরা লিখুন\"। সময় বেছে নিন, তারপর ক্যালেন্ডারে যোগ করুন।", "Your phone will remind you every day at the time you choose: \"Record today's attendance\". Pick a time, then add it to your calendar.")}</p>
+        <label class="wt-del-lbl" for="wtRmTime">${tr("কোন সময়ে?", "What time?")}</label>
+        <input type="time" id="wtRmTime" class="wt-del-input" value="${saved}">
+        <div class="wt-dlg-btns">
+          <button type="button" class="btn3d btn-sky" id="wtRmAdd">${tr("ক্যালেন্ডারে যোগ করুন", "Add to my calendar")}</button>
+        </div>
+        <p class="wt-dlg-note">${tr("নিজে থেকে কিছু যোগ হবে না। ফাইল খুললে আপনার ফোনের ক্যালেন্ডার জিজ্ঞেস করবে। বন্ধ করতে ক্যালেন্ডার থেকে \"WorkTrack\" ঘটনাটা মুছে দিন।", "Nothing is added automatically: your phone's calendar will ask you to confirm. To stop, delete the \"WorkTrack\" event from your calendar.")}</p>
+      </div>`);
+    const close = () => ov.remove();
+    ov.addEventListener("click", e => { if(e.target === ov) close(); });
+    ov.querySelector("#wtRmX").addEventListener("click", close);
+    ov.querySelector("#wtRmAdd").addEventListener("click", () => {
+      const v = ov.querySelector("#wtRmTime").value;
+      if(!/^\d{2}:\d{2}$/.test(v)){ showToast(tr("একটা সময় বেছে নিন।", "Please pick a time."), "warning"); return; }
+      try{ localStorage.setItem("wt-reminder-time", v); }catch(e){}
+      downloadBlob("worktrack-daily-reminder.ics", new Blob([buildReminderIcs(v)], { type: "text/calendar;charset=utf-8" }));
+      showToast(tr("ফাইল নেমেছে। খুলে ক্যালেন্ডারে যোগ করুন।", "File downloaded. Open it to add the reminder to your calendar."));
+    });
+  }
+  document.addEventListener("click", e => {
+    if(!e.target.closest("[data-wt-reminder]")) return;
+    e.preventDefault();
+    const closeBtn = document.querySelector("[data-wt-menu-close]");
+    if(closeBtn && document.getElementById("wtSidebar") && document.getElementById("wtSidebar").classList.contains("is-open")) closeBtn.click();
+    openReminderDialog();
+  });
+
+  // ===== Verify a report code (checks it against the data in the app) =====
+  function openVerifyDialog(){
+    if(!membersLoaded || !recordsLoaded){ showToast(tr("একটু অপেক্ষা করুন, ডেটা লোড হচ্ছে।", "Please wait, data is still loading."), "warning"); return; }
+    const ov = openOverlay("wtVerifyOverlay", `
+      <div class="kh-modal-card wt-bk-card" role="dialog" aria-modal="true">
+        <button type="button" class="kh-modal-x" id="wtVfX" aria-label="Close">${ICON_CLOSE}</button>
+        <p class="wt-dlg-title">${tr("রিপোর্ট যাচাই", "Verify a report")}</p>
+        <p class="wt-dlg-sub">${tr("PDF-এর Report ID এখানে লিখুন (যেমন WT-E-2026-10-MAS-7K4Q)। অ্যাপ দেখবে এখনকার তথ্যের সাথে মিলছে কি না।", "Type the Report ID from the PDF (e.g. WT-E-2026-10-MAS-7K4Q). The app checks it against your current records.")}</p>
+        <input type="text" id="wtVfCode" class="wt-del-input" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="WT-E-2026-10-MAS-XXXX">
+        <div class="wt-dlg-btns"><button type="button" class="btn3d btn-sky" id="wtVfGo">${tr("যাচাই করুন", "Check")}</button></div>
+        <div id="wtVfOut" class="wt-vf-out" aria-live="polite"></div>
+        <p class="wt-dlg-note">${tr("এটা আপনার অ্যাপের বর্তমান ডেটার সাথে মেলায়। কেউ PDF নিজে এডিট করেছে কি না, এটা তা ধরতে পারে না।", "This compares the code with the data in your app. It cannot prove that nobody edited a PDF file.")}</p>
+      </div>`);
+    const close = () => ov.remove();
+    ov.addEventListener("click", e => { if(e.target === ov) close(); });
+    ov.querySelector("#wtVfX").addEventListener("click", close);
+    const out = ov.querySelector("#wtVfOut");
+    const run = () => { out.innerHTML = verifyReportHtml(ov.querySelector("#wtVfCode").value); };
+    ov.querySelector("#wtVfGo").addEventListener("click", run);
+    ov.querySelector("#wtVfCode").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); run(); } });
+  }
+  function verifyReportHtml(input){
+    const code = String(input || "").toUpperCase().replace(/[\u2010-\u2015\u2212]/g, "-").replace(/\s+/g, "");
+    const mt = code.match(/^WT-E-(\d{4}-\d{2})-([A-Z0-9]{1,3})(?:-([A-Z0-9]{4}))?$/);
+    const bad = msg => `<div class="wt-vf is-bad"><b>${tr("পাওয়া যায়নি", "Not found")}</b><span>${msg}</span></div>`;
+    if(!mt) return bad(tr("কোডটা ঠিক লেখা হয়নি। উদাহরণ: WT-E-2026-10-MAS-7K4Q", "That is not a valid Report ID. Example: WT-E-2026-10-MAS-7K4Q"));
+    const ym = mt[1], who = mt[2], tail = mt[3] || "";
+    const recsAll = records.filter(r => r.date && r.date.startsWith(ym));
+    let rows, label;
+    if(who === "ALL"){
+      rows = buildSalaryRows(ym, recsAll);
+      label = tr("সব সদস্য", "All members");
+    }else{
+      const cands = members.filter(m => clean3(m.memberId || m.name) === who);
+      if(!cands.length) return bad(tr("এই কোডের কোনো সদস্য এখন অ্যাপে নেই।", "No member in the app matches this code."));
+      const m = cands[0];
+      rows = buildSalaryRows(ym, recsAll.filter(r => r.member === m.name));
+      label = m.name;
+    }
+    if(!rows.length) return bad(tr("ওই মাসে এখন কোনো হাজিরা নেই (মুছে গিয়ে থাকতে পারে)।", "There is no attendance for that month now (it may have been deleted)."));
+    rows.forEach(r => { r.rate = r.member ? rateFor(r.member, ym) : 0; });
+    computeEarnings(rows, ym);
+    const now = who === "ALL" ? `WT-E-${ym}-ALL-` + earnCheck(["ALL", ym].concat(rows.map(r => r.rid))) : rows[0].rid;
+    const money = fmtMoneyRM;
+    const sum = rows.reduce((t, r) => ({ h: t.h + r.hours, g: t.g + (r.rate > 0 ? r.gross : 0), d: t.d + (r.rate > 0 ? r.advDeducted : 0), n: t.n + (r.rate > 0 ? r.net : 0) }), { h: 0, g: 0, d: 0, n: 0 });
+    const facts = `<ul class="wt-vf-list"><li>${tr("সদস্য", "Member")}: <b>${escapeHtml(label)}</b></li><li>${tr("মাস", "Month")}: <b>${monthLabel(ym)}</b></li><li>${tr("মোট ঘণ্টা", "Total hours")}: <b>${fmtHours(sum.h)} h</b></li><li>${tr("মোট আয়", "Total earned")}: <b>${money(sum.g)}</b></li><li>${tr("অ্যাডভান্স কাটা", "Advance cut")}: <b>${money(sum.d)}</b></li><li>${tr("হাতে পাবেন", "Take-home")}: <b>${money(sum.n)}</b></li></ul>`;
+    if(!tail) return `<div class="wt-vf is-warn"><b>${tr("পুরনো ধরনের কোড", "Older-style code")}</b><span>${tr("এই কোডে যাচাইয়ের অক্ষর নেই, তাই মেলানো যায় না। এখনকার তথ্য:", "This code has no check letters, so it cannot be matched. Current figures:")}</span>${facts}</div>`;
+    if(tail === now.split("-").pop()) return `<div class="wt-vf is-ok"><b>${tr("মিলেছে", "Matches")}</b><span>${tr("এই রিপোর্টের সংখ্যা এখনকার তথ্যের সাথে হুবহু মিলছে।", "The figures in this report match your current records exactly.")}</span>${facts}</div>`;
+    return `<div class="wt-vf is-warn"><b>${tr("মেলেনি", "Does not match")}</b><span>${tr("PDF বানানোর পর তথ্য বদলেছে, অথবা কোডে ভুল আছে। এখনকার তথ্য:", "The data changed after that PDF was made, or the code was typed wrongly. Current figures:")}</span>${facts}</div>`;
+  }
+  document.addEventListener("click", e => {
+    if(!e.target.closest("[data-wt-verify]")) return;
+    e.preventDefault();
+    const closeBtn = document.querySelector("[data-wt-menu-close]");
+    if(closeBtn && document.getElementById("wtSidebar") && document.getElementById("wtSidebar").classList.contains("is-open")) closeBtn.click();
+    openVerifyDialog();
+  });
+
   function renderTodayCard(){
     const el = document.getElementById("wtTodayStats");
     if(!el) return;
@@ -3279,11 +3412,22 @@ export function initKhApp(uid, isAdmin){
         ${heading("Hours by Week")}
         ${weeks.map(w => `<div style="display:flex; align-items:center; gap:10px; margin-bottom:7px;"><div style="width:62px; font-size:9px; color:${MUTED}; font-weight:600;">${mon3} ${w.l}</div><div style="flex:1;">${bar(Math.round(w.h / maxWeek * 100), BLUE, 8)}</div><div style="width:78px; text-align:right; font-size:9.5px; font-weight:700; color:${INK};">${hrs(w.h)} h <span style="color:${MUTED}; font-weight:600;">· ${pct(w.h, E.hours)}%</span></div></div>`).join("")}
       </div>
-      ${E.linkUrl ? `<div id="khEarnLinkBox" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 14px; border:1px solid ${BORDER}; border-radius:10px; background:${LIGHT}; margin-bottom:16px;"><div><div style="font-size:10px; font-weight:700; color:${INK};">Daily attendance details</div><div style="font-size:8.5px; color:${MUTED}; margin-top:2px;">Day-by-day records are in the attendance report.</div></div><div style="font-size:9.5px; font-weight:700; color:${BLUE}; white-space:nowrap;">Open attendance report &rarr;</div></div>` : ""}
+      ${E.linkUrl ? `<div id="khEarnLinkBox" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 14px; border:1px solid ${BORDER}; border-radius:10px; background:${LIGHT}; margin-bottom:16px;"><div><div style="font-size:10px; font-weight:700; color:${INK};">Daily attendance details</div><div style="font-size:8.5px; color:${MUTED}; margin-top:2px;">Day-by-day records are in the attendance report.</div></div><div style="display:flex; align-items:center; gap:12px;"><div style="font-size:9.5px; font-weight:700; color:${BLUE}; white-space:nowrap; text-align:right;">Open attendance report &rarr;${E.qr ? `<div style="font-size:7.5px; font-weight:600; color:${MUTED}; margin-top:2px;">or scan the code</div>` : ""}</div>${E.qr ? `<img src="${E.qr}" alt="QR code" style="width:62px; height:62px; display:block;">` : ""}</div></div>` : ""}
       <div style="border-top:1px solid ${BORDER}; padding-top:9px; font-size:8.5px; color:${MUTED}; line-height:1.6;">Calculated from recorded attendance hours and the hourly rate. For reference only.</div>`;
   }
 
   const clean3 = x => String(x || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 3) || "GEN";
+
+  // 4-character check code made from the report's own numbers: if any figure changes, the code changes.
+  function earnCheck(parts){
+    const text = parts.join("|");
+    let h = 0x811c9dc5;
+    for(let i = 0; i < text.length; i++){ h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+    const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";   // no 0/O/1/I so it is easy to read out loud
+    let out = "";
+    for(let i = 0; i < 4; i++){ out += A[h % A.length]; h = Math.floor(h / A.length); }
+    return out;
+  }
 
   // Numbers for each member row (shared by the PDF and the share-link payload).
   function computeEarnings(rows, ym){
@@ -3306,7 +3450,8 @@ export function initKhApp(uid, isAdmin){
       r.daily.forEach(x => { const w = Math.min(weeks.length - 1, Math.floor((Number(x.d.slice(8, 10)) - 1) / 7)); weeks[w].h = round4(weeks[w].h + x.h); });
       r.weeks = weeks;
       r.longest = r.daily.reduce((a, c) => (c.h > (a ? a.h : -1) ? c : a), null);
-      r.rid = `WT-E-${ym}-${clean3(r.member ? (r.member.memberId || r.member.name) : r.name)}`;
+      const base = `WT-E-${ym}-${clean3(r.member ? (r.member.memberId || r.member.name) : r.name)}`;
+      r.rid = base + "-" + earnCheck([base, round4(r.hours), r.days, r.leave, round4(r.rate || 0), r.gross, r.advTaken, r.advDeducted, r.net]);
     });
   }
   function earningsPayload(r){
@@ -3344,10 +3489,11 @@ export function initKhApp(uid, isAdmin){
       };
       reportId = r.rid;
       fileName = `earnings-summary-${ym}-${r.name}.pdf`;
+      E.qr = E.linkUrl ? await qrDataUrl(E.linkUrl) : "";
       innerHtml = buildEarningsSections(E);
       if(E.linkUrl) linkEls = [{ id: "khEarnLinkBox", url: E.linkUrl }];
     }else{
-      reportId = `WT-E-${ym}-ALL`;
+      reportId = `WT-E-${ym}-ALL-` + earnCheck(["ALL", ym].concat(rows.map(r => r.rid)));
       fileName = `earnings-summary-${ym}-all-members.pdf`;
       const money = fmtMoneyRM;
       const withRate = rows.filter(r => r.rate > 0);
@@ -3950,6 +4096,17 @@ export function initKhApp(uid, isAdmin){
     "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
   ];
+  const QR_LIB = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";
+  async function qrDataUrl(text){
+    try{
+      if(typeof window.qrcode !== "function") await loadScriptOnce(QR_LIB);
+      if(typeof window.qrcode !== "function") return "";   // library not available: the PDF simply has no QR
+      const qr = window.qrcode(0, "M");
+      qr.addData(text);
+      qr.make();
+      return qr.createDataURL(6, 12);
+    }catch(e){ console.warn("QR failed", e); return ""; }
+  }
   function loadScriptOnce(src){
     return new Promise(resolve => {
       const el = document.createElement("script");
@@ -3971,6 +4128,7 @@ export function initKhApp(uid, isAdmin){
   function warmPdf(){
     try{
       ensurePdfLibs();
+      loadScriptOnce(QR_LIB);
       const im = new Image(); im.crossOrigin = "anonymous"; im.src = "masum.png";
     }catch(_){}
   }

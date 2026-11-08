@@ -1947,6 +1947,24 @@ export function initKhApp(uid, isAdmin){
     ];
     return lines.map(icsFold).join("\r\n") + "\r\n";
   }
+  // Opens Google Calendar with the daily event already filled in (you only press Save there).
+  function googleCalendarUrl(hhmm){
+    const [hh, mm] = hhmm.split(":").map(Number);
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0);
+    if(start.getTime() <= now.getTime()) start.setDate(start.getDate() + 1);
+    const end = new Date(start.getTime() + 10 * 60 * 1000);
+    const pad = n => String(n).padStart(2, "0");
+    const local = d => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+    const params = new URLSearchParams({
+      action: "TEMPLATE",
+      text: tr("WorkTrack: আজকের হাজিরা লিখুন", "WorkTrack: Record today's attendance"),
+      details: "https://masumcpex.com/attendance",
+      dates: `${local(start)}/${local(end)}`,
+      recur: "RRULE:FREQ=DAILY"
+    });
+    return "https://calendar.google.com/calendar/render?" + params.toString();
+  }
   function openReminderDialog(){
     let saved = "21:00";
     try{ saved = localStorage.getItem("wt-reminder-time") || "21:00"; }catch(e){}
@@ -1958,13 +1976,20 @@ export function initKhApp(uid, isAdmin){
         <label class="wt-del-lbl" for="wtRmTime">${tr("কোন সময়ে?", "What time?")}</label>
         <input type="time" id="wtRmTime" class="wt-del-input" value="${saved}">
         <div class="wt-dlg-btns">
-          <button type="button" class="btn3d btn-sky" id="wtRmAdd">${tr("ক্যালেন্ডারে যোগ করুন", "Add to my calendar")}</button>
+          <button type="button" class="btn3d btn-sky" id="wtRmGoogle">${tr("Google Calendar-এ খুলুন", "Open in Google Calendar")}</button>
+          <button type="button" class="wt-del-bk" id="wtRmAdd">${tr("অথবা ফাইল নামান (.ics)", "Or download a calendar file (.ics)")}</button>
         </div>
-        <p class="wt-dlg-note">${tr("নিজে থেকে কিছু যোগ হবে না। ফাইল খুললে আপনার ফোনের ক্যালেন্ডার জিজ্ঞেস করবে। বন্ধ করতে ক্যালেন্ডার থেকে \"WorkTrack\" ঘটনাটা মুছে দিন।", "Nothing is added automatically: your phone's calendar will ask you to confirm. To stop, delete the \"WorkTrack\" event from your calendar.")}</p>
+        <p class="wt-dlg-note">${tr("নিজে থেকে কিছু যোগ হবে না: Google Calendar খুলে আপনি \"Save\" চাপলে তবেই যোগ হবে। বন্ধ করতে ক্যালেন্ডার থেকে \"WorkTrack\" ঘটনাটা মুছে দিন।", "Nothing is added automatically: it is added only when you press \"Save\" in Google Calendar. To stop, delete the \"WorkTrack\" event from your calendar.")}</p>
       </div>`);
     const close = () => ov.remove();
     ov.addEventListener("click", e => { if(e.target === ov) close(); });
     ov.querySelector("#wtRmX").addEventListener("click", close);
+    ov.querySelector("#wtRmGoogle").addEventListener("click", () => {
+      const v = ov.querySelector("#wtRmTime").value;
+      if(!/^\d{2}:\d{2}$/.test(v)){ showToast(tr("একটা সময় বেছে নিন।", "Please pick a time."), "warning"); return; }
+      try{ localStorage.setItem("wt-reminder-time", v); }catch(e){}
+      window.open(googleCalendarUrl(v), "_blank", "noopener");
+    });
     ov.querySelector("#wtRmAdd").addEventListener("click", () => {
       const v = ov.querySelector("#wtRmTime").value;
       if(!/^\d{2}:\d{2}$/.test(v)){ showToast(tr("একটা সময় বেছে নিন।", "Please pick a time."), "warning"); return; }

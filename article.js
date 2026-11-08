@@ -18,3 +18,15 @@
     });
   });
 })();
+
+/* Footer: columns are open on desktop, collapsible on mobile */
+(function () {
+  var cols = document.querySelectorAll('.mc-footer details.mc-col');
+  if (!cols.length || !window.matchMedia) return;
+  var mq = window.matchMedia('(min-width:768px)');
+  function apply() {
+    cols.forEach(function (d) { if (mq.matches) d.setAttribute('open', ''); else d.removeAttribute('open'); });
+  }
+  apply();
+  if (mq.addEventListener) mq.addEventListener('change', apply); else if (mq.addListener) mq.addListener(apply);
+})();

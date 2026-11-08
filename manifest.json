@@ -6,23 +6,38 @@
   "start_url": "/attendance.html",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "portrait-primary",
   "theme_color": "#0E6E5C",
   "background_color": "#F8FAFC",
   "lang": "bn",
   "dir": "ltr",
-  "categories": ["books", "education", "lifestyle"],
+  "categories": [
+    "books",
+    "education",
+    "lifestyle"
+  ],
   "icons": [
-    { "src": "bdflag.webp", "sizes": "72x72",   "type": "image/webp", "purpose": "any" },
-    { "src": "bdflag.webp", "sizes": "96x96",   "type": "image/webp", "purpose": "any" },
-    { "src": "bdflag.webp", "sizes": "128x128", "type": "image/webp", "purpose": "any" },
-    { "src": "bdflag.webp", "sizes": "144x144", "type": "image/webp", "purpose": "any" },
-    { "src": "bdflag.webp", "sizes": "152x152", "type": "image/webp", "purpose": "any" },
-    { "src": "bdflag.webp", "sizes": "192x192", "type": "image/webp", "purpose": "any" },
-    { "src": "bdflag.webp", "sizes": "384x384", "type": "image/webp", "purpose": "any" },
-    { "src": "bdflag.webp", "sizes": "512x512", "type": "image/webp", "purpose": "any" },
-    { "src": "bdflag.webp", "sizes": "192x192", "type": "image/webp", "purpose": "maskable" },
-    { "src": "bdflag.webp", "sizes": "512x512", "type": "image/webp", "purpose": "maskable" }
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

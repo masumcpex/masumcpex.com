@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const isLocked = b.locked && !hasBookSession();
     return `
     <div class="book-card ${isLocked ? "locked":""}">
-      <img class="book-cover" src="${b.cover}" alt="${b.title}">
+      <img class="book-cover" src="${b.cover}" alt="${b.title}" loading="lazy" decoding="async">
       <div class="book-body">
         <span class="book-cat">${b.category}</span>
         <h3 class="book-title">${b.title}</h3>
@@ -119,12 +119,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function entryCard(e){
     return `
-    <div class="entry-card" data-id="${e.id}" data-type="${e._type}" data-url="${e.url || ""}">
+    <a class="entry-card" href="${e.url || (e._type === "article" ? "#articles" : "#journal")}" data-id="${e.id}" data-type="${e._type}" data-url="${e.url || ""}">
       <span class="cat">${e.category}</span>
       <h4>${e.title}</h4>
       <p class="excerpt">${e.excerpt}</p>
       <span class="date">${e.date}${e.readingTime ? " •  " + e.readingTime : ""}</span>
-    </div>`;
+    </a>`;
   }
 
   SITE_DATA.journal.forEach(j => j._type = "journal");
@@ -284,7 +284,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const card = e.target.closest(".entry-card");
     if(!card) return;
     const url = card.dataset.url;
-    if(url && url !== "#"){ window.location.href = url; return; }
+    if(url && url !== "#"){ return; } // real link: let the browser follow it
+    e.preventDefault();
     openModal(findEntry(card.dataset.id, card.dataset.type));
   });
   document.getElementById("modalClose").addEventListener("click", closeModal);

@@ -46,7 +46,7 @@ const SITE_DATA = {
     },
     {
       id: "book2",
-      cover: "/eka.jpg",
+      cover: "/eka.webp",
       title: "একাকিত্বের নোটবুক",
       category: "ভাবনা ও ডায়েরি",
       description: "নিঃসঙ্গতার প্রহরে ডায়েরির পাতায় আঁকা কিছু অনুভূতি।",
@@ -82,7 +82,7 @@ const SITE_DATA = {
     },
     {
       id: "book5",
-      cover: "/bookb.png",
+      cover: "/bookb.webp",
       title: "Easy English Mastery",
       category: "ভাষা ও স্কিল",
       description: "সহজ নিয়মে ইংরেজি গ্রামার ও স্পোকেন আয়ত্ত করার গাইড।",
@@ -121,6 +121,7 @@ const SITE_DATA = {
     },
     {
       id: "j2",
+      url: "journal-5-small-habits-to-change-life.html",
       title: "জীবন বদলানোর ৫টি ছোট কিন্তু শক্তিশালী অভ্যাস",
       category: "শেখার জার্নাল",
       date: "2025-04-23",
@@ -293,7 +294,7 @@ const SITE_DATA = {
       readingTime: "৫ মিনিট",
       image: "",
       excerpt: "একটি হৃদয়ভাঙা মন থেকে রবের পথে ফিরে আসার গল্প।",
-      url: "",
+      url: "journal-tumi-choley-gecho-rob-ke-peyechi.html",
       content: `
         <div class="lyric-section lyric-section--soft">
           <p>কিছু মানুষ চলে যায়…
@@ -573,7 +574,7 @@ const SITE_DATA = {
       readingTime: "৩ মিনিট",
       image: "",
       excerpt: "মুখের দাবি আর হৃদয়ের সত্যতার মধ্যে যে ফারাক, রবের প্রতি ভালোবাসাকে নিজের কাছেই প্রশ্ন করার একটি উপলব্ধি।",
-      url: "",
+      url: "journal-mukhe-dabi-bhalobashar.html",
       content: `
         <div class="lyric-section lyric-section--soft">
           <p>মানুষ বলে, সত্যিকারের ভালোবাসা
@@ -652,7 +653,7 @@ const SITE_DATA = {
       readingTime: "৪ মিনিট",
       image: "",
       excerpt: "ভাঙা হৃদয়ের নীরবতা পেরিয়ে সাহস আর আত্মমর্যাদা নিয়ে সামনে এগিয়ে যাওয়ার একটি গল্প।",
-      url: "",
+      url: "journal-purono-premer-sur-ar-deko-na.html",
       content: `
         <div class="lyric-section lyric-section--soft">
           <p>ফিরে এসো না
@@ -739,7 +740,7 @@ const SITE_DATA = {
       readingTime: "৩ মিনিট",
       image: "",
       excerpt: "রাতের পর রাত স্মৃতিতে কেটে যাওয়া এক ব্যাকুল হৃদয়ের গজল, যেখানে প্রার্থনাও প্রিয়জনের নামেই বাঁধা।",
-      url: "",
+      url: "journal-amar-prio-tumi-kothay.html",
       content: `
         <div class="lyric-section lyric-section--soft">
           <p>আমার প্রিয়, তুমি কোথায়?
@@ -806,7 +807,7 @@ const SITE_DATA = {
       readingTime: "৪ মিনিট",
       image: "",
       excerpt: "চোখের জল, ভাঙা বিশ্বাস আর নীরবে বয়ে যাওয়া ব্যথা থেকে ভালোবাসার আসল অর্থ খুঁজে পাওয়ার একটি উপলব্ধি।",
-      url: "",
+      url: "journal-osru-jhorar-por-bujhechi.html",
       content: `
         <div class="lyric-section lyric-section--soft">
           <p>চোখ থেকে অশ্রু ঝরার পর বুঝেছি,
@@ -897,7 +898,7 @@ const SITE_DATA = {
       readingTime: "৫ মিনিট",
       image: "",
       excerpt: "খুঁজেছি, দিয়েছি, সহ্য করেছি, অপেক্ষা করেছি—তবু মনের মতো মানুষ, ভালোবাসা আর বিশ্বাস না পাওয়ার এক নীরব উপলব্ধি।",
-      url: "",
+      url: "journal-khuje-o-apon-mele-na.html",
       content: `
         <div class="lyric-section lyric-section--soft">
           <p>খুঁজেও যখন দুঃখ ভাগ করে নেওয়ার মতো কাউকে পেলাম না—
@@ -978,7 +979,7 @@ const SITE_DATA = {
       readingTime: "২ মিনিট",
       image: "",
       excerpt: "বিশ্বাস, বিষণ্ণতা আর সময়ের সঙ্গে বদলে যাওয়া মানুষ নিয়ে ছোট্ট একটি উপলব্ধি।",
-      url: "",
+      url: "journal-tumi-jodi-dure-choley-jao.html",
       content: `
         <div class="lyric-section lyric-section--soft">
           <p>তুমিও যদি একদিন
@@ -1020,7 +1021,7 @@ const SITE_DATA = {
       readingTime: "৪ মিনিট",
       image: "",
       excerpt: "নীরব হৃদয়ের এক দীর্ঘ অপেক্ষা, আর ফিরে আসার জন্য একটি নিঃশব্দ আহ্বান।",
-      url: "",
+      url: "journal-phire-eso.html",
       content: `
         <div class="lyric-section lyric-section--soft">
           <p>কোথায় আছো তুমি?
@@ -1101,7 +1102,7 @@ const SITE_DATA = {
       readingTime: "৫ মিনিট",
       image: "",
       excerpt: "হৃদয় আর প্রাণের সমস্ত অনুভূতি দিয়ে একটি খোলা স্বীকারোক্তি — ভালোবাসি, শুধু তোমাকেই।",
-      url: "",
+      url: "journal-bhalobashar-sikarokti.html",
       content: `
         <div class="lyric-section">
           <p>এই কথাটি আজ স্বীকার করি—
@@ -1214,7 +1215,7 @@ const SITE_DATA = {
       readingTime: "৫ মিনিট",
       image: "",
       excerpt: "দুনিয়ার চোখে হারিয়ে যাওয়া, কিন্তু রবের কাছে কখনো না হারানোর এক নীরব প্রতিজ্ঞা।",
-      url: "",
+      url: "journal-ami-hariye-jabo.html",
       content: `
         <div class="lyric-section lyric-section--soft">
           <p>যদি খুঁজতে চাও আমাকে,

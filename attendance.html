@@ -106,7 +106,7 @@ body:not(.wt-loaded) .site-footer{display:none}
         <span class="kh-brand-tagline">Attendance &amp; Workforce Management</span>
       </span>
     </a>
-    <a class="btn3d btn-indigo kh-back" href="index.html">← Main Site</a>
+    <a class="btn3d btn-indigo kh-back" href="index.html"><span class="kh-back-arr" aria-hidden="true">←</span> Main Site</a>
   </div>
 </header>
 
@@ -237,7 +237,7 @@ body:not(.wt-loaded) .site-footer{display:none}
 
 <div id="khUserBar" class="kh-user-bar" style="display:none;">
     <a class="kh-bar-logo" href="https://masumcpex.com/" aria-label="Masum Cpex — open the main website" title="Masum Cpex"></a>
-  <button type="button" class="wt-hd-dl" id="wtHeaderDownload" aria-label="Download monthly report as PDF" title="Download monthly report (PDF)"><span class="wt-hd-dl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg></span><span class="wt-hd-dl-txt"><span>Download</span><span>Monthly Report</span></span></button>
+  <button type="button" class="wt-hd-dl" id="wtHeaderDownload" aria-label="Download monthly report as PDF" title="Download monthly report (PDF)"><span class="wt-hd-dl-ico"><svg class="wt-dl-i wt-dl-i--dl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg><svg class="wt-dl-i wt-dl-i--spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" opacity=".25"/><path d="M12 3a9 9 0 0 1 9 9"/></svg><svg class="wt-dl-i wt-dl-i--ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="wt-hd-dl-txt"><span>Download</span><span>Monthly Report</span></span></button>
   <div class="kh-account-wrap">
     <button type="button" class="kh-account-trigger" id="khAccountTrigger" aria-haspopup="true" aria-label="Account menu">
       <span class="kh-account-avatar" id="khAccountAvatar">
@@ -721,11 +721,21 @@ body:not(.wt-loaded) .site-footer{display:none}
     if(t.closest("a.kh-sidebar-link[href^='http']")&&!desktop.matches)closeMenu();
     var hd=t.closest("#wtHeaderDownload");
     if(hd){
-      if(hd.disabled)return;
+      if(hd.disabled||hd.classList.contains("is-busy")||hd.classList.contains("is-done"))return;
       if(typeof window.wtDownloadSelectedMonthPdf==="function"){
-        hd.disabled=true;hd.classList.add("is-busy");
-        var fin=function(){hd.disabled=false;hd.classList.remove("is-busy")};
-        try{Promise.resolve(window.wtDownloadSelectedMonthPdf()).then(fin,fin)}catch(x){fin()}
+        var lbl0=hd.getAttribute("aria-label"),ttl0=hd.getAttribute("title"),failed=false,realAlert=window.alert;
+        /* an alert from the PDF code means it did not finish, so no success state is shown */
+        window.alert=function(){failed=true;return realAlert.apply(window,arguments)};
+        hd.disabled=true;hd.classList.add("is-busy");hd.setAttribute("aria-busy","true");hd.setAttribute("aria-label","Downloading report");
+        var fin=function(ok){
+          window.alert=realAlert;
+          hd.disabled=false;hd.classList.remove("is-busy");hd.removeAttribute("aria-busy");
+          if(ok&&!failed){
+            hd.classList.add("is-done");hd.setAttribute("aria-label","Download complete");hd.setAttribute("title","Download complete");
+            setTimeout(function(){hd.classList.remove("is-done");if(lbl0)hd.setAttribute("aria-label",lbl0);if(ttl0)hd.setAttribute("title",ttl0)},1800);
+          }else{if(lbl0)hd.setAttribute("aria-label",lbl0)}
+        };
+        try{Promise.resolve(window.wtDownloadSelectedMonthPdf()).then(function(){fin(true)},function(){fin(false)})}catch(x){fin(false)}
       }else{var dl=$("downloadPdfBtn");if(dl)dl.click()}
       return;
     }

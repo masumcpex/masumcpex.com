@@ -1307,3 +1307,25 @@ html[data-theme=dark] .kh-header a.kh-back.btn3d:hover{ background:linear-gradie
   .kh-header a.kh-back.btn3d,.kh-header a.kh-back.btn3d .kh-back-arr{ transition:none; }
   .kh-header a.kh-back.btn3d:hover,.kh-header a.kh-back.btn3d:hover .kh-back-arr{ transform:none; }
 }
+
+
+/* ---------- Member card: ID chip + separate menu icons ---------- */
+.member-card-id{ margin-top:8px; line-height:1; }
+.wt-idchip{
+  display:inline-flex; align-items:center; gap:6px; padding:4px 10px 4px 8px; border-radius:999px;
+  background:#F1F5F9; border:1px solid #D6DEE8; color:#475569; font-size:.76rem; font-weight:600;
+  font-family:inherit; letter-spacing:.03em; cursor:pointer; transition:background .15s ease,border-color .15s ease,color .15s ease;
+}
+.wt-idchip:hover{ background:#E8EEF6; border-color:#B9C6D8; }
+.wt-idchip:active{ transform:translateY(1px); }
+.wt-idchip:focus-visible{ outline:2px solid #4F8CFF; outline-offset:2px; }
+.wt-idchip svg{ width:14px; height:14px; display:block; }
+.wt-idchip-ico{ display:inline-flex; color:#64748B; }
+.wt-idchip-cp{ display:inline-flex; color:#94A3B8; }
+.wt-idchip-ok{ display:none; color:#16A34A; }
+.wt-idchip.is-copied{ background:#ECFDF3; border-color:#A7E3BD; color:#166534; }
+.wt-idchip.is-copied .wt-idchip-cp{ display:none; }
+.wt-idchip.is-copied .wt-idchip-ok{ display:inline-flex; }
+html[data-theme=dark] .wt-idchip{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.16); color:#CBD5E1; }
+.member-card-attreport svg{ color:#2563EB; }
+.member-card-earnmenu svg{ color:#0E7C66; }

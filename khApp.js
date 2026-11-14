@@ -19,6 +19,11 @@ const ICON_CHECK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
 const ICON_INFO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
 const ICON_USER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>`;
 const ICON_DOC = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>`;
+const ICON_CALCHECK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17M9 15l2 2 4-4"/></svg>`;
+const ICON_WALLET2 = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18a2 2 0 0 1 2 2v2"/><path d="M4 7.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6.5A2.5 2.5 0 0 1 4 7.5z"/><circle cx="16" cy="14" r="1.1"/></svg>`;
+const ICON_IDCARD = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2"/><path d="M6.5 16c.5-1.6 1.6-2.3 2.5-2.3s2 .7 2.5 2.3M14 10h4M14 14h3"/></svg>`;
+const ICON_COPYSM = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>`;
+const ICON_OKSM = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
 const ICON_SETTINGS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
 const ICON_LOGOUT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`;
 const ICON_EYE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>`;
@@ -1059,6 +1064,8 @@ export function initKhApp(uid, isAdmin){
             <button type="button" class="member-card-icon-btn member-card-more" data-id="${m.id}" title="${tr("আরও","More options")}" aria-label="More options" aria-haspopup="true">${ICON_KEBAB}</button>
             <div class="member-card-menu" data-id="${m.id}">
               <button type="button" class="member-card-menu-item member-card-view" data-id="${m.id}">${ICON_USER}${tr("প্রোফাইল দেখুন","View Profile")}</button>
+              <button type="button" class="member-card-menu-item member-card-attreport" data-id="${m.id}">${ICON_CALCHECK}${tr("হাজিরা রিপোর্ট","Attendance Report")}</button>
+              <button type="button" class="member-card-menu-item member-card-earnmenu" data-id="${m.id}">${ICON_WALLET2}${tr("আয়ের সারাংশ","Earnings Summary")}</button>
               <button type="button" class="member-card-menu-item member-card-edit" data-id="${m.id}">${ICON_EDIT}${tr("নাম বদলান","Edit Member")}</button>
               <button type="button" class="member-card-menu-item member-card-share" data-id="${m.id}">${ICON_SHARE}${tr("লিংক শেয়ার","Share Attendance")}</button>
               <button type="button" class="member-card-menu-item is-danger member-card-delete" data-id="${m.id}">${ICON_TRASH}${tr("সদস্য মুছুন","Remove Member")}</button>
@@ -1069,7 +1076,7 @@ export function initKhApp(uid, isAdmin){
           <div class="member-card-name">${escapeHtmlLocal(m.name)}</div>
           <span class="wt-today-chip is-${st}">${stTxt}</span>
           <div class="member-card-stats">${stats2}</div>
-          <div class="member-card-id">${m.memberId ? "ID: " + escapeHtmlLocal(m.memberId) : ""}</div>
+          <div class="member-card-id">${m.memberId ? `<button type="button" class="wt-idchip" data-copy="${escapeHtmlLocal(m.memberId)}" title="${tr("ID কপি করুন","Copy ID")}: ${escapeHtmlLocal(m.memberId)}" aria-label="${tr("সদস্য ID কপি করুন","Copy member ID")} ${escapeHtmlLocal(m.memberId)}"><span class="wt-idchip-ico">${ICON_IDCARD}</span><span class="wt-idchip-num">${escapeHtmlLocal(String(m.memberId).split("-").pop())}</span><span class="wt-idchip-cp">${ICON_COPYSM}</span><span class="wt-idchip-ok">${ICON_OKSM}</span></button>` : ""}</div>
         </div>
         <div class="wt-card-btns">
           <button type="button" class="member-card-share wt-card-linkbtn" data-id="${m.id}" aria-label="${tr("লিংক শেয়ার","Share link")}">${ICON_SHARE}<span>${tr("লিংক","Link")}</span></button>
@@ -1377,6 +1384,54 @@ export function initKhApp(uid, isAdmin){
       const wasOpen = menu.classList.contains("is-open");
       closeAllMemberMenus();
       if(!wasOpen) menu.classList.add("is-open");
+      return;
+    }
+    const idChip = e.target.closest(".wt-idchip");
+    if(idChip){
+      const val = idChip.dataset.copy || "";
+      const done = () => {
+        idChip.classList.add("is-copied");
+        setTimeout(() => idChip.classList.remove("is-copied"), 1300);
+        showToast(tr("ID কপি হয়েছে", "ID copied"));
+      };
+      try{ await navigator.clipboard.writeText(val); done(); }
+      catch(_){
+        const ta = document.createElement("textarea");
+        ta.value = val; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try{ document.execCommand("copy"); done(); }
+        catch(__){ showToast(tr("কপি করা যায়নি", "Could not copy"), "error"); }
+        ta.remove();
+      }
+      return;
+    }
+    const attRepBtn = e.target.closest(".member-card-attreport");
+    if(attRepBtn){
+      closeAllMemberMenus();
+      const m = members.find(x => x.id === attRepBtn.dataset.id);
+      if(!m) return;
+      if(!(await ensurePdfLibs())){
+        showToast("PDF generation library failed to load. Please check your internet connection.", "error");
+        return;
+      }
+      const ymR = currentYearMonth();
+      const monthRecordsR = records
+        .filter(r => r.date.startsWith(ymR) && r.member === m.name)
+        .slice().sort((a,b) => a.date.localeCompare(b.date));
+      if(!monthRecordsR.length){
+        showToast("No records for this member this month yet.", "warning");
+        return;
+      }
+      showToast(tr("রিপোর্ট তৈরি হচ্ছে…", "Generating report…"), "info");
+      try{ await generatePdfReport(ymR, monthRecordsR, m.name); }
+      catch(err){ console.error(err); showToast("Failed to generate PDF. Please try again.", "error"); }
+      return;
+    }
+    const earnMenuBtn = e.target.closest(".member-card-earnmenu");
+    if(earnMenuBtn){
+      closeAllMemberMenus();
+      const m = members.find(x => x.id === earnMenuBtn.dataset.id);
+      if(m) openSalaryDialog(currentYearMonth(), m.name);
       return;
     }
     const viewBtn = e.target.closest(".member-card-view");
@@ -1814,8 +1869,8 @@ export function initKhApp(uid, isAdmin){
           <li>${tr("আপনার লগইন অ্যাকাউন্ট", "Your sign-in account")}</li>
         </ul>
         <button type="button" class="wt-del-bk" id="wtDelBackup">${tr("আগে ব্যাকআপ নামান", "Download a backup first")}</button>
-        ${isPassword ? `<input type="password" id="wtDelPw" class="wt-del-input" autocomplete="current-password" placeholder="${tr("আপনার পাসওয়ার্ড", "Your password")}">` : ""}
-        <label class="wt-del-lbl" for="wtDelType">${tr("নিশ্চিত করতে নিচে DELETE লিখুন", "Type DELETE below to confirm")}</label>
+        ${isPassword ? `<label class="wt-del-lbl" for="wtDelPw">${tr("আপনার অ্যাকাউন্টের পাসওয়ার্ড লিখুন", "Enter your account password")}</label><input type="password" id="wtDelPw" class="wt-del-input" autocomplete="current-password" placeholder="${tr("আপনার পাসওয়ার্ড", "Your password")}">` : ""}
+        <label class="wt-del-lbl" for="wtDelType">${tr("নিশ্চিত করতে নিচে <b class=\"wt-del-word\">“DELETE”</b> লিখুন", "Type <b class=\"wt-del-word\">“DELETE”</b> below to confirm")}</label>
         <input type="text" id="wtDelType" class="wt-del-input" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="DELETE">
         <p class="wt-del-status" id="wtDelStatus" aria-live="polite"></p>
         <div class="wt-dlg-btns">
@@ -1851,6 +1906,8 @@ export function initKhApp(uid, isAdmin){
       if(go) go.disabled = false;
       status(err && err.message === "needs-fresh-login"
         ? tr("নিরাপত্তার জন্য আগে লগআউট করে আবার লগইন করুন, তারপর ৫ মিনিটের মধ্যে ডিলিট করুন। কিছু মোছা হয়নি।", "For safety, log out and sign in again, then delete within 5 minutes. Nothing was deleted.")
+        : (err && /wrong-password|invalid-credential|invalid-login-credentials/.test(String(err.code || "")))
+        ? tr("পাসওয়ার্ড মেলেনি, তাই কিছুই মোছা হয়নি। সঠিক পাসওয়ার্ড দিন।", "That password doesn't match, so nothing was deleted. Enter your correct password.")
         : tr("পরিচয় যাচাই হয়নি, তাই কিছুই মোছা হয়নি। আবার চেষ্টা করুন।", "Identity check failed, so nothing was deleted. Please try again."));
       return;
     }

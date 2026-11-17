@@ -1652,3 +1652,52 @@ html[data-theme=dark] .kh-main .wt-set a.wt-side-legal-item{ color:var(--ink); }
 .kh-main .wt-pending-tx small{ font-size:.8rem; color:var(--muted); line-height:1.3; }
 .kh-main .wt-pending-go{ width:8px; height:8px; flex:none; border-right:2px solid var(--muted); border-top:2px solid var(--muted); transform:rotate(45deg); opacity:.7; margin-right:6px; }
 .kh-main .wt-pending:active{ transform:scale(.99); }
+
+/* =====================================================================
+   Greeting card: calm glowing "hills" (SMIL shape morph, no JS loop).
+   Re-tint with --wave-a (main crest) and --wave-b (second layer).
+   ===================================================================== */
+.kh-main .kh-intro{
+  --wave-a:25,211,162; --wave-b:26,167,201;
+  position:relative; overflow:hidden; isolation:isolate;
+  display:grid; grid-template-columns:44px minmax(0,1fr); column-gap:12px; align-items:start;
+  padding:16px 16px 56px; margin:0 0 14px; border-radius:20px;
+  background:linear-gradient(160deg,#F2FBF8 0%,#E4F3F4 100%); border:1px solid var(--line);
+}
+html[data-theme=dark] .kh-main .kh-intro{ --wave-a:25,211,162; background:linear-gradient(160deg,#08141B 0%,#050A10 100%); border-color:#16303A; }
+html:not([data-theme=dark]) .kh-main .kh-intro{ --wave-a:13,150,120; --wave-b:14,116,144; }
+.kh-main .kh-intro > *{ position:relative; z-index:1; }
+.kh-main .kh-intro .wt-hello-ico{ grid-column:1; grid-row:1 / span 3; width:44px; height:44px; display:block; }
+.kh-main .kh-intro .wt-hello-ico svg{ width:44px; height:44px; display:none; }
+.kh-main .kh-intro[data-tod="day"] .wt-hello-sun,
+.kh-main .kh-intro:not([data-tod]) .wt-hello-sun,
+.kh-main .kh-intro[data-tod="night"] .wt-hello-moon{ display:block; }
+.kh-main .kh-intro .wt-greeting,
+.kh-main .kh-intro .section-sub,
+.kh-main .kh-intro .kh-current-month-pill{ grid-column:2; }
+.kh-main .kh-intro .wt-greeting{ margin:0 0 4px; }
+.kh-main .kh-intro .section-sub{ margin:0; }
+.kh-main .kh-intro .kh-current-month-pill{ justify-self:start; margin-top:10px; }
+.wt-waves{ position:absolute !important; left:0; right:0; bottom:0; height:96px; z-index:0 !important; pointer-events:none; }
+.wt-hills{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+html[data-theme=dark] .wt-crest{ filter:drop-shadow(0 0 3px rgba(25,211,162,.55)); }
+
+/* ---- Greeting is NOT a separate card: no box, border or background. The hills fade into the page. ---- */
+.kh-main .kh-intro,
+html[data-theme=dark] .kh-main .kh-intro{
+  background:none; border:0; border-radius:0; box-shadow:none; overflow:visible;
+  padding:2px 0 50px; margin:0 0 4px;
+}
+.wt-waves{
+  left:-16px; right:-16px; height:92px;
+  -webkit-mask-image:linear-gradient(to top,transparent 0,#000 42%); mask-image:linear-gradient(to top,transparent 0,#000 42%);
+}
+.wt-hills{
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 14%,#000 90%,transparent 100%);
+  mask-image:linear-gradient(to right,transparent 0,#000 14%,#000 90%,transparent 100%);
+}
+@media (min-width:1024px){ .wt-waves{ left:0; right:0; } }
+/* the grey "pending" dot also in Light theme */
+.kh-main .wt-tc-pill::before{ background:var(--wt-idle,#9CA3AF); }
+.kh-main .wt-tc-pill.is-duty::before{ background:#22C55E; }
+.kh-main .wt-tc-pill.is-leave::before{ background:#F59E0B; }

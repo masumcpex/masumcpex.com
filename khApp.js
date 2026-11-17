@@ -2130,6 +2130,17 @@ export function initKhApp(uid, isAdmin){
     el.innerHTML = members.length
       ? `<span class="wt-tc-pill is-duty"><b>${p}</b> ${tr("উপস্থিত","present")}</span><span class="wt-tc-pill is-leave"><b>${l}</b> ${tr("ছুটি","leave")}</span><span class="wt-tc-pill is-none"><b>${pending}</b> ${tr("বাকি","pending")}</span>`
       : `<span class="wt-tc-empty">${tr("আগে প্রথম সদস্য যোগ করুন","Add your first member to begin")}</span>`;
+    const cnt = document.getElementById("wtTodayCount");
+    if(cnt) cnt.innerHTML = members.length ? `${toBn(p)} / ${toBn(members.length)} <small>${tr("সদস্য", "Members")}</small>` : "";
+    const bar = document.getElementById("wtTodayBar");
+    if(bar) bar.style.width = (members.length ? Math.round((p / members.length) * 100) : 0) + "%";
+    const pb = document.getElementById("wtPendingBanner");
+    if(pb){
+      pb.hidden = !(members.length && pending > 0);
+      const pt = document.getElementById("wtPendingTitle"), ps = document.getElementById("wtPendingSub");
+      if(pt) pt.textContent = tr("হাজিরা বাকি", "Pending Attendance");
+      if(ps) ps.textContent = tr(`আজ ${toBn(pending)} জন সদস্যের হাজিরা বাকি আছে।`, `${pending} member${pending === 1 ? "'s" : "s'"} attendance ${pending === 1 ? "is" : "are"} missing today.`);
+    }
     const btn = document.getElementById("wtTodayBtn");
     if(btn) btn.querySelector("span").textContent = members.length ? tr("আজকের হাজিরা লিখুন","Record today's attendance") : tr("সদস্য যোগ করুন","Add a member");
   }
@@ -3123,7 +3134,7 @@ export function initKhApp(uid, isAdmin){
         pdf.addImage(slice(pg.y0, pg.y1), "JPEG", 0, yMM, A4_WIDTH_MM, (pg.y1 - pg.y0) / pxPerMM);
         drawFooter(pdf, idx + 1, pages.length, A4_WIDTH_MM, A4_HEIGHT_MM);
       });
-      pdf.save(`attendance-report-${ym}${singleMember ? "-" + singleMember.name : ""}.pdf`);
+      wtSavePdf(pdf, `attendance-report-${ym}${singleMember ? "-" + singleMember.name : ""}.pdf`);
     }finally{
       document.body.removeChild(wrap);
       document.body.removeChild(style);
@@ -3781,7 +3792,7 @@ export function initKhApp(uid, isAdmin){
       const yMM = (idx > 0 ? TOP_MARGIN_MM : 0) + (pg.head ? pg.head.h / pxPerMM : 0) + (topPx - pg.y0) / pxPerMM;
       pdf.link((r.left - wrapRect.left) / pxPerMM, yMM, r.width / pxPerMM, r.height / pxPerMM, { url: l.url });
     });
-    pdf.save(fileName);
+    wtSavePdf(pdf, fileName);
   }
 
   function escapeHtml(str){
@@ -4197,6 +4208,11 @@ export function initKhApp(uid, isAdmin){
     });
   }
   // PDF libraries are only needed when someone downloads a report, so they can load on demand.
+  // Saves the PDF exactly like before, then offers "Send on WhatsApp" (see attendance.html -> wtOfferShare).
+  function wtSavePdf(pdf, name){
+    pdf.save(name);
+    try{ if(typeof window.wtOfferShare === "function") window.wtOfferShare(pdf.output("blob"), name); }catch(e){ console.warn("share offer skipped", e); }
+  }
   async function ensurePdfLibs(){
     if(window.html2canvas && window.jspdf) return true;
     const results = await Promise.all([

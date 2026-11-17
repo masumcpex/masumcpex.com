@@ -10,13 +10,13 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="worktrack.css?v=20261120">
+<link rel="stylesheet" href="worktrack.css?v=20261121">
 <script>try{var _t=localStorage.getItem("wt-theme"),_d=_t==="dark"||(_t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=_d?"dark":"light"}catch(e){}</script>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" crossorigin>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" crossorigin>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js" crossorigin>
 <link rel="modulepreload" href="firebase.js">
-<link rel="modulepreload" href="khApp.js">
+<link rel="modulepreload" href="khApp.js?v=20261121">
 <link rel="modulepreload" href="kh-auth.js">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="manifest" href="/worktrack.webmanifest">
@@ -289,6 +289,8 @@ body:not(.wt-loaded) .site-footer{display:none}
     pw:["পাসওয়ার্ড সেট / পরিবর্তন","Set / change password"],out:["লগ আউট","Log Out"],data:["ডেটা ও ব্যাকআপ","Data & backup"],
     priv:["ডেটা ও প্রাইভেসি","Data & Privacy"],more:["আরও","More"],legal:["আইনি ও নীতিমালা","Legal & policies"],about:["সম্পর্কে","About"],danger:["বিপজ্জনক এলাকা","Danger zone"]};
   document.querySelectorAll("[data-wts]").forEach(function(e){var d=T[e.getAttribute("data-wts")];if(d)e.textContent=d[I]});
+  var pb=document.getElementById("wtPendingBanner");
+  if(pb)pb.addEventListener("click",function(){var t=document.getElementById("wtTodayBtn");if(t)t.click()});
   var so=document.querySelector("[data-wt-signout]");
   if(so)so.addEventListener("click",function(ev){ev.preventDefault();var b=document.getElementById("khSignOutBtn");if(b)b.click()});
   /* profile card mirrors the account menu */
@@ -323,20 +325,10 @@ body:not(.wt-loaded) .site-footer{display:none}
   window.addEventListener("resize",later);
 
   /* ---- WhatsApp share: any PDF the app makes (salary slip, monthly report) can be sent right after ---- */
-  var blob=null,url="",name="",hideT=0,showT=0;
+  var blob=null,name="",hideT=0;
   var STR={ready:["PDF তৈরি হয়েছে","PDF is ready"],btn:["WhatsApp-এ পাঠান","Send on WhatsApp"],fb:["PDF ডাউনলোড হয়েছে। WhatsApp খুলছি, ফাইলটি সংযুক্ত করুন।","PDF downloaded. Opening WhatsApp, attach the file."]};
-  var _cou=URL.createObjectURL;
-  URL.createObjectURL=function(o){
-    var u=_cou.apply(URL,arguments);
-    try{if(o&&o.type==="application/pdf"){blob=o;url=u;name="";clearTimeout(showT);showT=setTimeout(show,700)}}catch(e){}
-    return u;
-  };
-  function grab(a){try{if(a&&a.download&&url&&a.href===url)name=a.download}catch(e){}}
-  var _ac=HTMLAnchorElement.prototype.click;
-  HTMLAnchorElement.prototype.click=function(){grab(this);return _ac.apply(this,arguments)};
-  var _de=EventTarget.prototype.dispatchEvent;
-  EventTarget.prototype.dispatchEvent=function(){if(this instanceof HTMLAnchorElement)grab(this);return _de.apply(this,arguments)};
-
+  /* called by khApp.js (wtSavePdf) right after every PDF is saved */
+  window.wtOfferShare=function(b,fn){blob=b;name=fn||"";setTimeout(show,500)};
   function chip(){
     var c=document.getElementById("wtShareChip");if(c)return c;
     c=document.createElement("div");c.id="wtShareChip";c.className="wt-share";c.setAttribute("role","status");
@@ -402,9 +394,12 @@ body:not(.wt-loaded) .site-footer{display:none}
       <div><div class="wt-today-eyebrow" data-i18n="today">আজ</div><div class="wt-today-date" id="wtTodayDate"></div></div>
       <button type="button" class="wt-today-earn" id="wtEarnBtn" aria-label="Earnings PDF" title="Earnings PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><circle cx="17" cy="14.5" r="1.2"/></svg></button>
     </div>
+    <div class="wt-today-count" id="wtTodayCount" aria-live="polite"></div>
     <div class="wt-today-stats" id="wtTodayStats"></div>
+    <div class="wt-today-bar" aria-hidden="true"><span id="wtTodayBar"></span></div>
     <button type="button" class="wt-today-btn" id="wtTodayBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span>আজকের হাজিরা লিখুন</span></button>
   </section>
+  <button type="button" class="wt-pending" id="wtPendingBanner" hidden><span class="wt-pending-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span><span class="wt-pending-tx"><b id="wtPendingTitle">Pending Attendance</b><small id="wtPendingSub"></small></span><span class="wt-pending-go" aria-hidden="true"></span></button>
   <div class="wt-sec-h" data-i18n="qk_h">Quick Actions</div>
   <div class="wt-qa" id="wtQuickActions">
     <a href="#sectionTeam" class="wt-qa-item" data-wt-view="team" data-wt-target="sectionTeam"><span class="wt-qa-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-1.5A5 5 0 0 1 7.5 13.5h3A5 5 0 0 1 15.5 18.5V20"/><path d="M19 8v6M16 11h6"/></svg></span><span data-i18n="qk_add">Add Member</span></a>
@@ -1346,7 +1341,7 @@ html[data-theme="dark"] .kh-reg-name,html[data-theme="dark"] .kh-reg-day-title,h
 </footer>
 
 <script type="module" src="firebase.js"></script>
-<script type="module" src="khApp.js"></script>
+<script type="module" src="khApp.js?v=20261121"></script>
 <script type="module" src="kh-auth.js"></script>
 
 <script>

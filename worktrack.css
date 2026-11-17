@@ -1607,3 +1607,28 @@ html[data-theme=dark] .wt-set .wt-side-seg{ background:#1A1D22; }
 html[data-theme=dark] .kh-main .wt-set a.kh-sidebar-link{ color:var(--ink); }
 .kh-main .wt-set a.kh-sidebar-link.wt-side-danger,
 html[data-theme=dark] .kh-main .wt-set a.kh-sidebar-link.wt-side-danger{ color:#D9534F !important; }
+
+/* ---- More tab removed: bottom nav has 4 equal items ---- */
+@media (max-width:1023.98px){ .wt-bottom-nav{ grid-template-columns:repeat(4,1fr); } }
+
+/* ---- Settings: "More", legal and about groups ---- */
+.wt-set .wt-side-legal{ display:block; padding:0; margin:0; background:transparent; border:0; border-radius:0; }
+.wt-set .wt-side-legal-item{
+  display:flex; align-items:center; gap:12px; min-height:52px; padding:10px 14px; border-radius:0; color:var(--ink);
+  font-size:.95rem; font-weight:600; text-decoration:none; position:relative; box-sizing:border-box;
+}
+.wt-set .wt-side-legal-item + .wt-side-legal-item{ border-top:1px solid var(--line); }
+.wt-set .wt-side-legal-item:hover{ background:rgba(45,136,255,.07); }
+.wt-set .wt-side-legal-ico{ width:34px; height:34px; border-radius:10px; background:rgba(45,136,255,.12); color:#2D88FF; }
+.wt-set .wt-side-legal-ico svg{ width:18px; height:18px; }
+.wt-set .wt-side-legal-go{ display:none; }
+.wt-set .wt-side-legal-item::after{ content:""; margin-left:auto; width:8px; height:8px; flex:none; border-right:2px solid var(--muted); border-top:2px solid var(--muted); transform:rotate(45deg); opacity:.7; }
+.wt-set .wt-side-legal-item span{ color:inherit; }
+.wt-set-social{ display:flex; align-items:center; gap:10px; padding:12px 14px; border-top:1px solid var(--line); }
+.wt-set-social .wt-social-link{ background:rgba(128,128,128,.14); }
+.wt-set .kh-sidebar-link[data-wt-view="contact"] svg{ background:rgba(45,136,255,.12); color:#2D88FF; }
+.wt-set .kh-sidebar-link[href*="Finance"] svg{ background:rgba(49,196,141,.15); color:#31C48D; }
+.wt-set .kh-sidebar-link[data-wt-view="team"] svg{ background:rgba(167,139,250,.16); color:#A78BFA; }
+.wt-set .kh-sidebar-link[href="index.html"] svg{ background:rgba(128,128,128,.16); color:var(--muted); }
+html[data-theme=dark] .wt-set .wt-side-legal-item + .wt-side-legal-item,html[data-theme=dark] .wt-set-social{ border-color:var(--wt-card-line,#22262D); }
+html[data-theme=dark] .kh-main .wt-set a.wt-side-legal-item{ color:var(--ink); }

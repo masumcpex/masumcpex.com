@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="worktrack.css?v=20261109">
+<link rel="stylesheet" href="worktrack.css?v=20261119">
 <script>try{var _t=localStorage.getItem("wt-theme"),_d=_t==="dark"||(_t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=_d?"dark":"light"}catch(e){}</script>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" crossorigin>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" crossorigin>
@@ -265,7 +265,83 @@ body:not(.wt-loaded) .site-footer{display:none}
       </button>
     </div>
   </div>
+  <button type="button" class="wt-hd-ic" id="wtHdNotif" aria-label="Notifications and daily reminder" title="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+  <button type="button" class="wt-hd-ic" id="wtHdSettings" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
 </div>
+<script>
+/* Header shortcuts: reuse the existing Settings and Daily-reminder actions (no new logic) */
+(function(){
+  function go(id,sel){var b=document.getElementById(id);if(!b)return;
+    b.addEventListener("click",function(){var t=document.querySelector(sel);if(t)t.click()})}
+  var g=document.getElementById("wtHdSettings");
+  if(g)g.addEventListener("click",function(){var dd=document.getElementById("khAccountDropdown");if(dd)dd.classList.remove("is-open");if(window.wtShowView)window.wtShowView("settings")});
+  go("wtHdNotif","[data-wt-reminder]");
+})();
+</script>
+
+<script>
+/* Settings page helpers + "Share PDF on WhatsApp" (no existing logic changed) */
+(function(){
+  var LANG="bn";try{LANG=localStorage.getItem("wt-lang")||"bn"}catch(e){}
+  var I=LANG==="en"?1:0;
+  var T={title:["সেটিংস","Settings"],sub:["অ্যাকাউন্ট, পছন্দ, রিমাইন্ডার ও ডেটা এক জায়গায়।","Account, preferences, reminders and your data in one place."],
+    pref:["পছন্দ","Preferences"],notif:["নোটিফিকেশন","Notifications"],sec:["অ্যাকাউন্ট ও নিরাপত্তা","Account & security"],
+    pw:["পাসওয়ার্ড সেট / পরিবর্তন","Set / change password"],out:["লগ আউট","Log Out"],data:["ডেটা ও ব্যাকআপ","Data & backup"],
+    priv:["ডেটা ও প্রাইভেসি","Data & Privacy"],danger:["বিপজ্জনক এলাকা","Danger zone"]};
+  document.querySelectorAll("[data-wts]").forEach(function(e){var d=T[e.getAttribute("data-wts")];if(d)e.textContent=d[I]});
+  var so=document.querySelector("[data-wt-signout]");
+  if(so)so.addEventListener("click",function(ev){ev.preventDefault();var b=document.getElementById("khSignOutBtn");if(b)b.click()});
+  /* profile card mirrors the account menu */
+  function sync(){
+    var nm=(document.getElementById("khUserEmail")||{}).textContent||"",em=(document.getElementById("khUserEmailFull")||{}).textContent||"";
+    var a=document.getElementById("khAccountAvatarImg"),img=document.getElementById("wtSetAvaImg"),ic=document.querySelector("#wtSetAva svg");
+    var n=document.getElementById("wtSetName"),m=document.getElementById("wtSetMail");
+    if(n)n.textContent=nm.trim()||"Account";if(m)m.textContent=em.trim();
+    if(a&&img&&a.getAttribute("src")&&a.style.display!=="none"){img.src=a.src;img.style.display="block";if(ic)ic.style.display="none"}
+  }
+  sync();
+  if(window.MutationObserver){var mo=new MutationObserver(sync);["khUserEmail","khUserEmailFull","khAccountAvatarImg"].forEach(function(id){var e=document.getElementById(id);if(e)mo.observe(e,{childList:true,characterData:true,subtree:true,attributes:true})})}
+
+  /* ---- WhatsApp share: any PDF the app makes (salary slip, monthly report) can be sent right after ---- */
+  var blob=null,url="",name="",hideT=0,showT=0;
+  var STR={ready:["PDF তৈরি হয়েছে","PDF is ready"],btn:["WhatsApp-এ পাঠান","Send on WhatsApp"],fb:["PDF ডাউনলোড হয়েছে। WhatsApp খুলছি, ফাইলটি সংযুক্ত করুন।","PDF downloaded. Opening WhatsApp, attach the file."]};
+  var _cou=URL.createObjectURL;
+  URL.createObjectURL=function(o){
+    var u=_cou.apply(URL,arguments);
+    try{if(o&&o.type==="application/pdf"){blob=o;url=u;name="";clearTimeout(showT);showT=setTimeout(show,700)}}catch(e){}
+    return u;
+  };
+  function grab(a){try{if(a&&a.download&&url&&a.href===url)name=a.download}catch(e){}}
+  var _ac=HTMLAnchorElement.prototype.click;
+  HTMLAnchorElement.prototype.click=function(){grab(this);return _ac.apply(this,arguments)};
+  var _de=EventTarget.prototype.dispatchEvent;
+  EventTarget.prototype.dispatchEvent=function(){if(this instanceof HTMLAnchorElement)grab(this);return _de.apply(this,arguments)};
+
+  function chip(){
+    var c=document.getElementById("wtShareChip");if(c)return c;
+    c=document.createElement("div");c.id="wtShareChip";c.className="wt-share";c.setAttribute("role","status");
+    c.innerHTML='<span class="wt-share-t"></span><button type="button" class="wt-share-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.8.9c.3.1.5.2.5.3.1.2.1.8-.1 1.5z"/></svg><span class="wt-share-b"></span></button><button type="button" class="wt-share-x" aria-label="Close">×</button>';
+    document.body.appendChild(c);
+    c.querySelector(".wt-share-x").addEventListener("click",hide);
+    c.querySelector(".wt-share-go").addEventListener("click",send);
+    return c;
+  }
+  function show(){var c=chip();c.querySelector(".wt-share-t").textContent=(name?name:STR.ready[I]);c.querySelector(".wt-share-b").textContent=STR.btn[I];c.classList.add("is-on");clearTimeout(hideT);hideT=setTimeout(hide,25000)}
+  function hide(){var c=document.getElementById("wtShareChip");if(c)c.classList.remove("is-on")}
+  function send(){
+    if(!blob)return;
+    var fn=name||"WorkTrack-report.pdf";if(!/\.pdf$/i.test(fn))fn+=".pdf";
+    try{
+      var f=new File([blob],fn,{type:"application/pdf"});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){
+        navigator.share({files:[f],title:fn}).then(hide,function(){});return;
+      }
+    }catch(e){}
+    window.open("https://wa.me/?text="+encodeURIComponent("WorkTrack: "+fn),"_blank","noopener");
+    alert(STR.fb[I]);hide();
+  }
+})();
+</script>
 
 <div class="kh-app-shell">
 <aside class="kh-sidebar" id="wtSidebar" aria-label="Main navigation">
@@ -288,34 +364,8 @@ body:not(.wt-loaded) .site-footer{display:none}
     <a href="https://masumcpex.com/Finance.html" class="kh-sidebar-link" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v.01M18 14v.01"/></svg><span>Finance Tracker</span></a>
     <a href="#sectionTeam" class="kh-sidebar-link" data-wt-view="team" data-wt-target="sectionMembers" data-wt-loose><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 20v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Team Members</span></a>
     <a href="#" class="kh-sidebar-link" id="wtAdminAccounts" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6z"/><circle cx="12" cy="10" r="2.5"/><path d="M7.5 16c.8-2 2.5-3 4.5-3s3.7 1 4.5 3"/></svg><span>All Accounts (Admin)</span></a>
-    <div class="wt-side-theme wt-side-lang">
-      <span class="wt-side-theme-h">Language</span>
-      <div class="wt-side-seg wt-side-seg--2" role="group" aria-label="Language">
-        <button type="button" data-wt-lang="en" title="English"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span>English</span></button>
-        <button type="button" data-wt-lang="bn" title="বাংলা"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span>বাংলা</span></button>
-      </div>
-    </div>
-    <div class="wt-side-theme">
-      <span class="wt-side-theme-h">Theme</span>
-      <div class="wt-side-seg" role="group" aria-label="Theme">
-        <button type="button" data-wt-theme="light" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Light</span></button>
-        <button type="button" data-wt-theme="dark" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>Dark</span></button>
-        <button type="button" data-wt-theme="system" title="Follow device"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Auto</span></button>
-      </div>
-    </div>
-    <div class="wt-side-theme wt-side-zoom">
-      <span class="wt-side-theme-h">Display Size</span>
-      <div class="wt-side-seg" role="group" aria-label="Display size">
-        <button type="button" data-wt-zoom="85" title="Small"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6"/></svg><span>Small</span></button>
-        <button type="button" data-wt-zoom="100" title="Normal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span>Normal</span></button>
-        <button type="button" data-wt-zoom="115" title="Large"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6M11 8v6"/></svg><span>Large</span></button>
-      </div>
-    </div>
+    <a href="#wtSettings" class="kh-sidebar-link" data-wt-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></a>
     <a href="#wtData" class="kh-sidebar-link" data-wt-view="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span>Data &amp; Privacy</span></a>
-    <a href="#" class="kh-sidebar-link" data-wt-verify><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><span data-i18n="vr">Verify report</span></a>
-    <a href="#" class="kh-sidebar-link" data-wt-reminder><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span data-i18n="rm">Daily reminder</span></a>
-    <a href="#" class="kh-sidebar-link" data-wt-backup><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span data-i18n="bk">Backup my data</span></a>
-    <a href="#" class="kh-sidebar-link wt-side-danger" data-wt-delete-account><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg><span data-i18n="da">Delete my account</span></a>
     <a href="#wtContact" class="kh-sidebar-link" data-wt-view="contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg><span>Contact</span></a>
 
     <div class="wt-side-label">Legal &amp; Policies</div>
@@ -519,6 +569,67 @@ body:not(.wt-loaded) .site-footer{display:none}
     </section>
   </div>
 
+  <div class="wt-view" id="wtView-settings" data-wt-view="settings">
+    <div class="wt-head" id="wtSettings"><h2 data-wts="title">Settings</h2><p class="wt-head-sub" data-wts="sub">Account, preferences, reminders and your data in one place.</p></div>
+    <div class="wt-set">
+      <section class="wt-set-profile" aria-label="Account">
+        <span class="wt-set-ava" id="wtSetAva"><img id="wtSetAvaImg" alt="" referrerpolicy="no-referrer" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg></span>
+        <span class="wt-set-who"><b id="wtSetName">Account</b><small id="wtSetMail"></small></span>
+      </section>
+
+      <h3 class="wt-set-h" data-wts="pref">Preferences</h3>
+      <div class="wt-set-card wt-set-card--pad">
+    <div class="wt-side-theme wt-side-lang">
+      <span class="wt-side-theme-h">Language</span>
+      <div class="wt-side-seg wt-side-seg--2" role="group" aria-label="Language">
+        <button type="button" data-wt-lang="en" title="English"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span>English</span></button>
+        <button type="button" data-wt-lang="bn" title="বাংলা"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span>বাংলা</span></button>
+      </div>
+    </div>
+    <div class="wt-side-theme">
+      <span class="wt-side-theme-h">Theme</span>
+      <div class="wt-side-seg" role="group" aria-label="Theme">
+        <button type="button" data-wt-theme="light" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Light</span></button>
+        <button type="button" data-wt-theme="dark" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>Dark</span></button>
+        <button type="button" data-wt-theme="system" title="Follow device"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Auto</span></button>
+      </div>
+    </div>
+    <div class="wt-side-theme wt-side-zoom">
+      <span class="wt-side-theme-h">Display Size</span>
+      <div class="wt-side-seg" role="group" aria-label="Display size">
+        <button type="button" data-wt-zoom="85" title="Small"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6"/></svg><span>Small</span></button>
+        <button type="button" data-wt-zoom="100" title="Normal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span>Normal</span></button>
+        <button type="button" data-wt-zoom="115" title="Large"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6M11 8v6"/></svg><span>Large</span></button>
+      </div>
+    </div>
+      </div>
+
+      <h3 class="wt-set-h" data-wts="notif">Notifications</h3>
+      <div class="wt-set-card">
+    <a href="#" class="kh-sidebar-link" data-wt-reminder><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span data-i18n="rm">Daily reminder</span></a>
+      </div>
+
+      <h3 class="wt-set-h" data-wts="sec">Account &amp; security</h3>
+      <div class="wt-set-card">
+        <a href="#" class="kh-sidebar-link" data-wt-pw><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-wts="pw">Set / change password</span></a>
+        <a href="#" class="kh-sidebar-link" data-wt-signout><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg><span data-wts="out">Log Out</span></a>
+      </div>
+
+      <h3 class="wt-set-h" data-wts="data">Data &amp; backup</h3>
+      <div class="wt-set-card">
+    <a href="#" class="kh-sidebar-link" data-wt-backup><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span data-i18n="bk">Backup my data</span></a>
+    <a href="#" class="kh-sidebar-link" data-wt-verify><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><span data-i18n="vr">Verify report</span></a>
+        <a href="#wtData" class="kh-sidebar-link" data-wt-goto="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span data-wts="priv">Data &amp; Privacy</span></a>
+      </div>
+
+      <h3 class="wt-set-h wt-set-h--danger" data-wts="danger">Danger zone</h3>
+      <div class="wt-set-card wt-set-card--danger">
+    <a href="#" class="kh-sidebar-link wt-side-danger" data-wt-delete-account><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg><span data-i18n="da">Delete my account</span></a>
+      </div>
+      <p class="wt-set-foot">WorkTrack · Masum Cpex</p>
+    </div>
+  </div>
+
   <div class="wt-view" id="wtView-contact" data-wt-view="contact">
     <div class="wt-head" id="wtContact"><div class="eyebrow">Settings</div><h2>Contact</h2><p class="wt-head-sub">Questions, suggestions or a problem? Get in touch.</p></div>
     <section class="kh-card kh-card--mint">
@@ -566,7 +677,7 @@ body:not(.wt-loaded) .site-footer{display:none}
     var b=e.target.closest("[data-wt-theme]");
     if(b){try{localStorage.setItem(KEY,b.dataset.wtTheme)}catch(x){}apply();return}
     if(e.target.closest("#khSettingsBtn")){var dd=document.getElementById("khAccountDropdown");if(dd)dd.classList.remove("is-open");
-      if(window.wtShowView)window.wtShowView("data")}
+      if(window.wtShowView)window.wtShowView("settings")}
   });
   try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){if(mode()==="system")apply()})}catch(e){}
   apply();
@@ -575,11 +686,11 @@ body:not(.wt-loaded) .site-footer{display:none}
 <script>
 /* WorkTrack navigation, contact form and login-art helpers (no other file is touched) */
 (function(){
-  var VIEWS=["dashboard","register","team","data","contact"];
-  var HASH={dashboard:"sectionDashboard",register:"attendanceRegisterSection",team:"sectionTeam",data:"wtData",contact:"wtContact"};
+  var VIEWS=["dashboard","register","team","data","contact","settings"];
+  var HASH={dashboard:"sectionDashboard",register:"attendanceRegisterSection",team:"sectionTeam",data:"wtData",contact:"wtContact",settings:"wtSettings"};
   var main=document.getElementById("khMain"), gate=document.getElementById("khAuthGate");
   var side=document.getElementById("wtSidebar"), scrim=document.getElementById("wtScrim");
-  var cur="dashboard", curTarget=null, lastOpener=null, MORE=["data","contact"];
+  var cur="dashboard", curTarget=null, lastOpener=null, MORE=["data","contact","settings"];
   var desktop=window.matchMedia?matchMedia("(min-width: 1024px)"):{matches:true};
 
   function $(id){return document.getElementById(id)}

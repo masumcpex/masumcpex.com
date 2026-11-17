@@ -1411,3 +1411,199 @@ html[data-theme=dark] .wt-sec-h::before{ background:#2D88FF; }
   .wt-qa-ico svg{ width:23px; height:23px; }
 }
 html[data-theme=dark] .kh-header{ background:#0A0B0C; border-bottom:1px solid #1F2124; box-shadow:none; }
+
+/* =====================================================================
+   WorkTrack dashboard v3: Reference-design match (layout + component sizing)
+   শুধু CSS: কোনো HTML id / data-attribute / JS / click action বদলায়নি।
+   Tokens (dark): bg #000 · card #111418 · border #22262D · primary #0A6CFF
+   Spacing: page 16 · gap 8 · section 22 · card radius 14 · hero radius 20
+   ===================================================================== */
+html[data-theme=dark]{
+  --wt-card:#111418; --wt-card-line:#22262D; --wt-primary:#0A6CFF;
+  --wt-ok:#22C55E; --wt-warn:#F59E0B; --wt-idle:#6B7280; --wt-sub:#9CA3AF;
+}
+
+/* ---- Page rhythm (phones/tablets) ---- */
+@media (max-width:1023.98px){
+  .kh-main{ padding-top:16px; padding-left:16px; padding-right:16px; }
+}
+
+/* ---- Greeting ---- */
+.kh-main .kh-intro{ margin-bottom:14px; }
+.kh-main .kh-intro .wt-greeting{ font-size:clamp(1.25rem,5.4vw,1.5rem); line-height:1.25; margin:0 0 4px; }
+.kh-main .kh-intro .section-sub{ font-size:.875rem; line-height:1.4; margin:0; }
+.kh-main .kh-current-month-pill{ margin-top:8px; padding:3px 10px; font-size:.72rem; }
+
+/* ---- Today / hero card ---- */
+.kh-main .wt-today{ margin:0 0 20px; padding:16px; border-radius:20px; }
+.kh-main .wt-today-head{ align-items:center; gap:10px; }
+.kh-main .wt-today-eyebrow{ font-size:.72rem; letter-spacing:.05em; opacity:.8; }
+.kh-main .wt-today-date{ font-size:.95rem; font-weight:700; margin-top:2px; line-height:1.3; }
+.kh-main .wt-today-earn{ width:40px; height:40px; }
+.kh-main .wt-today-earn svg{ width:20px; height:20px; }
+.kh-main .wt-today-stats{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 16px; margin:14px 0 14px; }
+.kh-main .wt-tc-pill{ gap:6px; align-items:center; padding:0; background:none; border-radius:0; font-size:.875rem; font-weight:500; }
+.kh-main .wt-tc-pill b{ font-size:.875rem; font-weight:700; }
+.kh-main .wt-tc-pill::before{ content:""; width:10px; height:10px; border-radius:50%; flex:none; background:var(--wt-idle); }
+.kh-main .wt-tc-pill.is-duty::before{ background:var(--wt-ok,#22C55E); }
+.kh-main .wt-tc-pill.is-leave::before{ background:var(--wt-warn,#F59E0B); }
+.kh-main .wt-tc-pill b{ color:inherit !important; }
+.kh-main .wt-today-btn{ min-height:48px; padding:0 14px; border-radius:14px; font-size:1rem; font-weight:700; box-shadow:none; }
+.kh-main .wt-today-btn:active{ transform:scale(.985); }
+.kh-main .wt-today-btn svg{ width:20px; height:20px; }
+html[data-theme=dark] .kh-main .wt-today{ background:linear-gradient(160deg,#0B1426 0%,#060B14 100%); border:1px solid #1C2940; box-shadow:none; }
+html[data-theme=dark] .kh-main .wt-today-btn{ background:var(--wt-primary); color:#fff; box-shadow:none; }
+
+/* ---- Section headings ---- */
+.kh-main .wt-sec-h{ margin:22px 0 10px; font-size:1.0625rem; font-weight:700; line-height:1.3; }
+
+/* ---- Quick Actions: 4 equal compact cards in one row ---- */
+.kh-main .wt-qa{ grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin:0 0 4px; }
+.kh-main .wt-qa-item{ min-height:64px; padding:8px 4px; gap:6px; border-radius:14px; font-size:.75rem; font-weight:600; line-height:1.2; }
+.kh-main .wt-qa-ico{ width:26px; height:26px; }
+.kh-main .wt-qa-ico svg{ width:24px; height:24px; }
+html[data-theme=dark] .kh-main .wt-qa-item{ background:var(--wt-card); border-color:var(--wt-card-line); }
+@media (max-width:380px){
+  .kh-main .wt-qa{ gap:6px; }
+  .kh-main .wt-qa-item{ min-height:60px; font-size:.7rem; }
+  .kh-main .wt-qa-ico{ width:24px; height:24px; } .kh-main .wt-qa-ico svg{ width:24px; height:24px; }
+}
+
+/* ---- Time-range tabs (existing feature): compact ---- */
+.kh-main .wt-scope{ padding:3px; margin:0 0 10px; }
+.kh-main .wt-scope button{ padding:5px 14px; font-size:.78rem; }
+
+/* ---- Overview: 2 columns, horizontal compact cards ---- */
+.kh-main .kh-quickstats{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-bottom:16px; }
+.kh-main .kh-qs-card[data-stat]{
+  position:relative; flex-direction:row; align-items:center; gap:10px;
+  min-height:64px; padding:12px; border-radius:14px; box-shadow:none;
+}
+.kh-main .kh-qs-card[data-stat] .kh-qs-main{ flex-direction:row; align-items:center; gap:12px; flex:1 1 auto; min-width:0; }
+.kh-main .kh-qs-card[data-stat] .kh-qs-icon{ width:40px; height:40px; border-radius:12px; }
+.kh-main .kh-qs-card[data-stat] .kh-qs-icon svg{ width:22px; height:22px; }
+.kh-main .kh-qs-card[data-stat] .kh-qs-text{ width:auto; min-width:0; padding-right:16px; }
+.kh-main .kh-qs-card[data-stat] .kh-qs-value{ font-size:1.25rem; font-weight:700; line-height:1.15; letter-spacing:0; }
+.kh-main .kh-qs-card[data-stat] .kh-qs-label{ font-size:.75rem; line-height:1.25; margin-top:2px; font-weight:400; }
+.kh-main .kh-qs-card[data-stat] .kh-qs-action{ display:none; }
+.kh-main .kh-qs-card[data-stat] .kh-qs-chev{ top:50%; right:8px; width:20px; height:20px; transform:translateY(-50%); background:transparent; border-radius:0; opacity:.9; }
+.kh-main .kh-qs-card[data-stat] .kh-qs-chev svg{ width:18px; height:18px; }
+.kh-main .kh-qs-card[data-stat]:hover .kh-qs-chev{ background:transparent; }
+/* reference order: Members · Work Hours · Present Days · Advance (DOM/ids unchanged) */
+.kh-main .kh-qs-card[data-stat="hours"]{ order:2; }
+.kh-main .kh-qs-card[data-stat="present"]{ order:3; }
+.kh-main .kh-qs-card[data-stat="advance"]{ order:4; }
+html[data-theme=dark] .kh-main .kh-qs-card[data-stat]{ background:var(--wt-card); border-color:var(--wt-card-line); }
+html[data-theme=dark] .kh-main .kh-qs-card[data-stat] .kh-qs-label{ color:var(--wt-sub); }
+html[data-theme=dark] .kh-main .kh-qs-card[data-stat] .kh-qs-chev{ color:#C9CDD3; }
+@media (max-width:360px){
+  .kh-main .kh-qs-card[data-stat]{ padding:10px; gap:8px; }
+  .kh-main .kh-qs-card[data-stat] .kh-qs-icon{ width:36px; height:36px; }
+  .kh-main .kh-qs-card[data-stat] .kh-qs-value{ font-size:1.125rem; }
+}
+
+/* v3 fixes: explicit border-box so heights match the reference regardless of global reset; chevron without circle in dark */
+.kh-main .wt-qa-item,
+.kh-main .kh-qs-card[data-stat],
+.kh-main .wt-today,
+.kh-main .wt-today-btn{ box-sizing:border-box; }
+html[data-theme=dark] .kh-main .kh-qs-card[data-stat] .kh-qs-chev,
+html[data-theme=dark] .kh-main .kh-qs-card[data-stat]:hover .kh-qs-chev{ background:transparent; border-radius:0; }
+
+/* ---- Header: Notification + Settings buttons beside the account pill.
+   Logo and Download button are untouched. The account pill shrinks (name gets "…") to make room. ---- */
+.kh-user-bar{ flex-wrap:nowrap; }
+.kh-user-bar .kh-account-wrap{ flex:0 1 auto; min-width:0; }
+.kh-user-bar .kh-account-trigger{ max-width:100%; min-width:0; }
+.kh-user-bar .kh-account-trigger .kh-user-email{ min-width:0; flex:1 1 auto; max-width:160px; }
+.wt-hd-ic{
+  flex:none; width:38px; height:38px; padding:0; border-radius:12px; display:inline-flex; align-items:center; justify-content:center;
+  border:1px solid var(--wt-border,var(--line)); background:var(--card-bg,#fff); color:var(--ink); cursor:pointer;
+  -webkit-tap-highlight-color:transparent; transition:background .15s ease,transform .12s ease;
+}
+.wt-hd-ic svg{ width:20px; height:20px; }
+.wt-hd-ic:active{ transform:scale(.94); }
+.wt-hd-ic:focus-visible{ outline:2px solid #2D88FF; outline-offset:2px; }
+html[data-theme=dark] .wt-hd-ic{ background:var(--wt-card,#111418); border-color:var(--wt-card-line,#22262D); }
+@media (max-width:560px){
+  .kh-user-bar{ gap:6px; padding-left:12px; padding-right:12px; }
+  .kh-user-bar .kh-account-trigger{ gap:.35rem; padding:.25rem .5rem .25rem .25rem; }
+  .kh-user-bar .kh-account-trigger .kh-user-email{ max-width:none; }
+  .wt-hd-ic{ width:36px; height:36px; border-radius:11px; }
+}
+
+/* =====================================================================
+   Settings page (grouped cards). The controls inside are the original sidebar
+   controls moved here (same ids / data-attributes / handlers), only re-styled.
+   ===================================================================== */
+.wt-set{ display:grid; gap:0; max-width:640px; }
+.wt-set-profile{
+  display:flex; align-items:center; gap:14px; padding:14px 16px; margin:0 0 6px; border-radius:16px;
+  background:var(--card-bg,#fff); border:1px solid var(--line);
+}
+.wt-set-ava{ width:52px; height:52px; border-radius:50%; flex:none; overflow:hidden; display:grid; place-items:center; background:var(--wt-navy,#173B63); color:#fff; }
+.wt-set-ava svg{ width:26px; height:26px; }
+.wt-set-ava img{ width:100%; height:100%; object-fit:cover; }
+.wt-set-who{ min-width:0; display:flex; flex-direction:column; gap:2px; }
+.wt-set-who b{ font-size:1.05rem; font-weight:700; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-transform:capitalize; }
+.wt-set-who small{ font-size:.8rem; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.wt-set-h{ margin:22px 4px 8px; font-size:.78rem; font-weight:700; letter-spacing:.04em; color:var(--muted); }
+.wt-set-h--danger{ color:#D9534F; }
+.wt-set-card{ border-radius:16px; overflow:hidden; background:var(--card-bg,#fff); border:1px solid var(--line); }
+.wt-set-card--pad{ padding:6px 12px 10px; }
+.wt-set-card--danger{ border-color:rgba(217,83,79,.35); }
+.wt-set-foot{ margin:26px 0 8px; text-align:center; font-size:.74rem; color:var(--muted); opacity:.8; }
+
+/* rows (moved .kh-sidebar-link items) */
+.wt-set .kh-sidebar-link{
+  display:flex; align-items:center; gap:12px; width:100%; box-sizing:border-box; min-height:52px; padding:10px 14px; margin:0; border-radius:0;
+  color:var(--ink); background:transparent; font-size:.95rem; font-weight:600; text-decoration:none; box-shadow:none; position:relative;
+}
+.wt-set .kh-sidebar-link + .kh-sidebar-link{ border-top:1px solid var(--line); }
+.wt-set .kh-sidebar-link:hover,.wt-set .kh-sidebar-link:active{ background:rgba(45,136,255,.07); color:var(--ink); }
+.wt-set .kh-sidebar-link svg{
+  width:34px; height:34px; padding:7px; box-sizing:border-box; flex:none; border-radius:10px;
+  background:rgba(45,136,255,.12); color:#2D88FF;
+}
+.wt-set .kh-sidebar-link::after{
+  content:""; margin-left:auto; width:8px; height:8px; flex:none; border-right:2px solid var(--muted); border-top:2px solid var(--muted);
+  transform:rotate(45deg); opacity:.7;
+}
+.wt-set .kh-sidebar-link.wt-side-danger,.wt-set .kh-sidebar-link.wt-side-danger:hover{ color:#D9534F !important; }
+.wt-set .kh-sidebar-link.wt-side-danger svg{ background:rgba(217,83,79,.13); color:#D9534F; }
+.wt-set .kh-sidebar-link.wt-side-danger::after{ border-color:#D9534F; }
+.wt-set .kh-sidebar-link[data-wt-signout] svg{ background:rgba(245,158,11,.14); color:#F59E0B; }
+.wt-set .kh-sidebar-link[data-wt-reminder] svg{ background:rgba(167,139,250,.16); color:#A78BFA; }
+.wt-set .kh-sidebar-link[data-wt-backup] svg{ background:rgba(49,196,141,.15); color:#31C48D; }
+.wt-set .kh-sidebar-link[data-wt-verify] svg{ background:rgba(45,136,255,.12); color:#2D88FF; }
+
+/* preference blocks (Language / Theme / Display size) */
+.wt-set .wt-side-theme{ margin:8px 0 0; padding:8px 2px 4px; background:transparent; border-radius:0; }
+.wt-set .wt-side-theme + .wt-side-theme{ border-top:1px solid var(--line); margin-top:8px; padding-top:12px; }
+.wt-set .wt-side-theme-h{ margin:0 2px 8px; font-size:.88rem; font-weight:700; color:var(--ink); }
+.wt-set .wt-side-seg{ background:rgba(128,128,128,.14); }
+.wt-set .wt-side-seg button{ color:var(--muted); min-height:48px; font-size:.72rem; }
+.wt-set .wt-side-seg button:hover{ color:var(--ink); }
+.wt-set .wt-side-seg button.on{ background:#2D88FF; color:#fff; box-shadow:0 2px 8px rgba(45,136,255,.35); }
+html[data-theme=dark] .wt-set-profile,html[data-theme=dark] .wt-set-card{ background:var(--wt-card,#111418); border-color:var(--wt-card-line,#22262D); }
+html[data-theme=dark] .wt-set .kh-sidebar-link + .kh-sidebar-link,html[data-theme=dark] .wt-set .wt-side-theme + .wt-side-theme{ border-color:var(--wt-card-line,#22262D); }
+html[data-theme=dark] .wt-set .wt-side-seg{ background:#1A1D22; }
+
+/* WhatsApp share chip (appears after a PDF is created) */
+.wt-share{
+  position:fixed; left:50%; bottom:calc(84px + env(safe-area-inset-bottom,0px)); z-index:60; max-width:calc(100vw - 24px);
+  display:flex; align-items:center; gap:10px; padding:8px 8px 8px 14px; border-radius:16px;
+  background:#101418; color:#fff; border:1px solid #2A2F36; box-shadow:0 10px 30px rgba(0,0,0,.45);
+  transform:translate(-50%,24px); opacity:0; pointer-events:none; transition:transform .22s ease,opacity .22s ease;
+}
+.wt-share.is-on{ transform:translate(-50%,0); opacity:1; pointer-events:auto; }
+.wt-share-t{ font-size:.85rem; font-weight:600; max-width:44vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.wt-share-go{ display:inline-flex; align-items:center; gap:7px; min-height:40px; padding:0 14px; border:0; border-radius:12px; background:#25D366; color:#06210F; font:inherit; font-size:.85rem; font-weight:800; cursor:pointer; white-space:nowrap; }
+.wt-share-go svg{ width:20px; height:20px; }
+.wt-share-x{ width:32px; height:32px; border:0; border-radius:50%; background:transparent; color:#9CA3AF; font-size:1.3rem; line-height:1; cursor:pointer; }
+@media (min-width:1024px){ .wt-share{ bottom:24px; } }
+/* Settings rows keep normal text colour (global dark-mode link colour would turn them blue) */
+.kh-main .wt-set a.kh-sidebar-link,
+html[data-theme=dark] .kh-main .wt-set a.kh-sidebar-link{ color:var(--ink); }
+.kh-main .wt-set a.kh-sidebar-link.wt-side-danger,
+html[data-theme=dark] .kh-main .wt-set a.kh-sidebar-link.wt-side-danger{ color:#D9534F !important; }

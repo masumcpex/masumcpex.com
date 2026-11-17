@@ -351,6 +351,14 @@ body:not(.wt-loaded) .site-footer{display:none}
     <div class="wt-today-stats" id="wtTodayStats"></div>
     <button type="button" class="wt-today-btn" id="wtTodayBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span>আজকের হাজিরা লিখুন</span></button>
   </section>
+  <div class="wt-sec-h" data-i18n="qk_h">Quick Actions</div>
+  <div class="wt-qa" id="wtQuickActions">
+    <a href="#sectionTeam" class="wt-qa-item" data-wt-view="team" data-wt-target="sectionTeam"><span class="wt-qa-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-1.5A5 5 0 0 1 7.5 13.5h3A5 5 0 0 1 15.5 18.5V20"/><path d="M19 8v6M16 11h6"/></svg></span><span data-i18n="qk_add">Add Member</span></a>
+    <a href="#sectionAttendance" class="wt-qa-item" data-wt-view="dashboard" data-wt-target="sectionAttendance"><span class="wt-qa-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14l2.5 2.5L16 11"/></svg></span><span data-i18n="qk_att">Attendance</span></a>
+    <a href="#sectionSummary" class="wt-qa-item" data-wt-view="dashboard" data-wt-target="sectionSummary"><span class="wt-qa-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="4" width="4" height="16" rx="1"/><rect x="16" y="9" width="4" height="11" rx="1"/></svg></span><span data-i18n="qk_rep">Reports</span></a>
+    <button type="button" class="wt-qa-item" data-wt-advance><span class="wt-qa-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v.01M18 14v.01"/></svg></span><span data-i18n="qk_adv">Advance</span></button>
+  </div>
+  <div class="wt-sec-h" data-i18n="ov_h">Overview</div>
   <div class="wt-scope" id="wtScopeTabs" role="group" aria-label="Time range"><button type="button" data-scope="month" class="is-on" data-i18n="scope_m">এই মাস</button><button type="button" data-scope="all" data-i18n="scope_a">সব সময়</button></div>
 
   <div class="kh-quickstats" id="quickStats">
@@ -539,10 +547,10 @@ body:not(.wt-loaded) .site-footer{display:none}
 
 
 <nav class="wt-bottom-nav" id="wtBottomNav" aria-label="Primary">
-  <a href="#sectionDashboard" class="wt-bn-item" data-wt-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span data-i18n="nav_dash">Dashboard</span></a>
-  <a href="#sectionAttendance" class="wt-bn-item" data-wt-view="dashboard" data-wt-target="sectionAttendance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14l2.5 2.5L16 11"/></svg><span data-i18n="nav_rec">Record Attendance</span></a>
-  <a href="#attendanceRegisterSection" class="wt-bn-item" data-wt-view="register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg><span data-i18n="nav_reg">Attendance Register</span></a>
-  <a href="#sectionSummary" class="wt-bn-item" data-wt-view="dashboard" data-wt-target="sectionSummary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="4" width="4" height="16" rx="1"/><rect x="16" y="9" width="4" height="11" rx="1"/></svg><span data-i18n="nav_sum">Monthly Summary</span></a>
+  <a href="#sectionDashboard" class="wt-bn-item" data-wt-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg><span data-i18n="nav_home">Home</span></a>
+  <a href="#sectionAttendance" class="wt-bn-item" data-wt-view="dashboard" data-wt-target="sectionAttendance" data-wt-also="register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14l2.5 2.5L16 11"/></svg><span data-i18n="nav_att">Attendance</span></a>
+  <button type="button" class="wt-bn-item" data-wt-advance aria-label="Advance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v.01M18 14v.01"/></svg><span data-i18n="nav_adv">Advance</span></button>
+  <a href="#sectionTeam" class="wt-bn-item" data-wt-view="team" data-wt-target="sectionMembers" data-wt-loose><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 20v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span data-i18n="nav_mem">Members</span></a>
   <button type="button" class="wt-bn-item" data-wt-menu data-wt-more aria-controls="wtSidebar" aria-expanded="false" aria-label="More"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg><span>More</span></button>
 </nav>
 </main>
@@ -571,13 +579,13 @@ body:not(.wt-loaded) .site-footer{display:none}
   var HASH={dashboard:"sectionDashboard",register:"attendanceRegisterSection",team:"sectionTeam",data:"wtData",contact:"wtContact"};
   var main=document.getElementById("khMain"), gate=document.getElementById("khAuthGate");
   var side=document.getElementById("wtSidebar"), scrim=document.getElementById("wtScrim");
-  var cur="dashboard", curTarget=null, lastOpener=null, MORE=["team","data","contact"];
+  var cur="dashboard", curTarget=null, lastOpener=null, MORE=["data","contact"];
   var desktop=window.matchMedia?matchMedia("(min-width: 1024px)"):{matches:true};
 
   function $(id){return document.getElementById(id)}
   function setActive(){
     document.querySelectorAll(".kh-sidebar-link[data-wt-view], .wt-bn-item").forEach(function(a){
-      var on = a.hasAttribute("data-wt-more") ? MORE.indexOf(cur)>=0 : a.hasAttribute("data-wt-loose") ? a.dataset.wtView===cur : (a.dataset.wtView===cur && (a.dataset.wtTarget||null)===curTarget);
+      var on = (a.hasAttribute("data-wt-more") ? MORE.indexOf(cur)>=0 : a.hasAttribute("data-wt-loose") ? a.dataset.wtView===cur : (a.dataset.wtView===cur && (a.dataset.wtTarget||null)===curTarget)) || !!(a.dataset.wtAlso && a.dataset.wtAlso.split(",").indexOf(cur)>=0);
       a.classList.toggle("is-active",on);
       if(on)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");
     });
@@ -698,7 +706,7 @@ body:not(.wt-loaded) .site-footer{display:none}
     if(mb){side&&side.classList.contains("is-open")?closeMenu():openMenu(mb);return}
     if(t.closest("[data-wt-menu-close]")){closeMenu();return}
 
-    var a=t.closest(".kh-sidebar-link[data-wt-view], .wt-bn-item[data-wt-view]");
+    var a=t.closest(".kh-sidebar-link[data-wt-view], .wt-bn-item[data-wt-view], .wt-qa-item[data-wt-view]");
     if(a){
       e.preventDefault();
       var target=a.dataset.wtTarget||null;
@@ -709,6 +717,13 @@ body:not(.wt-loaded) .site-footer{display:none}
         setTimeout(function(){var el=$(target);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},40);
       }
       if(!desktop.matches)closeMenu();
+      return;
+    }
+    var adv=t.closest("[data-wt-advance]");
+    if(adv){
+      var ac=document.querySelector('.kh-qs-card[data-stat="advance"]');
+      if(!desktop.matches)closeMenu();
+      if(ac)ac.click();
       return;
     }
     var lb=t.closest("[data-wt-lang]");
@@ -863,7 +878,7 @@ body:not(.wt-loaded) .site-footer{display:none}
   var D={
     today:["আজ","Today"],scope_m:["এই মাস","This month"],scope_a:["সব সময়","All time"],
     qa_members:["সদস্যরা","View members"],qa_att:["উপস্থিতি","View attendance"],qa_hours:["ঘণ্টার হিসাব","View work hours"],qa_adv:["দেখুন ও পরিচালনা","View & manage"],
-    nav_dash:["ড্যাশবোর্ড","Dashboard"],nav_rec:["হাজিরা লিখুন","Record Attendance"],nav_reg:["রেকর্ড","Attendance Register"],nav_sum:["রিপোর্ট","Monthly Summary"],
+    nav_dash:["ড্যাশবোর্ড","Dashboard"],nav_home:["হোম","Home"],nav_att:["হাজিরা","Attendance"],nav_adv:["অ্যাডভান্স","Advance"],nav_mem:["সদস্য","Members"],qk_h:["দ্রুত কাজ","Quick Actions"],ov_h:["ওভারভিউ","Overview"],qk_add:["সদস্য যোগ","Add Member"],qk_att:["হাজিরা","Attendance"],qk_rep:["রিপোর্ট","Reports"],qk_adv:["অ্যাডভান্স","Advance"],nav_rec:["হাজিরা লিখুন","Record Attendance"],nav_reg:["রেকর্ড","Attendance Register"],nav_sum:["রিপোর্ট","Monthly Summary"],
     rec_h:["হাজিরা লিখুন","Record Attendance"],rec_d:["সদস্য বেছে হাজিরা ও কাজের ঘণ্টা লিখুন।","Select a member and record today's attendance and work hours."],
     f_date:["তারিখ","Date"],f_member:["সদস্যের নাম","Member Name"],f_status:["অবস্থা","Status"],f_duty:["কাজ করেছে / উপস্থিত","Worked / Present"],f_leave:["ছুটি","Leave"],f_hours:["কাজের ঘণ্টা","Work Hours"],f_save:["সেভ করুন","Save Record"],
     sum_h:["মাসিক রিপোর্ট","Monthly Summary"],sum_m:["মাস:","Viewing month:"],

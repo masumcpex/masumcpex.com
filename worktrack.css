@@ -1329,3 +1329,85 @@ html[data-theme=dark] .kh-header a.kh-back.btn3d:hover{ background:linear-gradie
 html[data-theme=dark] .wt-idchip{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.16); color:#CBD5E1; }
 .member-card-attreport svg{ color:#2563EB; }
 .member-card-earnmenu svg{ color:#0E7C66; }
+
+
+/* =====================================================================
+   WorkTrack dashboard: Quick Actions, bottom bar, premium dark mode
+   (Light / Dark / Auto সব থিমেই কাজ করে; শুধু স্টাইল, কোনো ফিচার বদলায়নি)
+   ===================================================================== */
+.wt-sec-h{ display:flex; align-items:center; gap:.55rem; margin:1.25rem 0 .7rem; font-family:'Hind Siliguri',var(--font-body,Inter),sans-serif; font-weight:800; font-size:1.05rem; line-height:1.3; color:var(--ink); }
+.wt-sec-h::before{ content:""; width:4px; height:1.05em; border-radius:2px; background:#2D7DFF; }
+
+.wt-qa{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.6rem; margin:0 0 .3rem; }
+.kh-main .wt-qa-item{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.5rem;
+  min-height:86px; padding:.85rem .25rem; border-radius:16px; text-align:center; text-decoration:none;
+  background:var(--card-bg,#fff); border:1px solid var(--line); color:var(--ink);
+  font-weight:700; font-size:.78rem; line-height:1.25; -webkit-tap-highlight-color:transparent;
+  transition:transform .12s ease,border-color .15s ease,background-color .15s ease;
+  font-family:inherit; cursor:pointer; appearance:none; -webkit-appearance:none;
+}
+.kh-main .wt-qa-item:hover{ border-color:rgba(45,125,255,.55); }
+.kh-main .wt-qa-item:active{ transform:scale(.97); }
+.kh-main .wt-qa-item:focus-visible{ outline:2px solid #2D7DFF; outline-offset:2px; }
+.wt-qa-ico{ display:grid; place-items:center; width:34px; height:34px; color:#2D7DFF; }
+.wt-qa-ico svg{ width:26px; height:26px; }
+
+/* নিচের বার: হোম, হাজিরা, ফাইন্যান্স, সদস্য, More */
+.wt-bottom-nav .wt-bn-item:active{ background:rgba(45,125,255,.10); }
+.wt-bottom-nav .wt-bn-item.is-active{ color:#1F6FEB; background:rgba(45,125,255,.12); font-weight:700; }
+.wt-bottom-nav .wt-bn-item:focus-visible{ outline:2px solid #2D7DFF; outline-offset:-2px; }
+
+/* ---------- Premium dark: পিওর ব্ল্যাক + গাঢ় ধূসর কার্ড + নীল অ্যাকসেন্ট ---------- */
+html[data-theme=dark]{
+  color-scheme:dark;
+  --paper:#000000; --paper-2:#0A0B0C; --card-bg:#151617; --ink:#F5F6F7; --ink-2:#E4E6EB; --charcoal:#F5F6F7;
+  --muted:#A8ABB0; --line:#2A2C2F; --line-soft:rgba(255,255,255,.08);
+  --shadow:0 1px 2px rgba(0,0,0,.6),0 8px 24px rgba(0,0,0,.5);
+}
+html[data-theme=dark] .kh-main,html[data-theme=dark] .kh-header{ --wt-bg:#000; --wt-border:#2A2C2F; --wt-green:#31C48D; --wt-blue:#2D88FF; }
+html[data-theme=dark] body,html[data-theme=dark] .kh-app-shell{ background:#000; color:var(--ink); }
+html[data-theme=dark] .kh-main{ background:#000; }
+html[data-theme=dark] .kh-main a{ color:#5AA2FF; }
+html[data-theme=dark] .kh-main .kh-intro .eyebrow,html[data-theme=dark] .wt-head .eyebrow{ color:#6AA9FF; }
+html[data-theme=dark] .kh-main .kh-current-month-pill{ background:rgba(45,136,255,.14); color:#6AA9FF; }
+html[data-theme=dark] .wt-seg{ background:#0F1011; }
+html[data-theme=dark] .wt-seg button.on{ background:#26282B; }
+html[data-theme=dark] .wt-legal b{ color:#6AA9FF; }
+html[data-theme=dark] .kh-auth-gate{ --wa-bg:#000; --wa-card:#141516; --wa-field:#1C1D1F; --wa-line:#2A2C2F; --wa-ink:#F5F6F7; }
+html[data-theme=dark] .btn-indigo:not(.wt-social-btn),html[data-theme=dark] .btn-violet:not(.wt-social-btn){ background-color:#26282B; --btn-edge:#3A3D41; --btn-glow:rgba(0,0,0,.4); }
+html[data-theme=dark] .wt-hd-dl,html[data-theme=dark] .wt-hd-dl.is-busy{ background:#1F6FEB; }
+
+/* আজকের কার্ড */
+html[data-theme=dark] .wt-today{ background:linear-gradient(160deg,#0C1D3A 0%,#080F1C 100%); border:1px solid #1D3C6B; box-shadow:0 10px 30px rgba(0,0,0,.55); }
+html[data-theme=dark] .wt-today-btn{ background:#2D88FF; color:#fff; box-shadow:0 8px 20px rgba(45,136,255,.32); }
+html[data-theme=dark] .wt-scope button.is-on{ background:#2D88FF; }
+
+/* ওভারভিউ কার্ড (আগের মতোই ক্লিকযোগ্য) */
+html[data-theme=dark] .kh-qs-card,html[data-theme=dark] .kh-main .kh-qs-card{ background:var(--card-bg); }
+html[data-theme=dark] .kh-main .kh-qs-card[data-stat]{ border-color:#2A2C2F; }
+html[data-theme=dark] .kh-main .kh-qs-card[data-stat]:hover{ border-color:rgba(45,136,255,.55); }
+html[data-theme=dark] .kh-main .kh-qs-card[data-stat]:active{ background:#1C1D1F; }
+html[data-theme=dark] .kh-main .kh-qs-card:nth-child(1) .kh-qs-icon{ background:rgba(45,136,255,.16); color:#4C9BFF; }
+html[data-theme=dark] .kh-main .kh-qs-card:nth-child(2) .kh-qs-icon{ background:rgba(167,139,250,.16); color:#A78BFA; }
+html[data-theme=dark] .kh-main .kh-qs-card:nth-child(3) .kh-qs-icon{ background:rgba(49,196,141,.16); color:#31C48D; }
+html[data-theme=dark] .kh-main .kh-qs-card:nth-child(4) .kh-qs-icon{ background:rgba(255,166,48,.16); color:#FFA630; }
+html[data-theme=dark] .kh-main .kh-qs-card[data-stat="members"]{ --qs-accent:#4C9BFF; }
+html[data-theme=dark] .kh-main .kh-qs-card[data-stat="present"]{ --qs-accent:#A78BFA; }
+html[data-theme=dark] .kh-main .kh-qs-card[data-stat="hours"]{ --qs-accent:#31C48D; }
+html[data-theme=dark] .kh-main .kh-qs-card[data-stat="advance"]{ --qs-accent:#FFA630; }
+
+/* বটম নেভিগেশন: প্রিমিয়াম ডার্ক */
+html[data-theme=dark] .wt-bottom-nav{ background:#000; border-top-color:#1F2124; box-shadow:0 -8px 24px rgba(0,0,0,.6); }
+html[data-theme=dark] .wt-bottom-nav .wt-bn-item{ color:#A8ABB0; }
+html[data-theme=dark] .wt-bottom-nav .wt-bn-item:active{ background:rgba(45,136,255,.12); }
+html[data-theme=dark] .wt-bottom-nav .wt-bn-item.is-active{ color:#2D88FF; background:rgba(45,136,255,.14); }
+html[data-theme=dark] .kh-main .wt-qa-item{ color:#F5F6F7; border-color:#2A2C2F; }
+html[data-theme=dark] .wt-qa-ico{ color:#4C9BFF; }
+html[data-theme=dark] .wt-sec-h::before{ background:#2D88FF; }
+
+@media (max-width:380px){
+  .kh-main .wt-qa-item{ font-size:.72rem; min-height:80px; }
+  .wt-qa-ico svg{ width:23px; height:23px; }
+}
+html[data-theme=dark] .kh-header{ background:#0A0B0C; border-bottom:1px solid #1F2124; box-shadow:none; }

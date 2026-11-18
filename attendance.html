@@ -281,7 +281,8 @@ body:not(.wt-loaded) .site-footer{display:none}
 
 <script>
 /* Settings page helpers + "Share PDF on WhatsApp" (no existing logic changed) */
-(function(){
+/* Runs after the whole page is parsed: the Settings rows (Log Out, labels) are further down the page than this script, so they did not exist yet when it ran before. */
+document.addEventListener("DOMContentLoaded",function(){(function(){
   var LANG="bn";try{LANG=localStorage.getItem("wt-lang")||"bn"}catch(e){}
   var I=LANG==="en"?1:0;
   var T={title:["সেটিংস","Settings"],sub:["অ্যাকাউন্ট, পছন্দ, রিমাইন্ডার ও ডেটা এক জায়গায়।","Account, preferences, reminders and your data in one place."],
@@ -355,7 +356,7 @@ body:not(.wt-loaded) .site-footer{display:none}
     window.open("https://wa.me/?text="+encodeURIComponent("WorkTrack: "+fn),"_blank","noopener");
     alert(STR.fb[I]);hide();
   }
-})();
+})();});
 </script>
 
 <div class="kh-app-shell">

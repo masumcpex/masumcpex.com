@@ -1755,3 +1755,16 @@ html[data-theme=dark] .wt-te-m + .wt-te-m{ border-color:var(--wt-card-line,#2226
 .wt-te-av{ width:32px; height:32px; border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:700; margin-bottom:2px; }
 .wt-te-m b{ font-size:.88rem; color:var(--ink); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-transform:capitalize; }
 .wt-te-m small{ font-size:.8rem; font-weight:600; color:var(--muted); }
+
+/* ===== Fix: member profile modal (dark theme + small screens) ===== */
+/* The overlay is appended to <body>, outside .kh-main, so --wt-bg fell back to light #F6F8FA
+   while the text turned light in dark mode (white on white). Give the dark boxes their own colors. */
+html[data-theme=dark] .kh-profile-stat{ background:#161B24; border-color:#2A3140; }
+html[data-theme=dark] .kh-profile-stat strong{ color:#F2F5FA; }
+html[data-theme=dark] .kh-profile-stat span{ color:#A9B4C6; }
+/* Tall card used to overflow the screen (centered), cutting the top half. Make it scrollable. */
+.kh-modal-overlay{ padding-top:max(1.2rem, env(safe-area-inset-top, 0px)); padding-bottom:max(1.2rem, env(safe-area-inset-bottom, 0px)); }
+.kh-profile-card{
+  max-height:calc(100vh - 2.4rem); max-height:calc(100dvh - 2.4rem);
+  overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+}

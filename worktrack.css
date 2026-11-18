@@ -1701,3 +1701,57 @@ html[data-theme=dark] .kh-main .kh-intro{
 .kh-main .wt-tc-pill::before{ background:var(--wt-idle,#9CA3AF); }
 .kh-main .wt-tc-pill.is-duty::before{ background:#22C55E; }
 .kh-main .wt-tc-pill.is-leave::before{ background:#F59E0B; }
+
+/* =====================================================================
+   My Earning Summary card + Team Earnings
+   ===================================================================== */
+.kh-main .wt-earn{
+  margin:10px 0 4px; padding:14px; border-radius:20px; box-sizing:border-box; color:#fff;
+  background:linear-gradient(160deg,#12305A 0%,#0A1B33 100%); border:1px solid #1F3A66;
+}
+html[data-theme=dark] .kh-main .wt-earn{ background:linear-gradient(160deg,#0C1D3A 0%,#07101F 100%); border-color:#1C2940; }
+.wt-earn-top{ display:flex; align-items:center; gap:12px; }
+.wt-earn-ico{ width:44px; height:44px; flex:none; border-radius:13px; display:grid; place-items:center; background:rgba(45,136,255,.18); color:#7DB5FF; }
+.wt-earn-ico svg{ width:24px; height:24px; }
+.wt-earn-tx{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.wt-earn-lb{ font-size:.78rem; font-weight:600; color:#B6C2D6; }
+.wt-earn-amt{ font-size:1.7rem; font-weight:800; line-height:1.1; letter-spacing:-.01em; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.wt-earn-sub{ font-size:.74rem; font-weight:500; color:#9FB0C8; }
+.wt-earn-eye{ width:36px; height:36px; flex:none; padding:0; border-radius:50%; border:1px solid rgba(255,255,255,.18); background:transparent; color:#C3CCDA; display:grid; place-items:center; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.wt-earn-eye svg{ width:18px; height:18px; }
+.wt-earn-eye .wt-eye-off{ display:none; }
+.wt-earn.is-hidden .wt-eye-on{ display:none; }
+.wt-earn.is-hidden .wt-eye-off{ display:block; }
+.wt-earn-stats3{ display:grid; grid-template-columns:1fr 1.25fr 1.25fr; gap:8px; margin:12px 0; }
+.wt-earn-stats3 > div{ padding:9px 10px; border-radius:12px; background:rgba(255,255,255,.06); display:flex; flex-direction:column; gap:2px; min-width:0; }
+.wt-earn-stats3 small{ font-size:.7rem; color:#9FB0C8; }
+.wt-earn-stats3 b{ font-size:.92rem; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.wt-earn-stats3 b.neg{ color:#FBBF24; } .wt-earn-stats3 b.pos{ color:#4ADE80; }
+.wt-earn-btns2{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.wt-earn-btn{
+  min-width:0; min-height:52px; padding:0 10px; display:inline-flex; align-items:center; justify-content:center; gap:9px;
+  border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.07); color:#fff; font:inherit; font-size:.82rem; font-weight:700; cursor:pointer;
+  -webkit-tap-highlight-color:transparent; box-sizing:border-box;
+}
+.wt-earn-btn svg{ width:20px; height:20px; flex:none; color:#7DB5FF; }
+.wt-earn-btn > span{ display:flex; flex-direction:column; align-items:flex-start; line-height:1.15; text-align:left; min-width:0; }
+.wt-earn-btn small{ font-size:.66rem; font-weight:600; opacity:.75; }
+.wt-earn-btn--main{ background:#0A6CFF; border-color:#0A6CFF; }
+.wt-earn-btn--main svg{ color:#fff; }
+.wt-earn-btn:active,.wt-earn-eye:active{ transform:scale(.97); }
+.wt-earn-btn:focus-visible,.wt-earn-eye:focus-visible{ outline:2px solid #7DB5FF; outline-offset:2px; }
+@media (max-width:360px){ .wt-earn-amt{ font-size:1.45rem; } .wt-earn-btn{ font-size:.76rem; gap:6px; padding:0 6px; } }
+
+.wt-te-wrap[hidden]{ display:none; }
+.wt-te{
+  display:flex; overflow-x:auto; border-radius:16px; border:1px solid var(--line); background:var(--card-bg,#fff);
+  scrollbar-width:none; -webkit-overflow-scrolling:touch; margin-bottom:6px;
+}
+.wt-te::-webkit-scrollbar{ display:none; }
+html[data-theme=dark] .wt-te{ background:var(--wt-card,#111418); border-color:var(--wt-card-line,#22262D); }
+.wt-te-m{ flex:1 0 calc(100% / 3); min-width:104px; display:flex; flex-direction:column; align-items:center; gap:3px; padding:14px 6px; box-sizing:border-box; }
+.wt-te-m + .wt-te-m{ border-left:1px solid var(--line); }
+html[data-theme=dark] .wt-te-m + .wt-te-m{ border-color:var(--wt-card-line,#22262D); }
+.wt-te-av{ width:32px; height:32px; border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:700; margin-bottom:2px; }
+.wt-te-m b{ font-size:.88rem; color:var(--ink); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-transform:capitalize; }
+.wt-te-m small{ font-size:.8rem; font-weight:600; color:var(--muted); }

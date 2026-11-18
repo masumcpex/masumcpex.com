@@ -2145,6 +2145,58 @@ export function initKhApp(uid, isAdmin){
     if(btn) btn.querySelector("span").textContent = members.length ? tr("আজকের হাজিরা লিখুন","Record today's attendance") : tr("সদস্য যোগ করুন","Add a member");
   }
 
+  // ---- Dashboard "My Earning Summary" + "Team Earnings": same numbers as the Earning Summary PDF (hours x rate - advance cut) ----
+  let wtMoneyHidden = true;
+  try{ if(localStorage.getItem("wt-earn-hidden") === "0") wtMoneyHidden = false; }catch(e){}
+  const WT_AVA = ["#2D88FF", "#A78BFA", "#31C48D", "#F59E0B", "#EC4899", "#14B8A6"];
+  function renderEarnCard(){
+    const card = document.getElementById("wtEarnCard");
+    if(!card) return;
+    const ym = currentYearMonth();
+    const rows = buildSalaryRows(ym, records.filter(r => r.date && r.date.startsWith(ym)));
+    rows.forEach(r => { r.rate = r.member ? rateFor(r.member, ym) : 0; });
+    computeEarnings(rows, ym);
+    const T = rows.reduce((t, r) => ({
+      h: t.h + r.hours,
+      rh: t.rh + (r.rate > 0 ? r.hours : 0),
+      g: t.g + (r.rate > 0 ? r.gross : 0),
+      d: t.d + (r.rate > 0 ? r.advDeducted : 0),
+      n: t.n + (r.rate > 0 ? r.net : 0)
+    }), { h: 0, rh: 0, g: 0, d: 0, n: 0 });
+    const noRate = rows.filter(r => r.hours > 0 && !(r.rate > 0)).length;
+    const M = v => wtMoneyHidden ? "RM ••••••" : fmtMoneyRM(v);
+    const set = (id, v) => { const e = document.getElementById(id); if(e) e.textContent = v; };
+    const hrs = n => (Math.round(n * 100) / 100).toString();
+    card.classList.toggle("is-hidden", wtMoneyHidden);
+    set("wtEarnLbl", tr("আমার আয়ের সারসংক্ষেপ", "My Earning Summary") + " · " + monthLabel(ym));
+    set("wtEarnAmt", M(T.g));
+    set("wtEarnSub", tr("মোট আয়", "Total earned") + " · " + hrs(T.rh) + " h"
+      + (noRate ? " · " + tr(`${noRate} জনের রেট নেই`, `${noRate} without a rate`) : ""));
+    set("wtEarnHrsL", tr("ঘণ্টা", "Hours")); set("wtEarnHrs", hrs(T.h) + "h");
+    set("wtEarnAdvL", tr("অ্যাডভান্স কাটা", "Advance cut")); set("wtEarnAdv", T.d > 0 ? "− " + M(T.d).replace(/^− /, "") : M(0));
+    set("wtEarnNetL", tr("নিট বেতন", "Net pay")); set("wtEarnNet", M(T.n));
+    set("wtEarnAttT", tr("হাজিরা রিপোর্ট", "Attendees Report"));
+    set("wtEarnSalT", tr("আয়ের সারসংক্ষেপ", "Earning Summary"));
+    const eye = document.getElementById("wtEarnEye");
+    if(eye){ eye.setAttribute("aria-pressed", wtMoneyHidden ? "true" : "false"); eye.setAttribute("aria-label", wtMoneyHidden ? tr("অঙ্ক দেখান", "Show amounts") : tr("অঙ্ক লুকান", "Hide amounts")); }
+
+    const sec = document.getElementById("wtTeamEarn");
+    if(sec){
+      sec.hidden = !members.length;
+      set("wtTeamEarnH", tr("টিমের আয় · নিট বেতন", "Team Earnings · net pay") + " · " + monthLabel(ym));
+      const list = document.getElementById("wtTeamEarnList");
+      if(list){
+        list.classList.toggle("is-hidden", wtMoneyHidden);
+        list.innerHTML = members.map((m, i) => {
+          const r = rows.find(x => x.name === m.name);
+          const val = r && r.rate > 0 ? M(r.net) : "—";
+          const nm = escapeHtml(m.name || "");
+          return `<div class="wt-te-m"><span class="wt-te-av" style="background:${WT_AVA[i % WT_AVA.length]}">${escapeHtml((m.name || "?").trim().charAt(0).toUpperCase())}</span><b>${nm}</b><small>${val}</small></div>`;
+        }).join("");
+      }
+    }
+  }
+
   function renderQuickStats(){
     const ym = currentYearMonth();
     const all = window.__wtScope === "all";
@@ -2168,6 +2220,7 @@ export function initKhApp(uid, isAdmin){
     if(pill) pill.textContent = all ? tr("সব সময়ের হিসাব", "All-time totals") : monthLabel(ym);
     document.querySelectorAll("#wtScopeTabs button").forEach(b => b.classList.toggle("is-on", b.dataset.scope === (all ? "all" : "month")));
     renderTodayCard();
+    try{ renderEarnCard(); }catch(e){ console.warn("earn card skipped", e); }
     refreshStatSheet();
   }
   (function bindScopeTabs(){
@@ -2771,6 +2824,16 @@ export function initKhApp(uid, isAdmin){
   // Top buttons: current month. Each month in the register has its own PDF/CSV buttons.
   const downloadSalaryBtn = document.getElementById("downloadSalaryBtn");
   if(downloadSalaryBtn) downloadSalaryBtn.addEventListener("click", () => { khBounce(downloadSalaryBtn); openSalaryDialog(currentYearMonth()); });
+  const wtEarnSalBtn = document.getElementById("wtEarnSalBtn");
+  if(wtEarnSalBtn) wtEarnSalBtn.addEventListener("click", () => { khBounce(wtEarnSalBtn); openSalaryDialog(currentYearMonth()); });
+  const wtEarnAttBtn = document.getElementById("wtEarnAttBtn");   // same action as the header Download button
+  if(wtEarnAttBtn) wtEarnAttBtn.addEventListener("click", () => { khBounce(wtEarnAttBtn); const h = document.getElementById("wtHeaderDownload"); if(h) h.click(); });
+  const wtEarnEye = document.getElementById("wtEarnEye");
+  if(wtEarnEye) wtEarnEye.addEventListener("click", () => {
+    wtMoneyHidden = !wtMoneyHidden;
+    try{ localStorage.setItem("wt-earn-hidden", wtMoneyHidden ? "1" : "0"); }catch(e){}
+    renderEarnCard();
+  });
   downloadCsvBtn.addEventListener("click", () => exportMonthCsv(currentYearMonth(), downloadCsvBtn));
   downloadPdfBtn.addEventListener("click", () => exportMonthPdf(currentYearMonth(), downloadPdfBtn));
   // Header "Download Monthly Report" button: the month chosen in Monthly Summary (or the current month), all members.

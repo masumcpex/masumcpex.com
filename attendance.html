@@ -10,13 +10,13 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="worktrack.css?v=20261127">
+<link rel="stylesheet" href="worktrack.css?v=20261128">
 <script>try{var _t=localStorage.getItem("wt-theme"),_d=_t==="dark"||(_t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=_d?"dark":"light"}catch(e){}</script>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" crossorigin>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" crossorigin>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js" crossorigin>
 <link rel="modulepreload" href="firebase.js">
-<link rel="modulepreload" href="khApp.js?v=20261126">
+<link rel="modulepreload" href="khApp.js?v=20261128">
 <link rel="modulepreload" href="kh-auth.js">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="manifest" href="/worktrack.webmanifest">
@@ -237,7 +237,6 @@ body:not(.wt-loaded) .site-footer{display:none}
 
 <div id="khUserBar" class="kh-user-bar" style="display:none;">
     <a class="kh-bar-logo" href="https://masumcpex.com/" aria-label="Masum Cpex — open the main website" title="Masum Cpex"></a>
-  <button type="button" class="wt-hd-dl" id="wtHeaderDownload" aria-label="Download monthly report as PDF" title="Download monthly report (PDF)"><span class="wt-hd-dl-ico"><svg class="wt-dl-i wt-dl-i--dl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg><svg class="wt-dl-i wt-dl-i--spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" opacity=".25"/><path d="M12 3a9 9 0 0 1 9 9"/></svg><svg class="wt-dl-i wt-dl-i--ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="wt-hd-dl-txt"><span>Download</span><span>Monthly Report</span></span></button>
   <div class="kh-account-wrap">
     <button type="button" class="kh-account-trigger" id="khAccountTrigger" aria-haspopup="true" aria-label="Account menu">
       <span class="kh-account-avatar" id="khAccountAvatar">
@@ -388,7 +387,6 @@ document.addEventListener("DOMContentLoaded",function(){(function(){
 
   <div class="wt-view is-active" id="wtView-dashboard" data-wt-view="dashboard">
   <div class="kh-intro" id="sectionDashboard">
-    <span class="wt-hello-ico" aria-hidden="true"><svg class="wt-hello-sun" viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="24" r="9" fill="#FBBF24"/><g stroke="#FBBF24" stroke-width="3" stroke-linecap="round"><path d="M24 5v5M24 38v5M5 24h5M38 24h5M10.6 10.6l3.5 3.5M33.9 33.9l3.5 3.5M10.6 37.4l3.5-3.5M33.9 14.1l3.5-3.5"/></g></svg><svg class="wt-hello-moon" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M37 29.5A15 15 0 0 1 18.5 11a15 15 0 1 0 18.5 18.5z" fill="#CBD5E1"/><circle cx="33" cy="12" r="1.6" fill="#E2E8F0"/><circle cx="39" cy="19" r="1.1" fill="#E2E8F0"/></svg></span>
     <div class="wt-waves" aria-hidden="true"><svg class="wt-hills" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="wtHg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--wave-a))" stop-opacity=".42"/><stop offset="1" stop-color="rgb(var(--wave-a))" stop-opacity="0"/></linearGradient><linearGradient id="wtHg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--wave-b))" stop-opacity=".30"/><stop offset="1" stop-color="rgb(var(--wave-b))" stop-opacity="0"/></linearGradient><linearGradient id="wtHg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--wave-a))" stop-opacity=".16"/><stop offset="1" stop-color="rgb(var(--wave-a))" stop-opacity="0"/></linearGradient><linearGradient id="wtHs1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgb(var(--wave-b))" stop-opacity=".15"/><stop offset=".65" stop-color="rgb(var(--wave-a))" stop-opacity=".95"/><stop offset="1" stop-color="rgb(var(--wave-a))" stop-opacity=".75"/></linearGradient><linearGradient id="wtHs2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgb(var(--wave-b))" stop-opacity=".05"/><stop offset=".7" stop-color="rgb(var(--wave-b))" stop-opacity=".6"/><stop offset="1" stop-color="rgb(var(--wave-b))" stop-opacity=".5"/></linearGradient></defs><path fill="url(#wtHg3)" d="M0 66C90 60 150 44 220 50S330 26 400 40V100H0Z"><animate attributeName="d" dur="20s" begin="-6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 66C90 60 150 44 220 50S330 26 400 40V100H0Z;M0 62C80 66 160 52 230 42S340 34 400 30V100H0Z;M0 70C100 58 140 40 210 54S320 30 400 46V100H0Z;M0 66C90 60 150 44 220 50S330 26 400 40V100H0Z"/></path><path fill="url(#wtHg2)" d="M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62V100H0Z"><animate attributeName="d" dur="15s" begin="-4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62V100H0Z;M0 84C70 82 140 80 210 70S310 52 355 44S392 58 400 56V100H0Z;M0 88C60 84 120 72 195 78S295 46 345 54S388 68 400 66V100H0Z;M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62V100H0Z"/></path><path class="wt-crest" fill="none" stroke="url(#wtHs2)" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62"><animate attributeName="d" dur="15s" begin="-4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62;M0 84C70 82 140 80 210 70S310 52 355 44S392 58 400 56;M0 88C60 84 120 72 195 78S295 46 345 54S388 68 400 66;M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62"/></path><path fill="url(#wtHg1)" d="M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50V100H0Z"><animate attributeName="d" dur="11s" begin="-2s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50V100H0Z;M0 74C60 70 130 70 190 58S280 30 330 24S385 48 400 44V100H0Z;M0 80C80 76 110 58 175 70S265 26 315 34S375 60 400 54V100H0Z;M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50V100H0Z"/></path><path class="wt-crest" fill="none" stroke="url(#wtHs1)" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50"><animate attributeName="d" dur="11s" begin="-2s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50;M0 74C60 70 130 70 190 58S280 30 330 24S385 48 400 44;M0 80C80 76 110 58 175 70S265 26 315 34S375 60 400 54;M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50"/></path></svg></div>
     <h1 class="section-title wt-greeting" id="wtGreeting" aria-live="polite">সুপ্রভাত</h1>
     <p class="section-sub" id="wtGreetingSub">আজকের উপস্থিতি, কাজের ঘন্টা এবং টিমের সারাংশ এখানে দেখুন।</p>
@@ -418,7 +416,7 @@ document.addEventListener("DOMContentLoaded",function(){(function(){
       <div><small id="wtEarnNetL">Net pay</small><b class="pos" id="wtEarnNet">RM 0.00</b></div>
     </div>
     <div class="wt-earn-btns2">
-      <button type="button" class="wt-earn-btn wt-earn-btn--main" id="wtEarnAttBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-5.5 6.5-5.5s6.5 1.9 6.5 5.5"/><path d="M16 5a3.2 3.2 0 0 1 0 6M18 14.8c2 .6 3.5 2.2 3.5 5.2"/></svg><span><span id="wtEarnAttT">Attendees Report</span><small>PDF</small></span></button>
+      <button type="button" class="wt-earn-btn wt-earn-btn--main" id="wtEarnAttBtn" aria-label="Download attendees report PDF"><span class="wt-btn-ico" aria-hidden="true"><svg class="wt-dl-i wt-dl-i--dl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-5.5 6.5-5.5s6.5 1.9 6.5 5.5"/><path d="M16 5a3.2 3.2 0 0 1 0 6M18 14.8c2 .6 3.5 2.2 3.5 5.2"/></svg><svg class="wt-dl-i wt-dl-i--spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" opacity=".25"/><path d="M12 3a9 9 0 0 1 9 9"/></svg><svg class="wt-dl-i wt-dl-i--ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><span id="wtEarnAttT">Attendees Report</span><small>PDF</small></span></button>
       <button type="button" class="wt-earn-btn" id="wtEarnSalBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 14h6M9 17h4"/></svg><span><span id="wtEarnSalT">Earning Summary</span><small>PDF</small></span></button>
     </div>
   </section>
@@ -897,11 +895,12 @@ document.addEventListener("DOMContentLoaded",function(){(function(){
       return;
     }
     if(t.closest("a.kh-sidebar-link[href^='http']")&&!desktop.matches)closeMenu();
-    var hd=t.closest("#wtHeaderDownload");
+    var hd=t.closest("#wtEarnAttBtn,#wtHeaderDownload");
     if(hd){
       if(hd.disabled||hd.classList.contains("is-busy")||hd.classList.contains("is-done"))return;
       if(typeof window.wtDownloadSelectedMonthPdf==="function"){
         var lbl0=hd.getAttribute("aria-label"),ttl0=hd.getAttribute("title"),failed=false,realAlert=window.alert;
+        var restore=function(a,v){if(v===null)hd.removeAttribute(a);else hd.setAttribute(a,v)};
         /* an alert from the PDF code means it did not finish, so no success state is shown */
         window.alert=function(){failed=true;return realAlert.apply(window,arguments)};
         hd.disabled=true;hd.classList.add("is-busy");hd.setAttribute("aria-busy","true");hd.setAttribute("aria-label","Downloading report");
@@ -910,8 +909,8 @@ document.addEventListener("DOMContentLoaded",function(){(function(){
           hd.disabled=false;hd.classList.remove("is-busy");hd.removeAttribute("aria-busy");
           if(ok&&!failed){
             hd.classList.add("is-done");hd.setAttribute("aria-label","Download complete");hd.setAttribute("title","Download complete");
-            setTimeout(function(){hd.classList.remove("is-done");if(lbl0)hd.setAttribute("aria-label",lbl0);if(ttl0)hd.setAttribute("title",ttl0)},1800);
-          }else{if(lbl0)hd.setAttribute("aria-label",lbl0)}
+            setTimeout(function(){hd.classList.remove("is-done");restore("aria-label",lbl0);restore("title",ttl0)},1800);
+          }else{restore("aria-label",lbl0)}
         };
         try{Promise.resolve(window.wtDownloadSelectedMonthPdf()).then(function(){fin(true)},function(){fin(false)})}catch(x){fin(false)}
       }else{var dl=$("downloadPdfBtn");if(dl)dl.click()}
@@ -1368,7 +1367,7 @@ html[data-theme="dark"] .kh-reg-name,html[data-theme="dark"] .kh-reg-day-title,h
 </footer>
 
 <script type="module" src="firebase.js"></script>
-<script type="module" src="khApp.js?v=20261126"></script>
+<script type="module" src="khApp.js?v=20261128"></script>
 <script type="module" src="kh-auth.js"></script>
 
 <script>

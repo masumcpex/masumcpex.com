@@ -1321,6 +1321,7 @@ export function initKhApp(uid, isAdmin){
         <div class="kh-profile-avatar" id="khProfileAvatar"></div>
         <div class="kh-profile-name" id="khProfileName"></div>
         <div class="kh-profile-month" id="khProfileMonth"></div>
+        <div class="kh-profile-id" id="khProfileId"></div>
         <div class="kh-profile-stats" id="khProfileStats"></div>
         <div class="kh-ph" id="khProfileHistory"></div>
         <button type="button" class="btn3d btn-sky" id="khProfilePdfBtn" style="width:100%; margin-top:1rem;">${ICON_DOC} Download Member Report</button>
@@ -1341,6 +1342,9 @@ export function initKhApp(uid, isAdmin){
     overlay.querySelector("#khProfileAvatar").textContent = initial;
     overlay.querySelector("#khProfileName").textContent = member.name;
     overlay.querySelector("#khProfileMonth").textContent = monthLabel(ym);
+    overlay.querySelector("#khProfileId").innerHTML = member.memberId
+      ? `<button type="button" class="wt-idchip" data-copy="${escapeHtmlLocal(member.memberId)}" title="${tr("ID কপি করুন","Copy ID")}" aria-label="${tr("সদস্য ID কপি করুন","Copy member ID")} ${escapeHtmlLocal(member.memberId)}"><span class="wt-idchip-ico">${ICON_IDCARD}</span><span class="wt-idchip-num">${escapeHtmlLocal(String(member.memberId))}</span><span class="wt-idchip-cp">${ICON_COPYSM}</span><span class="wt-idchip-ok">${ICON_OKSM}</span></button>`
+      : "";
     overlay.querySelector("#khProfileStats").innerHTML = `
       <div class="kh-profile-stat"><strong>${stats.hours}</strong><span>Total Hours</span></div>
       <div class="kh-profile-stat"><strong>${stats.duty}</strong><span>Work Days</span></div>
@@ -2191,7 +2195,7 @@ export function initKhApp(uid, isAdmin){
           const r = rows.find(x => x.name === m.name);
           const val = r && r.rate > 0 ? M(r.net) : "—";
           const nm = escapeHtml(m.name || "");
-          return `<div class="wt-te-m"><span class="wt-te-av" style="background:${WT_AVA[i % WT_AVA.length]}">${escapeHtml((m.name || "?").trim().charAt(0).toUpperCase())}</span><b>${nm}</b><small>${val}</small></div>`;
+          return `<button type="button" class="wt-te-m" data-mid="${escapeHtml(m.id || "")}" aria-label="${nm} · ${tr("প্রোফাইল দেখুন","View Profile")}"><span class="wt-te-av" style="background:${WT_AVA[i % WT_AVA.length]}">${escapeHtml((m.name || "?").trim().charAt(0).toUpperCase())}</span><b>${nm}</b><small>${val}</small></button>`;
         }).join("");
       }
     }
@@ -2827,7 +2831,14 @@ export function initKhApp(uid, isAdmin){
   const wtEarnSalBtn = document.getElementById("wtEarnSalBtn");
   if(wtEarnSalBtn) wtEarnSalBtn.addEventListener("click", () => { khBounce(wtEarnSalBtn); openSalaryDialog(currentYearMonth()); });
   const wtEarnAttBtn = document.getElementById("wtEarnAttBtn");   // same action as the header Download button
-  if(wtEarnAttBtn) wtEarnAttBtn.addEventListener("click", () => { khBounce(wtEarnAttBtn); const h = document.getElementById("wtHeaderDownload"); if(h) h.click(); });
+  if(wtEarnAttBtn) wtEarnAttBtn.addEventListener("click", () => { khBounce(wtEarnAttBtn); });   // the download + spinner/tick state is handled in attendance.html
+  const wtTeamEarnList = document.getElementById("wtTeamEarnList");
+  if(wtTeamEarnList) wtTeamEarnList.addEventListener("click", e => {
+    const card = e.target.closest(".wt-te-m[data-mid]");
+    if(!card) return;
+    const m = members.find(x => x.id === card.dataset.mid);
+    if(m) openMemberProfileModal(m);
+  });
   const wtEarnEye = document.getElementById("wtEarnEye");
   if(wtEarnEye) wtEarnEye.addEventListener("click", () => {
     wtMoneyHidden = !wtMoneyHidden;

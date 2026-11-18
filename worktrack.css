@@ -1768,3 +1768,45 @@ html[data-theme=dark] .kh-profile-stat span{ color:#A9B4C6; }
   max-height:calc(100vh - 2.4rem); max-height:calc(100dvh - 2.4rem);
   overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
 }
+
+/* ===== Greeting card: sun icon removed (the greeting already carries its own time-of-day icon) ===== */
+.kh-main .kh-intro{ grid-template-columns:minmax(0,1fr); }
+.kh-main .kh-intro .wt-greeting,
+.kh-main .kh-intro .section-sub,
+.kh-main .kh-intro .kh-current-month-pill{ grid-column:1; }
+
+/* ===== "Attendees Report" button: Normal / Downloading / Done (same idea as the old header button) ===== */
+.wt-earn-btn .wt-btn-ico{ position:relative; width:20px; height:20px; flex:none; display:grid; place-items:center; }
+.wt-earn-btn .wt-btn-ico svg{ grid-area:1/1; width:20px; height:20px; }
+.wt-earn-btn .wt-btn-ico .wt-dl-i--spin,
+.wt-earn-btn .wt-btn-ico .wt-dl-i--ok{ display:none; }
+.wt-earn-btn{ position:relative; transition:background .25s ease, border-color .25s ease, opacity .2s ease; }
+.wt-earn-btn:disabled{ opacity:1; }
+.wt-earn-btn.is-busy{ cursor:progress; filter:saturate(.85); }
+.wt-earn-btn.is-busy .wt-dl-i--dl,
+.wt-earn-btn.is-done .wt-dl-i--dl{ display:none; }
+.wt-earn-btn.is-busy .wt-dl-i--spin{ display:block; animation:wtDlSpin .8s linear infinite; color:#fff; }
+.wt-earn-btn.is-done{ background:#16A34A; border-color:#16A34A; }
+.wt-earn-btn.is-done svg{ color:#fff; }
+.wt-earn-btn.is-done .wt-dl-i--ok{ display:block; animation:wtDlPop .45s cubic-bezier(.2,1.4,.4,1) both; }
+.wt-earn-btn.is-done .wt-dl-i--ok path{ stroke-dasharray:24; stroke-dashoffset:24; animation:wtDlDraw .4s .08s ease-out forwards; }
+.wt-earn-btn.is-done::after{ content:""; position:absolute; inset:-2px; border-radius:inherit; border:2px solid #22C55E; opacity:0; pointer-events:none; animation:wtDlRing .75s ease-out; }
+@media (prefers-reduced-motion:reduce){
+  .wt-earn-btn.is-busy .wt-dl-i--spin{ animation-duration:1.6s; }
+  .wt-earn-btn.is-done .wt-dl-i--ok, .wt-earn-btn.is-done .wt-dl-i--ok path{ animation:none; stroke-dashoffset:0; }
+  .wt-earn-btn.is-done::after{ animation:none; }
+}
+
+/* ===== Team Earnings: each member is a tappable card -> opens the member profile ===== */
+button.wt-te-m{ appearance:none; -webkit-appearance:none; background:none; border:0; border-radius:0; margin:0; font:inherit; color:inherit; cursor:pointer;
+  -webkit-tap-highlight-color:transparent; transition:background .15s ease, transform .12s ease; }
+button.wt-te-m:active{ background:rgba(125,181,255,.10); transform:scale(.97); }
+button.wt-te-m:focus-visible{ outline:2px solid #4F8CFF; outline-offset:-2px; }
+button.wt-te-m:hover .wt-te-av{ box-shadow:0 0 0 3px rgba(79,140,255,.25); }
+.wt-te-av{ transition:box-shadow .2s ease; }
+.wt-te-m b{ font-family:inherit; }
+
+/* ===== Member profile: ID chip under the month ===== */
+.kh-profile-id{ display:flex; justify-content:center; margin:-.4rem 0 1rem; }
+.kh-profile-id:empty{ display:none; }
+.kh-profile-id .wt-idchip-num{ letter-spacing:.06em; }

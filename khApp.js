@@ -2850,6 +2850,20 @@ export function initKhApp(uid, isAdmin){
   // Header "Download Monthly Report" button: the month chosen in Monthly Summary (or the current month), all members.
   window.wtDownloadSelectedMonthPdf = () => exportMonthPdf((summaryMonthSelect && summaryMonthSelect.value) || currentYearMonth(), downloadPdfBtn, true);
 
+  // ===== PDF look: Navy / Gold / Paper. Visual only: colors, fonts, spacing. =====
+  const WTP_SERIF = "'Lora','Noto Serif Bengali',serif";
+  // Waits until Lora + Inter are loaded so the PDF never falls back to another font.
+  async function wtPdfFontsReady(){
+    try{
+      const s = "0123456789 AaBbRMh\u2014\u00D7\u2212\u2192\u00B7%";
+      await Promise.all([
+        document.fonts.load('600 22px "Lora"', s), document.fonts.load('500 14px "Lora"', s), document.fonts.load('700 14px "Lora"', s),
+        document.fonts.load('400 10px "Inter"', s), document.fonts.load('500 10px "Inter"', s), document.fonts.load('600 10px "Inter"', s),
+        document.fonts.load('700 10px "Inter"', s), document.fonts.load('800 10px "Inter"', s)
+      ]);
+      await document.fonts.ready;
+    }catch(_){}
+  }
   async function generatePdfReport(ym, monthRecords, filter){
     const byMember = {};
     monthRecords.forEach(r => {
@@ -2860,12 +2874,13 @@ export function initKhApp(uid, isAdmin){
     const memberNames = Object.keys(byMember).sort((a,b) => a.localeCompare(b));
     const totalHoursAll = memberNames.reduce((sum,n) => sum + byMember[n].hours, 0);
 
-    const PDF_BLUE   = "#0F4C81";
-    const PDF_INK    = "#172033";
-    const PDF_MUTED  = "#667085";
-    const PDF_BORDER = "#E4E7EC";
-    const PDF_LIGHT  = "#F8FAFC";
-    const PDF_GREEN  = "#16A085";
+    const PDF_BLUE   = "#14213D";
+    const PDF_INK    = "#14213D";
+    const PDF_MUTED  = "#6B6F7A";
+    const PDF_BORDER = "#D9D2C3";
+    const PDF_LIGHT  = "transparent";
+    const PDF_GREEN  = "#6B6F7A";
+    const PDF_GOLD = "#B08D57", PDF_LGOLD = "#E3C98F", PDF_SERIF = WTP_SERIF;
 
     function prettyDate(dateStr){
       const d = new Date(dateStr + "T00:00:00");
@@ -2890,9 +2905,9 @@ export function initKhApp(uid, isAdmin){
 
     const advSubText = (taken, deducted) => `Taken ${(taken || 0).toFixed(2)}` + (deducted > 0 ? ` · Deducted ${deducted.toFixed(2)}` : "");
     const kpiCard = (label, value, sub) => `
-      <div style="flex:1; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:8px; padding:14px 12px;">
+      <div>
         <div style="font-size:8.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:${PDF_MUTED};">${label}</div>
-        <div style="font-size:19px; font-weight:800; color:${PDF_INK}; margin:5px 0 2px;">${value}</div>
+        <div style="font-family:${PDF_SERIF}; font-size:20px; font-weight:600; color:${PDF_INK}; margin:5px 0 2px; font-variant-numeric:tabular-nums;">${value}</div>
         <div style="font-size:8.5px; color:${PDF_MUTED};">${sub}</div>
       </div>`;
 
@@ -2903,16 +2918,16 @@ export function initKhApp(uid, isAdmin){
       const advSingle = advanceStatsFor(singleMember, ym);
       const initial = (singleMember.name || "?").trim().charAt(0).toUpperCase();
       identityBlockHtml = `
-        <div style="display:flex; align-items:center; gap:14px; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:10px; padding:14px 18px; margin-bottom:20px;">
-          <div style="width:42px; height:42px; line-height:42px; border-radius:50%; background:${PDF_BLUE}; color:#fff; text-align:center; font-weight:800; font-size:16px; flex-shrink:0;">${escapeHtml(initial)}</div>
+        <div style="display:flex; align-items:center; gap:14px; padding:14px 0; border-top:1px solid ${PDF_BORDER}; border-bottom:1px solid ${PDF_BORDER}; margin-bottom:20px;">
+          <div style="width:42px; height:42px; line-height:42px; border-radius:50%; background:${PDF_BLUE}; color:${PDF_LGOLD}; font-family:${PDF_SERIF}; text-align:center; font-weight:800; font-size:16px; flex-shrink:0;">${escapeHtml(initial)}</div>
           <div>
             <div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:${PDF_MUTED};">Employee</div>
-            <div style="font-size:17px; font-weight:800; color:${PDF_INK}; margin:2px 0 3px;">${escapeHtml(singleMember.name)}</div>
+            <div style="font-family:${PDF_SERIF}; font-size:20px; font-weight:600; color:${PDF_INK}; margin:2px 0 3px;">${escapeHtml(singleMember.name)}</div>
             <div style="font-size:9px; color:${PDF_MUTED};">Monthly Attendance Report — ${monthLabel(ym)}</div>
           </div>
         </div>`;
       kpiCardsHtml = `
-        <div style="display:flex; gap:10px; margin-bottom:22px;">
+        <div class="wt-kpis" style="margin-bottom:22px;">
           ${kpiCard("Present", toBn(stats.present), "Work Days")}
           ${kpiCard("Leave", toBn(stats.absent), "Leave Days")}
           ${kpiCard("Total Hours", toBn(stats.hours), "Hours")}
@@ -2926,7 +2941,7 @@ export function initKhApp(uid, isAdmin){
             <td class="pdf-td pdf-td-left">${escapeHtml(prettyDate(r.date))}</td>
             <td class="pdf-td pdf-td-left">${escapeHtml(dayName(r.date))}</td>
             <td class="pdf-td pdf-td-left">
-              <span style="color:${r.status === "duty" ? PDF_GREEN : PDF_MUTED}; font-weight:700;">${r.status === "duty" ? "PRESENT" : "LEAVE"}</span>
+              <span style="color:${r.status === "duty" ? PDF_MUTED : PDF_GOLD}; font-weight:${r.status === "duty" ? 500 : 700};">${r.status === "duty" ? "PRESENT" : "LEAVE"}</span>
             </td>
             <td class="pdf-td pdf-td-right">${r.status === "duty" ? toBn(r.hours) : "—"}</td>
           </tr>`).join("");
@@ -2935,10 +2950,10 @@ export function initKhApp(uid, isAdmin){
       totalHoursLabelVal = `${toBn(stats.hours)} hrs`;
     }else{
       identityBlockHtml = `
-        <div style="display:flex; align-items:center; gap:14px; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:10px; padding:14px 18px; margin-bottom:20px;">
+        <div style="display:flex; align-items:center; gap:14px; padding:14px 0; border-top:1px solid ${PDF_BORDER}; border-bottom:1px solid ${PDF_BORDER}; margin-bottom:20px;">
           <div>
             <div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:${PDF_MUTED};">Team</div>
-            <div style="font-size:17px; font-weight:800; color:${PDF_INK}; margin:2px 0 3px;">All Members</div>
+            <div style="font-family:${PDF_SERIF}; font-size:20px; font-weight:600; color:${PDF_INK}; margin:2px 0 3px;">All Members</div>
             <div style="font-size:9px; color:${PDF_MUTED};">Monthly Attendance Report — ${monthLabel(ym)}</div>
           </div>
         </div>`;
@@ -2949,7 +2964,7 @@ export function initKhApp(uid, isAdmin){
       // Same total as the dashboard "Total Advance" card: balance of every member.
       const advBalanceAll = members.reduce((sum,m) => sum + (typeof m.advance === "number" ? m.advance : 0), 0);
       kpiCardsHtml = `
-        <div style="display:flex; gap:10px; margin-bottom:22px;">
+        <div class="wt-kpis" style="margin-bottom:22px;">
           ${kpiCard("Present", toBn(totalPresentAll), "Work Days")}
           ${kpiCard("Leave", toBn(totalLeaveAll), "Leave Days")}
           ${kpiCard("Total Hours", toBn(totalHoursAll), "Hours")}
@@ -2972,8 +2987,8 @@ export function initKhApp(uid, isAdmin){
       }).join("");
       teamSummaryHtml = `
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-          <div style="width:3px; height:16px; background:${PDF_BLUE}; border-radius:2px;"></div>
-          <div style="font-size:14px; font-weight:700; color:${PDF_INK};">Per-Member Summary</div>
+          
+          <div style="font-family:${PDF_SERIF}; font-size:15px; font-weight:600; color:${PDF_INK};">Per-Member Summary</div>
         </div>
         <table class="pdf-table" style="margin-bottom:24px;">
           <thead><tr>
@@ -2993,7 +3008,7 @@ export function initKhApp(uid, isAdmin){
             <td class="pdf-td pdf-td-left">${escapeHtml(prettyDate(r.date))}</td>
             <td class="pdf-td pdf-td-left">${escapeHtml(r.member)}</td>
             <td class="pdf-td pdf-td-left">
-              <span style="color:${r.status === "duty" ? PDF_GREEN : PDF_MUTED}; font-weight:700;">${r.status === "duty" ? "PRESENT" : "LEAVE"}</span>
+              <span style="color:${r.status === "duty" ? PDF_MUTED : PDF_GOLD}; font-weight:${r.status === "duty" ? 500 : 700};">${r.status === "duty" ? "PRESENT" : "LEAVE"}</span>
             </td>
             <td class="pdf-td pdf-td-right">${r.status === "duty" ? toBn(r.hours) : "—"}</td>
           </tr>`).join("");
@@ -3017,7 +3032,7 @@ export function initKhApp(uid, isAdmin){
       <tr>
         <td class="pdf-td pdf-td-left">${escapeHtml(prettyDate(e.d))}</td>
         <td class="pdf-td pdf-td-left">${escapeHtml(e.name)}</td>
-        <td class="pdf-td pdf-td-left"><span style="color:${e.a > 0 ? PDF_BLUE : PDF_MUTED}; font-weight:700;">${e.a > 0 ? "TAKEN" : "DEDUCTED"}</span></td>
+        <td class="pdf-td pdf-td-left"><span style="color:${e.a > 0 ? PDF_BLUE : PDF_GOLD}; font-weight:700;">${e.a > 0 ? "TAKEN" : "DEDUCTED"}</span></td>
         <td class="pdf-td pdf-td-right">${money(Math.abs(e.a))}</td>
       </tr>`).join("");
     const advNoteHtml = Math.abs(advUntrackedTotal) >= 0.01
@@ -3025,8 +3040,8 @@ export function initKhApp(uid, isAdmin){
       : "";
     const advanceSectionHtml = `
       <div style="display:flex; align-items:center; gap:8px; margin:26px 0 12px;">
-        <div style="width:3px; height:16px; background:${PDF_BLUE}; border-radius:2px;"></div>
-        <div style="font-size:14px; font-weight:700; color:${PDF_INK};">Advance Details — ${monthLabel(ym)}</div>
+        
+        <div style="font-family:${PDF_SERIF}; font-size:15px; font-weight:600; color:${PDF_INK};">Advance Details — ${monthLabel(ym)}</div>
       </div>
       ${advEntriesPdf.length ? `
         <table class="pdf-table">
@@ -3046,9 +3061,9 @@ export function initKhApp(uid, isAdmin){
 
     const wrap = document.createElement("div");
     wrap.id = "pdfReportRoot";
-    wrap.style.cssText = `position:fixed; left:-99999px; top:0; width:800px; background:#fff; padding:40px 34px 30px; font-family:'Inter','Hind Siliguri',sans-serif; color:${PDF_INK};`;
+    wrap.style.cssText = `position:fixed; left:-99999px; top:0; width:800px; background:#FBF9F4; padding:40px 34px 30px; font-family:'Inter','Hind Siliguri',sans-serif; color:${PDF_INK};`;
     wrap.innerHTML = `
-      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:16px; border-bottom:1px solid ${PDF_BORDER}; margin-bottom:26px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom:2px solid #14213D;">
         <div style="display:flex; align-items:center; gap:14px;">
           <img src="masum.png" style="height:42px; object-fit:contain;" crossorigin="anonymous">
           <div>
@@ -3057,13 +3072,14 @@ export function initKhApp(uid, isAdmin){
           </div>
         </div>
         <div style="text-align:right;">
-          <div style="font-size:11px; font-weight:800; color:${PDF_BLUE}; letter-spacing:.05em;">ATTENDANCE REPORT</div>
+          <div style="font-size:10px; font-weight:700; color:#B08D57; letter-spacing:.16em;">ATTENDANCE REPORT</div>
           <div style="font-size:9px; color:${PDF_MUTED}; margin-top:2px;">${monthLabel(ym)}</div>
         </div>
       </div>
+      <div style="height:1px; background:#B08D57; margin:3px 0 26px;"></div>
 
       <div style="margin-bottom:22px;">
-        <div style="font-size:24px; font-weight:800; color:${PDF_INK};">Attendance Report</div>
+        <div style="font-family:${PDF_SERIF}; font-size:26px; font-weight:600; color:${PDF_INK};">Attendance Report</div>
         <div style="font-size:10.5px; color:${PDF_MUTED}; margin-top:4px;">${periodLabel}</div>
       </div>
 
@@ -3072,8 +3088,8 @@ export function initKhApp(uid, isAdmin){
       ${teamSummaryHtml}
 
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-        <div style="width:3px; height:16px; background:${PDF_BLUE}; border-radius:2px;"></div>
-        <div style="font-size:14px; font-weight:700; color:${PDF_INK};">Daily Attendance Details</div>
+        
+        <div style="font-family:${PDF_SERIF}; font-size:15px; font-weight:600; color:${PDF_INK};">Daily Attendance Details</div>
       </div>
 
       <table class="pdf-table">
@@ -3090,21 +3106,18 @@ export function initKhApp(uid, isAdmin){
 
     const style = document.createElement("style");
     style.textContent = `
-      #pdfReportRoot .pdf-table{ width:100%; border-collapse:collapse; font-size:10px; }
-      #pdfReportRoot .pdf-th{
-        background:${PDF_BLUE}; color:#fff; padding:9px 10px; text-align:center;
-        vertical-align:middle; font-weight:600; text-transform:uppercase; font-size:8.5px; letter-spacing:.04em;
-      }
-      #pdfReportRoot .pdf-th-left{ text-align:left; }
-      #pdfReportRoot .pdf-th-right{ text-align:right; }
-      #pdfReportRoot .pdf-td{
-        padding:9px 10px; text-align:center; vertical-align:middle;
-        border-bottom:1px solid ${PDF_BORDER}; line-height:1.4; font-size:10px;
-      }
-      #pdfReportRoot .pdf-td-left{ text-align:left; }
-      #pdfReportRoot .pdf-td-right{ text-align:right; }
-      #pdfReportRoot .pdf-tfoot-row td{ background:${PDF_LIGHT}; border-bottom:none; border-top:1px solid ${PDF_BORDER}; }
-      #pdfReportRoot tr{ height:34px; }
+#pdfReportRoot .pdf-table{ width:100%; border-collapse:collapse; font-size:10px; }
+#pdfReportRoot .pdf-th{ background:transparent; color:#B08D57; padding:9px 10px; text-align:right; vertical-align:middle; font-weight:700; text-transform:uppercase; font-size:8.5px; letter-spacing:.1em; border-bottom:1px solid #B08D57; }
+#pdfReportRoot .pdf-th-left{ text-align:left; } #pdfReportRoot .pdf-th-right{ text-align:right; }
+#pdfReportRoot .pdf-td{ padding:9px 10px; text-align:right; vertical-align:middle; border-bottom:1px solid #D9D2C3; line-height:1.4; font-size:10px; color:#14213D; font-variant-numeric:tabular-nums; font-feature-settings:"tnum"; }
+#pdfReportRoot .pdf-td-left{ text-align:left; } #pdfReportRoot .pdf-td-right{ text-align:right; }
+#pdfReportRoot .pdf-tfoot-row td{ background:#14213D; color:#fff; border-bottom:none; border-top:1px solid rgba(255,255,255,.14); }
+#pdfReportRoot .pdf-tfoot-row:first-child td{ border-top:none; }
+#pdfReportRoot tr{ height:34px; }
+#pdfReportRoot .wt-kpis{ display:flex; border-top:1px solid #D9D2C3; border-bottom:1px solid #D9D2C3; }
+#pdfReportRoot .wt-kpis > div{ flex:1; min-width:0; padding:12px 14px; }
+#pdfReportRoot .wt-kpis > div:first-child{ padding-left:0; }
+#pdfReportRoot .wt-kpis > div + div{ border-left:1px solid #D9D2C3; }
     `;
     document.body.appendChild(style);
     document.body.appendChild(wrap);
@@ -3114,18 +3127,18 @@ export function initKhApp(uid, isAdmin){
 
     function drawFooter(pdf, pageNum, totalPages, pageWidthMM, pageHeightMM){
       const bandTop = pageHeightMM - FOOTER_MARGIN_MM - 8;
-      pdf.setFillColor(255, 255, 255);
+      pdf.setFillColor(251, 249, 244);
       pdf.rect(0, bandTop, pageWidthMM, pageHeightMM - bandTop, "F");
       const y = pageHeightMM - FOOTER_MARGIN_MM;
-      pdf.setDrawColor(228, 231, 236);
+      pdf.setDrawColor(217, 210, 195);
       pdf.setLineWidth(0.2);
       pdf.line(16, y - 5, pageWidthMM - 16, y - 5);
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(7.5);
-      pdf.setTextColor(23, 32, 51);
+      pdf.setTextColor(20, 33, 61);
       pdf.text("masumcpex.com", 16, y);
       pdf.setFont("helvetica", "normal");
-      pdf.setTextColor(102, 112, 133);
+      pdf.setTextColor(107, 111, 122);
       pdf.text("info@masumcpex.com", 16, y + 4);
       pdf.text(`Report ID: ${reportId}`, pageWidthMM / 2 - 15, y);
       const rightText1 = `Generated: ${generatedAt}`;
@@ -3136,8 +3149,9 @@ export function initKhApp(uid, isAdmin){
 
     try{
       // Sharper text: up to 3x, lowered automatically for long reports so phones don't run out of canvas memory.
+      await wtPdfFontsReady();
       const hdScale = Math.max(2, Math.min(4, Math.sqrt(20000000 / (wrap.offsetWidth * wrap.scrollHeight))));
-      const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#ffffff", logging:false });
+      const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#FBF9F4", logging:false });
       const { jsPDF } = window.jspdf;
 
       const A4_WIDTH_MM  = 210;
@@ -3145,6 +3159,8 @@ export function initKhApp(uid, isAdmin){
       const BODY_BOTTOM_MM = A4_HEIGHT_MM - FOOTER_MARGIN_MM - 8;   // content must end above the footer band
       const TOP_MARGIN_MM = 12;                                      // top gap on pages 2+
       const pdf = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
+      const paintPaper = () => { pdf.setFillColor(251, 249, 244); pdf.rect(0, 0, 210, 297, "F"); };
+      paintPaper();
 
       // Work in the report's own pixel space; k converts to canvas pixels.
       const wrapRect = wrap.getBoundingClientRect();
@@ -3192,13 +3208,13 @@ export function initKhApp(uid, isAdmin){
         const c = document.createElement("canvas");
         c.width = canvas.width; c.height = sh;
         const g = c.getContext("2d");
-        g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+        g.fillStyle = "#FBF9F4"; g.fillRect(0, 0, c.width, c.height);
         g.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
         return c.toDataURL("image/jpeg", 0.98);
       };
 
       pages.forEach((pg, idx) => {
-        if(idx > 0) pdf.addPage();
+        if(idx > 0){ pdf.addPage(); paintPaper(); }
         let yMM = idx > 0 ? TOP_MARGIN_MM : 0;
         if(pg.head){
           const hh = pg.head.h / pxPerMM;
@@ -3491,7 +3507,7 @@ export function initKhApp(uid, isAdmin){
 
   // Shared by the app and the share page: builds the "Earnings Summary" sections (each one a direct child of the page).
   function buildEarningsSections(E){
-    const INK = "#172033", MUTED = "#667085", BORDER = "#E4E7EC", LIGHT = "#F8FAFC", BLUE = "#0F4C81", GREEN = "#0F766A", AMBER = "#D97706";
+    const INK = "#14213D", MUTED = "#6B6F7A", BORDER = "#D9D2C3", LIGHT = "transparent", BLUE = "#14213D", GREEN = "#14213D", AMBER = "#B08D57", GOLD = "#B08D57", LGOLD = "#E3C98F", SERIF = WTP_SERIF, TRACK = "rgba(217,210,195,.55)";
     const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
     const hrs = n => String(Math.round((Number(n) || 0) * 100) / 100);
     const money = n => { const v = Number(n) || 0; return (v < 0 ? "− " : "") + "RM " + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits:2, maximumFractionDigits:2 }); };
@@ -3504,43 +3520,50 @@ export function initKhApp(uid, isAdmin){
     const mon3 = MN[Number(mm) - 1].slice(0, 3);
     const dim = new Date(Number(yy), Number(mm), 0).getDate();
     const period = `01 ${mon3} ${yy} — ${String(dim).padStart(2, "0")} ${mon3} ${yy}`;
-    const bar = (v, color, h) => `<div style="height:${h || 7}px; background:${BORDER}; border-radius:6px; overflow:hidden;"><div style="height:100%; width:${Math.max(0, Math.min(100, v))}%; background:${color}; border-radius:6px;"></div></div>`;
-    const heading = t => `<div style="display:flex; align-items:center; gap:8px; margin:0 0 10px;"><div style="width:3px; height:15px; background:${BLUE}; border-radius:2px;"></div><div style="font-size:13px; font-weight:700; color:${INK};">${t}</div></div>`;
-    const panel = (label, big, body) => `<div style="flex:1; background:${LIGHT}; border:1px solid ${BORDER}; border-radius:10px; padding:13px 13px 12px;"><div style="font-size:8.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:${MUTED};">${label}</div><div style="font-size:22px; font-weight:800; color:${INK}; margin:5px 0 7px;">${big}</div>${body}</div>`;
-    const kpi = (label, value, sub, dark) => `<div style="flex:1; border-radius:10px; padding:14px 12px; ${dark ? `background:${dark}; border:1px solid ${dark};` : `background:${LIGHT}; border:1px solid ${BORDER};`}"><div style="font-size:8.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:${dark ? "rgba(255,255,255,.78)" : MUTED};">${label}</div><div style="font-size:18px; font-weight:800; color:${dark ? "#fff" : INK}; margin:5px 0 2px;">${value}</div><div style="font-size:8.5px; color:${dark ? "rgba(255,255,255,.78)" : MUTED};">${sub}</div></div>`;
+    const bar = (v, color, h) => `<div style="height:${h || 6}px; background:${TRACK}; overflow:hidden;"><div style="height:100%; width:${Math.max(0, Math.min(100, v))}%; background:${color};"></div></div>`;
+    const heading = t => `<div style="margin:0 0 10px;"><div style="font-family:${SERIF}; font-size:15px; font-weight:600; color:${INK};">${t}</div></div>`;
+    const panel = (label, big, body) => `<div><div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:${MUTED};">${label}</div><div style="font-family:${SERIF}; font-size:22px; font-weight:600; color:${INK}; margin:5px 0 7px; font-variant-numeric:tabular-nums;">${big}</div>${body}</div>`;
+    const kpi = (label, value, sub, dark) => `<div><div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:${dark ? GOLD : MUTED};">${label}</div><div style="font-family:${SERIF}; font-size:19px; font-weight:600; color:${INK}; margin:5px 0 2px; font-variant-numeric:tabular-nums; white-space:nowrap;">${value}</div><div style="font-size:8.5px; color:${MUTED};">${sub}</div></div>`;
     const pd = d => { const x = new Date(d + "T00:00:00"); return String(x.getDate()).padStart(2, "0") + " " + MN[x.getMonth()].slice(0, 3); };
 
     const takeHome = E.gross > 0 ? Math.max(0, Math.min(100, Math.round(E.net / E.gross * 100))) : 0;
     const cutPct = E.gross > 0 ? Math.max(0, Math.min(100 - takeHome, Math.round(E.ded / E.gross * 100))) : 0;
     const weeks = E.weeks || [];
     const maxWeek = Math.max(1, ...weeks.map(w => w.h));
+    const topWeek = (weeks.length && maxWeek > 1) ? weeks.reduce((bi, w, i) => w.h > weeks[bi].h ? i : bi, 0) : -1;
     const rateOk = E.rate > 0;
 
     const css = `<style>
-      .earn-root .pdf-table{ width:100%; border-collapse:collapse; font-size:10px; }
-      .earn-root .pdf-th{ background:${BLUE}; color:#fff; padding:9px 10px; text-align:center; font-weight:600; text-transform:uppercase; font-size:8.5px; letter-spacing:.04em; }
-      .earn-root .pdf-th-left{ text-align:left; } .earn-root .pdf-th-right{ text-align:right; }
-      .earn-root .pdf-td{ padding:9px 10px; text-align:center; border-bottom:1px solid ${BORDER}; line-height:1.4; font-size:10px; }
-      .earn-root .pdf-td-left{ text-align:left; } .earn-root .pdf-td-right{ text-align:right; }
-      .earn-root .pdf-tfoot-row td{ background:${LIGHT}; border-bottom:none; border-top:1px solid ${BORDER}; }
-      .earn-root tr{ height:32px; }
+.earn-root .pdf-table{ width:100%; border-collapse:collapse; font-size:10px; }
+.earn-root .pdf-th{ background:transparent; color:#B08D57; padding:9px 10px; text-align:right; vertical-align:middle; font-weight:700; text-transform:uppercase; font-size:8.5px; letter-spacing:.1em; border-bottom:1px solid #B08D57; }
+.earn-root .pdf-th-left{ text-align:left; } .earn-root .pdf-th-right{ text-align:right; }
+.earn-root .pdf-td{ padding:9px 10px; text-align:right; vertical-align:middle; border-bottom:1px solid #D9D2C3; line-height:1.4; font-size:10px; color:#14213D; font-variant-numeric:tabular-nums; font-feature-settings:"tnum"; }
+.earn-root .pdf-td-left{ text-align:left; } .earn-root .pdf-td-right{ text-align:right; }
+.earn-root .pdf-tfoot-row td{ background:#14213D; color:#fff; border-bottom:none; border-top:1px solid rgba(255,255,255,.14); }
+.earn-root .pdf-tfoot-row:first-child td{ border-top:none; }
+.earn-root tr{ height:32px; }
+.earn-root .wt-kpis{ display:flex; border-top:1px solid #D9D2C3; border-bottom:1px solid #D9D2C3; }
+.earn-root .wt-kpis > div{ flex:1; min-width:0; padding:12px 14px; }
+.earn-root .wt-kpis > div:first-child{ padding-left:0; }
+.earn-root .wt-kpis > div + div{ border-left:1px solid #D9D2C3; }
     </style>`;
 
     return css + `
-      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom:1px solid ${BORDER}; margin-bottom:20px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom:2px solid #14213D;">
         <div style="display:flex; align-items:center; gap:14px;">
           <img src="masum.png" style="height:42px; object-fit:contain;" crossorigin="anonymous">
           <div><div style="font-size:13px; font-weight:800; color:${INK}; letter-spacing:.03em;">WORKTRACK</div><div style="font-size:9px; color:${MUTED};">Attendance &amp; Workforce Management</div></div>
         </div>
-        <div style="text-align:right;"><div style="font-size:11px; font-weight:800; color:${BLUE}; letter-spacing:.05em;">EARNINGS SUMMARY</div><div style="font-size:9px; color:${MUTED}; margin-top:2px;">${monthName}</div></div>
+        <div style="text-align:right;"><div style="font-size:10px; font-weight:700; color:#B08D57; letter-spacing:.16em;">EARNINGS SUMMARY</div><div style="font-size:9px; color:${MUTED}; margin-top:2px;">${monthName}</div></div>
       </div>
-      <div style="margin-bottom:16px;"><div style="font-size:23px; font-weight:800; color:${INK};">Earnings Summary</div><div style="font-size:10.5px; color:${MUTED}; margin-top:3px;">${period}</div></div>
-      <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; background:${LIGHT}; border:1px solid ${BORDER}; border-radius:12px; margin-bottom:14px;">
-        <div style="width:44px; height:44px; border-radius:50%; background:${BLUE}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:800; flex-shrink:0;">${esc((E.name.trim().charAt(0) || "?").toUpperCase())}</div>
-        <div style="flex:1;"><div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; color:${MUTED};">MEMBER</div><div style="font-size:18px; font-weight:800; color:${INK};">${esc(E.name)}</div><div style="font-size:9px; color:${MUTED};">Monthly earnings overview — ${monthName}</div></div>
+      <div style="height:1px; background:#B08D57; margin:3px 0 20px;"></div>
+      <div style="margin-bottom:16px;"><div style="font-family:${SERIF}; font-size:26px; font-weight:600; color:${INK};">Earnings Summary</div><div style="font-size:10.5px; color:${MUTED}; margin-top:3px;">${period}</div></div>
+      <div style="display:flex; align-items:center; gap:14px; padding:14px 0; border-top:1px solid ${BORDER}; border-bottom:1px solid ${BORDER}; margin-bottom:14px;">
+        <div style="width:44px; height:44px; border-radius:50%; background:${BLUE}; color:${LGOLD}; font-family:${SERIF}; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:800; flex-shrink:0;">${esc((E.name.trim().charAt(0) || "?").toUpperCase())}</div>
+        <div style="flex:1;"><div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; color:${MUTED};">MEMBER</div><div style="font-family:${SERIF}; font-size:20px; font-weight:600; color:${INK};">${esc(E.name)}</div><div style="font-size:9px; color:${MUTED};">Monthly earnings overview — ${monthName}</div></div>
         <div style="text-align:right;"><div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; color:${MUTED};">REFERENCE</div><div style="font-size:11px; font-weight:800; color:${INK};">${esc(E.rid)}</div></div>
       </div>
-      <div style="display:flex; gap:10px; margin-bottom:16px;">
+      <div class="wt-kpis" style="margin-bottom:16px;">
         ${kpi("Total Hours", `${hrs(E.hours)} h`, `${E.days} work days`)}
         ${kpi("Hourly Rate", rateOk ? rateRM(E.rate) : "Not set", "per hour")}
         ${kpi("Total Earned", money(E.gross), `${hrs(E.hours)} h × ${rateOk ? rateRM(E.rate) : "—"}`, BLUE)}
@@ -3554,13 +3577,13 @@ export function initKhApp(uid, isAdmin){
             <tr><td class="pdf-td pdf-td-left" style="font-weight:700;">Total earned</td><td class="pdf-td pdf-td-left" style="color:${MUTED};">${hrs(E.hours)} h × ${rateOk ? rateRM(E.rate) : "rate not set"}</td><td class="pdf-td pdf-td-right" style="font-weight:700;">${money(E.gross)}</td></tr>
             <tr><td class="pdf-td pdf-td-left" style="font-weight:700;">Advance cut</td><td class="pdf-td pdf-td-left" style="color:${MUTED};">Recorded in ${monthName}</td><td class="pdf-td pdf-td-right" style="font-weight:700; color:${AMBER};">− ${money(E.ded)}</td></tr>
           </tbody>
-          <tfoot><tr class="pdf-tfoot-row"><td class="pdf-td pdf-td-left" style="font-weight:800; font-size:11px;" colspan="2">Take-home</td><td class="pdf-td pdf-td-right" style="font-weight:800; font-size:12px; color:${GREEN};">${money(E.net)}</td></tr></tfoot>
+          <tfoot><tr class="pdf-tfoot-row"><td class="pdf-td pdf-td-left" style="font-weight:800; font-size:11px;" colspan="2">Take-home</td><td class="pdf-td pdf-td-right" style="font-weight:800; font-size:12px; color:${LGOLD};">${money(E.net)}</td></tr></tfoot>
         </table>
         ${(() => {
           const bal = Math.round((Number(E.balance) || 0) * 100) / 100, tk = Number(E.taken) || 0;
           if(Math.abs(bal) < 0.005 && tk < 0.005) return `<div style="font-size:9px; color:${MUTED}; margin-top:7px;">Take-home = Total earned &minus; Advance cut</div>`;
           const label = bal >= 0 ? "Advance still to be cut later" : "Advance cut is more than taken by";
-          return `<div style="margin-top:9px; padding:9px 12px; border:1px solid #F3D9A4; background:#FFF8EA; border-radius:9px; font-size:9.5px; color:${INK};">
+          return `<div style="margin-top:9px; padding:9px 12px; border-left:2px solid ${GOLD}; border-top:1px solid ${BORDER}; border-bottom:1px solid ${BORDER}; font-size:9.5px; color:${INK};">
             <div style="display:flex; justify-content:space-between; gap:10px;"><span style="color:${MUTED};">Advance taken this month</span><b>${money(tk)}</b></div>
             <div style="display:flex; justify-content:space-between; gap:10px; margin-top:5px; font-size:10.5px;"><span style="font-weight:700;">${label}</span><b style="color:${AMBER};">${money(Math.abs(bal))}</b></div>
             <div style="margin-top:5px; font-size:8.5px; color:${MUTED};">Take-home = Total earned &minus; Advance cut</div>
@@ -3569,17 +3592,17 @@ export function initKhApp(uid, isAdmin){
       </div>
       <div style="margin-bottom:16px;">
         ${heading("Performance Analysis")}
-        <div style="display:flex; gap:10px;">
+        <div class="wt-kpis">
           ${panel("Attendance rate", `${E.att}%`, `${bar(E.att, GREEN)}<div style="font-size:8.5px; color:${MUTED}; margin-top:6px;">${E.days} present · ${E.leave} leave</div>`)}
-          ${panel("Take-home", E.gross > 0 ? `${takeHome}%` : "—", `<div style="display:flex; height:7px; border-radius:6px; overflow:hidden; background:${BORDER};"><div style="width:${takeHome}%; background:${GREEN};"></div><div style="width:${cutPct}%; background:${AMBER};"></div></div><div style="font-size:8.5px; color:${MUTED}; margin-top:6px;">${cutPct}% advance cut</div>`)}
+          ${panel("Take-home", E.gross > 0 ? `${takeHome}%` : "—", `<div style="display:flex; height:6px; overflow:hidden; background:${TRACK};"><div style="width:${takeHome}%; background:${GREEN};"></div><div style="width:${cutPct}%; background:${AMBER};"></div></div><div style="font-size:8.5px; color:${MUTED}; margin-top:6px;">${cutPct}% advance cut</div>`)}
           ${panel("Average per day", `${hrs(Math.round(E.avg * 10) / 10)} h`, `<div style="font-size:8.5px; color:${MUTED}; margin-top:2px;">${E.longest ? `Longest: ${hrs(E.longest.h)} h on ${pd(E.longest.d)}` : "No work days"}</div>`)}
         </div>
       </div>
       <div style="margin-bottom:16px;">
         ${heading("Hours by Week")}
-        ${weeks.map(w => `<div style="display:flex; align-items:center; gap:10px; margin-bottom:7px;"><div style="width:62px; font-size:9px; color:${MUTED}; font-weight:600;">${mon3} ${w.l}</div><div style="flex:1;">${bar(Math.round(w.h / maxWeek * 100), BLUE, 8)}</div><div style="width:78px; text-align:right; font-size:9.5px; font-weight:700; color:${INK};">${hrs(w.h)} h <span style="color:${MUTED}; font-weight:600;">· ${pct(w.h, E.hours)}%</span></div></div>`).join("")}
+        ${weeks.map((w, wi) => `<div style="display:flex; align-items:center; gap:10px; margin-bottom:7px;"><div style="width:62px; font-size:9px; color:${MUTED}; font-weight:600;">${mon3} ${w.l}</div><div style="flex:1;">${bar(Math.round(w.h / maxWeek * 100), wi === topWeek ? GOLD : BLUE, 8)}</div><div style="width:78px; text-align:right; font-size:9.5px; font-weight:700; color:${INK};">${hrs(w.h)} h <span style="color:${MUTED}; font-weight:600;">· ${pct(w.h, E.hours)}%</span></div></div>`).join("")}
       </div>
-      ${E.linkUrl ? `<div id="khEarnLinkBox" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 14px; border:1px solid ${BORDER}; border-radius:10px; background:${LIGHT}; margin-bottom:16px;"><div><div style="font-size:10px; font-weight:700; color:${INK};">Daily attendance details</div><div style="font-size:8.5px; color:${MUTED}; margin-top:2px;">Day-by-day records are in the attendance report.</div></div><div style="display:flex; align-items:center; gap:12px;"><div style="font-size:9.5px; font-weight:700; color:${BLUE}; white-space:nowrap; text-align:right;">Open attendance report &rarr;${E.qr ? `<div style="font-size:7.5px; font-weight:600; color:${MUTED}; margin-top:2px;">or scan the code</div>` : ""}</div>${E.qr ? `<img src="${E.qr}" alt="QR code" style="width:62px; height:62px; display:block;">` : ""}</div></div>` : ""}
+      ${E.linkUrl ? `<div id="khEarnLinkBox" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-top:1px solid ${BORDER}; margin-bottom:16px;"><div><div style="font-size:10px; font-weight:700; color:${INK};">Daily attendance details</div><div style="font-size:8.5px; color:${MUTED}; margin-top:2px;">Day-by-day records are in the attendance report.</div></div><div style="display:flex; align-items:center; gap:12px;"><div style="font-size:9.5px; font-weight:700; color:${BLUE}; white-space:nowrap; text-align:right;">Open attendance report &rarr;${E.qr ? `<div style="font-size:7.5px; font-weight:600; color:${MUTED}; margin-top:2px;">or scan the code</div>` : ""}</div>${E.qr ? `<img src="${E.qr}" alt="QR code" style="width:62px; height:62px; display:block;">` : ""}</div></div>` : ""}
       <div style="border-top:1px solid ${BORDER}; padding-top:9px; font-size:8.5px; color:${MUTED}; line-height:1.6;">Calculated from recorded attendance hours and the hourly rate. For reference only.</div>`;
   }
 
@@ -3630,12 +3653,13 @@ export function initKhApp(uid, isAdmin){
   }
 
   async function generateSalaryPdf(ym, rows){
-    const PDF_BLUE = "#0F4C81", PDF_INK = "#172033", PDF_MUTED = "#667085", PDF_BORDER = "#E4E7EC", PDF_LIGHT = "#F8FAFC";
-    const PDF_GREEN = "#0F766A", PDF_AMBER = "#D97706";
+    const PDF_BLUE = "#14213D", PDF_INK = "#14213D", PDF_MUTED = "#6B6F7A", PDF_BORDER = "#D9D2C3", PDF_LIGHT = "transparent";
+    const PDF_GREEN = "#14213D", PDF_AMBER = "#B08D57";
+    const PDF_GOLD = "#B08D57", PDF_LGOLD = "#E3C98F", PDF_SERIF = WTP_SERIF, PDF_TRACK = "rgba(217,210,195,.55)";
     computeEarnings(rows, ym);
     const single = rows.length === 1;
     const pct = (a, b) => b > 0 ? Math.round(a / b * 100) : 0;
-    const bar = (value, color, h) => `<div style="height:${h || 7}px; background:${PDF_BORDER}; border-radius:6px; overflow:hidden;"><div style="height:100%; width:${Math.max(0, Math.min(100, value))}%; background:${color}; border-radius:6px;"></div></div>`;
+    const bar = (v, color, h) => `<div style="height:${h || 6}px; background:${PDF_TRACK}; overflow:hidden;"><div style="height:100%; width:${Math.max(0, Math.min(100, v))}%; background:${color};"></div></div>`;
     const [yy, mm] = ym.split("-");
     const daysInMonth = new Date(Number(yy), Number(mm), 0).getDate();
     const mon3 = monthLabel(ym).split(" ")[0].slice(0, 3);
@@ -3670,27 +3694,33 @@ export function initKhApp(uid, isAdmin){
       const cutPct = T.gross > 0 ? Math.max(0, Math.min(100 - takeHome, Math.round(T.ded / T.gross * 100))) : 0;
       const teamAtt = pct(T.days, T.days + T.leave);
       const missing = rows.length - withRate.length;
-      const heading = t => `<div style="display:flex; align-items:center; gap:8px; margin:0 0 10px;"><div style="width:3px; height:15px; background:${PDF_BLUE}; border-radius:2px;"></div><div style="font-size:13px; font-weight:700; color:${PDF_INK};">${t}</div></div>`;
-      const panel = (label, big, body) => `<div style="flex:1; background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER}; border-radius:10px; padding:13px 13px 12px;"><div style="font-size:8.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:${PDF_MUTED};">${label}</div><div style="font-size:22px; font-weight:800; color:${PDF_INK}; margin:5px 0 7px;">${big}</div>${body}</div>`;
-      const kpi = (label, value, sub, dark) => `<div style="flex:1; border-radius:10px; padding:14px 12px; ${dark ? `background:${dark}; border:1px solid ${dark};` : `background:${PDF_LIGHT}; border:1px solid ${PDF_BORDER};`}"><div style="font-size:8.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:${dark ? "rgba(255,255,255,.78)" : PDF_MUTED};">${label}</div><div style="font-size:18px; font-weight:800; color:${dark ? "#fff" : PDF_INK}; margin:5px 0 2px;">${value}</div><div style="font-size:8.5px; color:${dark ? "rgba(255,255,255,.78)" : PDF_MUTED};">${sub}</div></div>`;
+      const heading = t => `<div style="margin:0 0 10px;"><div style="font-family:${PDF_SERIF}; font-size:15px; font-weight:600; color:${PDF_INK};">${t}</div></div>`;
+      const panel = (label, big, body) => `<div><div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:${PDF_MUTED};">${label}</div><div style="font-family:${PDF_SERIF}; font-size:22px; font-weight:600; color:${PDF_INK}; margin:5px 0 7px; font-variant-numeric:tabular-nums;">${big}</div>${body}</div>`;
+      const kpi = (label, value, sub, dark) => `<div><div style="font-size:8.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:${dark ? PDF_GOLD : PDF_MUTED};">${label}</div><div style="font-family:${PDF_SERIF}; font-size:19px; font-weight:600; color:${PDF_INK}; margin:5px 0 2px; font-variant-numeric:tabular-nums; white-space:nowrap;">${value}</div><div style="font-size:8.5px; color:${PDF_MUTED};">${sub}</div></div>`;
       innerHtml = `<style>
-        .earn-root .pdf-table{ width:100%; border-collapse:collapse; font-size:10px; }
-        .earn-root .pdf-th{ background:${PDF_BLUE}; color:#fff; padding:9px 8px; text-align:center; font-weight:600; text-transform:uppercase; font-size:8.5px; letter-spacing:.04em; }
-        .earn-root .pdf-th-left{ text-align:left; } .earn-root .pdf-th-right{ text-align:right; }
-        .earn-root .pdf-td{ padding:9px 8px; text-align:center; border-bottom:1px solid ${PDF_BORDER}; line-height:1.4; font-size:10px; }
-        .earn-root .pdf-td-left{ text-align:left; } .earn-root .pdf-td-right{ text-align:right; }
-        .earn-root .pdf-tfoot-row td{ background:${PDF_LIGHT}; border-bottom:none; border-top:1px solid ${PDF_BORDER}; }
-        .earn-root tr{ height:32px; }
+.earn-root .pdf-table{ width:100%; border-collapse:collapse; font-size:10px; }
+.earn-root .pdf-th{ background:transparent; color:#B08D57; padding:9px 8px; text-align:right; vertical-align:middle; font-weight:700; text-transform:uppercase; font-size:8.5px; letter-spacing:.1em; border-bottom:1px solid #B08D57; }
+.earn-root .pdf-th-left{ text-align:left; } .earn-root .pdf-th-right{ text-align:right; }
+.earn-root .pdf-td{ padding:9px 8px; text-align:right; vertical-align:middle; border-bottom:1px solid #D9D2C3; line-height:1.4; font-size:10px; color:#14213D; font-variant-numeric:tabular-nums; font-feature-settings:"tnum"; }
+.earn-root .pdf-td-left{ text-align:left; } .earn-root .pdf-td-right{ text-align:right; }
+.earn-root .pdf-tfoot-row td{ background:#14213D; color:#fff; border-bottom:none; border-top:1px solid rgba(255,255,255,.14); }
+.earn-root .pdf-tfoot-row:first-child td{ border-top:none; }
+.earn-root tr{ height:32px; }
+.earn-root .wt-kpis{ display:flex; border-top:1px solid #D9D2C3; border-bottom:1px solid #D9D2C3; }
+.earn-root .wt-kpis > div{ flex:1; min-width:0; padding:12px 14px; }
+.earn-root .wt-kpis > div:first-child{ padding-left:0; }
+.earn-root .wt-kpis > div + div{ border-left:1px solid #D9D2C3; }
       </style>
-      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom:1px solid ${PDF_BORDER}; margin-bottom:20px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom:2px solid #14213D;">
         <div style="display:flex; align-items:center; gap:14px;">
           <img src="masum.png" style="height:42px; object-fit:contain;" crossorigin="anonymous">
           <div><div style="font-size:13px; font-weight:800; color:${PDF_INK}; letter-spacing:.03em;">WORKTRACK</div><div style="font-size:9px; color:${PDF_MUTED};">Attendance &amp; Workforce Management</div></div>
         </div>
-        <div style="text-align:right;"><div style="font-size:11px; font-weight:800; color:${PDF_BLUE}; letter-spacing:.05em;">EARNINGS SUMMARY</div><div style="font-size:9px; color:${PDF_MUTED}; margin-top:2px;">${monthLabel(ym)}</div></div>
+        <div style="text-align:right;"><div style="font-size:10px; font-weight:700; color:#B08D57; letter-spacing:.16em;">EARNINGS SUMMARY</div><div style="font-size:9px; color:${PDF_MUTED}; margin-top:2px;">${monthLabel(ym)}</div></div>
       </div>
-      <div style="margin-bottom:16px;"><div style="font-size:23px; font-weight:800; color:${PDF_INK};">Earnings Summary</div><div style="font-size:10.5px; color:${PDF_MUTED}; margin-top:3px;">All members · ${periodLabel}</div></div>
-      <div style="display:flex; gap:10px; margin-bottom:16px;">
+      <div style="height:1px; background:#B08D57; margin:3px 0 20px;"></div>
+      <div style="margin-bottom:16px;"><div style="font-family:${PDF_SERIF}; font-size:26px; font-weight:600; color:${PDF_INK};">Earnings Summary</div><div style="font-size:10.5px; color:${PDF_MUTED}; margin-top:3px;">All members · ${periodLabel}</div></div>
+      <div class="wt-kpis" style="margin-bottom:16px;">
         ${kpi("Members", String(rows.length), `${T.days} work days`)}
         ${kpi("Total Hours", `${fmtHours(T.hours)} h`, `avg ${fmtHours(Math.round((rows.length ? T.hours / rows.length : 0) * 10) / 10)} h per member`)}
         ${kpi("Total Earned", money(T.gross), "hours × rate", PDF_BLUE)}
@@ -3710,22 +3740,22 @@ export function initKhApp(uid, isAdmin){
               <td class="pdf-td">${r.rate > 0 ? fmtRate(r.rate) : "—"}</td>
               <td class="pdf-td pdf-td-right">${r.rate > 0 ? money(r.gross) : "—"}</td>
               <td class="pdf-td pdf-td-right" style="color:${PDF_AMBER};">${r.advDeducted > 0 ? "− " + money(r.advDeducted) : "—"}</td>
-              <td class="pdf-td pdf-td-right" style="font-weight:800; color:${PDF_GREEN};">${r.rate > 0 ? money(r.net) : "—"}</td>
+              <td class="pdf-td pdf-td-right" style="font-weight:800; color:${PDF_BLUE};">${r.rate > 0 ? money(r.net) : "—"}</td>
               <td class="pdf-td pdf-td-left"><div style="display:flex; align-items:center; gap:6px;"><div style="flex:1;">${bar(pct(r.gross, T.gross), PDF_BLUE, 6)}</div><span style="font-size:8.5px; font-weight:700; width:26px; text-align:right;">${pct(r.gross, T.gross)}%</span></div></td>
             </tr>`).join("")}
           </tbody>
           <tfoot><tr class="pdf-tfoot-row">
             <td class="pdf-td pdf-td-left" style="font-weight:800;">Total</td><td class="pdf-td" style="font-weight:800;">${T.days}</td><td class="pdf-td" style="font-weight:800;">${fmtHours(T.hours)}</td><td class="pdf-td"></td>
-            <td class="pdf-td pdf-td-right" style="font-weight:800;">${money(T.gross)}</td><td class="pdf-td pdf-td-right" style="font-weight:800;">${T.ded > 0 ? "− " + money(T.ded) : "—"}</td><td class="pdf-td pdf-td-right" style="font-weight:800; color:${PDF_GREEN};">${money(T.net)}</td><td class="pdf-td"></td>
+            <td class="pdf-td pdf-td-right" style="font-weight:800;">${money(T.gross)}</td><td class="pdf-td pdf-td-right" style="font-weight:800;">${T.ded > 0 ? "− " + money(T.ded) : "—"}</td><td class="pdf-td pdf-td-right" style="font-weight:800; color:${PDF_LGOLD};">${money(T.net)}</td><td class="pdf-td"></td>
           </tr></tfoot>
         </table>
         ${missing ? `<div style="font-size:9px; color:${PDF_AMBER}; margin-top:7px;">${missing} member${missing > 1 ? "s have" : " has"} no hourly rate set, so ${missing > 1 ? "their earnings are" : "the earnings are"} not included in the totals.</div>` : ""}
       </div>
       <div style="margin-bottom:16px;">
         ${heading("Team Analysis")}
-        <div style="display:flex; gap:10px;">
+        <div class="wt-kpis">
           ${panel("Attendance rate", `${teamAtt}%`, `${bar(teamAtt, PDF_GREEN)}<div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:6px;">${T.days} present · ${T.leave} leave</div>`)}
-          ${panel("Take-home", T.gross > 0 ? `${takeHome}%` : "—", `<div style="display:flex; height:7px; border-radius:6px; overflow:hidden; background:${PDF_BORDER};"><div style="width:${takeHome}%; background:${PDF_GREEN};"></div><div style="width:${cutPct}%; background:${PDF_AMBER};"></div></div><div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:6px;">${cutPct}% advance cut</div>`)}
+          ${panel("Take-home", T.gross > 0 ? `${takeHome}%` : "—", `<div style="display:flex; height:6px; overflow:hidden; background:${PDF_TRACK};"><div style="width:${takeHome}%; background:${PDF_GREEN};"></div><div style="width:${cutPct}%; background:${PDF_AMBER};"></div></div><div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:6px;">${cutPct}% advance cut</div>`)}
           ${panel("Average rate", avgRate > 0 ? fmtRateRM(avgRate) : "—", `<div style="font-size:8.5px; color:${PDF_MUTED}; margin-top:2px;">per hour, weighted by hours</div>`)}
         </div>
       </div>
@@ -3735,7 +3765,7 @@ export function initKhApp(uid, isAdmin){
     const wrap = document.createElement("div");
     wrap.id = "pdfReportRoot";
     wrap.className = "earn-root";
-    wrap.style.cssText = `position:fixed; left:-99999px; top:0; width:800px; background:#fff; padding:38px 34px 26px; font-family:'Inter','Hind Siliguri',sans-serif; color:${PDF_INK};`;
+    wrap.style.cssText = `position:fixed; left:-99999px; top:0; width:800px; background:#FBF9F4; padding:38px 34px 26px; font-family:'Inter','Hind Siliguri',sans-serif; color:${PDF_INK};`;
     wrap.innerHTML = innerHtml;
     document.body.appendChild(wrap);
     try{
@@ -3751,27 +3781,30 @@ export function initKhApp(uid, isAdmin){
     const generatedAt = new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
     function drawFooter(pdf, pageNum, totalPages, pageWidthMM, pageHeightMM){
       const bandTop = pageHeightMM - FOOTER_MARGIN_MM - 8;
-      pdf.setFillColor(255, 255, 255);
+      pdf.setFillColor(251, 249, 244);
       pdf.rect(0, bandTop, pageWidthMM, pageHeightMM - bandTop, "F");
       const y = pageHeightMM - FOOTER_MARGIN_MM;
-      pdf.setDrawColor(228, 231, 236); pdf.setLineWidth(0.2);
+      pdf.setDrawColor(217, 210, 195); pdf.setLineWidth(0.2);
       pdf.line(16, y - 5, pageWidthMM - 16, y - 5);
-      pdf.setFont("helvetica", "bold"); pdf.setFontSize(7.5); pdf.setTextColor(23, 32, 51);
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(7.5); pdf.setTextColor(20, 33, 61);
       pdf.text("masumcpex.com", 16, y);
-      pdf.setFont("helvetica", "normal"); pdf.setTextColor(102, 112, 133);
+      pdf.setFont("helvetica", "normal"); pdf.setTextColor(107, 111, 122);
       pdf.text("info@masumcpex.com", 16, y + 4);
       pdf.text(`Report ID: ${reportId}`, pageWidthMM / 2 - 15, y);
       pdf.text(`Generated: ${generatedAt}`, pageWidthMM - 16, y, { align: "right" });
       pdf.text(`Page ${pageNum} of ${totalPages}`, pageWidthMM - 16, y + 4, { align: "right" });
     }
 
+    await wtPdfFontsReady();
     const hdScale = Math.max(2, Math.min(4, Math.sqrt(20000000 / (wrap.offsetWidth * wrap.scrollHeight))));
-    const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#ffffff", logging:false });
+    const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#FBF9F4", logging:false });
     const { jsPDF } = window.jspdf;
     const A4_WIDTH_MM = 210, A4_HEIGHT_MM = 297;
     const BODY_BOTTOM_MM = A4_HEIGHT_MM - FOOTER_MARGIN_MM - 8;
     const TOP_MARGIN_MM = 12;
     const pdf = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
+    const paintPaper = () => { pdf.setFillColor(251, 249, 244); pdf.rect(0, 0, 210, 297, "F"); };
+    paintPaper();
 
     const wrapRect = wrap.getBoundingClientRect();
     const totalPx = wrap.scrollHeight;
@@ -3826,12 +3859,12 @@ export function initKhApp(uid, isAdmin){
       const c = document.createElement("canvas");
       c.width = canvas.width; c.height = sh;
       const g = c.getContext("2d");
-      g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+      g.fillStyle = "#FBF9F4"; g.fillRect(0, 0, c.width, c.height);
       g.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
       return c.toDataURL("image/jpeg", 0.98);
     };
     pages.forEach((pg, idx) => {
-      if(idx > 0) pdf.addPage();
+      if(idx > 0){ pdf.addPage(); paintPaper(); }
       if(pg.fit){
         const wMM = A4_WIDTH_MM * pg.fit, hMM = (pg.y1 - pg.y0) / pxPerMM * pg.fit;
         pdf.addImage(slice(pg.y0, pg.y1), "JPEG", (A4_WIDTH_MM - wMM) / 2, 0, wMM, hMM);

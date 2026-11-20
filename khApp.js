@@ -3180,7 +3180,7 @@ export function initKhApp(uid, isAdmin){
     try{
       // Sharper text: up to 3x, lowered automatically for long reports so phones don't run out of canvas memory.
       await wtPdfFontsReady();
-      const hdScale = Math.max(2, Math.min(4, Math.sqrt(20000000 / (wrap.offsetWidth * wrap.scrollHeight))));
+      const hdScale = Math.max(2, Math.min(3, Math.sqrt(12000000 / (wrap.offsetWidth * wrap.scrollHeight))));
       const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#FBF9F4", logging:false });
       const { jsPDF } = window.jspdf;
       const wm = await wtLogoData();
@@ -3241,7 +3241,7 @@ export function initKhApp(uid, isAdmin){
         const g = c.getContext("2d");
         g.fillStyle = "#FBF9F4"; g.fillRect(0, 0, c.width, c.height);
         g.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
-        return c.toDataURL("image/jpeg", 0.98);
+        return c.toDataURL("image/jpeg", 0.92);
       };
 
       pages.forEach((pg, idx) => {
@@ -3833,7 +3833,7 @@ export function initKhApp(uid, isAdmin){
     }
 
     await wtPdfFontsReady();
-    const hdScale = Math.max(2, Math.min(4, Math.sqrt(20000000 / (wrap.offsetWidth * wrap.scrollHeight))));
+    const hdScale = Math.max(2, Math.min(3, Math.sqrt(12000000 / (wrap.offsetWidth * wrap.scrollHeight))));
     const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#FBF9F4", logging:false });
     const { jsPDF } = window.jspdf;
       const wm = await wtLogoData();
@@ -3899,7 +3899,7 @@ export function initKhApp(uid, isAdmin){
       const g = c.getContext("2d");
       g.fillStyle = "#FBF9F4"; g.fillRect(0, 0, c.width, c.height);
       g.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
-      return c.toDataURL("image/jpeg", 0.98);
+      return c.toDataURL("image/jpeg", 0.92);
     };
     pages.forEach((pg, idx) => {
       if(idx > 0){ pdf.addPage(); paintPaper(); }
@@ -4361,9 +4361,10 @@ export function initKhApp(uid, isAdmin){
     _wtLogo = false;
     try{
       const img = await new Promise((res, rej) => { const im = new Image(); im.crossOrigin = "anonymous"; im.onload = () => res(im); im.onerror = rej; im.src = "masum.png"; });
-      const c = document.createElement("canvas"); c.width = img.naturalWidth; c.height = img.naturalHeight;
-      c.getContext("2d").drawImage(img, 0, 0);
-      _wtLogo = { url: c.toDataURL("image/png"), w: img.naturalWidth, h: img.naturalHeight };
+      const sc = Math.min(1, 500 / img.naturalWidth);
+      const c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      _wtLogo = { url: c.toDataURL("image/png"), w: c.width, h: c.height };
     }catch(_){ _wtLogo = false; }
     return _wtLogo;
   }

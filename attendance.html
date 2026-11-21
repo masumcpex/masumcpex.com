@@ -1418,6 +1418,24 @@ html[data-theme="dark"] .kh-reg-name,html[data-theme="dark"] .kh-reg-day-title,h
   }
 })();
 </script>
+<script>
+/* Profile menu toggle lives here so it works whatever version of khApp.js / kh-auth.js is cached.
+   Runs in the capture phase and stops the event, so no other copy of the toggle can cancel it. */
+(function(){
+  window.__khAccountMenuBound = true;
+  document.addEventListener("click", function(e){
+    var dd = document.getElementById("khAccountDropdown"); if(!dd) return;
+    var tg = e.target.closest ? e.target.closest("#khAccountTrigger") : null;
+    if(tg){
+      e.stopImmediatePropagation();
+      var on = dd.classList.toggle("is-open");
+      tg.setAttribute("aria-expanded", on ? "true" : "false");
+      return;
+    }
+    if(!e.target.closest(".kh-account-wrap")) dd.classList.remove("is-open");
+  }, true);
+})();
+</script>
 <script type="module" src="firebase.js"></script>
 <script type="module" src="khApp.js?v=20261129"></script>
 <script type="module" src="kh-auth.js"></script>

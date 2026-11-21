@@ -2074,8 +2074,8 @@ export function initKhApp(uid, isAdmin){
       <div class="kh-modal-card wt-bk-card" role="dialog" aria-modal="true">
         <button type="button" class="kh-modal-x" id="wtVfX" aria-label="Close">${ICON_CLOSE}</button>
         <p class="wt-dlg-title">${tr("রিপোর্ট যাচাই", "Verify a report")}</p>
-        <p class="wt-dlg-sub">${tr("PDF-এর Report ID এখানে লিখুন (যেমন WT-E-2026-10-MAS-7K4Q)। অ্যাপ দেখবে এখনকার তথ্যের সাথে মিলছে কি না।", "Type the Report ID from the PDF (e.g. WT-E-2026-10-MAS-7K4Q). The app checks it against your current records.")}</p>
-        <input type="text" id="wtVfCode" class="wt-del-input" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="WT-E-2026-10-MAS-XXXX">
+        <p class="wt-dlg-sub">${tr("PDF-এর Report ID এখানে লিখুন (যেমন E-1126-MAS-P9L বা A-1126-MAS-X7K)। অ্যাপ দেখবে এখনকার তথ্যের সাথে মিলছে কি না।", "Type the Report ID from the PDF (e.g. E-1126-MAS-P9L or A-1126-MAS-X7K). The app checks it against your current records.")}</p>
+        <input type="text" id="wtVfCode" class="wt-del-input" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="E-1126-MAS-XXX">
         <div class="wt-dlg-btns"><button type="button" class="btn3d btn-sky" id="wtVfGo">${tr("যাচাই করুন", "Check")}</button></div>
         <div id="wtVfOut" class="wt-vf-out" aria-live="polite"></div>
         <p class="wt-dlg-note">${tr("এটা আপনার অ্যাপের বর্তমান ডেটার সাথে মেলায়। কেউ PDF নিজে এডিট করেছে কি না, এটা তা ধরতে পারে না।", "This compares the code with the data in your app. It cannot prove that nobody edited a PDF file.")}</p>
@@ -2088,11 +2088,44 @@ export function initKhApp(uid, isAdmin){
     ov.querySelector("#wtVfGo").addEventListener("click", run);
     ov.querySelector("#wtVfCode").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); run(); } });
   }
+  // Attendance IDs: A-MMYY-XXX-ccc (new, with check letters) or WT-YYYY-MM-XXX (old, no check letters).
+  function verifyAttendanceHtml(ym, who, tail, bad){
+    const recsAll = records.filter(r => r.date && r.date.startsWith(ym));
+    let groups;
+    if(who === "ALL"){
+      groups = [{ label: tr("সব সদস্য", "All members"), recs: recsAll }];
+    }else{
+      const cands = members.filter(m => clean3(m.memberId || m.name) === who);
+      if(!cands.length) return bad(tr("এই কোডের কোনো সদস্য এখন অ্যাপে নেই।", "No member in the app matches this code."));
+      groups = cands.map(m => ({ label: m.name, recs: recsAll.filter(r => r.member === m.name) }));
+    }
+    groups = groups.filter(g => g.recs.length);
+    if(!groups.length) return bad(tr("ওই মাসে এখন কোনো হাজিরা নেই (মুছে গিয়ে থাকতে পারে)।", "There is no attendance for that month now (it may have been deleted)."));
+    groups.forEach(g => {
+      let d = 0, l = 0, h = 0;
+      g.recs.forEach(r => { if(r.status === "duty"){ d++; h += (r.hours || 0); } else l++; });
+      g.duty = d; g.leave = l; g.hrs = h;
+      g.chk = attReportId(ym, who, d, l, h).split("-").pop();
+    });
+    const factsOf = list => list.map(g => `<ul class="wt-vf-list"><li>${tr("সদস্য", "Member")}: <b>${escapeHtml(g.label)}</b></li><li>${tr("মাস", "Month")}: <b>${monthLabel(ym)}</b></li><li>${tr("উপস্থিত", "Present")}: <b>${g.duty}</b></li><li>${tr("ছুটি", "Leave")}: <b>${g.leave}</b></li><li>${tr("মোট ঘণ্টা", "Total hours")}: <b>${fmtHours(g.hrs)} h</b></li></ul>`).join("");
+    if(!tail) return `<div class="wt-vf is-warn"><b>${tr("পুরনো ধরনের কোড", "Older-style code")}</b><span>${tr("এই কোডে যাচাইয়ের অক্ষর নেই, তাই মেলানো যায় না। এখনকার তথ্য:", "This code has no check letters, so it cannot be matched. Current figures:")}</span>${factsOf(groups)}</div>`;
+    const hit = groups.filter(g => g.chk === tail);
+    if(hit.length) return `<div class="wt-vf is-ok"><b>${tr("মিলেছে", "Matches")}</b><span>${tr("এই রিপোর্টের সংখ্যা এখনকার তথ্যের সাথে হুবহু মিলছে।", "The figures in this report match your current records exactly.")}</span>${factsOf(hit)}</div>`;
+    return `<div class="wt-vf is-warn"><b>${tr("মেলেনি", "Does not match")}</b><span>${tr("PDF বানানোর পর তথ্য বদলেছে, অথবা কোডে ভুল আছে। এখনকার তথ্য:", "The data changed after that PDF was made, or the code was typed wrongly. Current figures:")}</span>${factsOf(groups)}</div>`;
+  }
   function verifyReportHtml(input){
     const code = String(input || "").toUpperCase().replace(/[\u2010-\u2015\u2212]/g, "-").replace(/\s+/g, "");
-    const mt = code.match(/^WT-E-(\d{4}-\d{2})-([A-Z0-9]{1,3})(?:-([A-Z0-9]{4}))?$/);
+    let mt = code.match(/^WT-E-(\d{4}-\d{2})-([A-Z0-9]{1,3})(?:-([A-Z0-9]{4}))?$/);
     const bad = msg => `<div class="wt-vf is-bad"><b>${tr("পাওয়া যায়নি", "Not found")}</b><span>${msg}</span></div>`;
-    if(!mt) return bad(tr("কোডটা ঠিক লেখা হয়নি। উদাহরণ: WT-E-2026-10-MAS-7K4Q", "That is not a valid Report ID. Example: WT-E-2026-10-MAS-7K4Q"));
+    if(!mt){
+      const mA = code.match(/^A-(\d{2})(\d{2})-([A-Z0-9]{1,3})-([A-Z0-9]{3})$/);
+      if(mA && +mA[1] >= 1 && +mA[1] <= 12) return verifyAttendanceHtml(`20${mA[2]}-${mA[1]}`, mA[3], mA[4], bad);
+      const mO = code.match(/^WT-(\d{4}-\d{2})-([A-Z0-9]{1,3})$/);
+      if(mO) return verifyAttendanceHtml(mO[1], mO[2], "", bad);
+      const mE = code.match(/^E-(\d{2})(\d{2})-([A-Z0-9]{1,3})-([A-Z0-9]{3})$/);
+      if(mE && +mE[1] >= 1 && +mE[1] <= 12) mt = [code, `20${mE[2]}-${mE[1]}`, mE[3], mE[4]];
+    }
+    if(!mt) return bad(tr("কোডটা ঠিক লেখা হয়নি। উদাহরণ: E-1126-MAS-P9L অথবা A-1126-MAS-X7K", "That is not a valid Report ID. Example: E-1126-MAS-P9L or A-1126-MAS-X7K"));
     const ym = mt[1], who = mt[2], tail = mt[3] || "";
     const recsAll = records.filter(r => r.date && r.date.startsWith(ym));
     let rows, label;
@@ -2114,7 +2147,7 @@ export function initKhApp(uid, isAdmin){
     const sum = rows.reduce((t, r) => ({ h: t.h + r.hours, g: t.g + (r.rate > 0 ? r.gross : 0), d: t.d + (r.rate > 0 ? r.advDeducted : 0), n: t.n + (r.rate > 0 ? r.net : 0) }), { h: 0, g: 0, d: 0, n: 0 });
     const facts = `<ul class="wt-vf-list"><li>${tr("সদস্য", "Member")}: <b>${escapeHtml(label)}</b></li><li>${tr("মাস", "Month")}: <b>${monthLabel(ym)}</b></li><li>${tr("মোট ঘণ্টা", "Total hours")}: <b>${fmtHours(sum.h)} h</b></li><li>${tr("মোট আয়", "Total earned")}: <b>${money(sum.g)}</b></li><li>${tr("অ্যাডভান্স কাটা", "Advance cut")}: <b>${money(sum.d)}</b></li><li>${tr("হাতে পাবেন", "Take-home")}: <b>${money(sum.n)}</b></li></ul>`;
     if(!tail) return `<div class="wt-vf is-warn"><b>${tr("পুরনো ধরনের কোড", "Older-style code")}</b><span>${tr("এই কোডে যাচাইয়ের অক্ষর নেই, তাই মেলানো যায় না। এখনকার তথ্য:", "This code has no check letters, so it cannot be matched. Current figures:")}</span>${facts}</div>`;
-    if(tail === now.split("-").pop()) return `<div class="wt-vf is-ok"><b>${tr("মিলেছে", "Matches")}</b><span>${tr("এই রিপোর্টের সংখ্যা এখনকার তথ্যের সাথে হুবহু মিলছে।", "The figures in this report match your current records exactly.")}</span>${facts}</div>`;
+    if(tail === now.split("-").pop().slice(0, tail.length)) return `<div class="wt-vf is-ok"><b>${tr("মিলেছে", "Matches")}</b><span>${tr("এই রিপোর্টের সংখ্যা এখনকার তথ্যের সাথে হুবহু মিলছে।", "The figures in this report match your current records exactly.")}</span>${facts}</div>`;
     return `<div class="wt-vf is-warn"><b>${tr("মেলেনি", "Does not match")}</b><span>${tr("PDF বানানোর পর তথ্য বদলেছে, অথবা কোডে ভুল আছে। এখনকার তথ্য:", "The data changed after that PDF was made, or the code was typed wrongly. Current figures:")}</span>${facts}</div>`;
   }
   document.addEventListener("click", e => {
@@ -2951,7 +2984,7 @@ export function initKhApp(uid, isAdmin){
             <td class="pdf-td pdf-td-right">${r.status === "duty" ? toBn(r.hours) : "—"}</td>
           </tr>`).join("");
       tableColsHead = `<th class="pdf-th pdf-th-left">Date</th><th class="pdf-th pdf-th-left">Day</th><th class="pdf-th pdf-th-left">Status</th><th class="pdf-th pdf-th-right">Work Hours</th>`;
-      reportId = reportIdFor(singleMember.memberId || singleMember.name);
+      reportId = attReportId(ym, singleMember.memberId || singleMember.name, stats.present, stats.absent, stats.hours);
       totalHoursLabelVal = `${toBn(stats.hours)} hrs`;
     }else{
       identityBlockHtml = `
@@ -3018,7 +3051,7 @@ export function initKhApp(uid, isAdmin){
             <td class="pdf-td pdf-td-right">${r.status === "duty" ? toBn(r.hours) : "—"}</td>
           </tr>`).join("");
       tableColsHead = `<th class="pdf-th pdf-th-left">Date</th><th class="pdf-th pdf-th-left">Name</th><th class="pdf-th pdf-th-left">Status</th><th class="pdf-th pdf-th-right">Work Hours</th>`;
-      reportId = reportIdFor("ALL");
+      reportId = attReportId(ym, "ALL", memberNames.reduce((t, n) => t + byMember[n].present, 0), memberNames.reduce((t, n) => t + byMember[n].absent, 0), totalHoursAll);
       totalHoursLabelVal = `${toBn(totalHoursAll)} hrs`;
     }
 
@@ -3653,6 +3686,19 @@ export function initKhApp(uid, isAdmin){
     return out;
   }
 
+  // Short report IDs: A-MMYY-XXX-ccc (attendance) and E-MMYY-XXX-ccc (earnings).
+  // ccc = 3 check letters made from the report's own numbers, so an edited figure no longer matches.
+  function attReportId(ym, who, duty, leave, hours){
+    const w = clean3(who), p = String(ym).split("-");
+    const h = Math.round((Number(hours) || 0) * 10000 + 1e-7) / 10000;
+    return `A-${p[1]}${p[0].slice(2)}-${w}-` + earnCheck(["A", ym, w, duty, leave, h]).slice(0, 3);
+  }
+  // Earnings keep their internal id (WT-E-YYYY-MM-XXX-cccc); only the printed form is shortened to E-MMYY-XXX-ccc.
+  function earnDisplayId(rid){
+    const m = String(rid || "").match(/^WT-E-(\d{4})-(\d{2})-([A-Z0-9]{1,3})-([A-Z0-9]{4})$/);
+    return m ? `E-${m[2]}${m[1].slice(2)}-${m[3]}-${m[4].slice(0, 3)}` : rid;
+  }
+
   // Numbers for each member row (shared by the PDF and the share-link payload).
   function computeEarnings(rows, ym){
     const [yy, mm] = ym.split("-");
@@ -3709,16 +3755,16 @@ export function initKhApp(uid, isAdmin){
       const sh = r.member ? activeShareFor(r.member.id) : null;
       const E = {
         name: r.name, ym, rate: r.rate, hours: r.hours, days: r.days, leave: r.leave, gross: r.gross, ded: r.advDeducted, net: r.net,
-        taken: r.advTaken, balance: r.advBalance, att: r.attRate, avg: r.avg, weeks: r.weeks, longest: r.longest, rid: r.rid,
+        taken: r.advTaken, balance: r.advBalance, att: r.attRate, avg: r.avg, weeks: r.weeks, longest: r.longest, rid: earnDisplayId(r.rid),
         linkUrl: sh ? SHARE_VIEW_URL + "?token=" + encodeURIComponent(sh.id) : ""
       };
-      reportId = r.rid;
+      reportId = earnDisplayId(r.rid);
       fileName = `earnings-summary-${ym}-${r.name}.pdf`;
       E.qr = E.linkUrl ? await qrDataUrl(E.linkUrl) : "";
       innerHtml = buildEarningsSections(E);
       if(E.linkUrl) linkEls = [{ id: "khEarnLinkBox", url: E.linkUrl }];
     }else{
-      reportId = `WT-E-${ym}-ALL-` + earnCheck(["ALL", ym].concat(rows.map(r => r.rid)));
+      reportId = earnDisplayId(`WT-E-${ym}-ALL-` + earnCheck(["ALL", ym].concat(rows.map(r => r.rid))));
       fileName = `earnings-summary-${ym}-all-members.pdf`;
       const money = fmtMoneyRM;
       const withRate = rows.filter(r => r.rate > 0);

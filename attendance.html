@@ -87,6 +87,20 @@ body:not(.wt-loaded) .site-footer{display:none}
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Attendance & Work Hours Register","url":"https://masumcpex.com/attendance.html","description":"A simple digital attendance and work hours register to manage team attendance, daily working hours and advances. Securely track your team's work records.","inLanguage":"en","applicationCategory":"BusinessApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","@id":"https://masumcpex.com/#masum","name":"Masum Billah","url":"https://masumcpex.com/","image":"https://masumcpex.com/masum.webp","sameAs":["https://t.me/masumcpex","https://www.facebook.com/share/1HM1rZJg3a/","https://www.instagram.com/masum.171","https://www.tiktok.com/@masum__171","https://masum171.blogspot.com/"]}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"হোম","item":"https://masumcpex.com/"},{"@type":"ListItem","position":2,"name":"Attendance & Work Hours Register","item":"https://masumcpex.com/attendance.html"}]}]}
 </script>
+<style>
+.kh-account-dropdown{ min-width:244px; }
+.kh-dd-profile{ display:flex; align-items:center; gap:10px; }
+.kh-dd-av{ width:36px; height:36px; border-radius:50%; background:var(--wt-navy,#173B63); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; flex:none; overflow:hidden; }
+.kh-dd-av img{ width:100%; height:100%; object-fit:cover; display:block; }
+.kh-dd-who{ min-width:0; display:flex; flex-direction:column; gap:1px; }
+.kh-dd-who b{ font-size:.9rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-transform:capitalize; }
+.kh-dd-lang{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:.45rem .7rem; }
+.kh-dd-lang-l{ font-size:.85rem; font-weight:600; color:var(--ink); }
+.kh-dd-lang-b{ display:inline-flex; border:1px solid var(--wt-border,var(--line)); border-radius:999px; overflow:hidden; }
+.kh-dd-lang-b button{ border:0; background:transparent; color:var(--ink); font:inherit; font-size:.78rem; font-weight:700; padding:.3rem .7rem; cursor:pointer; }
+.kh-dd-lang-b button.on{ background:var(--wt-navy,#173B63); color:#fff; }
+.kh-dd-sep{ height:1px; background:var(--wt-border,var(--line)); margin:.3rem .4rem; }
+</style>
 </head>
 <body>
 <div id="wtSplash" role="status" aria-live="polite" aria-label="Loading WorkTrack">
@@ -247,8 +261,9 @@ body:not(.wt-loaded) .site-footer{display:none}
       <svg class="kh-account-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
     </button>
     <div class="kh-account-dropdown" id="khAccountDropdown">
-      <div class="kh-account-dropdown-info">
-        <span id="khUserEmailFull" class="kh-account-dropdown-email"></span>
+      <div class="kh-account-dropdown-info kh-dd-profile">
+        <span class="kh-dd-av"><img id="khDdAvImg" alt="" referrerpolicy="no-referrer" style="display:none;"><span id="khDdInit"></span></span>
+        <span class="kh-dd-who"><b id="khDdName"></b><span id="khUserEmailFull" class="kh-account-dropdown-email"></span></span>
       </div>
       <button id="khSettingsBtn" type="button" class="kh-account-menu-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
@@ -258,6 +273,11 @@ body:not(.wt-loaded) .site-footer{display:none}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
         Set / change password
       </button>
+      <div class="kh-dd-lang" role="group" aria-label="Language">
+        <span class="kh-dd-lang-l">Language</span>
+        <span class="kh-dd-lang-b"><button type="button" data-wt-lang="en">English</button><button type="button" data-wt-lang="bn">বাংলা</button></span>
+      </div>
+      <div class="kh-dd-sep"></div>
       <button id="khSignOutBtn" class="kh-account-menu-item is-danger">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Log Out
@@ -1379,9 +1399,23 @@ html[data-theme="dark"] .kh-reg-name,html[data-theme="dark"] .kh-reg-day-title,h
     if(w.length>1&&w===w.toUpperCase())w=w.toLowerCase();
     return w.charAt(0).toUpperCase()+w.slice(1);
   }
-  function sync(){var f=first();if(out.textContent!==f)out.textContent=f;if(f)out.title=(src.textContent||"").trim()}
+  var ddName=document.getElementById("khDdName"),ddInit=document.getElementById("khDdInit"),ddImg=document.getElementById("khDdAvImg"),srcImg=document.getElementById("khAccountAvatarImg");
+  function sync(){
+    var f=first();if(out.textContent!==f)out.textContent=f;
+    var full=(src.textContent||"").trim();if(f)out.title=full;
+    if(ddName&&ddName.textContent!==full)ddName.textContent=full;
+    if(ddInit){var ch=(full||"?").charAt(0).toUpperCase();if(ddInit.textContent!==ch)ddInit.textContent=ch}
+    if(ddImg&&srcImg){
+      var u=srcImg.getAttribute("src");
+      if(u&&srcImg.style.display!=="none"){if(ddImg.getAttribute("src")!==u)ddImg.src=u;ddImg.style.display="block";if(ddInit)ddInit.style.display="none"}
+      else{ddImg.style.display="none";if(ddInit)ddInit.style.display=""}
+    }
+  }
   sync();
-  if(window.MutationObserver)new MutationObserver(sync).observe(src,{childList:true,characterData:true,subtree:true});
+  if(window.MutationObserver){
+    new MutationObserver(sync).observe(src,{childList:true,characterData:true,subtree:true});
+    if(srcImg)new MutationObserver(sync).observe(srcImg,{attributes:true,attributeFilter:["src","style"]});
+  }
 })();
 </script>
 <script type="module" src="firebase.js"></script>

@@ -101,6 +101,82 @@ body:not(.wt-loaded) .site-footer{display:none}
 .kh-dd-lang-b button.on{ background:var(--wt-navy,#173B63); color:#fff; }
 .kh-dd-sep{ height:1px; background:var(--wt-border,var(--line)); margin:.3rem .4rem; }
 </style>
+<style>
+/* ---- calm look: navy line icons on warm cream, gold accents; no rainbow tiles ---- */
+.wt-set .wt-set-card a.kh-sidebar-link svg,
+.wt-set .wt-set-card .wt-side-legal-ico{ background:#F4EFE3; color:#173B63; box-shadow:inset 0 0 0 1px #E8E0CC; }
+.wt-set .wt-set-card a.kh-sidebar-link.wt-side-danger svg{ background:rgba(217,83,79,.09); color:#C2453F; box-shadow:inset 0 0 0 1px rgba(217,83,79,.22); }
+.wt-set .wt-set-card a.kh-sidebar-link:hover,.wt-set .wt-set-card a.kh-sidebar-link:active{ background:rgba(176,141,87,.09); }
+html[data-theme=dark] .wt-set .wt-set-card a.kh-sidebar-link svg,
+html[data-theme=dark] .wt-set .wt-set-card .wt-side-legal-ico{ background:rgba(217,184,119,.12); color:#D9B877; box-shadow:inset 0 0 0 1px rgba(217,184,119,.22); }
+html[data-theme=dark] .wt-set .wt-set-card a.kh-sidebar-link.wt-side-danger svg{ background:rgba(217,83,79,.14); color:#E06B66; box-shadow:inset 0 0 0 1px rgba(217,83,79,.3); }
+.wt-ct-ico{ background:#F4EFE3; color:#173B63; box-shadow:inset 0 0 0 1px #E8E0CC; }
+html[data-theme=dark] .wt-ct-ico{ background:rgba(217,184,119,.12); color:#D9B877; box-shadow:inset 0 0 0 1px rgba(217,184,119,.22); }
+.wt-acc-n{ background:#F4EFE3; color:#173B63; box-shadow:inset 0 0 0 1px #E8E0CC; }
+.wt-acc[open]{ border-color:rgba(176,141,87,.55); box-shadow:0 4px 16px rgba(176,141,87,.10); }
+html[data-theme=dark] .wt-acc-n{ background:rgba(217,184,119,.12); color:#D9B877; box-shadow:none; }
+#wtView-contact .kh-card, .kh-main #wtView-contact .kh-card--mint, .kh-main #wtView-contact .kh-card--sky{ border-top-color:#B08D57; }
+#wtView-contact .kh-card + .kh-card{ margin-top:14px; }
+#wtCfSend.btn3d{ background-color:#173B63; --btn-edge:#0F2A47; --btn-glow:rgba(23,59,99,.25); }
+.wt-help-list{ display:grid; gap:10px; margin-top:14px; }
+.wt-help-item{ display:flex; align-items:center; gap:12px; width:100%; text-align:left; padding:12px 14px; min-height:62px; border:1px solid var(--line); border-radius:14px; background:var(--card-bg,#fff); color:var(--ink); font:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:border-color .15s ease, background-color .15s ease; }
+.wt-help-item:active{ background:rgba(176,141,87,.09); border-color:rgba(176,141,87,.55); }
+.wt-help-ico{ width:38px; height:38px; border-radius:11px; flex:none; display:grid; place-items:center; background:#F4EFE3; color:#173B63; box-shadow:inset 0 0 0 1px #E8E0CC; }
+.wt-help-ico svg{ width:19px; height:19px; }
+.wt-help-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.wt-help-txt b{ font-size:.95rem; font-weight:700; }
+.wt-help-txt small{ font-size:.8rem; color:var(--muted); line-height:1.35; }
+.wt-help-go{ flex:none; color:#B08D57; display:grid; place-items:center; }
+.wt-help-go svg{ width:18px; height:18px; }
+.wt-help-alt{ margin:12px 2px 0; font-size:.82rem; color:var(--muted); line-height:1.5; }
+html[data-theme=dark] .wt-help-ico{ background:rgba(217,184,119,.12); color:#D9B877; box-shadow:inset 0 0 0 1px rgba(217,184,119,.22); }
+html[data-theme=dark] .wt-help-go{ color:#D9B877; }
+a.kh-account-menu-item{ text-decoration:none; }
+</style>
+<style>
+/* ===== Home: navy + gold, calm. Two main cards, greeting waves, quick actions, bottom tab ===== */
+html .kh-main .wt-today, html[data-theme=dark] .kh-main .wt-today,
+html .kh-main .wt-earn, html[data-theme=dark] .kh-main .wt-earn{
+  background:linear-gradient(165deg,#13305A 0%,#0B1A33 100%);
+  border:1px solid rgba(217,184,119,.30);
+  box-shadow:0 10px 26px rgba(11,26,51,.26), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.kh-main .wt-today-eyebrow{ color:#D9B877; opacity:1; font-weight:700; letter-spacing:.12em; }
+.kh-main .wt-today-count, .wt-earn-amt{ font-family:'Lora',Georgia,serif; font-weight:600; letter-spacing:0; }
+.kh-main .wt-today-count small{ font-family:Inter,system-ui,sans-serif; font-weight:600; }
+.kh-main .wt-today-earn{ background:rgba(217,184,119,.14); border:1px solid rgba(217,184,119,.35); color:#D9B877; }
+.kh-main .wt-today-bar{ background:rgba(255,255,255,.12); }
+.kh-main .wt-today-bar span{ background:linear-gradient(90deg,#B08D57,#E3C98F); }
+html .kh-main .wt-today-btn, html[data-theme=dark] .kh-main .wt-today-btn{ background:#F6F1E4; color:#0F2A47; box-shadow:none; }
+.kh-main .wt-today-btn svg{ color:#9A7438; }
+.wt-earn-ico{ background:rgba(217,184,119,.14); color:#D9B877; box-shadow:inset 0 0 0 1px rgba(217,184,119,.28); }
+.wt-earn-lb{ color:#C5CEDC; }
+.wt-earn-eye{ border-color:rgba(217,184,119,.32); color:#D9B877; }
+.wt-earn-stats3 > div{ background:rgba(255,255,255,.05); box-shadow:inset 0 0 0 1px rgba(217,184,119,.14); }
+.wt-earn-stats3 b.neg{ color:#CDB98E; } .wt-earn-stats3 b.pos{ color:#F1DFB0; }
+.wt-earn-btn{ border-color:rgba(217,184,119,.30); background:rgba(255,255,255,.05); }
+.wt-earn-btn svg{ color:#D9B877; }
+.wt-earn-btn--main{ background:#D9B877; border-color:#D9B877; color:#0F2A47; }
+.wt-earn-btn--main svg{ color:#0F2A47; }
+.wt-earn-btn--main small{ opacity:.72; }
+.wt-earn-btn--main.is-busy .wt-dl-i--spin{ color:#0F2A47; }
+.wt-earn-btn.is-done{ background:#2F7D5B; border-color:#2F7D5B; color:#fff; }
+.wt-earn-btn:focus-visible, .wt-earn-eye:focus-visible{ outline-color:#D9B877; }
+/* greeting hills, month pill, section bars, quick actions, bottom tab */
+html:not([data-theme=dark]) .kh-main .kh-intro{ --wave-a:176,141,87; --wave-b:23,59,99; }
+html[data-theme=dark] .kh-main .kh-intro{ --wave-a:217,184,119; --wave-b:90,130,190; }
+html[data-theme=dark] .wt-crest{ filter:drop-shadow(0 0 3px rgba(217,184,119,.5)); }
+html .kh-main .kh-current-month-pill{ background:rgba(176,141,87,.14); color:#7A5A22; }
+html[data-theme=dark] .kh-main .kh-current-month-pill{ background:rgba(217,184,119,.14); color:#D9B877; }
+.wt-sec-h::before, html[data-theme=dark] .wt-sec-h::before{ background:#B08D57; }
+.wt-qa-ico{ color:#173B63; } html[data-theme=dark] .wt-qa-ico{ color:#D9B877; }
+.kh-main .wt-qa-item:hover{ border-color:rgba(176,141,87,.6); }
+.kh-main .wt-qa-item:focus-visible{ outline-color:#B08D57; }
+html .wt-bottom-nav .wt-bn-item.is-active{ color:#173B63; background:rgba(176,141,87,.16); }
+html[data-theme=dark] .wt-bottom-nav .wt-bn-item.is-active{ color:#D9B877; background:rgba(217,184,119,.14); }
+html .wt-bottom-nav .wt-bn-item:active{ background:rgba(176,141,87,.12); }
+.wt-bottom-nav .wt-bn-item:focus-visible{ outline-color:#B08D57; }
+</style>
 </head>
 <body>
 <div id="wtSplash" role="status" aria-live="polite" aria-label="Loading WorkTrack">
@@ -273,6 +349,10 @@ body:not(.wt-loaded) .site-footer{display:none}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
         Set / change password
       </button>
+      <a id="khHelpBtn" href="#wtContact" class="kh-account-menu-item" data-wt-view="contact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5.6 5.6l3.9 3.9M14.5 14.5l3.9 3.9M18.4 5.6l-3.9 3.9M9.5 14.5l-3.9 3.9"/></svg>
+        Help &amp; Support
+      </a>
       <div class="kh-dd-lang" role="group" aria-label="Language">
         <span class="kh-dd-lang-l">Language</span>
         <span class="kh-dd-lang-b"><button type="button" data-wt-lang="en">English</button><button type="button" data-wt-lang="bn">বাংলা</button></span>
@@ -407,7 +487,7 @@ document.addEventListener("DOMContentLoaded",function(){(function(){
 
   <div class="wt-view is-active" id="wtView-dashboard" data-wt-view="dashboard">
   <div class="kh-intro" id="sectionDashboard">
-    <div class="wt-waves" aria-hidden="true"><svg class="wt-hills" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="wtHg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--wave-a))" stop-opacity=".42"/><stop offset="1" stop-color="rgb(var(--wave-a))" stop-opacity="0"/></linearGradient><linearGradient id="wtHg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--wave-b))" stop-opacity=".30"/><stop offset="1" stop-color="rgb(var(--wave-b))" stop-opacity="0"/></linearGradient><linearGradient id="wtHg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--wave-a))" stop-opacity=".16"/><stop offset="1" stop-color="rgb(var(--wave-a))" stop-opacity="0"/></linearGradient><linearGradient id="wtHs1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgb(var(--wave-b))" stop-opacity=".15"/><stop offset=".65" stop-color="rgb(var(--wave-a))" stop-opacity=".95"/><stop offset="1" stop-color="rgb(var(--wave-a))" stop-opacity=".75"/></linearGradient><linearGradient id="wtHs2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgb(var(--wave-b))" stop-opacity=".05"/><stop offset=".7" stop-color="rgb(var(--wave-b))" stop-opacity=".6"/><stop offset="1" stop-color="rgb(var(--wave-b))" stop-opacity=".5"/></linearGradient></defs><path fill="url(#wtHg3)" d="M0 66C90 60 150 44 220 50S330 26 400 40V100H0Z"><animate attributeName="d" dur="20s" begin="-6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 66C90 60 150 44 220 50S330 26 400 40V100H0Z;M0 62C80 66 160 52 230 42S340 34 400 30V100H0Z;M0 70C100 58 140 40 210 54S320 30 400 46V100H0Z;M0 66C90 60 150 44 220 50S330 26 400 40V100H0Z"/></path><path fill="url(#wtHg2)" d="M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62V100H0Z"><animate attributeName="d" dur="15s" begin="-4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62V100H0Z;M0 84C70 82 140 80 210 70S310 52 355 44S392 58 400 56V100H0Z;M0 88C60 84 120 72 195 78S295 46 345 54S388 68 400 66V100H0Z;M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62V100H0Z"/></path><path class="wt-crest" fill="none" stroke="url(#wtHs2)" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62"><animate attributeName="d" dur="15s" begin="-4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62;M0 84C70 82 140 80 210 70S310 52 355 44S392 58 400 56;M0 88C60 84 120 72 195 78S295 46 345 54S388 68 400 66;M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62"/></path><path fill="url(#wtHg1)" d="M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50V100H0Z"><animate attributeName="d" dur="11s" begin="-2s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50V100H0Z;M0 74C60 70 130 70 190 58S280 30 330 24S385 48 400 44V100H0Z;M0 80C80 76 110 58 175 70S265 26 315 34S375 60 400 54V100H0Z;M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50V100H0Z"/></path><path class="wt-crest" fill="none" stroke="url(#wtHs1)" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50"><animate attributeName="d" dur="11s" begin="-2s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50;M0 74C60 70 130 70 190 58S280 30 330 24S385 48 400 44;M0 80C80 76 110 58 175 70S265 26 315 34S375 60 400 54;M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50"/></path></svg></div>
+    <div class="wt-waves" aria-hidden="true"><svg class="wt-hills" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="wtHg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--wave-a))" stop-opacity=".42"/><stop offset="1" stop-color="rgb(var(--wave-a))" stop-opacity="0"/></linearGradient><linearGradient id="wtHg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--wave-b))" stop-opacity=".30"/><stop offset="1" stop-color="rgb(var(--wave-b))" stop-opacity="0"/></linearGradient><linearGradient id="wtHg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--wave-a))" stop-opacity=".16"/><stop offset="1" stop-color="rgb(var(--wave-a))" stop-opacity="0"/></linearGradient><linearGradient id="wtHs1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgb(var(--wave-b))" stop-opacity=".15"/><stop offset=".65" stop-color="rgb(var(--wave-a))" stop-opacity=".95"/><stop offset="1" stop-color="rgb(var(--wave-a))" stop-opacity=".75"/></linearGradient><linearGradient id="wtHs2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgb(var(--wave-b))" stop-opacity=".05"/><stop offset=".7" stop-color="rgb(var(--wave-b))" stop-opacity=".6"/><stop offset="1" stop-color="rgb(var(--wave-b))" stop-opacity=".5"/></linearGradient></defs><path fill="url(#wtHg3)" d="M0 66C90 60 150 44 220 50S330 26 400 40V100H0Z"><animate attributeName="d" dur="12s" begin="-3.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 66C90 60 150 44 220 50S330 26 400 40V100H0Z;M0 62C80 66 160 52 230 42S340 34 400 30V100H0Z;M0 70C100 58 140 40 210 54S320 30 400 46V100H0Z;M0 66C90 60 150 44 220 50S330 26 400 40V100H0Z"/></path><path fill="url(#wtHg2)" d="M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62V100H0Z"><animate attributeName="d" dur="9s" begin="-2.4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62V100H0Z;M0 84C70 82 140 80 210 70S310 52 355 44S392 58 400 56V100H0Z;M0 88C60 84 120 72 195 78S295 46 345 54S388 68 400 66V100H0Z;M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62V100H0Z"/></path><path class="wt-crest" fill="none" stroke="url(#wtHs2)" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62"><animate attributeName="d" dur="9s" begin="-2.4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62;M0 84C70 82 140 80 210 70S310 52 355 44S392 58 400 56;M0 88C60 84 120 72 195 78S295 46 345 54S388 68 400 66;M0 86C60 88 130 76 200 74S300 44 350 50S390 64 400 62"/></path><path fill="url(#wtHg1)" d="M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50V100H0Z"><animate attributeName="d" dur="6.6s" begin="-1.2s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50V100H0Z;M0 74C60 70 130 70 190 58S280 30 330 24S385 48 400 44V100H0Z;M0 80C80 76 110 58 175 70S265 26 315 34S375 60 400 54V100H0Z;M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50V100H0Z"/></path><path class="wt-crest" fill="none" stroke="url(#wtHs1)" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50"><animate attributeName="d" dur="6.6s" begin="-1.2s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50;M0 74C60 70 130 70 190 58S280 30 330 24S385 48 400 44;M0 80C80 76 110 58 175 70S265 26 315 34S375 60 400 54;M0 78C70 80 120 62 180 66S270 22 320 30S380 56 400 50"/></path></svg></div>
     <h1 class="section-title wt-greeting" id="wtGreeting" aria-live="polite">সুপ্রভাত</h1>
     <p class="section-sub" id="wtGreetingSub">আজকের উপস্থিতি, কাজের ঘন্টা এবং টিমের সারাংশ এখানে দেখুন।</p>
     <div class="kh-current-month-pill" id="dashboardMonthPill"></div>
@@ -671,7 +751,7 @@ document.addEventListener("DOMContentLoaded",function(){(function(){
     <a href="https://masumcpex.com/Finance.html" class="kh-sidebar-link" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v.01M18 14v.01"/></svg><span>Finance Tracker</span></a>
     <a href="#sectionTeam" class="kh-sidebar-link" data-wt-view="team" data-wt-target="sectionMembers" data-wt-loose><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 20v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Team Members</span></a>
     <a href="#" class="kh-sidebar-link" id="wtAdminAccounts" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6z"/><circle cx="12" cy="10" r="2.5"/><path d="M7.5 16c.8-2 2.5-3 4.5-3s3.7 1 4.5 3"/></svg><span>All Accounts (Admin)</span></a>
-    <a href="#wtContact" class="kh-sidebar-link" data-wt-view="contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg><span>Contact</span></a>
+    <a href="#wtContact" class="kh-sidebar-link" data-wt-view="contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5.6 5.6l3.9 3.9M14.5 14.5l3.9 3.9M18.4 5.6l-3.9 3.9M9.5 14.5l-3.9 3.9"/></svg><span>Help &amp; Support</span></a>
       </div>
 
       <h3 class="wt-set-h" data-wts="legal">Legal &amp; policies</h3>
@@ -702,13 +782,31 @@ document.addEventListener("DOMContentLoaded",function(){(function(){
   </div>
 
   <div class="wt-view" id="wtView-contact" data-wt-view="contact">
-    <div class="wt-head" id="wtContact"><div class="eyebrow">Settings</div><h2>Contact</h2><p class="wt-head-sub">Questions, suggestions or a problem? Get in touch.</p></div>
+    <div class="wt-head" id="wtContact"><div class="eyebrow">Settings</div><h2>Help &amp; Support</h2><p class="wt-head-sub">Something not right? Tell us and we will sort it out.</p></div>
+    <section class="kh-card wt-help" id="wtHelp">
+      <h2 class="kh-card-title">What do you need help with?</h2>
+      <p class="kh-section-desc">Choose a topic. Your message opens with your name and the month already filled in, so you only press send.</p>
+      <div class="wt-help-list">
+        <button type="button" class="wt-help-item" data-wt-help="Attendance or work hours look wrong"><span class="wt-help-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="wt-help-txt"><b>Attendance or hours look wrong</b><small>A day is missing, or the hours are not right</small></span><span class="wt-help-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span></button>
+        <button type="button" class="wt-help-item" data-wt-help="Earnings Summary or PDF problem"><span class="wt-help-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span><span class="wt-help-txt"><b>Earnings Summary or PDF problem</b><small>The amount, the PDF, or the download</small></span><span class="wt-help-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span></button>
+        <button type="button" class="wt-help-item" data-wt-help="Advance question"><span class="wt-help-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14.5h2"/></svg></span><span class="wt-help-txt"><b>Advance question</b><small>Taken, cut or still to be cut</small></span><span class="wt-help-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span></button>
+        <button type="button" class="wt-help-item" data-wt-help="Account or password help"><span class="wt-help-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><span class="wt-help-txt"><b>Account or password</b><small>Login, password or account help</small></span><span class="wt-help-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span></button>
+        <button type="button" class="wt-help-item" data-wt-help="Suggestion or app problem"><span class="wt-help-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span><span class="wt-help-txt"><b>Suggestion or app problem</b><small>Something broken, or an idea to improve</small></span><span class="wt-help-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span></button>
+      </div>
+      <p class="wt-help-alt" id="wtHelpAlt"></p>
+    </section>
+    <section class="kh-card">
+      <h2 class="kh-card-title">Quick answers</h2>
+      <div class="wt-acc-list"><details class="wt-acc"><summary><span class="wt-acc-n">1</span><span class="wt-acc-t">How do I download my report as a PDF?</span><span class="wt-acc-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></summary><div class="wt-acc-b"><p>On Home, tap Attendees Report or Earning Summary, choose the month, and the PDF is saved to your phone. The first PDF can take a few seconds to prepare.</p></div></details><details class="wt-acc"><summary><span class="wt-acc-n">2</span><span class="wt-acc-t">My hours look wrong. What should I do?</span><span class="wt-acc-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></summary><div class="wt-acc-b"><p>Open Attendance and check that day first. If it is still wrong, pick "Attendance or hours look wrong" above and we will look at it with you.</p></div></details><details class="wt-acc"><summary><span class="wt-acc-n">3</span><span class="wt-acc-t">How is my take-home calculated?</span><span class="wt-acc-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></summary><div class="wt-acc-b"><p>Total hours multiplied by the hourly rate gives the total earned. Any advance cut for the month is subtracted from that to get your take-home.</p></div></details><details class="wt-acc"><summary><span class="wt-acc-n">4</span><span class="wt-acc-t">How do I change my password?</span><span class="wt-acc-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></summary><div class="wt-acc-b"><p>Tap your name at the top and choose Set / change password, or go to Settings, then Account &amp; security. If you forgot the old password, use the Forgot password link in the same window and a reset link is sent to your email.</p></div></details><details class="wt-acc"><summary><span class="wt-acc-n">5</span><span class="wt-acc-t">How do I back up my data?</span><span class="wt-acc-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></summary><div class="wt-acc-b"><p>Go to Settings, then Data &amp; backup, then Backup my data.</p></div></details></div>
+    </section>
+
     <section class="kh-card kh-card--mint">
       <div class="wt-ct-hero"><img src="masum.webp" alt="Masum" decoding="async" onerror="this.onerror=null;this.src='photo.png'"><div><h3>Masum Cpex</h3><p>WorkTrack · Malaysia</p></div></div>
       <ul class="wt-ct-list">
         <li class="wt-ct-item"><a href="mailto:admin@masumcpex.com"><span class="wt-ct-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg></span><span class="wt-ct-txt"><small>Primary Email</small><b>admin@masumcpex.com</b></span></a><button type="button" class="wt-ct-copy" data-wt-copy="admin@masumcpex.com" aria-label="Copy Primary Email">Copy</button></li>
         <li class="wt-ct-item"><a href="mailto:contact@masumcpex.com"><span class="wt-ct-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg></span><span class="wt-ct-txt"><small>Alternative Email</small><b>contact@masumcpex.com</b></span></a><button type="button" class="wt-ct-copy" data-wt-copy="contact@masumcpex.com" aria-label="Copy Alternative Email">Copy</button></li>
         <li class="wt-ct-item"><a href="https://masumcpex.bro.bd" target="_blank" rel="noopener noreferrer"><span class="wt-ct-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><span class="wt-ct-txt"><small>Website</small><b>masumcpex.bro.bd</b></span></a><button type="button" class="wt-ct-copy" data-wt-copy="masumcpex.bro.bd" aria-label="Copy Website">Copy</button></li>
+        <li class="wt-ct-item" id="wtCtWa" hidden><a id="wtCtWaLink" href="#" target="_blank" rel="noopener noreferrer"><span class="wt-ct-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span><span class="wt-ct-txt"><small>WhatsApp</small><b id="wtCtWaTxt"></b></span></a><button type="button" class="wt-ct-copy" id="wtCtWaCopy" data-wt-copy="" aria-label="Copy WhatsApp number">Copy</button></li>
         <li class="wt-ct-item"><a href="https://t.me/masumcpex" target="_blank" rel="noopener noreferrer"><span class="wt-ct-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 4.5 2.5 11.8l6 2.2 2.3 6.5 3.3-4 5 3.7z"/><path d="m8.5 14 9-6.5"/></svg></span><span class="wt-ct-txt"><small>Telegram</small><b>@masumcpex</b></span></a><button type="button" class="wt-ct-copy" data-wt-copy="@masumcpex" aria-label="Copy Telegram">Copy</button></li>
         <li class="wt-ct-item"><div><span class="wt-ct-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><span class="wt-ct-txt"><small>Location</small><b>Malaysia</b></span></div><button type="button" class="wt-ct-copy" data-wt-copy="Malaysia" aria-label="Copy Location">Copy</button></li>
       </ul>
@@ -1432,8 +1530,33 @@ html[data-theme="dark"] .kh-reg-name,html[data-theme="dark"] .kh-reg-day-title,h
       tg.setAttribute("aria-expanded", on ? "true" : "false");
       return;
     }
-    if(!e.target.closest(".kh-account-wrap")) dd.classList.remove("is-open");
+    if(!e.target.closest(".kh-account-wrap") || (e.target.closest(".kh-account-dropdown a, .kh-account-dropdown button"))) setTimeout(function(){ dd.classList.remove("is-open"); }, 0);
   }, true);
+})();
+</script>
+<script>
+/* Help & Support: topic buttons open WhatsApp (if a number is set below) or the email app, with the details filled in. */
+(function(){
+  var WA = "";  /* <-- support WhatsApp number, digits only, with country code. Example: 60123456789 */
+  var MAIL = "admin@masumcpex.com";
+  function $(id){ return document.getElementById(id); }
+  function t(id){ var e=$(id); return e ? (e.textContent||"").trim() : ""; }
+  function body(topic){
+    var m = new Date().toLocaleString("en-GB",{month:"long",year:"numeric"});
+    return "Hello Masum, I need help with WorkTrack.\n\nTopic: "+topic+"\nName: "+(t("khUserEmail")||"-")+"\nEmail: "+(t("khUserEmailFull")||"-")+"\nMonth: "+m+"\n\nDetails: ";
+  }
+  document.addEventListener("click", function(e){
+    var b = e.target.closest && e.target.closest("[data-wt-help]"); if(!b) return;
+    e.preventDefault();
+    var topic = b.getAttribute("data-wt-help"), msg = body(topic);
+    if(WA){ window.open("https://wa.me/"+WA+"?text="+encodeURIComponent(msg), "_blank", "noopener"); }
+    else{ location.href = "mailto:"+MAIL+"?subject="+encodeURIComponent("WorkTrack help: "+topic)+"&body="+encodeURIComponent(msg); }
+  });
+  var alt=$("wtHelpAlt");
+  if(alt) alt.textContent = WA ? "Prefer email? Write to "+MAIL+"." : "This opens your email app with the details filled in.";
+  if(WA){
+    var li=$("wtCtWa"); if(li){ li.hidden=false; $("wtCtWaLink").href="https://wa.me/"+WA; $("wtCtWaTxt").textContent="+"+WA; $("wtCtWaCopy").setAttribute("data-wt-copy","+"+WA); }
+  }
 })();
 </script>
 <script type="module" src="firebase.js"></script>

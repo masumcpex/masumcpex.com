@@ -918,7 +918,7 @@ document.addEventListener("DOMContentLoaded",function(){(function(){
     }
     var g=t.closest("[data-wt-goto]");
     if(g){showView(g.dataset.wtGoto);return}
-    if(t.closest("[data-wt-pw]")){var pb=$("khSetPasswordBtn");if(pb)pb.click();return}
+    if(t.closest("[data-wt-pw]")){e.preventDefault();var pb=$("khSetPasswordBtn");if(pb)pb.click();if(!desktop.matches)closeMenu();return}
     if(t.closest(".wt-side-legal-item")&&!desktop.matches){closeMenu();return}
 
     var cp=t.closest("[data-wt-copy]");

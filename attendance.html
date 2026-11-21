@@ -243,7 +243,7 @@ body:not(.wt-loaded) .site-footer{display:none}
         <img id="khAccountAvatarImg" class="kh-account-avatar-img" src="" alt="" referrerpolicy="no-referrer" style="display:none;">
         <svg id="khAccountAvatarIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
       </span>
-      <span id="khUserEmail" class="kh-user-email"></span>
+      <span id="khUserEmail" class="kh-user-email" style="display:none;"></span><span id="khUserFirst" class="kh-user-email"></span>
       <svg class="kh-account-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
     </button>
     <div class="kh-account-dropdown" id="khAccountDropdown">
@@ -1366,6 +1366,24 @@ html[data-theme="dark"] .kh-reg-name,html[data-theme="dark"] .kh-reg-day-title,h
   <p>© 2026 <b>Masum Cpex</b>. All Rights Reserved.</p>
 </footer>
 
+<script>
+/* Header chip shows only the first name. The hidden #khUserEmail keeps the full name for the greeting and Settings card. */
+(function(){
+  var src=document.getElementById("khUserEmail"),out=document.getElementById("khUserFirst");
+  if(!src||!out)return;
+  function first(){
+    var t=(src.textContent||"").trim();
+    if(!t)return "";
+    if(t.indexOf("@")>-1)t=t.split("@")[0];
+    var w=t.split(/[\s._\-+\d]+/).filter(Boolean)[0]||t;
+    if(w.length>1&&w===w.toUpperCase())w=w.toLowerCase();
+    return w.charAt(0).toUpperCase()+w.slice(1);
+  }
+  function sync(){var f=first();if(out.textContent!==f)out.textContent=f;if(f)out.title=(src.textContent||"").trim()}
+  sync();
+  if(window.MutationObserver)new MutationObserver(sync).observe(src,{childList:true,characterData:true,subtree:true});
+})();
+</script>
 <script type="module" src="firebase.js"></script>
 <script type="module" src="khApp.js?v=20261129"></script>
 <script type="module" src="kh-auth.js"></script>

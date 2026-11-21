@@ -110,7 +110,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function pwErrorText(err){
     const code = err && err.code;
     if(code === "auth/weak-password") return "That password is too weak. Use at least 10 characters.";
-    if(code === "auth/requires-recent-login") return "For security, please log in again and then retry.";
+    if(code === "auth/requires-recent-login") return "For security, type your current password in the first box (or tap \"Forgot password?\"), then save again.";
+    if(code === "auth/wrong-password" || code === "auth/invalid-credential" || code === "auth/invalid-login-credentials") return "Your current password is not correct. If you don't remember it, tap \"Forgot password?\" to get a reset link by email.";
+    if(code === "auth/too-many-requests") return "Too many attempts. Please wait a few minutes and try again, or use \"Forgot password?\".";
     if(code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return "Google confirmation was cancelled. Nothing was changed.";
     if(code === "auth/popup-blocked") return "The Google confirmation window was blocked. Allow pop-ups and try again.";
     if(code === "auth/email-already-in-use" || code === "auth/credential-already-in-use") return "This email already has a separate password account. Please contact support before continuing.";
@@ -120,10 +122,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return "Could not save the password. Please try again.";
   }
 
-  async function saveAccountPassword(password){
+  async function saveAccountPassword(password, currentPassword){
     const user = auth.currentUser;
     if(!user || !user.email) throw Object.assign(new Error("no-email"), { code: "custom/no-email" });
     const hasPassword = user.providerData.some(p => p.providerId === "password");
+    if(hasPassword && currentPassword){
+      // prove it is really the owner (same CDN module as firebase.js, so it is the same instance)
+      const m = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+      await m.reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, currentPassword));
+    }
     const apply = async () => {
       if(hasPassword) await updatePassword(user, password);
       else await linkWithCredential(user, EmailAuthProvider.credential(user.email, password));
@@ -158,6 +165,11 @@ document.addEventListener("DOMContentLoaded", () => {
         <p style="margin:0 0 1rem;color:#667085;font-size:.9rem;line-height:1.45;">
           ${hasPassword ? "Choose a new password for" : "After this you can log in with"} <b style="overflow-wrap:anywhere;">${email.replace(/[<>&"]/g, "")}</b> ${hasPassword ? "." : "and this password, as well as with Google."}
         </p>
+        ${hasPassword ? `
+        <label style="display:block;font-size:.75rem;font-weight:700;color:#667085;text-transform:uppercase;margin-bottom:4px;" for="khPw0">Current password</label>
+        <input id="khPw0" type="password" autocomplete="current-password" style="${field}margin-bottom:6px;">
+        <button type="button" id="khPwForgot" style="background:none;border:0;padding:4px 0;margin:0 0 12px;color:#1D6FB8;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:underline;">Forgot password? Email me a reset link</button>
+        ` : ""}
         <label style="display:block;font-size:.75rem;font-weight:700;color:#667085;text-transform:uppercase;margin-bottom:4px;" for="khPw1">New password</label>
         <input id="khPw1" type="password" autocomplete="new-password" minlength="10" style="${field}margin-bottom:12px;">
         <label style="display:block;font-size:.75rem;font-weight:700;color:#667085;text-transform:uppercase;margin-bottom:4px;" for="khPw2">Confirm password</label>
@@ -177,7 +189,25 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("keydown", onKey);
     overlay.addEventListener("click", e => { if(e.target === overlay) close(); });
     q("#khPwCancel").addEventListener("click", close);
-    q("#khPwShow").addEventListener("change", e => { q("#khPw1").type = q("#khPw2").type = e.target.checked ? "text" : "password"; });
+    q("#khPwShow").addEventListener("change", e => { const t = e.target.checked ? "text" : "password"; ["#khPw0", "#khPw1", "#khPw2"].forEach(id => { const el = q(id); if(el) el.type = t; }); });
+    const forgotPw = q("#khPwForgot");
+    if(forgotPw){
+      forgotPw.addEventListener("click", async () => {
+        const msg = q("#khPwMsg");
+        msg.style.color = "#C0392B";
+        if(!email){ msg.textContent = "This account has no email address."; return; }
+        forgotPw.disabled = true;
+        try{
+          await sendPasswordResetEmail(auth, email);
+          msg.style.color = "#0F766A";
+          msg.textContent = "Reset link sent to " + email + ". Open it (check spam too), choose a new password, then log in again.";
+        }catch(err){
+          console.error("Reset email failed:", err && err.code);
+          msg.textContent = err && err.code === "auth/network-request-failed" ? "No internet connection. Please try again." : "Could not send the reset email. Please try again.";
+        }
+        forgotPw.disabled = false;
+      });
+    }
     q("#khPw1").focus();
 
     q("#khPwSave").addEventListener("click", async () => {
@@ -189,8 +219,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if(p1 !== p2){ msg.textContent = "The two passwords do not match."; return; }
       const btn = q("#khPwSave"); btn.disabled = true; btn.textContent = "Saving...";
       try{
-        await saveAccountPassword(p1);
-        q("#khPw1").value = q("#khPw2").value = "";
+        const cur = q("#khPw0") ? q("#khPw0").value : "";
+        await saveAccountPassword(p1, cur);
+        q("#khPw1").value = q("#khPw2").value = ""; if(q("#khPw0")) q("#khPw0").value = "";
         msg.style.color = "#0F766A";
         msg.textContent = "Password saved. You can now log in with your email and this password.";
         btn.textContent = "Done";

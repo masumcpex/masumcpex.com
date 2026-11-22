@@ -839,10 +839,10 @@ function earningsFor(ym){
 function pdfPagesHtml(ym, list, rid, qr){
   const asc = list.slice().sort((a, b) => a.d.localeCompare(b.d));
   const st = stats(asc);
-  const NAVY = "#14213D", GOLD = "#B08D57", LGOLD = "#E3C98F", MUTED = "#6B6F7A", LINE = "#D9D2C3", PAPER = "#FBF9F4", ZEBRA = "#F5F1E7", LEAVE = "#F4E9CC";
+  const NAVY = "#14213D", GOLD = "#B08D57", LGOLD = "#E3C98F", MUTED = "#6B6F7A", LINE = "#D9D2C3", ROW = "#E9E3D4", PAPER = "#FBF9F4", LEAVE = "#F6EBD0";
   const SERIF = "Georgia,'Noto Serif Bengali','Times New Roman',serif";
   const n = Math.max(1, asc.length);
-  const rowH = Math.max(18, Math.min(32, Math.floor(715 / n)));
+  const rowH = Math.max(18, Math.min(32, Math.floor(670 / n)));
   const avg = st.duty ? Math.round(st.hours / st.duty * 10) / 10 : 0;
   const gen = new Date();
   const genTxt = String(gen.getDate()).padStart(2, "0") + " " + MONTHS[gen.getMonth()].slice(0, 3) + " " + gen.getFullYear();
@@ -852,32 +852,36 @@ function pdfPagesHtml(ym, list, rid, qr){
   const shortDate = d => { const [y, m, dd] = d.split("-").map(Number); return String(dd).padStart(2, "0") + " " + MONTHS[m - 1].slice(0, 3) + " " + y; };
   const dayShort = d => { const [y, m, dd] = d.split("-").map(Number); return new Date(y, m - 1, dd).toLocaleDateString("en-US", { weekday: "long" }); };
   const dot = d => { const [y, m, dd] = d.split("-").map(Number); const g = new Date(y, m - 1, dd).getDay(); return (g === 0 || g === 6) ? `<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:${GOLD};margin-left:7px;vertical-align:middle;"></span>` : ""; };
-  const th = (t, al) => `<th style="background:transparent;color:${GOLD};padding:0 10px;height:28px;text-align:${al || "left"};font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid ${GOLD};">${t}</th>`;
+  const th = (t, al) => `<th style="background:transparent;color:${GOLD};padding:0 10px;height:28px;text-align:${al || "left"};font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid ${NAVY};">${t}</th>`;
   const rows = asc.map((r, i) => {
     const duty = r.s === "duty";
-    const bg = !duty ? LEAVE : (i % 2 ? ZEBRA : "transparent");
-    const td = "padding:0 10px;height:" + rowH + "px;line-height:" + rowH + "px;font-size:11.5px;border-bottom:1px solid " + LINE + ";color:" + NAVY + ";background:" + bg + ";";
-    return `<tr><td style="${td}">${shortDate(r.d)}</td><td style="${td}">${dayShort(r.d)}${dot(r.d)}</td><td style="${td}font-weight:700;letter-spacing:.04em;${duty ? "" : "color:" + GOLD + ";"}">${duty ? "PRESENT" : "LEAVE"}</td><td style="${td}text-align:right;font-variant-numeric:tabular-nums;">${duty ? fmtH(r.h) : "\u2014"}</td></tr>`;
+    const last = i === asc.length - 1;
+    const td = "padding:0 10px;height:" + rowH + "px;line-height:" + rowH + "px;font-size:11.5px;color:" + NAVY + ";" + (last ? "" : "border-bottom:1px solid " + ROW + ";") + (duty ? "" : "background:" + LEAVE + ";");
+    const first = td + (duty ? "" : "border-left:3px solid " + GOLD + ";");
+    return `<tr><td style="${first}">${shortDate(r.d)}</td><td style="${td}">${dayShort(r.d)}${dot(r.d)}</td><td style="${td}font-weight:700;letter-spacing:.04em;${duty ? "" : "color:" + GOLD + ";"}">${duty ? "PRESENT" : "LEAVE"}</td><td style="${td}text-align:right;font-variant-numeric:tabular-nums;">${duty ? fmtH(r.h) : "\u2014"}</td></tr>`;
   }).join("");
-  const kpi = (l, v, first) => `<div style="flex:1;min-width:0;padding:10px 14px;${first ? "padding-left:0;" : "border-left:1px solid " + LINE + ";"}"><div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${MUTED};">${l}</div><div style="font-family:${SERIF};font-size:21px;font-weight:600;color:${NAVY};margin-top:3px;">${v}</div></div>`;
+  const kpi = (l, v, first) => `<div style="flex:1;min-width:0;padding:10px 14px 12px;${first ? "padding-left:0;" : "border-left:1px solid " + LINE + ";"}"><div style="width:16px;height:2px;background:${GOLD};margin-bottom:9px;"></div><div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${MUTED};">${l}</div><div style="font-family:${SERIF};font-size:21px;font-weight:600;color:${NAVY};margin-top:3px;">${v}</div></div>`;
   const initial = esc((share.memberName || "?").trim().charAt(0).toUpperCase());
-  return `<div class="pdfp" style="width:794px;height:1123px;padding:36px 48px 0;background:${PAPER};position:relative;overflow:hidden;font-family:${getComputedStyle(document.body).fontFamily};color:${NAVY};">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:2px solid ${NAVY};">
+  return `<div class="pdfp" style="width:794px;height:1123px;padding:40px 52px 0;background:${PAPER};position:relative;overflow:hidden;font-family:${getComputedStyle(document.body).fontFamily};color:${NAVY};">
+    <div style="position:absolute;left:23px;top:23px;right:23px;bottom:23px;border:1px solid #DCC590;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid ${NAVY};">
       <div style="display:flex;align-items:center;gap:12px;"><img src="masum.png" alt="" onerror="this.style.display='none'" style="height:38px;object-fit:contain;"><div><div style="font-size:13px;font-weight:800;letter-spacing:.03em;">WORKTRACK</div><div style="font-size:10px;color:${MUTED};">Attendance &amp; Workforce Management</div></div></div>
       <div style="text-align:right;"><div style="font-size:11px;font-weight:700;color:${GOLD};letter-spacing:.16em;">ATTENDANCE REPORT</div><div style="font-size:10px;color:${MUTED};margin-top:2px;">${monthLabel(ym)}</div></div>
     </div>
-    <div style="height:1px;background:${GOLD};margin:3px 0 16px;"></div>
+    <div style="position:relative;height:18px;"><div style="position:absolute;left:0;top:-2px;width:40px;height:3px;background:${GOLD};"></div></div>
     <div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-top:1px solid ${LINE};border-bottom:1px solid ${LINE};">
       <div style="width:40px;height:40px;line-height:40px;border-radius:50%;background:${NAVY};color:${LGOLD};font-family:${SERIF};text-align:center;font-weight:700;font-size:16px;flex-shrink:0;">${initial}</div>
       <div style="flex:1;"><div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${MUTED};">Employee</div><div style="font-family:${SERIF};font-size:20px;font-weight:600;margin:2px 0;">${esc(share.memberName || "")}</div><div style="font-size:10.5px;color:${MUTED};">Monthly Attendance Report \u2014 ${monthLabel(ym)} \u00B7 ${period}</div></div>
     </div>
     <div style="display:flex;border-bottom:1px solid ${LINE};margin-bottom:14px;">${kpi("Present", st.duty, true)}${kpi("Leave", st.leave)}${kpi("Total hours", fmtH(st.hours) + " h")}${kpi("Avg / work day", avg + " h")}</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div style="white-space:nowrap;font-family:${SERIF};font-size:14px;font-weight:600;">Daily Attendance Details</div><div style="flex:1;border-top:1px solid ${LINE};"></div></div>
     <table style="width:100%;border-collapse:collapse;"><thead><tr>${th("Date")}${th("Day")}${th("Status")}${th("Work hours", "right")}</tr></thead><tbody>${rows}</tbody>
-      <tfoot><tr><td colspan="3" style="background:${NAVY};color:#fff;padding:0 10px;height:32px;font-size:11.5px;font-weight:800;">Total work hours</td><td style="background:${NAVY};color:#fff;padding:0 10px;height:32px;font-size:11.5px;font-weight:800;text-align:right;">${fmtH(st.hours)} hrs</td></tr></tfoot></table>
-    <div style="position:absolute;left:48px;right:48px;bottom:28px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid ${LINE};padding-top:10px;font-size:10.5px;color:${MUTED};line-height:1.6;">
+      <tfoot><tr><td colspan="3" style="padding:0 10px;height:36px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:${NAVY};border-top:1px solid ${NAVY};border-bottom:3px double ${GOLD};">Total work hours</td><td style="padding:0 10px;height:36px;font-family:${SERIF};font-size:16px;font-weight:600;text-align:right;color:${NAVY};border-top:1px solid ${NAVY};border-bottom:3px double ${GOLD};">${fmtH(st.hours)} hrs</td></tr></tfoot></table>
+    <div style="position:absolute;left:52px;right:52px;bottom:40px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid ${NAVY};padding-top:10px;font-size:10.5px;color:${MUTED};line-height:1.6;">
+      <div style="position:absolute;left:0;top:-2px;width:30px;height:3px;background:${GOLD};"></div>
       <div><div style="color:${NAVY};font-weight:700;">masumcpex.com</div><div>${CONTACT}</div></div>
       <div style="text-align:center;"><div>Report ID: <b style="color:${NAVY};">${esc(rid)}</b></div><div>View-only copy \u00B7 Generated ${genTxt}</div></div>
-      <div style="display:flex;align-items:center;gap:10px;"><div style="text-align:right;">Page 1 of 1</div>${qr ? `<div style="text-align:center;"><img id="khQrImg" src="${qr}" alt="" style="width:62px;height:62px;display:block;"><div style="font-size:9px;margin-top:2px;">Scan to verify</div></div>` : ""}</div>
+      <div style="display:flex;align-items:center;gap:10px;"><div style="text-align:right;"><div>Page 1 of 1</div>${qr ? `<div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:${GOLD};">SCAN TO VERIFY</div>` : ""}</div>${qr ? `<img id="khQrImg" src="${qr}" alt="" style="width:62px;height:62px;display:block;">` : ""}</div>
     </div></div>`;
 }
 async function downloadPdf(btn){

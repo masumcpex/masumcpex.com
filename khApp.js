@@ -2955,7 +2955,7 @@ export function initKhApp(uid, isAdmin){
     const kpiCard = (label, value, sub) => `
       <div>
         <div style="font-size:8.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:${PDF_MUTED};">${label}</div>
-        <div style="font-family:${PDF_SERIF}; font-size:20px; font-weight:600; color:${PDF_INK}; margin:5px 0 2px; font-variant-numeric:tabular-nums;">${value}</div>
+        <div style="font-family:${PDF_SERIF}; font-size:20px; font-weight:600; color:${PDF_INK}; margin:5px 0 2px; font-variant-numeric:tabular-nums;">${String(value).replace(/ /g, "<span style=\"display:inline-block; width:.22em;\"></span>")}</div>
         <div style="font-size:8.5px; color:${PDF_MUTED};">${sub}</div>
       </div>`;
 
@@ -3036,7 +3036,8 @@ export function initKhApp(uid, isAdmin){
       teamSummaryHtml = `
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
           
-          <div style="font-family:${PDF_SERIF}; font-size:15px; font-weight:600; color:${PDF_INK};">Per-Member Summary</div>
+          <div style="white-space:nowrap; font-family:${PDF_SERIF}; font-size:15px; font-weight:600; color:${PDF_INK};">Per-Member Summary</div>
+        <div style="flex:1; border-top:1px solid #D9D2C3;"></div>
         </div>
         <table class="pdf-table" style="margin-bottom:24px;">
           <thead><tr>
@@ -3089,7 +3090,8 @@ export function initKhApp(uid, isAdmin){
     const advanceSectionHtml = `
       <div style="display:flex; align-items:center; gap:8px; margin:26px 0 12px;">
         
-        <div style="font-family:${PDF_SERIF}; font-size:15px; font-weight:600; color:${PDF_INK};">Advance Details — ${monthLabel(ym)}</div>
+        <div style="white-space:nowrap; font-family:${PDF_SERIF}; font-size:15px; font-weight:600; color:${PDF_INK};">Advance Details — ${monthLabel(ym)}</div>
+        <div style="flex:1; border-top:1px solid #D9D2C3;"></div>
       </div>
       ${advEntriesPdf.length ? `
         <table class="pdf-table">
@@ -3115,14 +3117,13 @@ export function initKhApp(uid, isAdmin){
     const sumAvg = sumPresent ? Math.round(sumHoursAll / sumPresent * 10) / 10 : 0;
     const sumLongest = sumDuty.reduce((a, r) => ((r.hours || 0) > (a ? (a.hours || 0) : -1) ? r : a), null);
     const summaryCardHtml = sumRecs.length ? `
-      <div style="margin-top:26px; border:1px solid ${PDF_GOLD}; padding:16px 18px 6px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-          <div style="font-family:${PDF_SERIF}; font-size:15px; font-weight:600; color:${PDF_INK};">Month at a Glance</div>
-          <div style="font-size:8.5px; font-weight:700; letter-spacing:.16em; color:${PDF_GOLD};">${escapeHtml(monthLabel(ym).toUpperCase())}</div>
+      <div style="margin-top:26px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div style="white-space:nowrap; font-family:${PDF_SERIF}; font-size:15px; font-weight:600; color:${PDF_INK};">Month at a Glance</div>
+          <div style="flex:1; border-top:1px solid #D9D2C3;"></div>
+          <div style="white-space:nowrap; font-size:8.5px; font-weight:700; letter-spacing:.16em; color:${PDF_GOLD};">${escapeHtml(monthLabel(ym).toUpperCase())}</div>
         </div>
-        <div class="wt-kpis" style="border-bottom:none;">
-          ${kpiCard("Present", toBn(sumPresent), "Work days")}
-          ${kpiCard("Leave", toBn(sumLeave), "Leave days")}
+        <div class="wt-kpis wt-plain" style="border-top:1px solid ${PDF_GOLD}; border-bottom:1px solid ${PDF_GOLD};">
           ${kpiCard("Average", toBn(sumAvg) + " h", "Per work day")}
           ${kpiCard("Longest Day", sumLongest ? toBn(sumLongest.hours) + " h" : "—", sumLongest ? escapeHtml((singleMember ? "" : sumLongest.member + " · ") + prettyDate(sumLongest.date)) : "No work days")}
         </div>
@@ -3130,9 +3131,9 @@ export function initKhApp(uid, isAdmin){
 
     const wrap = document.createElement("div");
     wrap.id = "pdfReportRoot";
-    wrap.style.cssText = `position:fixed; left:-99999px; top:0; width:800px; background:#FBF9F4; padding:40px 34px 30px; font-family:'Inter','Hind Siliguri',sans-serif; color:${PDF_INK};`;
+    wrap.style.cssText = `position:fixed; left:-99999px; top:0; width:800px; background:#FBF9F4; padding:40px 44px 30px; font-family:'Inter','Hind Siliguri',sans-serif; color:${PDF_INK};`;
     wrap.innerHTML = `
-      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom:2px solid #14213D;">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom:1px solid #14213D;">
         <div style="display:flex; align-items:center; gap:14px;">
           <img src="masum.png" style="height:42px; object-fit:contain;" crossorigin="anonymous">
           <div>
@@ -3145,7 +3146,7 @@ export function initKhApp(uid, isAdmin){
           <div style="font-size:9px; color:${PDF_MUTED}; margin-top:2px;">${monthLabel(ym)}</div>
         </div>
       </div>
-      <div style="height:1px; background:#B08D57; margin:3px 0 26px;"></div>
+      <div style="position:relative; height:26px;"><div style="position:absolute; left:0; top:-2px; width:40px; height:3px; background:#B08D57;"></div></div>
 
       <div style="margin-bottom:22px;">
         <div style="font-family:${PDF_SERIF}; font-size:26px; font-weight:600; color:${PDF_INK};">Attendance Report</div>
@@ -3159,7 +3160,8 @@ export function initKhApp(uid, isAdmin){
 
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
         
-        <div style="font-family:${PDF_SERIF}; font-size:15px; font-weight:600; color:${PDF_INK};">Daily Attendance Details</div>
+        <div style="white-space:nowrap; font-family:${PDF_SERIF}; font-size:15px; font-weight:600; color:${PDF_INK};">Daily Attendance Details</div>
+        <div style="flex:1; border-top:1px solid #D9D2C3;"></div>
       </div>
 
       <table class="pdf-table">
@@ -3167,8 +3169,8 @@ export function initKhApp(uid, isAdmin){
         <tbody>${detailRowsHtml}</tbody>
         <tfoot>
           <tr class="pdf-tfoot-row">
-            <td class="pdf-td pdf-td-left" style="font-weight:800;" colspan="3">Total Work Hours</td>
-            <td class="pdf-td pdf-td-right" style="font-weight:800;">${totalHoursLabelVal}</td>
+            <td class="pdf-td pdf-td-left" style="font-weight:700; font-size:9px; letter-spacing:.14em; text-transform:uppercase;" colspan="3">Total Work Hours</td>
+            <td class="pdf-td pdf-td-right" style="font-family:${PDF_SERIF}; font-weight:600; font-size:16px;">${totalHoursLabelVal}</td>
           </tr>
         </tfoot>
       </table>
@@ -3178,51 +3180,83 @@ export function initKhApp(uid, isAdmin){
     const style = document.createElement("style");
     style.textContent = `
 #pdfReportRoot .pdf-table{ width:100%; border-collapse:collapse; font-size:10px; }
-#pdfReportRoot .pdf-th{ background:transparent; color:#B08D57; padding:9px 10px; text-align:right; vertical-align:middle; font-weight:700; text-transform:uppercase; font-size:8.5px; letter-spacing:.1em; border-bottom:1px solid #B08D57; }
+#pdfReportRoot .pdf-th{ background:transparent; color:#B08D57; padding:9px 10px; text-align:right; vertical-align:middle; font-weight:700; text-transform:uppercase; font-size:8.5px; letter-spacing:.1em; border-bottom:1px solid #14213D; }
 #pdfReportRoot .pdf-th-left{ text-align:left; } #pdfReportRoot .pdf-th-right{ text-align:right; }
-#pdfReportRoot .pdf-td{ padding:9px 10px; text-align:right; vertical-align:middle; border-bottom:1px solid #D9D2C3; line-height:1.4; font-size:10px; color:#14213D; font-variant-numeric:tabular-nums; font-feature-settings:"tnum"; }
+#pdfReportRoot .pdf-td{ padding:9px 10px; text-align:right; vertical-align:middle; border-bottom:1px solid #E9E3D4; line-height:1.4; font-size:10px; color:#14213D; font-variant-numeric:tabular-nums; font-feature-settings:"tnum"; }
 #pdfReportRoot .pdf-td-left{ text-align:left; } #pdfReportRoot .pdf-td-right{ text-align:right; }
-#pdfReportRoot .pdf-tfoot-row td{ background:#14213D; color:#fff; border-bottom:none; border-top:1px solid rgba(255,255,255,.14); }
-#pdfReportRoot .pdf-tfoot-row:first-child td{ border-top:none; }
+#pdfReportRoot tbody tr:last-child td{ border-bottom:none; }
+#pdfReportRoot .pdf-tfoot-row td{ background:transparent; color:#14213D; border-top:none; border-bottom:1px solid #E9E3D4; }
+#pdfReportRoot tfoot tr:first-child td{ border-top:1px solid #14213D; }
+#pdfReportRoot tfoot tr:last-child td{ border-bottom:3px double #B08D57; }
 #pdfReportRoot tr{ height:34px; }
-#pdfReportRoot tbody tr:nth-child(even) td{ background:#F5F1E7; }
-#pdfReportRoot tbody tr.pdf-leave td{ background:#F4E9CC !important; }
-#pdfReportRoot .wt-kpis{ display:flex; border-top:1px solid #D9D2C3; border-bottom:1px solid #D9D2C3; }
-#pdfReportRoot .wt-kpis > div{ flex:1; min-width:0; padding:12px 14px; }
+#pdfReportRoot tbody tr.pdf-leave td{ background:#F6EBD0 !important; }
+#pdfReportRoot tbody tr.pdf-leave td:first-child{ border-left:3px solid #B08D57; }
+#pdfReportRoot .wt-kpis{ display:flex; border-bottom:1px solid #D9D2C3; }
+#pdfReportRoot .wt-kpis > div{ flex:1; min-width:0; padding:10px 14px 12px; }
 #pdfReportRoot .wt-kpis > div:first-child{ padding-left:0; }
 #pdfReportRoot .wt-kpis > div + div{ border-left:1px solid #D9D2C3; }
+#pdfReportRoot .wt-kpis > div::before{ content:""; display:block; width:16px; height:2px; background:#B08D57; margin-bottom:9px; }
+#pdfReportRoot .wt-plain > div::before{ display:none; }
     `;
     document.body.appendChild(style);
     document.body.appendChild(wrap);
 
-    const FOOTER_MARGIN_MM = 14;
+    const FOOTER_MARGIN_MM = 21;
+    const FOOT_SIDE_MM = 11.5;     // same side margin as the report body
+    const FRAME_MM = 6;            // thin gold frame around every page
     const generatedAt = new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
+    // Footer QR: opens this member's view link with the Report ID ready (auto verify) when a link is active; otherwise the site.
+    let footQr = null, footUrl = "", footCap = "";
 
     function drawFooter(pdf, pageNum, totalPages, pageWidthMM, pageHeightMM){
       const bandTop = pageHeightMM - FOOTER_MARGIN_MM - 8;
       pdf.setFillColor(251, 249, 244);
       pdf.rect(0, bandTop, pageWidthMM, pageHeightMM - bandTop, "F");
       const y = pageHeightMM - FOOTER_MARGIN_MM;
-      pdf.setDrawColor(217, 210, 195);
-      pdf.setLineWidth(0.2);
-      pdf.line(16, y - 5, pageWidthMM - 16, y - 5);
+      const L = FOOT_SIDE_MM, R = pageWidthMM - FOOT_SIDE_MM;
+      pdf.setDrawColor(20, 33, 61);
+      pdf.setLineWidth(0.15);
+      pdf.line(L, y - 5, R, y - 5);
+      pdf.setFillColor(176, 141, 87);
+      pdf.rect(L, y - 5.5, 10, 1, "F");
+      const QS = footQr ? 15 : 0;
+      const rx = R - (QS ? QS + 4 : 0);
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(7.5);
       pdf.setTextColor(20, 33, 61);
-      pdf.text("masumcpex.com", 16, y);
+      pdf.text("masumcpex.com", L, y);
       pdf.setFont("helvetica", "normal");
       pdf.setTextColor(107, 111, 122);
-      pdf.text("info@masumcpex.com", 16, y + 4);
-      pdf.text(`Report ID: ${reportId}${provisionalTag(ym)}`, pageWidthMM / 2 - 15, y);
-      const rightText1 = `Generated: ${generatedAt}`;
-      const rightText2 = `Page ${pageNum} of ${totalPages}`;
-      pdf.text(rightText1, pageWidthMM - 16, y, { align: "right" });
-      pdf.text(rightText2, pageWidthMM - 16, y + 4, { align: "right" });
+      pdf.text("info@masumcpex.com", L, y + 4);
+      pdf.text(`Report ID: ${reportId}${provisionalTag(ym)}`, pageWidthMM / 2 - (QS ? 8 : 0), y, { align: "center" });
+      pdf.text(`Generated: ${generatedAt}`, rx, y, { align: "right" });
+      pdf.text(`Page ${pageNum} of ${totalPages}`, rx, y + 4, { align: "right" });
+      if(footQr){
+        const n = footQr.getModuleCount(), cell = QS / n, qx = R - QS, qy = y - 3;
+        pdf.setFillColor(20, 33, 61);
+        for(let r = 0; r < n; r++) for(let c = 0; c < n; c++){
+          if(footQr.isDark(r, c)) pdf.rect(qx + c * cell, qy + r * cell, cell + 0.02, cell + 0.02, "F");
+        }
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(6);
+        pdf.setTextColor(176, 141, 87);
+        pdf.text(footCap, rx, y + 8, { align: "right" });
+        pdf.link(qx, qy, QS, QS, { url: footUrl });
+      }
+      pdf.setDrawColor(220, 197, 144);
+      pdf.setLineWidth(0.15);
+      pdf.rect(FRAME_MM, FRAME_MM, pageWidthMM - 2 * FRAME_MM, pageHeightMM - 2 * FRAME_MM, "S");
     }
 
     try{
       // Sharper text: up to 3x, lowered automatically for long reports so phones don't run out of canvas memory.
       await wtPdfFontsReady();
+      try{
+        let qUrl = "https://masumcpex.com", qCap = "SCAN TO VISIT";
+        const sh = singleMember ? activeShareFor(singleMember.id) : null;
+        if(sh){ qUrl = SHARE_VIEW_URL + "?token=" + encodeURIComponent(sh.id) + "&verify=" + encodeURIComponent(reportId); qCap = "SCAN TO VERIFY"; }
+        footQr = await qrObject(qUrl); footUrl = qUrl; footCap = qCap;
+      }catch(e){ footQr = null; }
       const hdScale = Math.max(2, Math.min(3, Math.sqrt(12000000 / (wrap.offsetWidth * wrap.scrollHeight))));
       const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#FBF9F4", logging:false });
       const { jsPDF } = window.jspdf;
@@ -4407,6 +4441,17 @@ export function initKhApp(uid, isAdmin){
       qr.make();
       return qr.createDataURL(6, 12);
     }catch(e){ console.warn("QR failed", e); return ""; }
+  }
+  // Same QR, but returned as a matrix so the PDF can draw it as sharp vector squares.
+  async function qrObject(text){
+    try{
+      if(typeof window.qrcode !== "function") await loadScriptOnce(QR_LIB);
+      if(typeof window.qrcode !== "function") return null;
+      const qr = window.qrcode(0, "M");
+      qr.addData(text);
+      qr.make();
+      return qr;
+    }catch(e){ return null; }
   }
   function loadScriptOnce(src){
     return new Promise(resolve => {

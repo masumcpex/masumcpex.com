@@ -269,7 +269,7 @@ button.chip:active{ background:rgba(255,255,255,.26); }
 <body>
 <header class="bar">
   <a class="brandrow" href="https://masumcpex.com" target="_blank" rel="noopener noreferrer" aria-label="Masum Cpex website (opens in a new tab)"><div class="mark" aria-hidden="true"><img src="masum2.png" alt="" decoding="async" onerror="this.parentNode.textContent='M'"></div><div class="brand">WORKTRACK<small>Attendance &amp; Workforce Management</small></div></a>
-  <button type="button" class="chip" id="viewOnlyBtn" aria-haspopup="dialog" aria-label="About this view-only link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>View only<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;opacity:.75"><path d="M9 6l6 6-6 6"/></svg></button>
+  <button type="button" class="chip" id="viewOnlyBtn" aria-haspopup="dialog" aria-label="Secure view: rules and report ID check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v5.5c0 4.6-3.1 8.2-7.5 9.5-4.4-1.3-7.5-4.9-7.5-9.5V6L12 3z"/><path d="M8.8 12.2l2.2 2.2 4.2-4.4"/></svg>Secure view<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;opacity:.75"><path d="M9 6l6 6-6 6"/></svg></button>
 </header>
 <main id="app" aria-live="polite">
   <div class="card"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;height:24px"></div><div class="skel"></div><div class="skel" style="width:85%"></div></div>
@@ -438,7 +438,7 @@ function faqHtml(hasEarn){
   ];
   if(hasEarn){
     qa.push(["How are earnings calculated?", "Recorded hours multiplied by the hourly rate, less any advance. It is for reference only."]);
-    qa.push(["How can I check an earnings PDF is genuine?", "Each PDF has a Report ID in its footer. You can check it yourself: tap View only at the top, then Verify ID. The administrator can also check it in WorkTrack."]);
+    qa.push(["How can I check an earnings PDF is genuine?", "Each PDF has a Report ID in its footer. You can check it yourself: tap Secure view at the top, then Verify ID. The administrator can also check it in WorkTrack."]);
   }
   return qa.map(q => `<details><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`).join("");
 }

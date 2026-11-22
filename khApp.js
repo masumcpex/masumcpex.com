@@ -2089,6 +2089,16 @@ export function initKhApp(uid, isAdmin){
     ov.querySelector("#wtVfCode").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); run(); } });
   }
   // Attendance IDs: A-MMYY-XXX-ccc (new, with check letters) or WT-YYYY-MM-XXX (old, no check letters).
+  function verifyReportHtml(input){
+    const raw = String(input || "").toUpperCase().replace(/[\s(]*PROVISIONAL\)?\s*$/, "");
+    const html = verifyReportHtmlCore(raw);
+    const c = raw.replace(/\s+/g, "");
+    let ym = "", m = c.match(/^[AE]-(\d{2})(\d{2})-/);
+    if(m) ym = `20${m[2]}-${m[1]}`;
+    else if((m = c.match(/^WT-(?:E-)?(\d{4}-\d{2})-/))) ym = m[1];
+    if(ym && isOpenMonth(ym)) return html + `<div style="margin-top:8px;font-size:.82rem;opacity:.85">${tr("এই মাস এখনও শেষ হয়নি, তাই সংখ্যা বদলাতে পারে। মাস শেষে রিপোর্টটা আবার বানান।", "This month has not ended yet, so the figures can still change. Make the report again after the month closes.")}</div>`;
+    return html;
+  }
   function verifyAttendanceHtml(ym, who, tail, bad){
     const recsAll = records.filter(r => r.date && r.date.startsWith(ym));
     let groups;
@@ -2113,7 +2123,7 @@ export function initKhApp(uid, isAdmin){
     if(hit.length) return `<div class="wt-vf is-ok"><b>${tr("মিলেছে", "Matches")}</b><span>${tr("এই রিপোর্টের সংখ্যা এখনকার তথ্যের সাথে হুবহু মিলছে।", "The figures in this report match your current records exactly.")}</span>${factsOf(hit)}</div>`;
     return `<div class="wt-vf is-warn"><b>${tr("মেলেনি", "Does not match")}</b><span>${tr("PDF বানানোর পর তথ্য বদলেছে, অথবা কোডে ভুল আছে। এখনকার তথ্য:", "The data changed after that PDF was made, or the code was typed wrongly. Current figures:")}</span>${factsOf(groups)}</div>`;
   }
-  function verifyReportHtml(input){
+  function verifyReportHtmlCore(input){
     const code = String(input || "").toUpperCase().replace(/[\u2010-\u2015\u2212]/g, "-").replace(/\s+/g, "");
     let mt = code.match(/^WT-E-(\d{4}-\d{2})-([A-Z0-9]{1,3})(?:-([A-Z0-9]{4}))?$/);
     const bad = msg => `<div class="wt-vf is-bad"><b>${tr("পাওয়া যায়নি", "Not found")}</b><span>${msg}</span></div>`;
@@ -3203,7 +3213,7 @@ export function initKhApp(uid, isAdmin){
       pdf.setFont("helvetica", "normal");
       pdf.setTextColor(107, 111, 122);
       pdf.text("info@masumcpex.com", 16, y + 4);
-      pdf.text(`Report ID: ${reportId}`, pageWidthMM / 2 - 15, y);
+      pdf.text(`Report ID: ${reportId}${provisionalTag(ym)}`, pageWidthMM / 2 - 15, y);
       const rightText1 = `Generated: ${generatedAt}`;
       const rightText2 = `Page ${pageNum} of ${totalPages}`;
       pdf.text(rightText1, pageWidthMM - 16, y, { align: "right" });
@@ -3699,6 +3709,13 @@ export function initKhApp(uid, isAdmin){
     return m ? `E-${m[2]}${m[1].slice(2)}-${m[3]}-${m[4].slice(0, 3)}` : rid;
   }
 
+  // A report made before its month has ended can still change, so its footer says "Provisional".
+  function isOpenMonth(ym){
+    const n = new Date();
+    return String(ym) >= n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0");
+  }
+  function provisionalTag(ym){ return isOpenMonth(ym) ? " (Provisional)" : ""; }
+
   // Numbers for each member row (shared by the PDF and the share-link payload).
   function computeEarnings(rows, ym){
     const [yy, mm] = ym.split("-");
@@ -3728,7 +3745,7 @@ export function initKhApp(uid, isAdmin){
     return {
       rate: r.rate, hours: r.hours, days: r.days, leave: r.leave, gross: r.gross, ded: r.advDeducted, net: r.net,
       taken: r.advTaken, balance: r.advBalance, att: r.attRate, avg: round4(r.avg), weeks: r.weeks,
-      longest: r.longest ? { d: r.longest.d, h: r.longest.h } : null, rid: r.rid, ts: Date.now()
+      longest: r.longest ? { d: r.longest.d, h: r.longest.h } : null, rid: earnDisplayId(r.rid), ts: Date.now()
     };
   }
 
@@ -3852,7 +3869,7 @@ export function initKhApp(uid, isAdmin){
     wrap.innerHTML = innerHtml;
     document.body.appendChild(wrap);
     try{
-      await renderWrapToA4Pdf(wrap, reportId, fileName, linkEls, { fitOnePage: true });
+      await renderWrapToA4Pdf(wrap, reportId + provisionalTag(ym), fileName, linkEls, { fitOnePage: true });
     }finally{
       document.body.removeChild(wrap);
     }

@@ -5,8 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#173B63">
-<title>Shared Attendance | WorkTrack</title>
+<meta name="theme-color" content="#12203F">
+<title>Shared Attendance | WorkTrack by Masum Cpex</title>
+<meta name="description" content="WorkTrack by Masum Cpex: a secure, view-only attendance page. See work days, leave, total hours and monthly reports, and report an issue in one tap.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="WorkTrack by Masum Cpex">
+<meta property="og:title" content="Shared Attendance | WorkTrack">
+<meta property="og:description" content="A secure, view-only attendance page: work days, leave, total hours and monthly reports.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Shared Attendance | WorkTrack">
+<meta name="twitter:description" content="A secure, view-only attendance page: work days, leave, total hours and monthly reports.">
 <link rel="icon" href="/bdflag.webp" type="image/webp">
 <style>
 :root{
@@ -156,6 +164,77 @@ footer a, .state a{ color:var(--navy); font-weight:700; }
 }
 .skel{ height:14px; border-radius:7px; background:linear-gradient(90deg,#EEF1F4,#F8FAFB,#EEF1F4); background-size:200% 100%; animation:sk 1.2s linear infinite; margin:12px 0; }
 @keyframes sk{ 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+/* ===== Theme v2: navy / gold / cream, matches the PDF reports ===== */
+:root{
+  --navy:#12203F; --navy2:#12203F; --ink:#14213D; --muted:#5B6372; --line:#E4DDCC; --soft:#F1ECDF;
+  --bg:#FAF8F3; --ok:#1F6B47; --okbg:#E4F1EA; --lv:#7A4E0E; --lvbg:#F6E9D3; --gold:#8A6A36; --goldb:#B08D57;
+  --serif:Georgia,"Noto Serif Bengali","Times New Roman",serif;
+}
+.bar{ background:var(--navy); border-bottom:3px solid var(--goldb); box-shadow:none; }
+h1,.tile b,.earn-grid b,.lhead h3,.state h2,.sheet h2,.ratehead b,.mlabel{ font-family:var(--serif); }
+.card{ border-radius:14px; box-shadow:0 1px 2px rgba(20,33,61,.05); }
+.hero{ border-top:4px solid var(--goldb); }
+.avatar{ background:var(--navy); color:#E3C58A; font-family:var(--serif); box-shadow:none; }
+.eyebrow{ color:var(--gold); }
+.tile{ border-radius:10px; box-shadow:none; }
+.tile::before,.tile.t-ok::before,.tile.t-lv::before{ background:var(--goldb); }
+.bar2 i{ background:var(--navy); }
+.earn{ border-top:4px solid var(--goldb); }
+.earn-ic{ background:#F3ECDD; color:var(--gold); }
+.earn-grid > div{ background:#fff; border-radius:10px; }
+.earn-grid > div.take{ background:var(--navy); border-color:var(--navy); }
+.earn-grid > div.take b{ color:#E3C58A; }
+.btn{ border-radius:10px; box-shadow:none; min-height:52px; }
+.btn.sec{ border-color:var(--navy); }
+.rep-wide{ width:100%; flex:none; }
+.mstep{ display:flex; align-items:center; gap:6px; margin-top:16px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:6px 0; }
+.mstep select{ flex:1; border:0; background:transparent; text-align:center; text-align-last:center; font-family:var(--serif); font-size:1.1rem; font-weight:700; color:var(--navy); min-height:44px; }
+.mbtn{ width:44px; height:44px; border:0; background:transparent; color:var(--navy); font-size:1.6rem; line-height:1; cursor:pointer; border-radius:10px; }
+.mbtn:disabled{ opacity:.25; cursor:default; }
+.mbtn:active:not(:disabled){ background:var(--soft); }
+.weeks{ display:flex; flex-direction:column; gap:2px; margin-top:6px; }
+.wk{ display:flex; align-items:center; gap:10px; min-height:30px; font-size:.78rem; color:var(--muted); }
+.wk > span:first-child{ width:84px; flex-shrink:0; }
+.wk i{ flex:1; height:8px; border-radius:4px; background:#E8E2D4; overflow:hidden; display:block; }
+.wk i b{ display:block; height:100%; background:var(--navy); }
+.wk i b.top{ background:var(--goldb); }
+.wk em{ width:44px; text-align:right; font-style:normal; font-weight:700; color:var(--navy); }
+.row{ grid-template-columns:1fr auto 46px 40px; gap:10px; padding:6px 0; min-height:52px; border-bottom:1px solid var(--line); }
+.row .d b{ font-size:.95rem; font-weight:600; }
+.row.is-leave .d b{ color:var(--lv); }
+.flag{ display:inline-flex !important; border-radius:10px; }
+.more{ margin-top:12px; width:100%; flex:none; }
+.tapnote{ text-align:center; font-size:.76rem; color:var(--muted); margin:10px 0 0; }
+.faq details{ border-bottom:1px solid var(--line); }
+.faq details:last-of-type{ border-bottom:0; }
+.faq summary{ cursor:pointer; list-style:none; min-height:48px; display:flex; align-items:center; justify-content:space-between; gap:10px; font-weight:600; font-size:.93rem; color:var(--navy); }
+.faq summary::-webkit-details-marker{ display:none; }
+.faq summary::after{ content:"+"; font-size:1.3rem; color:var(--gold); flex-shrink:0; }
+.faq details[open] summary::after{ content:"\2212"; }
+.faq details p{ margin:0 0 14px; color:var(--muted); font-size:.88rem; line-height:1.55; }
+.helpbox{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+.helpbox h4{ margin:0 0 4px; font-family:var(--serif); font-size:1rem; color:var(--navy); }
+.helpbox p{ margin:0 0 12px; font-size:.84rem; color:var(--muted); }
+.helpbox .actions .btn{ text-decoration:none; flex:1 1 90px; }
+
+/* ===== Footer: data wave + legal links ===== */
+footer.wf{ margin-top:18px; background:#081B3F; color:#C9D6EE; font-size:.8rem; padding:22px 16px calc(18px + env(safe-area-inset-bottom,0)); text-align:center; border-top:3px solid #11956E; }
+footer.wf .byline{ color:#fff; margin-bottom:8px; }
+footer.wf .sec{ color:#9FD9C2; }
+footer.wf a{ color:#fff; font-weight:600; }
+.wf-wave{ margin:16px -16px 8px; }
+.wf-cap{ display:flex; justify-content:space-between; align-items:baseline; padding:0 16px 6px; text-align:left; }
+.wf-cap b{ font-family:var(--serif); font-size:1rem; color:#fff; }
+.wf-cap span{ font-size:.74rem; color:#9FB3D6; }
+.wf-svg{ display:block; width:100%; height:120px; transform-origin:50% 100%; animation:wavein .9s ease-out both; }
+@keyframes wavein{ from{ transform:scaleY(.15); opacity:.3; } to{ transform:scaleY(1); opacity:1; } }
+@media (prefers-reduced-motion:reduce){ .wf-svg{ animation:none; } }
+.wf-leg{ display:flex; flex-wrap:wrap; justify-content:center; gap:4px 14px; padding:8px 16px 0; font-size:.74rem; color:#C9D6EE; }
+.wf-leg i{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+.wf-legal{ border-top:1px solid rgba(255,255,255,.12); padding-top:14px; line-height:2; }
+.wf-legal a{ color:#C9D6EE; text-decoration:none; font-weight:500; }
+.wf-legal a:hover{ color:#fff; text-decoration:underline; }
+.wf-legal .dot{ margin:0 10px; opacity:.6; }
 </style>
 </head>
 <body>
@@ -166,7 +245,14 @@ footer a, .state a{ color:var(--navy); font-weight:700; }
 <main id="app" aria-live="polite">
   <div class="card"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;height:24px"></div><div class="skel"></div><div class="skel" style="width:85%"></div></div>
 </main>
-<footer><div class="byline"><img src="masum.webp" alt="" decoding="async" onerror="this.style.display='none'">Prepared by Masum Cpex</div><br><div class="sec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Secure view-only link</div><div>© <span id="yr">2026</span> Masum Cpex · <a href="mailto:info@masumcpex.com">info@masumcpex.com</a></div></footer>
+<footer class="wf"><div class="byline"><img src="masum.webp" alt="" decoding="async" onerror="this.style.display='none'">Prepared by Masum Cpex</div><br><div class="sec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Secure view-only link</div>
+<div id="waveBox"></div>
+<div class="wf-legal">
+  <div>© <span id="yr">2026</span> <b style="color:#fff">Masum Cpex</b>. All Rights Reserved.</div>
+  <div><a href="https://masumcpex.bro.bd/legal#privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a><span class="dot" aria-hidden="true">•</span><a href="https://masumcpex.bro.bd/legal#terms-of-service" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a></div>
+  <div><a href="mailto:info@masumcpex.com">info@masumcpex.com</a></div>
+</div>
+</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -175,6 +261,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-lite.js";
 
 const CONTACT = "info@masumcpex.com";
+const PHONE = "";   // support phone, digits with country code (e.g. 60123456789). Leave empty to hide the WhatsApp and SMS buttons.
 const H2C = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
 const JSPDF = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
 const QRLIB = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";
@@ -268,6 +355,77 @@ function stats(list){
   return { duty, leave, hours };
 }
 
+let showAll = false;
+const DAILY_LIMIT = 7;
+const wkday3 = d => weekday(d).slice(0, 3);
+function weekBars(list, ym){
+  const [y, m] = ym.split("-").map(Number), last = new Date(y, m, 0).getDate();
+  const pad = n => String(n).padStart(2, "0"), mon = MONTHS[m - 1].slice(0, 3);
+  const rg = [[1, 7], [8, 14], [15, 21], [22, 28], [29, last]].filter(r => r[0] <= last);
+  const hrs = rg.map(([a, b]) => list.reduce((t, r) => { const dd = Number(r.d.slice(8, 10)); return (r.s === "duty" && dd >= a && dd <= b) ? t + (Number(r.h) || 0) : t; }, 0));
+  const total = hrs.reduce((t, h) => t + h, 0), max = Math.max.apply(null, hrs.concat([1]));
+  if(!(total > 0)) return "";
+  return `<section class="card"><div class="lhead"><h3>Hours by week</h3><span>${esc(fmtH(total))} h</span></div><div class="weeks">${rg.map((r, i) =>
+    `<div class="wk"><span>${mon} ${pad(r[0])}–${pad(Math.min(r[1], last))}</span><i><b class="${hrs[i] === max ? "top" : ""}" style="width:${Math.round(hrs[i] / max * 100)}%"></b></i><em>${esc(fmtH(hrs[i]))} h</em></div>`).join("")}</div></section>`;
+}
+function faqHtml(hasEarn){
+  const qa = [
+    ["Who can see this page?", "Only people who have this private link. It is view-only, nobody can change anything here, and the administrator can switch the link off at any time."],
+    ["How often is it updated?", "Whenever the administrator updates your records. The date under your name shows when it last changed."],
+    ["Something looks wrong. What do I do?", "Tap the flag next to a day, or press Report an Issue. Your report goes straight to the administrator for review."],
+    ["What does the attendance rate mean?", "It is your work days divided by work days plus leave days for the selected month."]
+  ];
+  if(hasEarn){
+    qa.push(["How are earnings calculated?", "Recorded hours multiplied by the hourly rate, less any advance. It is for reference only."]);
+    qa.push(["How can I check an earnings PDF is genuine?", "Each PDF has a Report ID in its footer. The administrator can check it in WorkTrack under Verify a report."]);
+  }
+  return qa.map(q => `<details><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`).join("");
+}
+function helpHtml(name, ym){
+  const who = name || "a member";
+  const msg = "Hello, I am " + who + ". I have a question about my attendance for " + monthLabel(ym) + ".";
+  const enc = encodeURIComponent(msg);
+  const mail = "mailto:" + CONTACT + "?subject=" + encodeURIComponent("WorkTrack help: " + who + " - " + monthLabel(ym)) + "&body=" + enc;
+  const wa = PHONE ? `<a class="btn sec" href="${esc("https://wa.me/" + PHONE + "?text=" + enc)}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : "";
+  const sms = PHONE ? `<a class="btn sec" href="${esc("sms:+" + PHONE + "?&body=" + enc)}">SMS</a>` : "";
+  return `<div class="helpbox"><h4>Need more help?</h4><p>Your message opens with your name and month already filled in.</p><div class="actions"><a class="btn sec" href="${esc(mail)}">Email</a>${wa}${sms}</div></div>`;
+}
+
+// ---- Footer wave: one point per recorded day (hours), leave days dip to the baseline; the blue layer is a 5-day trend ----
+function smoothPath(pts){
+  let d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
+  const cl = y => Math.max(6, Math.min(118, y));
+  for(let i = 0; i < pts.length - 1; i++){
+    const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    const c = [p1[0] + (p2[0] - p0[0]) / 6, cl(p1[1] + (p2[1] - p0[1]) / 6), p2[0] - (p3[0] - p1[0]) / 6, cl(p2[1] - (p3[1] - p1[1]) / 6), p2[0], p2[1]];
+    d += " C" + c.map(n => n.toFixed(1)).join(" ");
+  }
+  return d;
+}
+function drawWave(list, ym){
+  const box = document.getElementById("waveBox");
+  if(!box) return;
+  const asc = list.slice().sort((a, b) => a.d.localeCompare(b.d));
+  const hrs = asc.map(r => r.s === "duty" ? (Number(r.h) || 0) : 0);
+  const n = hrs.length, duty = asc.filter(r => r.s === "duty").length, total = hrs.reduce((t, h) => t + h, 0);
+  if(n < 2 || !(total > 0)){ box.innerHTML = ""; return; }
+  const W = 390, H = 130, TOP = 22, BASE = 118, max = Math.max(10, Math.max.apply(null, hrs));
+  const X = i => 6 + i * ((W - 12) / (n - 1)), Y = v => BASE - (v / max) * (BASE - TOP);
+  const pts = hrs.map((v, i) => [X(i), Y(v)]);
+  const tr = hrs.map((_, i) => { let t = 0, c = 0; for(let k = Math.max(0, i - 2); k <= Math.min(n - 1, i + 2); k++){ t += hrs[k]; c++; } return [X(i), Y(t / c)]; });
+  const area = p => smoothPath(p) + " L" + X(n - 1).toFixed(1) + " " + H + " L" + X(0).toFixed(1) + " " + H + " Z";
+  let pk = 0; hrs.forEach((h, i) => { if(h > hrs[pk]) pk = i; });
+  const pd = asc[pk].d, peak = fmtH(hrs[pk]) + " h on " + Number(pd.slice(8, 10)) + " " + MONTHS[Number(pd.slice(5, 7)) - 1].slice(0, 3);
+  const avg = fmtH(total / duty);
+  box.innerHTML = `<div class="wf-wave"><div class="wf-cap"><b>Work rhythm</b><span>${esc(monthLabel(ym))}</span></div>
+    <svg class="wf-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="${esc("Daily hours for " + monthLabel(ym) + ". Highest " + peak + ". Average " + avg + " hours per work day.")}">
+      <path d="${area(tr)}" fill="#0B5AA6"/>
+      <path d="${area(pts)}" fill="#11956E" fill-opacity=".92"/>
+      <path d="${smoothPath(pts)}" fill="none" stroke="#7BE7BF" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <div class="wf-leg"><span><i style="background:#11956E"></i>Daily hours</span><span><i style="background:#0B5AA6"></i>Trend</span><span>Peak ${esc(peak)}</span><span>Avg ${esc(avg)} h</span></div></div>`;
+}
+
 function render(){
   const months = monthsList();
   const list = monthRecords(curYm);
@@ -284,8 +442,11 @@ function render(){
         <div class="avatar" aria-hidden="true">${esc((name.trim().charAt(0) || "?").toUpperCase())}</div>
         <div><p class="eyebrow">Shared Attendance</p><h1>${esc(name)}</h1>${updated ? `<p class="sub">${esc(updated)}</p>` : ""}</div>
       </div>
-      ${months.length ? `<label class="fl" for="month">Month</label>
-      <select id="month">${months.map(m => `<option value="${m}"${m === curYm ? " selected" : ""}>${monthLabel(m)}</option>`).join("")}</select>` : ""}
+      ${months.length ? `<div class="mstep">
+        <button class="mbtn" data-step="1" aria-label="Previous month"${months.indexOf(curYm) >= months.length - 1 ? " disabled" : ""}>&#8249;</button>
+        <select id="month" aria-label="Month">${months.map(m => `<option value="${m}"${m === curYm ? " selected" : ""}>${monthLabel(m)}</option>`).join("")}</select>
+        <button class="mbtn" data-step="-1" aria-label="Next month"${months.indexOf(curYm) <= 0 ? " disabled" : ""}>&#8250;</button>
+      </div>` : ""}
     </section>
     ${months.length ? `
     <div class="tiles">
@@ -299,40 +460,53 @@ function render(){
       <div class="ratefoot">Average ${avg}h per work day · ${monthLabel(curYm)}</div>
     </section>
     ${eg ? `<section class="card earn">
-      <div class="earnhead"><span class="earn-ic">${ICON_EARN}</span><div><h3>My Earnings</h3><p>${monthLabel(curYm)}</p></div></div>
+      <div class="earnhead"><span class="earn-ic">${ICON_EARN}</span><div><h3>Earnings</h3><p>${monthLabel(curYm)}</p></div></div>
       <div class="earn-grid">
         <div><span>Total Earned</span><b>${moneyRM(eg.gross)}</b><small>${fmtH(eg.hours)} h × RM ${rateTxt(eg.rate)}</small></div>
         <div class="take"><span>Take-home</span><b>${moneyRM(eg.net)}</b><small>after advance cut</small></div>
       </div>
-      <p class="earn-note">Calculated from recorded attendance hours. For reference only.</p>
-      <button class="btn sec earn-btn" id="earnBtn">${ICON_DL}Download Earnings Summary</button>
+      <p class="earn-note" style="margin:0">Calculated from recorded attendance hours. For reference only.</p>
     </section>` : ""}
     <div class="actions">
-      <button class="btn" id="pdfBtn">${ICON_DL}Download PDF</button>
-      <button class="btn sec" id="repBtn">${ICON_FLAG}Report an Issue</button>
+      <button class="btn" id="pdfBtn">${ICON_DL}Attendance PDF</button>
+      ${eg ? `<button class="btn sec" id="earnBtn">${ICON_DL}Earnings PDF</button>` : ""}
     </div>
+    <button class="btn sec rep-wide" id="repBtn">${ICON_FLAG}Report an Issue</button>
+    ${weekBars(list, curYm)}
     <section class="card">
-      <div class="lhead"><h3>Daily Records</h3><span>${list.length} day${list.length === 1 ? "" : "s"}</span></div>
-      <ul class="list" id="rows">${list.map(r => {
-        const dd = r.d.slice(8, 10), mm = MONTHS[Number(r.d.slice(5, 7)) - 1].slice(0, 3);
-        return `
+      <div class="lhead"><h3>Daily Records</h3><span>${list.length > DAILY_LIMIT && !showAll ? "Latest " + DAILY_LIMIT + " of " + list.length + " days" : list.length + " day" + (list.length === 1 ? "" : "s")}</span></div>
+      <ul class="list" id="rows">${(showAll ? list : list.slice(0, DAILY_LIMIT)).map(r => `
         <li class="row${r.s === "duty" ? "" : " is-leave"}">
-          <div class="dt"><b>${dd}</b><span>${mm}</span></div>
-          <div class="d"><b>${weekday(r.d)}</b><small>${fullLabel(r.d)}</small></div>
+          <div class="d"><b>${wkday3(r.d)}, ${Number(r.d.slice(8, 10))} ${MONTHS[Number(r.d.slice(5, 7)) - 1].slice(0, 3)}</b></div>
           <span class="badge ${r.s === "duty" ? "duty" : "leave"}">${r.s === "duty" ? "Present" : "Leave"}</span>
           <span class="h${r.s === "duty" ? "" : " off"}">${r.s === "duty" ? fmtH(r.h) + "h" : "—"}</span>
           <button class="flag" data-date="${r.d}" aria-label="Report an issue for ${fullLabel(r.d)}" title="Report an issue">${ICON_FLAG}</button>
-        </li>`; }).join("")}</ul>
+        </li>`).join("")}</ul>
+      ${list.length > DAILY_LIMIT ? `<button class="btn sec more" id="moreBtn">${showAll ? "Show fewer days" : "Show all " + list.length + " days"}</button>` : ""}
+      <p class="tapnote">Tap the flag next to a day to report an issue</p>
+    </section>
+    <section class="card faq">
+      <div class="lhead"><h3>Questions &amp; answers</h3></div>
+      ${faqHtml(!!eg)}
+      ${helpHtml(name, curYm)}
     </section>` : `<section class="card"><div class="empty">No attendance records yet.</div></section>`}`;
+  drawWave(months.length ? list : [], curYm);
 }
 
 // ---- one set of delegated listeners (no per-row listeners) ----
 app.addEventListener("change", e => {
-  if(e.target.id === "month"){ curYm = e.target.value; render(); }
+  if(e.target.id === "month"){ curYm = e.target.value; showAll = false; render(); }
 });
 app.addEventListener("click", e => {
   const f = e.target.closest(".flag");
   if(f){ openReport(f.dataset.date); return; }
+  const st = e.target.closest(".mbtn");
+  if(st && !st.disabled){
+    const ms = monthsList(), i = ms.indexOf(curYm) + Number(st.dataset.step);
+    if(ms[i]){ curYm = ms[i]; showAll = false; render(); }
+    return;
+  }
+  if(e.target.closest("#moreBtn")){ const y = window.scrollY; showAll = !showAll; render(); window.scrollTo(0, y); return; }
   if(e.target.closest("#repBtn")) openReport("");
   else if(e.target.closest("#pdfBtn")) downloadPdf(e.target.closest("#pdfBtn"));
   else if(e.target.closest("#earnBtn")) downloadEarnings(e.target.closest("#earnBtn"));

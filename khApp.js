@@ -3714,7 +3714,7 @@ export function initKhApp(uid, isAdmin){
     const n = new Date();
     return String(ym) >= n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0");
   }
-  function provisionalTag(ym){ return isOpenMonth(ym) ? " (Provisional)" : ""; }
+  function provisionalTag(ym){ return ""; }   // the PDF Report ID is printed clean, with no "(Provisional)" label
 
   // Numbers for each member row (shared by the PDF and the share-link payload).
   function computeEarnings(rows, ym){

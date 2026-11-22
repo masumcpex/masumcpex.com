@@ -222,16 +222,7 @@ footer.wf{ margin-top:18px; background:#081B3F; color:#C9D6EE; font-size:.8rem; 
 footer.wf .byline{ color:#fff; margin-bottom:8px; }
 footer.wf .sec{ color:#9FD9C2; }
 footer.wf a{ color:#fff; font-weight:600; }
-.wf-wave{ margin:16px -16px 8px; }
-.wf-cap{ display:flex; justify-content:space-between; align-items:baseline; padding:0 16px 6px; text-align:left; }
-.wf-cap b{ font-family:var(--serif); font-size:1rem; color:#fff; }
-.wf-cap span{ font-size:.74rem; color:#9FB3D6; }
-.wf-svg{ display:block; width:100%; height:120px; transform-origin:50% 100%; animation:wavein .9s ease-out both; }
-@keyframes wavein{ from{ transform:scaleY(.15); opacity:.3; } to{ transform:scaleY(1); opacity:1; } }
-@media (prefers-reduced-motion:reduce){ .wf-svg{ animation:none; } }
-.wf-leg{ display:flex; flex-wrap:wrap; justify-content:center; gap:4px 14px; padding:8px 16px 0; font-size:.74rem; color:#C9D6EE; }
-.wf-leg i{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
-.wf-legal{ border-top:1px solid rgba(255,255,255,.12); padding-top:14px; line-height:2; }
+.wf-legal{ padding-top:0; line-height:2; }
 .wf-legal a{ color:#C9D6EE; text-decoration:none; font-weight:500; }
 .wf-legal a:hover{ color:#fff; text-decoration:underline; }
 .wf-legal .dot{ margin:0 10px; opacity:.6; }
@@ -246,18 +237,44 @@ footer.wf a{ color:#fff; font-weight:600; }
 @keyframes mkRun{ from{ stroke-dashoffset:1000; } to{ stroke-dashoffset:0; } }
 .wf-mail{ display:inline-flex; align-items:center; gap:8px; }
 .wf-mail img{ width:26px; height:26px; border-radius:50%; object-fit:cover; border:1.5px solid #fff; box-shadow:0 1px 4px rgba(16,24,40,.25); }
+/* ===== View-only info sheet + Verify ID ===== */
+[hidden]{ display:none !important; }
+button.chip{ font-family:inherit; color:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+button.chip:active{ background:rgba(255,255,255,.26); }
+.tabs2{ display:flex; gap:6px; background:#F1ECDF; padding:4px; border-radius:12px; margin:10px 0 12px; }
+.tabs2 button{ flex:1; min-height:42px; border:0; border-radius:9px; background:transparent; font-weight:700; font-size:.92rem; color:var(--muted); cursor:pointer; }
+.tabs2 button.on{ background:#fff; color:var(--navy); box-shadow:0 1px 3px rgba(16,24,40,.14); }
+.rules{ list-style:none; margin:0; padding:0; }
+.rules li{ display:flex; gap:12px; padding:11px 0; border-bottom:1px solid var(--line); }
+.rules li:last-child{ border-bottom:0; }
+.rules .ri{ width:26px; height:26px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; margin-top:1px; }
+.rules .ri svg{ width:15px; height:15px; }
+.rules .no .ri{ background:rgba(192,57,43,.12); color:var(--danger); }
+.rules .yes .ri{ background:var(--okbg); color:var(--ok); }
+.rules .lk .ri{ background:#F1ECDF; color:var(--navy); }
+.rules b{ display:block; font-size:.95rem; color:var(--ink); }
+.rules span.t{ display:block; font-size:.84rem; color:var(--muted); margin-top:1px; }
+.vf-in{ width:100%; min-height:50px; padding:10px 14px; border:1.5px solid var(--line); border-radius:12px; background:#fff; color:var(--ink); font-size:1rem; letter-spacing:.05em; text-transform:uppercase; }
+.vf-in:focus{ outline:none; border-color:var(--navy); box-shadow:0 0 0 3px rgba(18,32,63,.12); }
+.vf{ margin-top:14px; padding:13px 14px; border-radius:12px; border:1.5px solid var(--line); font-size:.9rem; }
+.vf > b{ display:block; font-size:1rem; margin-bottom:2px; }
+.vf.is-ok{ background:var(--okbg); border-color:#9CC9B0; } .vf.is-ok > b{ color:var(--ok); }
+.vf.is-warn{ background:var(--lvbg); border-color:#E2C48F; } .vf.is-warn > b{ color:var(--lv); }
+.vf.is-bad{ background:rgba(192,57,43,.08); border-color:#E5B1AB; } .vf.is-bad > b{ color:var(--danger); }
+.vf-list{ list-style:none; margin:10px 0 0; padding:10px 0 0; border-top:1px solid rgba(0,0,0,.08); }
+.vf-list li{ padding:2px 0; } .vf-note{ margin:8px 0 0; font-size:.82rem; opacity:.85; }
+.vf-fine{ margin:12px 0 0; font-size:.78rem; color:var(--muted); }
 </style>
 </head>
 <body>
 <header class="bar">
   <a class="brandrow" href="https://masumcpex.com" target="_blank" rel="noopener noreferrer" aria-label="Masum Cpex website (opens in a new tab)"><div class="mark" aria-hidden="true"><img src="masum2.png" alt="" decoding="async" onerror="this.parentNode.textContent='M'"></div><div class="brand">WORKTRACK<small>Attendance &amp; Workforce Management</small></div></a>
-  <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>View only</span>
+  <button type="button" class="chip" id="viewOnlyBtn" aria-haspopup="dialog" aria-label="About this view-only link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>View only<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;opacity:.75"><path d="M9 6l6 6-6 6"/></svg></button>
 </header>
 <main id="app" aria-live="polite">
   <div class="card"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;height:24px"></div><div class="skel"></div><div class="skel" style="width:85%"></div></div>
 </main>
-<footer class="wf"><div id="waveBox"></div>
-<div class="wf-legal">
+<footer class="wf"><div class="wf-legal">
   <div>© <span id="yr">2026</span> Masum Cpex. All Rights Reserved.</div>
   <div><a href="https://masumcpex.bro.bd/legal#privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a><span class="dot" aria-hidden="true">•</span><a href="https://masumcpex.bro.bd/legal#terms-of-service" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a></div>
   <div><span class="wf-mail"><img src="masum.webp" alt="" decoding="async" onerror="this.style.display='none'"><a href="mailto:info@masumcpex.com">info@masumcpex.com</a></span></div>
@@ -415,14 +432,13 @@ function weekBars(list, ym){
 }
 function faqHtml(hasEarn){
   const qa = [
-    ["Who can see this page?", "Only people who have this private link. It is view-only, nobody can change anything here, and the administrator can switch the link off at any time."],
     ["How often is it updated?", "Whenever the administrator updates your records. The date under your name shows when it last changed."],
     ["Something looks wrong. What do I do?", "Tap the flag next to a day, or press Report an Issue. Your report goes straight to the administrator for review."],
     ["What does the attendance rate mean?", "It is your work days divided by work days plus leave days for the selected month."]
   ];
   if(hasEarn){
     qa.push(["How are earnings calculated?", "Recorded hours multiplied by the hourly rate, less any advance. It is for reference only."]);
-    qa.push(["How can I check an earnings PDF is genuine?", "Each PDF has a Report ID in its footer. The administrator can check it in WorkTrack under Verify a report."]);
+    qa.push(["How can I check an earnings PDF is genuine?", "Each PDF has a Report ID in its footer. You can check it yourself: tap View only at the top, then Verify ID. The administrator can also check it in WorkTrack."]);
   }
   return qa.map(q => `<details><summary>${esc(q[0])}</summary><p>${esc(q[1])}</p></details>`).join("");
 }
@@ -434,41 +450,6 @@ function helpHtml(name, ym){
   const wa = PHONE ? `<a class="btn sec" href="${esc("https://wa.me/" + PHONE + "?text=" + enc)}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : "";
   const sms = PHONE ? `<a class="btn sec" href="${esc("sms:+" + PHONE + "?&body=" + enc)}">SMS</a>` : "";
   return `<div class="helpbox"><h4>Need more help?</h4><p>Your message opens with your name and month already filled in.</p><div class="actions"><a class="btn sec" href="${esc(mail)}">Email</a>${wa}${sms}</div></div>`;
-}
-
-// ---- Footer wave: one point per recorded day (hours), leave days dip to the baseline; the blue layer is a 5-day trend ----
-function smoothPath(pts){
-  let d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
-  const cl = y => Math.max(6, Math.min(118, y));
-  for(let i = 0; i < pts.length - 1; i++){
-    const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
-    const c = [p1[0] + (p2[0] - p0[0]) / 6, cl(p1[1] + (p2[1] - p0[1]) / 6), p2[0] - (p3[0] - p1[0]) / 6, cl(p2[1] - (p3[1] - p1[1]) / 6), p2[0], p2[1]];
-    d += " C" + c.map(n => n.toFixed(1)).join(" ");
-  }
-  return d;
-}
-function drawWave(list, ym){
-  const box = document.getElementById("waveBox");
-  if(!box) return;
-  const asc = list.slice().sort((a, b) => a.d.localeCompare(b.d));
-  const hrs = asc.map(r => r.s === "duty" ? (Number(r.h) || 0) : 0);
-  const n = hrs.length, duty = asc.filter(r => r.s === "duty").length, total = hrs.reduce((t, h) => t + h, 0);
-  if(n < 2 || !(total > 0)){ box.innerHTML = ""; return; }
-  const W = 390, H = 130, TOP = 22, BASE = 118, max = Math.max(10, Math.max.apply(null, hrs));
-  const X = i => 6 + i * ((W - 12) / (n - 1)), Y = v => BASE - (v / max) * (BASE - TOP);
-  const pts = hrs.map((v, i) => [X(i), Y(v)]);
-  const tr = hrs.map((_, i) => { let t = 0, c = 0; for(let k = Math.max(0, i - 2); k <= Math.min(n - 1, i + 2); k++){ t += hrs[k]; c++; } return [X(i), Y(t / c)]; });
-  const area = p => smoothPath(p) + " L" + X(n - 1).toFixed(1) + " " + H + " L" + X(0).toFixed(1) + " " + H + " Z";
-  let pk = 0; hrs.forEach((h, i) => { if(h > hrs[pk]) pk = i; });
-  const pd = asc[pk].d, peak = fmtH(hrs[pk]) + " h on " + Number(pd.slice(8, 10)) + " " + MONTHS[Number(pd.slice(5, 7)) - 1].slice(0, 3);
-  const avg = fmtH(total / duty);
-  box.innerHTML = `<div class="wf-wave"><div class="wf-cap"><b>Work rhythm</b><span>${esc(monthLabel(ym))}</span></div>
-    <svg class="wf-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="${esc("Daily hours for " + monthLabel(ym) + ". Highest " + peak + ". Average " + avg + " hours per work day.")}">
-      <path d="${area(tr)}" fill="#0B5AA6"/>
-      <path d="${area(pts)}" fill="#11956E" fill-opacity=".92"/>
-      <path d="${smoothPath(pts)}" fill="none" stroke="#7BE7BF" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
-    </svg>
-    <div class="wf-leg"><span><i style="background:#11956E"></i>Daily hours</span><span><i style="background:#0B5AA6"></i>Trend</span><span>Peak ${esc(peak)}</span><span>Avg ${esc(avg)} h</span></div></div>`;
 }
 
 function render(){
@@ -535,7 +516,6 @@ function render(){
       ${faqHtml(!!eg)}
       ${helpHtml(name, curYm)}
     </section>` : `<section class="card"><div class="empty">No attendance records yet.</div></section>`}`;
-  drawWave(months.length ? list : [], curYm);
 }
 
 // ---- one set of delegated listeners (no per-row listeners) ----
@@ -556,6 +536,111 @@ app.addEventListener("click", e => {
   else if(e.target.closest("#pdfBtn")) downloadPdf(e.target.closest("#pdfBtn"));
   else if(e.target.closest("#earnBtn")) downloadEarnings(e.target.closest("#earnBtn"));
 });
+
+// ---- View-only rules + verify a Report ID (works only on this link's own member) ----
+const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+function earnCheck(parts){
+  const text = parts.join("|");
+  let h = 0x811c9dc5;
+  for(let i = 0; i < text.length; i++){ h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  let out = "";
+  for(let i = 0; i < 4; i++){ out += A[h % A.length]; h = Math.floor(h / A.length); }
+  return out;
+}
+const clean3 = x => String(x || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 3) || "GEN";
+function attRid(ym, who, duty, leave, hours){
+  const w = clean3(who), p = String(ym).split("-");
+  const h = Math.round((Number(hours) || 0) * 10000 + 1e-7) / 10000;
+  return "A-" + p[1] + p[0].slice(2) + "-" + w + "-" + earnCheck(["A", ym, w, duty, leave, h]).slice(0, 3);
+}
+const vfBox = (cls, title, text, extra) => `<div class="vf ${cls}"><b>${esc(title)}</b><span>${esc(text)}</span>${extra || ""}</div>`;
+const vfFacts = rows => `<ul class="vf-list">${rows.map(r => `<li>${esc(r[0])}: <b>${esc(r[1])}</b></li>`).join("")}</ul>`;
+function verifyId(input){
+  if(!share) return vfBox("is-bad", "Not available", "Open your own attendance link to verify a Report ID.");
+  const c = String(input || "").toUpperCase().replace(/\(?PROVISIONAL\)?/g, "").replace(/\s+/g, "");
+  if(!c) return vfBox("is-bad", "Enter an ID", "Type the Report ID printed at the bottom of your PDF.");
+  const badFmt = () => vfBox("is-bad", "Not a valid ID", "Example: A-1126-MAS-X7K (attendance) or E-1126-MAS-P9L (earnings).");
+  let kind = "", mm = "", yy = "", who = "", tail = "", m;
+  if((m = c.match(/^([AE])-(\d{2})(\d{2})-([A-Z0-9]{1,3})-([A-Z0-9]{3})$/))){ kind = m[1]; mm = m[2]; yy = m[3]; who = m[4]; tail = m[5]; }
+  else if((m = c.match(/^WT-E-(\d{4})-(\d{2})-([A-Z0-9]{1,3})(?:-([A-Z0-9]{4}))?$/))){ kind = "E"; yy = m[1].slice(2); mm = m[2]; who = m[3]; tail = (m[4] || "").slice(0, 3); }
+  else if((m = c.match(/^WT-(\d{4})-(\d{2})-([A-Z0-9]{1,3})$/))){ kind = "A"; yy = m[1].slice(2); mm = m[2]; who = m[3]; tail = ""; }
+  else return badFmt();
+  if(Number(mm) < 1 || Number(mm) > 12) return badFmt();
+  const ym = "20" + yy + "-" + mm;
+  const mine = clean3(share.memberId || share.memberName);
+  if(who !== mine) return vfBox("is-bad", "Not found", "This ID does not belong to this attendance link.");
+  const now = new Date(), open = ym >= now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+  const note = open ? '<p class="vf-note">This month has not ended yet, so the figures can still change.</p>' : "";
+  const OK = "The figures in this report match the records exactly.";
+  const NO = "The records changed after this PDF was made, or the ID was typed wrongly. Current figures:";
+  const OLD = "This older-style ID has no check letters, so it cannot be matched. Current figures:";
+  if(kind === "A"){
+    const list = monthRecords(ym);
+    if(!list.length) return vfBox("is-bad", "Not found", "There is no attendance recorded for " + monthLabel(ym) + ".");
+    const st = stats(list);
+    const facts = vfFacts([["Member", share.memberName || "-"], ["Month", monthLabel(ym)], ["Present", st.duty], ["Leave", st.leave], ["Total hours", fmtH(st.hours) + " h"]]);
+    if(!tail) return vfBox("is-warn", "Older-style ID", OLD, facts + note);
+    const exp = attRid(ym, mine, st.duty, st.leave, st.hours).split("-").pop();
+    return exp === tail ? vfBox("is-ok", "Matches", OK, facts + note) : vfBox("is-warn", "Does not match", NO, facts + note);
+  }
+  const rawE = share.earnings && share.earnings[ekey(ym)];
+  if(!rawE || typeof rawE !== "object" || !(Number(rawE.rate) > 0)) return vfBox("is-bad", "Not found", "There is no earnings report for " + monthLabel(ym) + " on this link.");
+  const e = earningsFor(ym);
+  if(!e) return vfBox("is-warn", "Report is out of date", "The attendance changed after this earnings report was prepared. Please ask the administrator for a new report.");
+  const facts = vfFacts([["Member", share.memberName || "-"], ["Month", monthLabel(ym)], ["Total hours", fmtH(e.hours) + " h"], ["Total earned", moneyRM(e.gross)], ["Advance cut", moneyRM(e.ded)], ["Take-home", moneyRM(e.net)]]);
+  if(!tail) return vfBox("is-warn", "Older-style ID", OLD, facts + note);
+  const exp = String(e.rid || "").split("-").pop().slice(0, 3);
+  return exp === tail ? vfBox("is-ok", "Matches", OK, facts + note) : vfBox("is-warn", "Does not match", NO, facts + note);
+}
+function openInfo(tab){
+  const rule = (cls, icon, t, d) => `<li class="${cls}"><span class="ri">${icon}</span><div><b>${esc(t)}</b><span class="t">${esc(d)}</span></div></li>`;
+  const ov = document.createElement("div");
+  ov.className = "ov";
+  ov.innerHTML = `
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="View-only link">
+      <h2>View-only link</h2>
+      <div class="tabs2" role="tablist">
+        <button type="button" role="tab" data-tab="rules">Rules</button>
+        <button type="button" role="tab" data-tab="verify">Verify ID</button>
+      </div>
+      <div id="tabRules"><ul class="rules">
+        ${rule("no", ICON_X, "Nothing can be edited", "Dates, status and hours cannot be changed from this page.")}
+        ${rule("no", ICON_X, "Nothing can be added or deleted", "New attendance, leave and advances are entered only by the administrator.")}
+        ${rule("no", ICON_X, "Rates and earnings cannot be changed", "Earnings, where shown, are calculated from recorded hours and are for reference only.")}
+        ${rule("yes", ICON_OK, "You can view and download", "Your attendance, monthly reports and PDFs.")}
+        ${rule("yes", ICON_OK, "You can report an issue", "Your message goes to the administrator. It does not change anything by itself.")}
+        ${rule("lk", ICON_LOCK, "Private link", "Only people who have this link can open it, so please do not post it publicly. The administrator can switch it off at any time.")}
+        ${rule("lk", ICON_LOCK, "Only your own record", "No other member's data is shown on this page.")}
+      </ul></div>
+      <div id="tabVerify" hidden>
+        <p class="lead">Type the Report ID printed at the bottom of a PDF to check it against the records on this page.</p>
+        <input class="vf-in" id="vfCode" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" placeholder="A-1126-MAS-XXX" aria-label="Report ID">
+        <div class="actions" style="margin-top:10px"><button type="button" class="btn" id="vfGo">Check ID</button></div>
+        <div id="vfOut" aria-live="polite"></div>
+        <p class="vf-fine">This compares the ID with the records held for this link. It cannot prove that nobody edited a PDF file.</p>
+      </div>
+      <div class="actions" style="margin-top:14px"><button type="button" class="btn sec" id="infoClose">Close</button></div>
+    </div>`;
+  document.body.appendChild(ov);
+  const q = s => ov.querySelector(s);
+  const close = () => { document.removeEventListener("keydown", onKey); ov.remove(); };
+  const onKey = e => { if(e.key === "Escape") close(); };
+  document.addEventListener("keydown", onKey);
+  ov.addEventListener("click", e => { if(e.target === ov) close(); });
+  q("#infoClose").onclick = close;
+  const show = t => {
+    q("#tabRules").hidden = t !== "rules"; q("#tabVerify").hidden = t !== "verify";
+    ov.querySelectorAll(".tabs2 button").forEach(b => { const on = b.dataset.tab === t; b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false"); });
+    if(t === "verify") setTimeout(() => { try{ q("#vfCode").focus(); }catch(_){} }, 60);
+  };
+  ov.querySelectorAll(".tabs2 button").forEach(b => b.addEventListener("click", () => show(b.dataset.tab)));
+  const run = () => { q("#vfOut").innerHTML = verifyId(q("#vfCode").value); };
+  q("#vfGo").onclick = run;
+  q("#vfCode").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); run(); } });
+  show(tab === "verify" ? "verify" : "rules");
+}
+{ const vb = document.getElementById("viewOnlyBtn"); if(vb) vb.addEventListener("click", () => openInfo("rules")); }
 
 // ---- Report an issue ----
 function openReport(preDate){

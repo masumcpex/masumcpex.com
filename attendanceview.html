@@ -568,8 +568,6 @@ function verifyId(input){
   else return badFmt();
   if(Number(mm) < 1 || Number(mm) > 12) return badFmt();
   const ym = "20" + yy + "-" + mm;
-  const mine = clean3(share.memberId || share.memberName);
-  if(who !== mine) return vfBox("is-bad", "Not found", "This ID does not belong to this attendance link.");
   const now = new Date(), open = ym >= now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
   const note = open ? '<p class="vf-note">This month has not ended yet, so the figures can still change.</p>' : "";
   const OK = "The figures in this report match the records exactly.";
@@ -581,7 +579,7 @@ function verifyId(input){
     const st = stats(list);
     const facts = vfFacts([["Member", share.memberName || "-"], ["Month", monthLabel(ym)], ["Present", st.duty], ["Leave", st.leave], ["Total hours", fmtH(st.hours) + " h"]]);
     if(!tail) return vfBox("is-warn", "Older-style ID", OLD, facts + note);
-    const exp = attRid(ym, mine, st.duty, st.leave, st.hours).split("-").pop();
+    const exp = attRid(ym, who, st.duty, st.leave, st.hours).split("-").pop();
     return exp === tail ? vfBox("is-ok", "Matches", OK, facts + note) : vfBox("is-warn", "Does not match", NO, facts + note);
   }
   const rawE = share.earnings && share.earnings[ekey(ym)];
@@ -590,8 +588,9 @@ function verifyId(input){
   if(!e) return vfBox("is-warn", "Report is out of date", "The attendance changed after this earnings report was prepared. Please ask the administrator for a new report.");
   const facts = vfFacts([["Member", share.memberName || "-"], ["Month", monthLabel(ym)], ["Total hours", fmtH(e.hours) + " h"], ["Total earned", moneyRM(e.gross)], ["Advance cut", moneyRM(e.ded)], ["Take-home", moneyRM(e.net)]]);
   if(!tail) return vfBox("is-warn", "Older-style ID", OLD, facts + note);
-  const exp = String(e.rid || "").split("-").pop().slice(0, 3);
-  return exp === tail ? vfBox("is-ok", "Matches", OK, facts + note) : vfBox("is-warn", "Does not match", NO, facts + note);
+  const exp = String(e.rid || "").toUpperCase().replace(/\s+/g, "");
+  const typed = "E-" + mm + yy + "-" + who + "-" + tail;
+  return exp === typed ? vfBox("is-ok", "Matches", OK, facts + note) : vfBox("is-warn", "Does not match", NO, facts + note);
 }
 function openInfo(tab){
   const rule = (cls, icon, t, d) => `<li class="${cls}"><span class="ri">${icon}</span><div><b>${esc(t)}</b><span class="t">${esc(d)}</span></div></li>`;

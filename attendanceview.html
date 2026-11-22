@@ -327,13 +327,23 @@ const PHONE = "";   // support phone, digits with country code (e.g. 60123456789
 const H2C = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
 const JSPDF = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
 const QRLIB = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";
-async function qrFor(text){
+async function qrObj(text){
   try{
     if(typeof window.qrcode !== "function") await loadScript(QRLIB);
-    if(typeof window.qrcode !== "function") return "";
+    if(typeof window.qrcode !== "function") return null;
     const qr = window.qrcode(0, "M"); qr.addData(text); qr.make();
-    return qr.createDataURL(6, 12);
-  }catch(e){ return ""; }
+    return qr;
+  }catch(e){ return null; }
+}
+// Crisp QR for pictures inside a page: drawn as SVG squares, so it never goes soft when scaled.
+async function qrFor(text){
+  const qr = await qrObj(text);
+  if(!qr) return "";
+  const n = qr.getModuleCount(), m = 2, sz = n + 2 * m;
+  let d = "";
+  for(let r = 0; r < n; r++) for(let c = 0; c < n; c++) if(qr.isDark(r, c)) d += "M" + (c + m) + " " + (r + m) + "h1v1h-1z";
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + sz * 8 + '" height="' + sz * 8 + '" viewBox="0 0 ' + sz + " " + sz + '" shape-rendering="crispEdges"><rect width="' + sz + '" height="' + sz + '" fill="#fff"/><path d="' + d + '" fill="#14213D"/></svg>';
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }
 const CATS = {
   status: "Incorrect attendance status", hours: "Incorrect work hours", missing: "Missing attendance record",
@@ -881,7 +891,7 @@ function pdfPagesHtml(ym, list, rid, qr){
       <div style="position:absolute;left:0;top:-2px;width:30px;height:3px;background:${GOLD};"></div>
       <div><div style="color:${NAVY};font-weight:700;">masumcpex.com</div><div>${CONTACT}</div></div>
       <div style="text-align:center;"><div>Report ID: <b style="color:${NAVY};">${esc(rid)}</b></div><div>View-only copy \u00B7 Generated ${genTxt}</div></div>
-      <div style="display:flex;align-items:center;gap:10px;"><div style="text-align:right;"><div>Page 1 of 1</div>${qr ? `<div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:${GOLD};">SCAN TO VERIFY</div>` : ""}</div>${qr ? `<img id="khQrImg" src="${qr}" alt="" style="width:62px;height:62px;display:block;">` : ""}</div>
+      <div style="display:flex;align-items:center;gap:10px;"><div style="text-align:right;"><div>Page 1 of 1</div>${qr ? `<div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:${GOLD};">SCAN TO VERIFY</div>` : ""}</div>${qr ? `<div id="khQrImg" style="width:62px;height:62px;"></div>` : ""}</div>
     </div></div>`;
 }
 async function downloadPdf(btn){
@@ -894,10 +904,10 @@ async function downloadPdf(btn){
     const st = stats(list);
     const rid = attRid(curYm, share.memberId || share.memberName, st.duty, st.leave, st.hours);
     const u = new URL(location.href); u.hash = ""; u.searchParams.set("verify", rid);
-    const qr = await qrFor(u.toString());
+    const qo = await qrObj(u.toString());
     wrap = document.createElement("div");
     wrap.style.cssText = "position:fixed;left:-10000px;top:0;width:794px;";
-    wrap.innerHTML = pdfPagesHtml(curYm, list, rid, qr);
+    wrap.innerHTML = pdfPagesHtml(curYm, list, rid, !!qo);
     document.body.appendChild(wrap);
     try{ await document.fonts.ready; }catch(_){}
     const pageEl = wrap.querySelector(".pdfp");
@@ -905,8 +915,12 @@ async function downloadPdf(btn){
     const pdf = new window.jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     pdf.addImage(canvas.toDataURL("image/jpeg", 0.98), "JPEG", 0, 0, 210, 297);
     const qe = wrap.querySelector("#khQrImg");
-    if(qe){
+    if(qe && qo){
       const pr = pageEl.getBoundingClientRect(), r = qe.getBoundingClientRect();
+      const qx = (r.left - pr.left) / pr.width * 210, qy = (r.top - pr.top) / pr.height * 297, qs = r.width / pr.width * 210;
+      const nm = qo.getModuleCount(), cell = qs / nm;
+      pdf.setFillColor(20, 33, 61);
+      for(let i = 0; i < nm; i++) for(let j = 0; j < nm; j++) if(qo.isDark(i, j)) pdf.rect(qx + j * cell, qy + i * cell, cell + 0.02, cell + 0.02, "F");
       pdf.link((r.left - pr.left) / pr.width * 210, (r.top - pr.top) / pr.height * 297, r.width / pr.width * 210, r.height / pr.height * 297, { url: u.toString() });
     }
     const safe = String(share.memberName).replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") || "member";

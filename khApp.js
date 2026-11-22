@@ -4433,14 +4433,14 @@ export function initKhApp(uid, isAdmin){
   ];
   const QR_LIB = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";
   async function qrDataUrl(text){
-    try{
-      if(typeof window.qrcode !== "function") await loadScriptOnce(QR_LIB);
-      if(typeof window.qrcode !== "function") return "";   // library not available: the PDF simply has no QR
-      const qr = window.qrcode(0, "M");
-      qr.addData(text);
-      qr.make();
-      return qr.createDataURL(6, 12);
-    }catch(e){ console.warn("QR failed", e); return ""; }
+    const qr = await qrObject(text);
+    if(!qr) return "";   // library not available: the PDF simply has no QR
+    // Drawn as SVG squares so the QR stays sharp at any size in the PDF.
+    const n = qr.getModuleCount(), m = 2, sz = n + 2 * m;
+    let d = "";
+    for(let r = 0; r < n; r++) for(let c = 0; c < n; c++) if(qr.isDark(r, c)) d += "M" + (c + m) + " " + (r + m) + "h1v1h-1z";
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + sz * 8 + '" height="' + sz * 8 + '" viewBox="0 0 ' + sz + " " + sz + '" shape-rendering="crispEdges"><rect width="' + sz + '" height="' + sz + '" fill="#fff"/><path d="' + d + '" fill="#14213D"/></svg>';
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
   }
   // Same QR, but returned as a matrix so the PDF can draw it as sharp vector squares.
   async function qrObject(text){

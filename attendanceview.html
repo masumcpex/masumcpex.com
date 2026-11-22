@@ -396,6 +396,11 @@ async function load(){
     const months = monthsList();
     curYm = months[0] || "";
     render();
+    const vp = params.get("verify");
+    if(vp){
+      try{ params.delete("verify"); history.replaceState(null, "", location.pathname + (params.toString() ? "?" + params.toString() : "")); }catch(_){}
+      openInfo("verify", vp);
+    }
   }catch(err){
     console.error(err);
     const denied = err && (err.code === "permission-denied" || err.code === "unauthenticated");
@@ -592,7 +597,7 @@ function verifyId(input){
   const typed = "E-" + mm + yy + "-" + who + "-" + tail;
   return exp === typed ? vfBox("is-ok", "Matches", OK, facts + note) : vfBox("is-warn", "Does not match", NO, facts + note);
 }
-function openInfo(tab){
+function openInfo(tab, pre){
   const rule = (cls, icon, t, d) => `<li class="${cls}"><span class="ri">${icon}</span><div><b>${esc(t)}</b><span class="t">${esc(d)}</span></div></li>`;
   const ov = document.createElement("div");
   ov.className = "ov";
@@ -638,6 +643,7 @@ function openInfo(tab){
   q("#vfGo").onclick = run;
   q("#vfCode").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); run(); } });
   show(tab === "verify" ? "verify" : "rules");
+  if(pre){ q("#vfCode").value = String(pre).slice(0, 40); run(); }
 }
 { const vb = document.getElementById("viewOnlyBtn"); if(vb) vb.addEventListener("click", () => openInfo("rules")); }
 
@@ -830,34 +836,49 @@ function earningsFor(ym){
   if(Math.abs((Number(raw.hours) || 0) - st.hours) > 0.005 || raw.days !== st.duty || raw.leave !== st.leave) return null;
   return raw;
 }
-function pdfPagesHtml(ym, list){
+function pdfPagesHtml(ym, list, rid, qr){
   const asc = list.slice().sort((a, b) => a.d.localeCompare(b.d));
   const st = stats(asc);
-  const FIRST = 22, NEXT = 28;
-  const chunks = [asc.slice(0, FIRST)];
-  for(let i = FIRST; i < asc.length; i += NEXT) chunks.push(asc.slice(i, i + NEXT));
-  const gen = new Date(); const genTxt = String(gen.getDate()).padStart(2,"0") + " " + MONTHS[gen.getMonth()].slice(0,3) + " " + gen.getFullYear();
-  const th = "text-align:left;padding:9px 10px;font-size:12px;color:#fff;background:#173B63;";
-  const table = rows => `<table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr>
-      <th style="${th}">Date</th><th style="${th}">Day</th><th style="${th}">Status</th><th style="${th}text-align:right;">Hours</th></tr></thead><tbody>
-      ${rows.map((r, i) => `<tr style="background:${i % 2 ? "#F6F8FA" : "#fff"};height:34px;">
-        <td style="padding:0 10px;font-weight:600;">${fullLabel(r.d)}</td><td style="padding:0 10px;color:#667085;">${weekday(r.d)}</td>
-        <td style="padding:0 10px;color:${r.s === "duty" ? "#0F766A" : "#9C6B0F"};font-weight:700;">${r.s === "duty" ? "Present" : "Leave"}</td>
-        <td style="padding:0 10px;text-align:right;font-weight:700;">${r.s === "duty" ? fmtH(r.h) + "h" : "—"}</td></tr>`).join("")}
-      </tbody></table>`;
-  const kpi = (l, v) => `<div style="flex:1;background:#F3F6F9;border-radius:10px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#173B63;">${v}</div><div style="font-size:11px;color:#667085;font-weight:600;">${l}</div></div>`;
-  const page = (inner, n, total) => `<div class="pdfp" style="width:794px;height:1123px;padding:44px 48px;background:#fff;position:relative;font-family:${getComputedStyle(document.body).fontFamily};color:#172033;">
-      ${inner}
-      <div style="position:absolute;left:48px;right:48px;bottom:26px;display:flex;justify-content:space-between;font-size:11px;color:#98A2B3;border-top:1px solid #EEF1F4;padding-top:8px;">
-        <span>Generated ${genTxt} · View-only attendance report</span><span>Page ${n} of ${total}</span></div></div>`;
-  const total = chunks.length;
-  return chunks.map((rows, i) => page(i === 0 ? `
-      <div style="background:#173B63;color:#fff;border-radius:12px;padding:18px 20px;margin-bottom:18px;">
-        <div style="font-size:12px;letter-spacing:.12em;opacity:.8;">WORKTRACK · ATTENDANCE REPORT</div>
-        <div style="font-size:26px;font-weight:800;margin-top:4px;">${esc(share.memberName)}</div>
-        <div style="font-size:14px;opacity:.9;margin-top:2px;">${monthLabel(ym)}</div></div>
-      <div style="display:flex;gap:10px;margin-bottom:18px;">${kpi("Work Days", st.duty)}${kpi("Leave Days", st.leave)}${kpi("Total Hours", fmtH(st.hours))}</div>
-      ${table(rows)}` : table(rows), i + 1, total)).join("");
+  const NAVY = "#14213D", GOLD = "#B08D57", LGOLD = "#E3C98F", MUTED = "#6B6F7A", LINE = "#D9D2C3", PAPER = "#FBF9F4", ZEBRA = "#F5F1E7", LEAVE = "#F4E9CC";
+  const SERIF = "Georgia,'Noto Serif Bengali','Times New Roman',serif";
+  const n = Math.max(1, asc.length);
+  const rowH = Math.max(18, Math.min(32, Math.floor(715 / n)));
+  const avg = st.duty ? Math.round(st.hours / st.duty * 10) / 10 : 0;
+  const gen = new Date();
+  const genTxt = String(gen.getDate()).padStart(2, "0") + " " + MONTHS[gen.getMonth()].slice(0, 3) + " " + gen.getFullYear();
+  const mon3 = MONTHS[Number(ym.slice(5, 7)) - 1].slice(0, 3), yy = ym.slice(0, 4);
+  const dim = new Date(Number(yy), Number(ym.slice(5, 7)), 0).getDate();
+  const period = "01 " + mon3 + " " + yy + " \u2014 " + String(dim).padStart(2, "0") + " " + mon3 + " " + yy;
+  const shortDate = d => { const [y, m, dd] = d.split("-").map(Number); return String(dd).padStart(2, "0") + " " + MONTHS[m - 1].slice(0, 3) + " " + y; };
+  const dayShort = d => { const [y, m, dd] = d.split("-").map(Number); return new Date(y, m - 1, dd).toLocaleDateString("en-US", { weekday: "long" }); };
+  const dot = d => { const [y, m, dd] = d.split("-").map(Number); const g = new Date(y, m - 1, dd).getDay(); return (g === 0 || g === 6) ? `<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:${GOLD};margin-left:7px;vertical-align:middle;"></span>` : ""; };
+  const th = (t, al) => `<th style="background:transparent;color:${GOLD};padding:0 10px;height:28px;text-align:${al || "left"};font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid ${GOLD};">${t}</th>`;
+  const rows = asc.map((r, i) => {
+    const duty = r.s === "duty";
+    const bg = !duty ? LEAVE : (i % 2 ? ZEBRA : "transparent");
+    const td = "padding:0 10px;height:" + rowH + "px;line-height:" + rowH + "px;font-size:11.5px;border-bottom:1px solid " + LINE + ";color:" + NAVY + ";background:" + bg + ";";
+    return `<tr><td style="${td}">${shortDate(r.d)}</td><td style="${td}">${dayShort(r.d)}${dot(r.d)}</td><td style="${td}font-weight:700;letter-spacing:.04em;${duty ? "" : "color:" + GOLD + ";"}">${duty ? "PRESENT" : "LEAVE"}</td><td style="${td}text-align:right;font-variant-numeric:tabular-nums;">${duty ? fmtH(r.h) : "\u2014"}</td></tr>`;
+  }).join("");
+  const kpi = (l, v, first) => `<div style="flex:1;min-width:0;padding:10px 14px;${first ? "padding-left:0;" : "border-left:1px solid " + LINE + ";"}"><div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${MUTED};">${l}</div><div style="font-family:${SERIF};font-size:21px;font-weight:600;color:${NAVY};margin-top:3px;">${v}</div></div>`;
+  const initial = esc((share.memberName || "?").trim().charAt(0).toUpperCase());
+  return `<div class="pdfp" style="width:794px;height:1123px;padding:36px 48px 0;background:${PAPER};position:relative;overflow:hidden;font-family:${getComputedStyle(document.body).fontFamily};color:${NAVY};">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:2px solid ${NAVY};">
+      <div style="display:flex;align-items:center;gap:12px;"><img src="masum.png" alt="" onerror="this.style.display='none'" style="height:38px;object-fit:contain;"><div><div style="font-size:13px;font-weight:800;letter-spacing:.03em;">WORKTRACK</div><div style="font-size:10px;color:${MUTED};">Attendance &amp; Workforce Management</div></div></div>
+      <div style="text-align:right;"><div style="font-size:11px;font-weight:700;color:${GOLD};letter-spacing:.16em;">ATTENDANCE REPORT</div><div style="font-size:10px;color:${MUTED};margin-top:2px;">${monthLabel(ym)}</div></div>
+    </div>
+    <div style="height:1px;background:${GOLD};margin:3px 0 16px;"></div>
+    <div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-top:1px solid ${LINE};border-bottom:1px solid ${LINE};">
+      <div style="width:40px;height:40px;line-height:40px;border-radius:50%;background:${NAVY};color:${LGOLD};font-family:${SERIF};text-align:center;font-weight:700;font-size:16px;flex-shrink:0;">${initial}</div>
+      <div style="flex:1;"><div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${MUTED};">Employee</div><div style="font-family:${SERIF};font-size:20px;font-weight:600;margin:2px 0;">${esc(share.memberName || "")}</div><div style="font-size:10.5px;color:${MUTED};">Monthly Attendance Report \u2014 ${monthLabel(ym)} \u00B7 ${period}</div></div>
+    </div>
+    <div style="display:flex;border-bottom:1px solid ${LINE};margin-bottom:14px;">${kpi("Present", st.duty, true)}${kpi("Leave", st.leave)}${kpi("Total hours", fmtH(st.hours) + " h")}${kpi("Avg / work day", avg + " h")}</div>
+    <table style="width:100%;border-collapse:collapse;"><thead><tr>${th("Date")}${th("Day")}${th("Status")}${th("Work hours", "right")}</tr></thead><tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="3" style="background:${NAVY};color:#fff;padding:0 10px;height:32px;font-size:11.5px;font-weight:800;">Total work hours</td><td style="background:${NAVY};color:#fff;padding:0 10px;height:32px;font-size:11.5px;font-weight:800;text-align:right;">${fmtH(st.hours)} hrs</td></tr></tfoot></table>
+    <div style="position:absolute;left:48px;right:48px;bottom:28px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid ${LINE};padding-top:10px;font-size:10.5px;color:${MUTED};line-height:1.6;">
+      <div><div style="color:${NAVY};font-weight:700;">masumcpex.com</div><div>${CONTACT}</div></div>
+      <div style="text-align:center;"><div>Report ID: <b style="color:${NAVY};">${esc(rid)}</b></div><div>View-only copy \u00B7 Generated ${genTxt}</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><div style="text-align:right;">Page 1 of 1</div>${qr ? `<div style="text-align:center;"><img id="khQrImg" src="${qr}" alt="" style="width:62px;height:62px;display:block;"><div style="font-size:9px;margin-top:2px;">Scan to verify</div></div>` : ""}</div>
+    </div></div>`;
 }
 async function downloadPdf(btn){
   const list = monthRecords(curYm);
@@ -866,16 +887,23 @@ async function downloadPdf(btn){
   let wrap = null;
   try{
     await Promise.all([window.html2canvas ? 0 : loadScript(H2C), window.jspdf ? 0 : loadScript(JSPDF)]);
+    const st = stats(list);
+    const rid = attRid(curYm, share.memberId || share.memberName, st.duty, st.leave, st.hours);
+    const u = new URL(location.href); u.hash = ""; u.searchParams.set("verify", rid);
+    const qr = await qrFor(u.toString());
     wrap = document.createElement("div");
     wrap.style.cssText = "position:fixed;left:-10000px;top:0;width:794px;";
-    wrap.innerHTML = pdfPagesHtml(curYm, list);
+    wrap.innerHTML = pdfPagesHtml(curYm, list, rid, qr);
     document.body.appendChild(wrap);
+    try{ await document.fonts.ready; }catch(_){}
+    const pageEl = wrap.querySelector(".pdfp");
+    const canvas = await window.html2canvas(pageEl, { scale: 3, backgroundColor: "#FBF9F4", useCORS: true, logging: false });
     const pdf = new window.jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    const pages = wrap.querySelectorAll(".pdfp");
-    for(let i = 0; i < pages.length; i++){
-      const canvas = await window.html2canvas(pages[i], { scale: 3, backgroundColor: "#ffffff", useCORS: true, logging: false });
-      if(i) pdf.addPage();
-      pdf.addImage(canvas.toDataURL("image/jpeg", 0.98), "JPEG", 0, 0, 210, 297);
+    pdf.addImage(canvas.toDataURL("image/jpeg", 0.98), "JPEG", 0, 0, 210, 297);
+    const qe = wrap.querySelector("#khQrImg");
+    if(qe){
+      const pr = pageEl.getBoundingClientRect(), r = qe.getBoundingClientRect();
+      pdf.link((r.left - pr.left) / pr.width * 210, (r.top - pr.top) / pr.height * 297, r.width / pr.width * 210, r.height / pr.height * 297, { url: u.toString() });
     }
     const safe = String(share.memberName).replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") || "member";
     pdf.save("attendance-" + safe + "-" + curYm + ".pdf");

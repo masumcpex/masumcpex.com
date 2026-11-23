@@ -327,11 +327,11 @@ const PHONE = "";   // support phone, digits with country code (e.g. 60123456789
 const H2C = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
 const JSPDF = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
 const QRLIB = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";
-async function qrObj(text){
+async function qrObj(text, ec){
   try{
     if(typeof window.qrcode !== "function") await loadScript(QRLIB);
     if(typeof window.qrcode !== "function") return null;
-    const qr = window.qrcode(0, "M"); qr.addData(text); qr.make();
+    const qr = window.qrcode(0, ec || "M"); qr.addData(text); qr.make();
     return qr;
   }catch(e){ return null; }
 }
@@ -406,9 +406,9 @@ async function load(){
     const months = monthsList();
     curYm = months[0] || "";
     render();
-    const vp = params.get("verify");
+    const vp = params.get("v") || params.get("verify");
     if(vp){
-      try{ params.delete("verify"); history.replaceState(null, "", location.pathname + (params.toString() ? "?" + params.toString() : "")); }catch(_){}
+      try{ params.delete("verify"); params.delete("v"); history.replaceState(null, "", location.pathname + (params.toString() ? "?" + params.toString() : "")); }catch(_){}
       openInfo("verify", vp);
     }
   }catch(err){
@@ -852,7 +852,7 @@ function pdfPagesHtml(ym, list, rid, qr){
   const NAVY = "#14213D", GOLD = "#B08D57", LGOLD = "#E3C98F", MUTED = "#6B6F7A", LINE = "#D9D2C3", ROW = "#E9E3D4", PAPER = "#FBF9F4", LEAVE = "#F6EBD0";
   const SERIF = "Georgia,'Noto Serif Bengali','Times New Roman',serif";
   const n = Math.max(1, asc.length);
-  const rowH = Math.max(18, Math.min(32, Math.floor(670 / n)));
+  const rowH = Math.max(18, Math.min(32, Math.floor(630 / n)));
   const avg = st.duty ? Math.round(st.hours / st.duty * 10) / 10 : 0;
   const gen = new Date();
   const genTxt = String(gen.getDate()).padStart(2, "0") + " " + MONTHS[gen.getMonth()].slice(0, 3) + " " + gen.getFullYear();
@@ -891,7 +891,7 @@ function pdfPagesHtml(ym, list, rid, qr){
       <div style="position:absolute;left:0;top:-2px;width:30px;height:3px;background:${GOLD};"></div>
       <div><div style="color:${NAVY};font-weight:700;">masumcpex.com</div><div>${CONTACT}</div></div>
       <div style="text-align:center;"><div>Report ID: <b style="color:${NAVY};">${esc(rid)}</b></div><div>View-only copy \u00B7 Generated ${genTxt}</div></div>
-      <div style="display:flex;align-items:center;gap:10px;"><div style="text-align:right;"><div>Page 1 of 1</div>${qr ? `<div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:${GOLD};">SCAN TO VERIFY</div>` : ""}</div>${qr ? `<div id="khQrImg" style="width:62px;height:62px;"></div>` : ""}</div>
+      <div style="display:flex;align-items:center;gap:10px;"><div style="text-align:right;"><div>Page 1 of 1</div>${qr ? `<div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:${GOLD};">SCAN TO VERIFY</div>` : ""}</div>${qr ? `<div id="khQrImg" style="width:96px;height:96px;background:#fff;border:1px solid ${ROW};box-sizing:border-box;"></div>` : ""}</div>
     </div></div>`;
 }
 async function downloadPdf(btn){
@@ -903,8 +903,8 @@ async function downloadPdf(btn){
     await Promise.all([window.html2canvas ? 0 : loadScript(H2C), window.jspdf ? 0 : loadScript(JSPDF)]);
     const st = stats(list);
     const rid = attRid(curYm, share.memberId || share.memberName, st.duty, st.leave, st.hours);
-    const u = new URL(location.href); u.hash = ""; u.searchParams.set("verify", rid);
-    const qo = await qrObj(u.toString());
+    const u = new URL(location.href); u.hash = ""; u.searchParams.delete("verify"); u.searchParams.set("v", rid);
+    const qo = await qrObj(u.toString(), "L");
     wrap = document.createElement("div");
     wrap.style.cssText = "position:fixed;left:-10000px;top:0;width:794px;";
     wrap.innerHTML = pdfPagesHtml(curYm, list, rid, !!qo);
@@ -917,7 +917,8 @@ async function downloadPdf(btn){
     const qe = wrap.querySelector("#khQrImg");
     if(qe && qo){
       const pr = pageEl.getBoundingClientRect(), r = qe.getBoundingClientRect();
-      const qx = (r.left - pr.left) / pr.width * 210, qy = (r.top - pr.top) / pr.height * 297, qs = r.width / pr.width * 210;
+      const bw = 7 / pr.width * 210;   // white border around the QR
+      const qx = (r.left - pr.left) / pr.width * 210 + bw, qy = (r.top - pr.top) / pr.height * 297 + bw, qs = r.width / pr.width * 210 - 2 * bw;
       const nm = qo.getModuleCount(), cell = qs / nm;
       pdf.setFillColor(20, 33, 61);
       for(let i = 0; i < nm; i++) for(let j = 0; j < nm; j++) if(qo.isDark(i, j)) pdf.rect(qx + j * cell, qy + i * cell, cell + 0.02, cell + 0.02, "F");

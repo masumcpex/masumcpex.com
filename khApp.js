@@ -3201,7 +3201,7 @@ export function initKhApp(uid, isAdmin){
     document.body.appendChild(style);
     document.body.appendChild(wrap);
 
-    const FOOTER_MARGIN_MM = 21;
+    const FOOTER_MARGIN_MM = 26;
     const FOOT_SIDE_MM = 11.5;     // same side margin as the report body
     const FRAME_MM = 6;            // thin gold frame around every page
     const generatedAt = new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
@@ -3219,8 +3219,8 @@ export function initKhApp(uid, isAdmin){
       pdf.line(L, y - 5, R, y - 5);
       pdf.setFillColor(176, 141, 87);
       pdf.rect(L, y - 5.5, 10, 1, "F");
-      const QS = footQr ? 15 : 0;
-      const rx = R - (QS ? QS + 4 : 0);
+      const QS = footQr ? 20 : 0, QP = 1.2;   // QR size and its white border (quiet zone), in mm
+      const rx = R - (QS ? QS + 2 * QP + 4 : 0);
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(7.5);
       pdf.setTextColor(20, 33, 61);
@@ -3228,11 +3228,16 @@ export function initKhApp(uid, isAdmin){
       pdf.setFont("helvetica", "normal");
       pdf.setTextColor(107, 111, 122);
       pdf.text("info@masumcpex.com", L, y + 4);
-      pdf.text(`Report ID: ${reportId}${provisionalTag(ym)}`, pageWidthMM / 2 - (QS ? 8 : 0), y, { align: "center" });
+      pdf.text(`Report ID: ${reportId}${provisionalTag(ym)}`, pageWidthMM / 2 - (QS ? 10 : 0), y, { align: "center" });
       pdf.text(`Generated: ${generatedAt}`, rx, y, { align: "right" });
       pdf.text(`Page ${pageNum} of ${totalPages}`, rx, y + 4, { align: "right" });
       if(footQr){
-        const n = footQr.getModuleCount(), cell = QS / n, qx = R - QS, qy = y - 3;
+        const n = footQr.getModuleCount(), cell = QS / n;
+        const tx = R - QS - 2 * QP, ty = y - 3.6, qx = tx + QP, qy = ty + QP;
+        pdf.setFillColor(255, 255, 255);
+        pdf.setDrawColor(217, 210, 195);
+        pdf.setLineWidth(0.1);
+        pdf.rect(tx, ty, QS + 2 * QP, QS + 2 * QP, "FD");
         pdf.setFillColor(20, 33, 61);
         for(let r = 0; r < n; r++) for(let c = 0; c < n; c++){
           if(footQr.isDark(r, c)) pdf.rect(qx + c * cell, qy + r * cell, cell + 0.02, cell + 0.02, "F");
@@ -3241,7 +3246,7 @@ export function initKhApp(uid, isAdmin){
         pdf.setFontSize(6);
         pdf.setTextColor(176, 141, 87);
         pdf.text(footCap, rx, y + 8, { align: "right" });
-        pdf.link(qx, qy, QS, QS, { url: footUrl });
+        pdf.link(tx, ty, QS + 2 * QP, QS + 2 * QP, { url: footUrl });
       }
       pdf.setDrawColor(220, 197, 144);
       pdf.setLineWidth(0.15);
@@ -3254,8 +3259,8 @@ export function initKhApp(uid, isAdmin){
       try{
         let qUrl = "https://masumcpex.com", qCap = "SCAN TO VISIT";
         const sh = singleMember ? activeShareFor(singleMember.id) : null;
-        if(sh){ qUrl = SHARE_VIEW_URL + "?token=" + encodeURIComponent(sh.id) + "&verify=" + encodeURIComponent(reportId); qCap = "SCAN TO VERIFY"; }
-        footQr = await qrObject(qUrl); footUrl = qUrl; footCap = qCap;
+        if(sh){ qUrl = SHARE_VIEW_URL + "?token=" + encodeURIComponent(sh.id) + "&v=" + encodeURIComponent(reportId); qCap = "SCAN TO VERIFY"; }
+        footQr = await qrObject(qUrl, "L"); footUrl = qUrl; footCap = qCap;
       }catch(e){ footQr = null; }
       const hdScale = Math.max(2, Math.min(3, Math.sqrt(12000000 / (wrap.offsetWidth * wrap.scrollHeight))));
       const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#FBF9F4", logging:false });
@@ -4443,11 +4448,11 @@ export function initKhApp(uid, isAdmin){
     return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
   }
   // Same QR, but returned as a matrix so the PDF can draw it as sharp vector squares.
-  async function qrObject(text){
+  async function qrObject(text, ec){
     try{
       if(typeof window.qrcode !== "function") await loadScriptOnce(QR_LIB);
       if(typeof window.qrcode !== "function") return null;
-      const qr = window.qrcode(0, "M");
+      const qr = window.qrcode(0, ec || "M");
       qr.addData(text);
       qr.make();
       return qr;

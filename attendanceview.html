@@ -852,7 +852,7 @@ function pdfPagesHtml(ym, list, rid, qr){
   const NAVY = "#14213D", GOLD = "#B08D57", LGOLD = "#E3C98F", MUTED = "#6B6F7A", LINE = "#D9D2C3", ROW = "#E9E3D4", PAPER = "#FBF9F4", LEAVE = "#F6EBD0";
   const SERIF = "Georgia,'Noto Serif Bengali','Times New Roman',serif";
   const n = Math.max(1, asc.length);
-  const rowH = Math.max(18, Math.min(32, Math.floor(630 / n)));
+  const rowH = Math.max(18, Math.min(32, Math.floor(620 / n)));
   const avg = st.duty ? Math.round(st.hours / st.duty * 10) / 10 : 0;
   const gen = new Date();
   const genTxt = String(gen.getDate()).padStart(2, "0") + " " + MONTHS[gen.getMonth()].slice(0, 3) + " " + gen.getFullYear();
@@ -887,18 +887,15 @@ function pdfPagesHtml(ym, list, rid, qr){
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div style="white-space:nowrap;font-family:${SERIF};font-size:14px;font-weight:600;">Daily Attendance Details</div><div style="flex:1;border-top:1px solid ${LINE};"></div></div>
     <table style="width:100%;border-collapse:collapse;"><thead><tr>${th("Date")}${th("Day")}${th("Status")}${th("Work hours", "right")}</tr></thead><tbody>${rows}</tbody>
       <tfoot><tr><td colspan="3" style="padding:0 10px;height:36px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:${NAVY};border-top:1px solid ${NAVY};border-bottom:3px double ${GOLD};">Total work hours</td><td style="padding:0 10px;height:36px;font-family:${SERIF};font-size:16px;font-weight:600;text-align:right;color:${NAVY};border-top:1px solid ${NAVY};border-bottom:3px double ${GOLD};">${fmtH(st.hours)} hrs</td></tr></tfoot></table>
-    <div style="position:absolute;left:52px;right:52px;bottom:40px;height:104px;font-size:10.5px;color:${MUTED};line-height:1.6;">
-      <div style="position:absolute;left:0;right:${qr ? 84 : 0}px;top:0;border-top:1px solid ${NAVY};"></div>
+    <div style="position:absolute;left:52px;right:52px;bottom:40px;height:${qr ? 112 : 20}px;font-size:10.5px;color:${MUTED};line-height:1.6;">
+      ${qr ? `<svg width="690" height="113" viewBox="0 0 690 113" style="position:absolute;left:0;top:0;overflow:visible;" xmlns="http://www.w3.org/2000/svg"><path d="M0 1 H564 Q578 1 578 15 V98 Q578 112 564 112 H676 Q690 112 690 98 V15 Q690 1 676 1 H578" fill="none" stroke="${NAVY}" stroke-width="1"/><path d="M564 1 Q578 1 578 15" fill="none" stroke="${GOLD}" stroke-width="2.2"/><rect x="586" y="9" width="96" height="96" rx="11" fill="#fff" stroke="${LGOLD}" stroke-width="1"/></svg>` : `<div style="position:absolute;left:0;right:0;top:0;border-top:1px solid ${NAVY};"></div>`}
       <div style="position:absolute;left:0;top:-2px;width:30px;height:3px;background:${GOLD};"></div>
-      <div style="position:absolute;left:0;right:${qr ? 112 : 0}px;top:14px;display:flex;justify-content:space-between;align-items:flex-start;">
+      <div style="position:absolute;left:0;right:${qr ? 134 : 0}px;top:14px;display:flex;justify-content:space-between;align-items:flex-start;">
         <div><div style="color:${NAVY};font-weight:700;">masumcpex.com</div><div>${CONTACT}</div></div>
         <div style="text-align:center;"><div>Report ID: <b style="color:${NAVY};">${esc(rid)}</b></div><div>View-only copy \u00B7 Generated ${genTxt}</div></div>
-        <div style="text-align:right;">Page 1 of 1${qr ? `<br><span style="display:inline-block;background:${GOLD};color:#fff;font-size:10px;line-height:16px;padding:0 12px;border-radius:8px;letter-spacing:.06em;">VERIFY</span>` : ""}</div>
+        <div style="text-align:right;">Page 1 of 1${qr ? `<br><span style="display:inline-block;margin-top:6px;background:${GOLD};color:#fff;font-size:10px;line-height:17px;padding:0 12px;border-radius:9px;letter-spacing:.06em;">SCAN TO VERIFY</span>` : ""}</div>
       </div>
-      ${qr ? `<div id="khQrBox" style="position:absolute;right:0;top:-1px;width:96px;height:98px;box-sizing:border-box;background:#fff;border:1px solid ${NAVY};border-radius:12px;">
-        <div style="position:absolute;left:-1px;top:-1px;width:14px;height:14px;border-top:2px solid ${GOLD};border-left:2px solid ${GOLD};border-top-left-radius:12px;"></div>
-        <div id="khQrImg" style="position:absolute;left:6px;top:7px;width:82px;height:82px;"></div>
-      </div>` : ""}
+      ${qr ? `<div id="khQrBox" style="position:absolute;left:578px;top:0;width:112px;height:112px;"></div><div id="khQrImg" style="position:absolute;left:593px;top:16px;width:82px;height:82px;"></div>` : ""}
     </div></div>`;
 }
 async function downloadPdf(btn){

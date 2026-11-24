@@ -3216,7 +3216,7 @@ export function initKhApp(uid, isAdmin){
       const y0 = y - 5;                                   // the footer line
       const L = FOOT_SIDE_MM, R = pageWidthMM - FOOT_SIDE_MM;
       const QS = footQr ? 20 : 0;                         // QR size (mm) - unchanged
-      const CR = 3, PX = 1.8, PTOP = 1.4, PW = QS + 2 * PX, PH = QS + PTOP + 1.6;   // QR "pocket"
+      const CR = 3, PX = 1.8, PTOP = 1.4, PW = QS + 2 * PX, PH = QS + PTOP + 1.4;   // QR "pocket"
       const tx = R - PW, ty = y0;
       pdf.setDrawColor(20, 33, 61);
       pdf.setLineWidth(0.15);
@@ -3234,6 +3234,15 @@ export function initKhApp(uid, isAdmin){
       pdf.text(`Report ID: ${reportId}${provisionalTag(ym)}`, pageWidthMM / 2 - (footQr ? 12 : 0), y, { align: "center" });
       pdf.text(`Generated: ${generatedAt}`, rx, y, { align: "right" });
       pdf.text(`Page ${pageNum} of ${totalPages}`, rx, y + 4, { align: "right" });
+      if(footQr){                                          // small gold label under the page number
+        const pw = 13;
+        pdf.setFillColor(176, 141, 87);
+        pdf.roundedRect(rx - pw, y + 5.6, pw, 3.2, 1.6, 1.6, "F");
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(5.5);
+        pdf.setTextColor(255, 255, 255);
+        pdf.text(footCap, rx - pw / 2, y + 7.8, { align: "center" });
+      }
       if(footQr){
         pdf.setFillColor(255, 255, 255);
         pdf.setDrawColor(20, 33, 61);
@@ -3248,13 +3257,6 @@ export function initKhApp(uid, isAdmin){
         for(let r = 0; r < n; r++) for(let c2 = 0; c2 < n; c2++){
           if(footQr.isDark(r, c2)) pdf.rect(qx + c2 * cell, qy + r * cell, cell + 0.02, cell + 0.02, "F");
         }
-        const by = ty + PH, cx = tx + PW / 2;             // small gold label sitting on the pocket's bottom edge
-        pdf.setFillColor(176, 141, 87);
-        pdf.roundedRect(cx - 6.5, by - 1.6, 13, 3.2, 1.6, 1.6, "F");
-        pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(5.5);
-        pdf.setTextColor(255, 255, 255);
-        pdf.text(footCap, cx, by + 0.7, { align: "center" });
         pdf.link(tx, ty, PW, PH, { url: footUrl });
       }
       pdf.setDrawColor(220, 197, 144);

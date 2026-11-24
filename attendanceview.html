@@ -893,12 +893,11 @@ function pdfPagesHtml(ym, list, rid, qr){
       <div style="position:absolute;left:0;right:${qr ? 112 : 0}px;top:14px;display:flex;justify-content:space-between;align-items:flex-start;">
         <div><div style="color:${NAVY};font-weight:700;">masumcpex.com</div><div>${CONTACT}</div></div>
         <div style="text-align:center;"><div>Report ID: <b style="color:${NAVY};">${esc(rid)}</b></div><div>View-only copy \u00B7 Generated ${genTxt}</div></div>
-        <div style="text-align:right;">Page 1 of 1</div>
+        <div style="text-align:right;">Page 1 of 1${qr ? `<br><span style="display:inline-block;background:${GOLD};color:#fff;font-size:10px;line-height:16px;padding:0 12px;border-radius:8px;letter-spacing:.06em;">VERIFY</span>` : ""}</div>
       </div>
-      ${qr ? `<div id="khQrBox" style="position:absolute;right:0;top:-1px;width:96px;height:104px;box-sizing:border-box;background:#fff;border:1px solid ${NAVY};border-radius:12px;">
+      ${qr ? `<div id="khQrBox" style="position:absolute;right:0;top:-1px;width:96px;height:98px;box-sizing:border-box;background:#fff;border:1px solid ${NAVY};border-radius:12px;">
         <div style="position:absolute;left:-1px;top:-1px;width:14px;height:14px;border-top:2px solid ${GOLD};border-left:2px solid ${GOLD};border-top-left-radius:12px;"></div>
         <div id="khQrImg" style="position:absolute;left:6px;top:7px;width:82px;height:82px;"></div>
-        <div style="position:absolute;left:16px;bottom:-9px;width:62px;height:16px;line-height:16px;text-align:center;background:${GOLD};color:#fff;border-radius:8px;font-size:10px;letter-spacing:.06em;">VERIFY</div>
       </div>` : ""}
     </div></div>`;
 }

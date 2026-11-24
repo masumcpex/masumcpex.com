@@ -887,11 +887,19 @@ function pdfPagesHtml(ym, list, rid, qr){
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div style="white-space:nowrap;font-family:${SERIF};font-size:14px;font-weight:600;">Daily Attendance Details</div><div style="flex:1;border-top:1px solid ${LINE};"></div></div>
     <table style="width:100%;border-collapse:collapse;"><thead><tr>${th("Date")}${th("Day")}${th("Status")}${th("Work hours", "right")}</tr></thead><tbody>${rows}</tbody>
       <tfoot><tr><td colspan="3" style="padding:0 10px;height:36px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:${NAVY};border-top:1px solid ${NAVY};border-bottom:3px double ${GOLD};">Total work hours</td><td style="padding:0 10px;height:36px;font-family:${SERIF};font-size:16px;font-weight:600;text-align:right;color:${NAVY};border-top:1px solid ${NAVY};border-bottom:3px double ${GOLD};">${fmtH(st.hours)} hrs</td></tr></tfoot></table>
-    <div style="position:absolute;left:52px;right:52px;bottom:40px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid ${NAVY};padding-top:10px;font-size:10.5px;color:${MUTED};line-height:1.6;">
+    <div style="position:absolute;left:52px;right:52px;bottom:40px;height:104px;font-size:10.5px;color:${MUTED};line-height:1.6;">
+      <div style="position:absolute;left:0;right:${qr ? 84 : 0}px;top:0;border-top:1px solid ${NAVY};"></div>
       <div style="position:absolute;left:0;top:-2px;width:30px;height:3px;background:${GOLD};"></div>
-      <div><div style="color:${NAVY};font-weight:700;">masumcpex.com</div><div>${CONTACT}</div></div>
-      <div style="text-align:center;"><div>Report ID: <b style="color:${NAVY};">${esc(rid)}</b></div><div>View-only copy \u00B7 Generated ${genTxt}</div></div>
-      <div style="display:flex;align-items:center;gap:10px;"><div style="text-align:right;"><div>Page 1 of 1</div>${qr ? `<div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:${GOLD};">SCAN TO VERIFY</div>` : ""}</div>${qr ? `<div id="khQrImg" style="width:96px;height:96px;background:#fff;border:1px solid ${ROW};box-sizing:border-box;"></div>` : ""}</div>
+      <div style="position:absolute;left:0;right:${qr ? 112 : 0}px;top:14px;display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><div style="color:${NAVY};font-weight:700;">masumcpex.com</div><div>${CONTACT}</div></div>
+        <div style="text-align:center;"><div>Report ID: <b style="color:${NAVY};">${esc(rid)}</b></div><div>View-only copy \u00B7 Generated ${genTxt}</div></div>
+        <div style="text-align:right;">Page 1 of 1</div>
+      </div>
+      ${qr ? `<div id="khQrBox" style="position:absolute;right:0;top:-1px;width:96px;height:104px;box-sizing:border-box;background:#fff;border:1px solid ${NAVY};border-radius:12px;">
+        <div style="position:absolute;left:-1px;top:-1px;width:14px;height:14px;border-top:2px solid ${GOLD};border-left:2px solid ${GOLD};border-top-left-radius:12px;"></div>
+        <div id="khQrImg" style="position:absolute;left:6px;top:7px;width:82px;height:82px;"></div>
+        <div style="position:absolute;left:16px;bottom:-9px;width:62px;height:16px;line-height:16px;text-align:center;background:${GOLD};color:#fff;border-radius:8px;font-size:10px;letter-spacing:.06em;">VERIFY</div>
+      </div>` : ""}
     </div></div>`;
 }
 async function downloadPdf(btn){
@@ -917,12 +925,12 @@ async function downloadPdf(btn){
     const qe = wrap.querySelector("#khQrImg");
     if(qe && qo){
       const pr = pageEl.getBoundingClientRect(), r = qe.getBoundingClientRect();
-      const bw = 7 / pr.width * 210;   // white border around the QR
-      const qx = (r.left - pr.left) / pr.width * 210 + bw, qy = (r.top - pr.top) / pr.height * 297 + bw, qs = r.width / pr.width * 210 - 2 * bw;
+      const qx = (r.left - pr.left) / pr.width * 210, qy = (r.top - pr.top) / pr.height * 297, qs = r.width / pr.width * 210;
       const nm = qo.getModuleCount(), cell = qs / nm;
       pdf.setFillColor(20, 33, 61);
       for(let i = 0; i < nm; i++) for(let j = 0; j < nm; j++) if(qo.isDark(i, j)) pdf.rect(qx + j * cell, qy + i * cell, cell + 0.02, cell + 0.02, "F");
-      pdf.link((r.left - pr.left) / pr.width * 210, (r.top - pr.top) / pr.height * 297, r.width / pr.width * 210, r.height / pr.height * 297, { url: u.toString() });
+      const bx = wrap.querySelector("#khQrBox").getBoundingClientRect();
+      pdf.link((bx.left - pr.left) / pr.width * 210, (bx.top - pr.top) / pr.height * 297, bx.width / pr.width * 210, bx.height / pr.height * 297, { url: u.toString() });
     }
     const safe = String(share.memberName).replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") || "member";
     pdf.save("attendance-" + safe + "-" + curYm + ".pdf");

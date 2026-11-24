@@ -3201,7 +3201,7 @@ export function initKhApp(uid, isAdmin){
     document.body.appendChild(style);
     document.body.appendChild(wrap);
 
-    const FOOTER_MARGIN_MM = 26;
+    const FOOTER_MARGIN_MM = 27;
     const FOOT_SIDE_MM = 11.5;     // same side margin as the report body
     const FRAME_MM = 6;            // thin gold frame around every page
     const generatedAt = new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
@@ -3213,14 +3213,17 @@ export function initKhApp(uid, isAdmin){
       pdf.setFillColor(251, 249, 244);
       pdf.rect(0, bandTop, pageWidthMM, pageHeightMM - bandTop, "F");
       const y = pageHeightMM - FOOTER_MARGIN_MM;
+      const y0 = y - 5;                                   // the footer line
       const L = FOOT_SIDE_MM, R = pageWidthMM - FOOT_SIDE_MM;
+      const QS = footQr ? 20 : 0;                         // QR size (mm) - unchanged
+      const CR = 3, PX = 1.8, PTOP = 1.4, PW = QS + 2 * PX, PH = QS + PTOP + 1.6;   // QR "pocket"
+      const tx = R - PW, ty = y0;
       pdf.setDrawColor(20, 33, 61);
       pdf.setLineWidth(0.15);
-      pdf.line(L, y - 5, R, y - 5);
+      pdf.line(L, y0, footQr ? tx + CR : R, y0);          // line runs up to the pocket and turns into it
       pdf.setFillColor(176, 141, 87);
-      pdf.rect(L, y - 5.5, 10, 1, "F");
-      const QS = footQr ? 20 : 0, QP = 1.2;   // QR size and its white border (quiet zone), in mm
-      const rx = R - (QS ? QS + 2 * QP + 4 : 0);
+      pdf.rect(L, y0 - 0.5, 10, 1, "F");                  // gold tab
+      const rx = footQr ? tx - 4 : R;
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(7.5);
       pdf.setTextColor(20, 33, 61);
@@ -3228,25 +3231,31 @@ export function initKhApp(uid, isAdmin){
       pdf.setFont("helvetica", "normal");
       pdf.setTextColor(107, 111, 122);
       pdf.text("info@masumcpex.com", L, y + 4);
-      pdf.text(`Report ID: ${reportId}${provisionalTag(ym)}`, pageWidthMM / 2 - (QS ? 10 : 0), y, { align: "center" });
+      pdf.text(`Report ID: ${reportId}${provisionalTag(ym)}`, pageWidthMM / 2 - (footQr ? 12 : 0), y, { align: "center" });
       pdf.text(`Generated: ${generatedAt}`, rx, y, { align: "right" });
       pdf.text(`Page ${pageNum} of ${totalPages}`, rx, y + 4, { align: "right" });
       if(footQr){
-        const n = footQr.getModuleCount(), cell = QS / n;
-        const tx = R - QS - 2 * QP, ty = y - 3.6, qx = tx + QP, qy = ty + QP;
         pdf.setFillColor(255, 255, 255);
-        pdf.setDrawColor(217, 210, 195);
-        pdf.setLineWidth(0.1);
-        pdf.rect(tx, ty, QS + 2 * QP, QS + 2 * QP, "FD");
+        pdf.setDrawColor(20, 33, 61);
+        pdf.setLineWidth(0.15);
+        pdf.roundedRect(tx, ty, PW, PH, CR, CR, "FD");
+        const c = 0.5523 * CR;                            // gold curve where the line turns into the pocket
+        pdf.setDrawColor(176, 141, 87);
+        pdf.setLineWidth(0.5);
+        pdf.lines([[-c, 0, -CR, CR - c, -CR, CR]], tx + CR, ty, [1, 1], "S", false);
+        const n = footQr.getModuleCount(), cell = QS / n, qx = tx + PX, qy = ty + PTOP;
         pdf.setFillColor(20, 33, 61);
-        for(let r = 0; r < n; r++) for(let c = 0; c < n; c++){
-          if(footQr.isDark(r, c)) pdf.rect(qx + c * cell, qy + r * cell, cell + 0.02, cell + 0.02, "F");
+        for(let r = 0; r < n; r++) for(let c2 = 0; c2 < n; c2++){
+          if(footQr.isDark(r, c2)) pdf.rect(qx + c2 * cell, qy + r * cell, cell + 0.02, cell + 0.02, "F");
         }
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(6);
-        pdf.setTextColor(176, 141, 87);
-        pdf.text(footCap, rx, y + 8, { align: "right" });
-        pdf.link(tx, ty, QS + 2 * QP, QS + 2 * QP, { url: footUrl });
+        const by = ty + PH, cx = tx + PW / 2;             // small gold label sitting on the pocket's bottom edge
+        pdf.setFillColor(176, 141, 87);
+        pdf.roundedRect(cx - 6.5, by - 1.6, 13, 3.2, 1.6, 1.6, "F");
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(5.5);
+        pdf.setTextColor(255, 255, 255);
+        pdf.text(footCap, cx, by + 0.7, { align: "center" });
+        pdf.link(tx, ty, PW, PH, { url: footUrl });
       }
       pdf.setDrawColor(220, 197, 144);
       pdf.setLineWidth(0.15);
@@ -3257,15 +3266,14 @@ export function initKhApp(uid, isAdmin){
       // Sharper text: up to 3x, lowered automatically for long reports so phones don't run out of canvas memory.
       await wtPdfFontsReady();
       try{
-        let qUrl = "https://masumcpex.com", qCap = "SCAN TO VISIT";
+        let qUrl = "https://masumcpex.com", qCap = "VISIT";
         const sh = singleMember ? activeShareFor(singleMember.id) : null;
-        if(sh){ qUrl = SHARE_VIEW_URL + "?token=" + encodeURIComponent(sh.id) + "&v=" + encodeURIComponent(reportId); qCap = "SCAN TO VERIFY"; }
+        if(sh){ qUrl = SHARE_VIEW_URL + "?token=" + encodeURIComponent(sh.id) + "&v=" + encodeURIComponent(reportId); qCap = "VERIFY"; }
         footQr = await qrObject(qUrl, "L"); footUrl = qUrl; footCap = qCap;
       }catch(e){ footQr = null; }
       const hdScale = Math.max(2, Math.min(3, Math.sqrt(12000000 / (wrap.offsetWidth * wrap.scrollHeight))));
       const canvas = await window.html2canvas(wrap, { scale:hdScale, useCORS:true, backgroundColor:"#FBF9F4", logging:false });
       const { jsPDF } = window.jspdf;
-      const wm = await wtLogoData();
 
       const A4_WIDTH_MM  = 210;
       const A4_HEIGHT_MM = 297;
@@ -3335,7 +3343,7 @@ export function initKhApp(uid, isAdmin){
           yMM += hh;
         }
         pdf.addImage(slice(pg.y0, pg.y1), "JPEG", 0, yMM, A4_WIDTH_MM, (pg.y1 - pg.y0) / pxPerMM);
-        wtDrawWatermark(pdf, wm); drawFooter(pdf, idx + 1, pages.length, A4_WIDTH_MM, A4_HEIGHT_MM);
+        drawFooter(pdf, idx + 1, pages.length, A4_WIDTH_MM, A4_HEIGHT_MM);   // clean page: no logo watermark over the table
       });
       wtSavePdf(pdf, `attendance-report-${ym}${singleMember ? "-" + singleMember.name : ""}.pdf`);
     }finally{
